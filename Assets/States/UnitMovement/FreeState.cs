@@ -29,7 +29,13 @@ public class FreeState : PlayerMovementState
 		base.tick();
 		UnitInput inp = mover.control.getUnitInuput();
 
-		mover.planarVelocity = input2vec(inp.move) * mover.baseSpeed;
+		float force =  1.0f;
+		if (!mover.grounded)
+		{
+			force *= 0.6f;
+		}
+		mover.move(input2vec(inp.move), force,force);
+		
 
 		
 	}
@@ -37,9 +43,9 @@ public class FreeState : PlayerMovementState
 	{
 		
 		UnitInput inp = mover.control.getUnitInuput();
-		if (inp.jump)
+		if (inp.jump && mover.grounded)
 		{
-			return new StateTransition(new JumpsquatState(mover, 1f), true);
+			return new StateTransition(new JumpsquatState(mover, mover.jumpsquatTime), true);
 		}
 		return base.transition();
 	}

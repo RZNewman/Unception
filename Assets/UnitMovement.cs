@@ -13,6 +13,9 @@ public class UnitMovement : NetworkBehaviour
     UnitControl controller;
     StateMachine<PlayerMovementState> movement;
     CapsuleCollider col;
+
+    [HideInInspector]
+    public float currentLookAngle=0;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +25,7 @@ public class UnitMovement : NetworkBehaviour
         movement = new StateMachine<PlayerMovementState>(new FreeState(this));
         
     }
+
 
     // Update is called once per frame
     void Update()
@@ -48,17 +52,25 @@ public class UnitMovement : NetworkBehaviour
 	{
 		get
 		{
-            return new Vector3(rb.velocity.x, 0, rb.velocity.z);
-		}
+            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
+            Quaternion rot = Quaternion.AngleAxis(-Vector3.Angle(groundNormal, Vector3.up), Vector3.Cross(Vector3.up, groundNormal));
+            return rot * plane3;
+        }
 		set
 		{
-            rb.velocity = new Vector3(value.x, rb.velocity.y, value.z);
-		}
+            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
+            Vector3 vertdiff = rb.velocity - plane3;
+
+            Vector3 move3 = new Vector3(value.x, 0, value.z);
+            Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(groundNormal, Vector3.up), Vector3.Cross(Vector3.up, groundNormal));
+            Vector3 plane3New = rot * move3;
+            rb.velocity = plane3New + vertdiff;
+        }
 	}
 
     public void jump()
 	{
-        rb.velocity += new Vector3(0, jumpForce, 0);
+        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.y);
 	}
 
     public void move(Vector3 desiredDirection, float speedMultiplier, float accMultiplier)
@@ -115,5 +127,6 @@ public class UnitMovement : NetworkBehaviour
 
         }
     }
+
 
 }

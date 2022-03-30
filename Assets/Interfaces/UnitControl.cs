@@ -9,6 +9,7 @@ public interface UnitControl
     public struct UnitInput
 	{
         public Vector2 move;
+        public Vector2 look;
         public bool jump;
         public AttackKey[] attacks;
 

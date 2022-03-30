@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnitControl;
-
+using static Utils;
 public class InputHandler : NetworkBehaviour, UnitControl
 {
 
@@ -83,8 +83,31 @@ public class InputHandler : NetworkBehaviour, UnitControl
         currentInput.attacks = new AttackKey[atks.Count];  
         atks.CopyTo(currentInput.attacks);
 
+        setLocalLook();
     }
 
+    static float cameraRayMax = 100f;
+    void setLocalLook()
+	{
+        Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit info;
+        Vector3 dir;
+        if(Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain"))){
+            
+            dir = info.point - transform.position;
+            
+		}
+        else
+		{
+            Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("ClickPlane"));
+            dir = info.point - transform.position;
+
+        }
+        dir.y = 0;
+        dir.Normalize();
+        currentInput.look = vec2input(dir);
+
+    }
     static float serverTickRate = 1.0f / 30.0f;
     float currentSendTime=0;
     void checkServerSend()

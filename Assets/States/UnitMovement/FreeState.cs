@@ -29,6 +29,9 @@ public class FreeState : PlayerMovementState
 		base.tick();
 		UnitInput inp = mover.control.getUnitInuput();
 
+		float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
+		mover.currentLookAngle = desiredAngle;
+
 		float force =  1.0f;
 		if (!mover.grounded)
 		{

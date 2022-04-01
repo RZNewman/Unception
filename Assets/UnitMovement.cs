@@ -9,6 +9,8 @@ public class UnitMovement : NetworkBehaviour
     public float acceleration = 5f;
     public float jumpForce = 10f;
     public float jumpsquatTime = 0.8f;
+    public float lookSpeedDegrees = 270f;
+    public float backwardsMoveMultiplier = 0.7f;
     Rigidbody rb;
     UnitControl controller;
     StateMachine<PlayerMovementState> movement;
@@ -22,7 +24,7 @@ public class UnitMovement : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         controller = GetComponent<UnitControl>();
         col = GetComponentInChildren<CapsuleCollider>();
-        movement = new StateMachine<PlayerMovementState>(new FreeState(this));
+        movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         
     }
 
@@ -75,12 +77,24 @@ public class UnitMovement : NetworkBehaviour
 
     public void move(Vector3 desiredDirection, float speedMultiplier, float accMultiplier)
 	{
-        Vector3 desiredSpeed = desiredDirection * maxSpeed * speedMultiplier;
+        float potentialSpeed = maxSpeed * speedMultiplier;
+        float desiredSpeed;
+		if (grounded)
+		{
+            desiredSpeed = potentialSpeed;
+
+        }
+        else
+		{
+            float usefulSpeed = Mathf.Max(Vector3.Dot(planarVelocity, desiredDirection), 0);
+            desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
+        }
+        Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
         float frameMagnitude = acceleration * accMultiplier * Time.fixedDeltaTime;
-        Vector3 diff = desiredSpeed - planarVelocity;
+        Vector3 diff = desiredVeloicity - planarVelocity;
 		if (diff.magnitude <= frameMagnitude)
 		{
-            planarVelocity = desiredSpeed;
+            planarVelocity = desiredVeloicity;
 
         }
 		else
@@ -89,6 +103,20 @@ public class UnitMovement : NetworkBehaviour
 		}
 
     }
+    public void rotate(float desiredAngle, float speedMultiplier)
+	{
+        float diff = desiredAngle - currentLookAngle;
+        float frameMagnitude = lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
+        diff = normalizeAngle(diff);
+        if (Mathf.Abs(diff) <= frameMagnitude)
+		{
+            currentLookAngle = desiredAngle;
+		}
+		else
+		{
+            currentLookAngle += frameMagnitude * Mathf.Sign(diff);
+		}
+	}
 
     bool ground = false;
     Vector3 groundNormal;

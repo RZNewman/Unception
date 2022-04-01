@@ -103,8 +103,11 @@ MonoBehaviour:
   syncInterval: 0.1
   maxSpeed: 7
   acceleration: 20
-  jumpForce: 10
+  jumpForce: 20
   jumpsquatTime: 0.4
+  lookSpeedDegrees: 270
+  backwardsMoveMultiplier: 0.7
+  currentLookAngle: 0
 --- !u!114 &935787168308635777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c52ae49ccfe564eb25dd410b85124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: -9.81
+  gravity: -30
 --- !u!1 &4921098641576344319
 GameObject:
   m_ObjectHideFlags: 0

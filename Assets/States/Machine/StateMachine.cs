@@ -7,10 +7,11 @@ using static State;
 public class StateMachine<T> where T: State
 {
     T currentState;
-    T defaultState;
-    public StateMachine(T baseState){
-        defaultState = baseState;
-        currentState = (T)Activator.CreateInstance(baseState.GetType(), baseState); ;
+    Func<T> defaultBuilder;
+    public StateMachine(Func<T> defaultB)
+    {
+        defaultBuilder = defaultB;
+        currentState = defaultBuilder();
         currentState.enter();
     }
 
@@ -22,7 +23,7 @@ public class StateMachine<T> where T: State
             T nextState;
             if(t.nextState == null)
 			{
-                nextState = (T)Activator.CreateInstance(defaultState.GetType(), defaultState);
+                nextState = defaultBuilder();
             }
 			else
 			{

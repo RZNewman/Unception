@@ -30,14 +30,21 @@ public class FreeState : PlayerMovementState
 		UnitInput inp = mover.control.getUnitInuput();
 
 		float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
-		mover.currentLookAngle = desiredAngle;
+		mover.rotate(desiredAngle, 1.0f);
+
+		Vector3 moveDir = input2vec(inp.move);
+		float inputAngle = -Vector2.SignedAngle(Vector2.up, moveDir);
+		float angleDiff = Mathf.Abs(normalizeAngle(inputAngle - mover.currentLookAngle));
+
+
 
 		float force =  1.0f;
+		force *= Mathf.Lerp(1.0f, mover.backwardsMoveMultiplier, angleDiff / 180);
 		if (!mover.grounded)
 		{
 			force *= 0.6f;
 		}
-		mover.move(input2vec(inp.move), force,force);
+		mover.move(moveDir, force,force);
 		
 
 		

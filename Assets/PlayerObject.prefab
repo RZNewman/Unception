@@ -92,6 +92,7 @@ MonoBehaviour:
   jumpForce: 20
   jumpsquatTime: 0.4
   lookSpeedDegrees: 270
+  sidewaysMoveMultiplier: 0.85
   backwardsMoveMultiplier: 0.7
   currentLookAngle: 0
 --- !u!114 &935787168308635777

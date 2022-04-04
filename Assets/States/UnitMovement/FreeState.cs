@@ -27,23 +27,30 @@ public class FreeState : PlayerMovementState
 	public override void tick()
 	{
 		base.tick();
-		UnitInput inp = mover.control.getUnitInuput();
+		UnitInput inp = mover.input;
 
 		float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
 		mover.rotate(desiredAngle, 1.0f);
 
-		Vector3 moveDir = input2vec(inp.move);
-		float inputAngle = -Vector2.SignedAngle(Vector2.up, moveDir);
+		
+		float inputAngle = -Vector2.SignedAngle(Vector2.up, inp.move);
 		float angleDiff = Mathf.Abs(normalizeAngle(inputAngle - mover.currentLookAngle));
 
-
-
 		float force =  1.0f;
-		force *= Mathf.Lerp(1.0f, mover.backwardsMoveMultiplier, angleDiff / 180);
+		if (angleDiff > 90)
+		{
+			force *= Mathf.Lerp(mover.sidewaysMoveMultiplier, mover.backwardsMoveMultiplier, (angleDiff-90) / 90);
+		}
+		else
+		{
+			force *= Mathf.Lerp(1.0f, mover.sidewaysMoveMultiplier, angleDiff / 90);
+		}
+		
 		if (!mover.grounded)
 		{
 			force *= 0.6f;
 		}
+		Vector3 moveDir = input2vec(inp.move);
 		mover.move(moveDir, force,force);
 		
 
@@ -52,7 +59,7 @@ public class FreeState : PlayerMovementState
 	public override StateTransition transition()
 	{
 		
-		UnitInput inp = mover.control.getUnitInuput();
+		UnitInput inp = mover.input;
 		if (inp.jump && mover.grounded)
 		{
 			return new StateTransition(new JumpsquatState(mover, mover.jumpsquatTime), true);

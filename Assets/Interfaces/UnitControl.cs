@@ -26,4 +26,6 @@ public interface UnitControl
         Two
 	}
     public UnitInput getUnitInuput();
+
+    public void refreshInput();
 }

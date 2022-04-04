@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class Utils 
 {
-    public static Vector3 input2vec(Vector2 move)
+    public static Vector3 input2vec(Vector2 inp)
 	{
-		return new Vector3(move.x, 0, move.y);
+		return new Vector3(inp.x, 0, inp.y);
 	}
 	public static Vector2 vec2input(Vector3 world)
 	{

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnitControl;
 using static Utils;
-public class InputHandler : NetworkBehaviour, UnitControl
+public class InputHandler : MonoBehaviour, UnitControl
 {
 
 
     UnitInput currentInput;
 
-    UnitInput lastInput;
+
 
     public UnitInput getUnitInuput()
 	{
@@ -26,19 +26,13 @@ public class InputHandler : NetworkBehaviour, UnitControl
     // Update is called once per frame
     void Update()
     {
-		if (isClient && isLocalPlayer)
-		{
-            UpdateClient();
-		}
-        if (isServer)
-        {
-            UpdateServer();
-        }
+		
+
     }
-    void UpdateClient()
+    public void refreshInput()
 	{
         setLocalInput();
-        checkServerSend();
+        
     }
 
     void setLocalInput()
@@ -108,32 +102,6 @@ public class InputHandler : NetworkBehaviour, UnitControl
         currentInput.look = vec2input(dir);
 
     }
-    static float serverTickRate = 1.0f / 30.0f;
-    float currentSendTime=0;
-    void checkServerSend()
-	{
-        currentSendTime += Time.deltaTime;
-		if (currentSendTime > serverTickRate)
-		{
-            while(currentSendTime > serverTickRate)
-			{
-                currentSendTime -= serverTickRate;
-			}
-            CmdSendInput(currentInput);
-            currentInput.reset();
-		}
-	}
-
-    [Command]
-    void CmdSendInput(UnitInput input)
-	{
-        lastInput = currentInput;
-        currentInput = input;
-	}
-    void UpdateServer()
-    {
-        
-
-    }
+    
 
 }

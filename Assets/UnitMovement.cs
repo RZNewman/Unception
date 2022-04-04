@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnitControl;
 using static Utils;
 public class UnitMovement : NetworkBehaviour
 {
@@ -10,9 +11,10 @@ public class UnitMovement : NetworkBehaviour
     public float jumpForce = 10f;
     public float jumpsquatTime = 0.8f;
     public float lookSpeedDegrees = 270f;
+    public float sidewaysMoveMultiplier = 0.85f;
     public float backwardsMoveMultiplier = 0.7f;
     Rigidbody rb;
-    UnitControl controller;
+    ControlManager controller;
     StateMachine<PlayerMovementState> movement;
     CapsuleCollider col;
 
@@ -22,7 +24,8 @@ public class UnitMovement : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        controller = GetComponent<UnitControl>();
+        controller = GetComponent<ControlManager>();
+        controller.spawnControl();
         col = GetComponentInChildren<CapsuleCollider>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         
@@ -43,11 +46,11 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
-	public UnitControl control
+	public UnitInput input
 	{
 		get
 		{
-            return controller;
+            return controller.GetUnitInput();
 		}
 	}
     public Vector3 planarVelocity

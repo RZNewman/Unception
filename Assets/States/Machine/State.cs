@@ -19,8 +19,7 @@ public abstract class State
     public enum DurrationType
 	{
         None,
-        Timed,
-        Controlled
+        Timed
 	}
     DurrationType durationType;
     float duration;

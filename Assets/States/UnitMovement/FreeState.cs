@@ -10,10 +10,7 @@ public class FreeState : PlayerMovementState
 	{
 
 	}
-	public FreeState(FreeState root) : base(root.mover)
-	{
 
-	}
 	public override void enter()
 	{
 		
@@ -60,6 +57,11 @@ public class FreeState : PlayerMovementState
 	{
 		
 		UnitInput inp = mover.input;
+		if (inp.attacks.Length > 0)
+		{
+			//TODO eat keys and find ability off cooldown
+			return new StateTransition(new AttackingState(mover, inp.attacks[0]), true);
+		}
 		if (inp.jump && mover.grounded)
 		{
 			return new StateTransition(new JumpsquatState(mover, mover.jumpsquatTime), true);

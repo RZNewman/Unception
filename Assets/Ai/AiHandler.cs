@@ -15,6 +15,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 	void Start()
 	{
 		currentInput = new UnitInput();
+		currentInput.reset();
 		aggro = GetComponent<AggroHandler>();
 	}
 	public void refreshInput()

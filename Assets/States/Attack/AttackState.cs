@@ -4,10 +4,15 @@ using UnityEngine;
 
 public abstract class AttackState : State
 {
-	public AttackState() : base()
+	protected AttackController controller;
+	public float moveMultiplier =0.5f;
+	public float lookMultiplier = 0.5f;
+	public AttackState(AttackController c) : base()
 	{
+		controller = c;
 	}
-	public AttackState(float t) : base(t)
+	public AttackState(AttackController c, float t) : base(t)
 	{
+		controller = c;
 	}
 }

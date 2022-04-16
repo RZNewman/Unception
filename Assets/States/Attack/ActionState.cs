@@ -4,17 +4,23 @@ using UnityEngine;
 
 public class ActionState : AttackState
 {
-	public ActionState() : base()
+	GameObject attack;
+	public ActionState(AttackController c) : base(c)
 	{
 	}
 	public override void enter()
 	{
-		throw new System.NotImplementedException();
+		attack = Object.Instantiate(Resources.Load("AttackLine") as GameObject, controller.getSpawnBody().transform);
 	}
 
 	public override void exit(bool expired)
 	{
-		throw new System.NotImplementedException();
+		//Object.Destroy(attack);
+	}
+
+	public override StateTransition transition()
+	{
+		return new StateTransition(null, true);
 	}
 
 }

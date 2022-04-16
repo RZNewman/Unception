@@ -12,6 +12,7 @@ public interface UnitControl
         public Vector2 look;
         public bool jump;
         public AttackKey[] attacks;
+        
 
         public void reset()
 		{
@@ -22,7 +23,7 @@ public interface UnitControl
     [Serializable]
     public enum AttackKey:byte
 	{
-        One =1,
+        One =0,
         Two
 	}
     public UnitInput getUnitInuput();

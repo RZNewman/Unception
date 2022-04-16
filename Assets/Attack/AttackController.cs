@@ -6,14 +6,27 @@ public class AttackController : MonoBehaviour
 {
     AttackBlock attackFormat;
     StateMachine<AttackState> attackMachine;
+    bool ended = false;
 
     List<AttackState> currentStates;
-    // Start is called before the first frame update
-    public void buildAttack()
+    GameObject rotatingBody;
+
+	private void Start()
+	{
+        rotatingBody = transform.parent.GetComponentInChildren<UnitRotation>().gameObject;
+	}
+
+    public GameObject getSpawnBody()
+	{
+        return rotatingBody;
+	}
+	// Start is called before the first frame update
+	public void buildAttack()
     {
-        currentStates = attackFormat.buildStates();
+        currentStates = attackFormat.buildStates(this);
         attackMachine = new StateMachine<AttackState>(getNextState);
     }
+    
 
     AttackState getNextState()
 	{
@@ -23,13 +36,33 @@ public class AttackController : MonoBehaviour
             currentStates.RemoveAt(0);
             return s;
 		}
-        //Set Termination
-        return new WindState(1f);
+        ended = true;
+        return new WindState(this,1f);
 	}
 
-    // Update is called once per frame
-    void Update()
+    public void setFormat(AttackBlock b)
+	{
+        attackFormat = b;
+	}
+
+    public float getLookMultiplier()
+	{
+        return attackMachine.state().lookMultiplier;
+	}
+
+    public float getMoveMultiplier()
     {
-        
+        return attackMachine.state().moveMultiplier;
     }
+
+
+    public void tick()
+	{
+        attackMachine.tick();
+	}
+
+    public bool hasEnded()
+	{
+        return ended;
+	}
 }

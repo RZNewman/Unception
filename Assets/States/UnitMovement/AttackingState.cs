@@ -5,20 +5,44 @@ using static UnitControl;
 
 public class AttackingState : PlayerMovementState
 {
+	AttackController castingAbility;
 
-	public AttackingState(UnitMovement m, AttackKey atk) : base(m)
+	public AttackingState(UnitMovement m, AttackController atk) : base(m)
 	{
-		Ability a = m.GetComponent<AbiltyList>().getAbility(atk).GetComponent<Ability>();
+		castingAbility = atk;
 	}
 
 	public override void enter()
 	{
-		throw new System.NotImplementedException();
+		castingAbility.GetComponent<Ability>().cast();
 	}
 
 	public override void exit(bool expired)
 	{
-		throw new System.NotImplementedException();
+		//TODO ability kill current instance
 	}
+	public override void tick()
+	{
+		base.tick();
+		UnitInput inp = mover.input;
+
+
+		defaultLook(inp, castingAbility.getLookMultiplier());
+		defaultMove(inp, castingAbility.getMoveMultiplier());
+
+		castingAbility.tick();
+
+
+
+	}
+	public override StateTransition transition()
+	{
+		if (castingAbility.hasEnded())
+		{
+			return new StateTransition(new FreeState(mover), true);
+		}
+		return base.transition();
+	}
+
 
 }

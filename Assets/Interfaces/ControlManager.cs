@@ -18,8 +18,14 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 	[SyncVar]
     public bool isPlayer = true;
 
+	void Start()
+	{
+		currentInput = new UnitInput();
+		currentInput.reset();
+	}
     public void spawnControl()
 	{
+
 		if (isPlayer)
 		{
 			GameObject o =  Instantiate(playerControlPre, transform);

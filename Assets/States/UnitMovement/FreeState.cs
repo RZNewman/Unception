@@ -26,41 +26,25 @@ public class FreeState : PlayerMovementState
 		base.tick();
 		UnitInput inp = mover.input;
 
-		float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
-		mover.rotate(desiredAngle, 1.0f);
+		defaultLook(inp);
+		defaultMove(inp);
 
-		
-		float inputAngle = -Vector2.SignedAngle(Vector2.up, inp.move);
-		float angleDiff = Mathf.Abs(normalizeAngle(inputAngle - mover.currentLookAngle));
 
-		float force =  1.0f;
-		if (angleDiff > 90)
-		{
-			force *= Mathf.Lerp(mover.sidewaysMoveMultiplier, mover.backwardsMoveMultiplier, (angleDiff-90) / 90);
-		}
-		else
-		{
-			force *= Mathf.Lerp(1.0f, mover.sidewaysMoveMultiplier, angleDiff / 90);
-		}
-		
-		if (!mover.grounded)
-		{
-			force *= 0.6f;
-		}
-		Vector3 moveDir = input2vec(inp.move);
-		mover.move(moveDir, force,force);
-		
 
-		
+
+
+
 	}
 	public override StateTransition transition()
 	{
 		
 		UnitInput inp = mover.input;
-		if (inp.attacks.Length > 0)
+		AttackKey[] atks = inp.attacks;
+		if (atks.Length > 0)
 		{
 			//TODO eat keys and find ability off cooldown
-			return new StateTransition(new AttackingState(mover, inp.attacks[0]), true);
+			AttackController a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[0]).GetComponent<AttackController>();
+			return new StateTransition(new AttackingState(mover, a), true);
 		}
 		if (inp.jump && mover.grounded)
 		{

@@ -36,4 +36,9 @@ public class StateMachine<T> where T: State
         currentState.tick();
 
     }
+
+    public T state()
+	{
+        return currentState;
+	}
 }

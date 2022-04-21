@@ -29,4 +29,7 @@ public interface UnitControl
     public UnitInput getUnitInuput();
 
     public void refreshInput();
+
+    public void init();
+    public void reset();
 }

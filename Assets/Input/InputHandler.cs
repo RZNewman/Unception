@@ -18,7 +18,11 @@ public class InputHandler : MonoBehaviour, UnitControl
 	}
 
 	// Start is called before the first frame update
-	void Start()
+	public void init()
+    {
+        currentInput.reset();
+    }
+    public void reset()
     {
         currentInput.reset();
     }

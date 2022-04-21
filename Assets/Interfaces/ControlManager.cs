@@ -36,6 +36,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 			GameObject o = Instantiate(aiControlPre, transform);
 			controller = o.GetComponent<UnitControl>();
 		}
+		controller.init();
 	}
 
 	public UnitInput GetUnitInput()
@@ -70,7 +71,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 				currentSendTime -= serverTickRate;
 			}
 			CmdSendInput(currentInput);
-			currentInput.reset();
+			controller.reset();
 		}
 	}
 

@@ -12,13 +12,17 @@ public class AiHandler : MonoBehaviour, UnitControl
 	{
 		return currentInput;
 	}
-	void Start()
+	public void init()
 	{
 		currentInput = new UnitInput();
 		currentInput.reset();
 		aggro = GetComponent<AggroHandler>();
 	}
-	public void refreshInput()
+    public void reset()
+    {
+		currentInput.reset();
+	}
+    public void refreshInput()
 	{
 		//Get current target and move to it
 		if (aggro)

@@ -10,7 +10,12 @@ public class ActionState : AttackState
 	}
 	public override void enter()
 	{
-		attack = Object.Instantiate(Resources.Load("AttackLine") as GameObject, controller.getSpawnBody().transform);
+		//attack = Object.Instantiate(Resources.Load("AttackLine") as GameObject, controller.getSpawnBody().transform);
+		List<GameObject> hits = InstantHit.LineAttack(controller.getSpawnBody().transform, 0.5f, 2f, 1f);
+		foreach(GameObject o in hits)
+        {
+			//Debug.Log(o);
+        }
 	}
 
 	public override void exit(bool expired)

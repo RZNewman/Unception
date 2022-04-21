@@ -25,6 +25,7 @@ public class AttackController : MonoBehaviour
     {
         currentStates = attackFormat.buildStates(this);
         attackMachine = new StateMachine<AttackState>(getNextState);
+        ended = false;
     }
     
 

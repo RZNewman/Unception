@@ -24,6 +24,13 @@ public abstract class State
     DurrationType durationType;
     float duration;
 
+    protected float currentDurration
+    {
+        get
+        {
+            return duration;
+        }
+    }
     public State()
 	{
         durationType = DurrationType.None;

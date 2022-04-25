@@ -10,8 +10,12 @@ public class BasicBlock : AttackBlock
 	public override List<AttackState> buildStates(AttackController controller)
 	{
 		List<AttackState> states = new List<AttackState>();
-		states.Add(new WindState(controller, windup));
-		states.Add(new ActionState(controller));
+		AttackData data = new AttackData();
+		data.length = 3;
+		data.width = 6;
+
+		states.Add(new WindState(controller, windup, data));
+		states.Add(new ActionState(controller, data));
 		states.Add(new WindState(controller,winddown));
 		return states;
 	}

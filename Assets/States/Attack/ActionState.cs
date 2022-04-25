@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class ActionState : AttackState
 {
-	GameObject attack;
-	public ActionState(AttackController c) : base(c)
+	AttackData attackData;
+	public ActionState(AttackController c, AttackData data) : base(c)
 	{
+		attackData = data;
 	}
 	public override void enter()
 	{
-		//attack = Object.Instantiate(Resources.Load("AttackLine") as GameObject, controller.getSpawnBody().transform);
-		List<GameObject> hits = InstantHit.LineAttack(controller.getSpawnBody().transform, 0.5f, 2f, 1f);
+		
+		List<GameObject> hits = InstantHit.LineAttack(controller.getSpawnBody().transform, 0.5f, attackData.length, attackData.width);
 		foreach(GameObject o in hits)
         {
-			//Debug.Log(o);
+			Debug.Log(o);
         }
 	}
 
 	public override void exit(bool expired)
 	{
-		//Object.Destroy(attack);
+		
 	}
 
 	public override StateTransition transition()

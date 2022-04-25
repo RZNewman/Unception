@@ -159,5 +159,13 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
+    public Vector3 floorNormal
+    {
+        get
+        {
+            return groundNormal;
+        }
+    }
+
 
 }

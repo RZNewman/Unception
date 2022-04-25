@@ -11,15 +11,16 @@ public class AttackController : MonoBehaviour
     List<AttackState> currentStates;
     GameObject rotatingBody;
 
-	private void Start()
-	{
+    private void Start()
+    {
         rotatingBody = transform.parent.GetComponentInChildren<UnitRotation>().gameObject;
-	}
+    }
 
     public GameObject getSpawnBody()
-	{
+    {
         return rotatingBody;
-	}
+    }
+
 	// Start is called before the first frame update
 	public void buildAttack()
     {
@@ -37,6 +38,7 @@ public class AttackController : MonoBehaviour
             currentStates.RemoveAt(0);
             return s;
 		}
+        //TODO 1 frame delay with AttackingState
         ended = true;
         return new WindState(this,1f);
 	}

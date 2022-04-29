@@ -6,15 +6,10 @@ using static UnitControl;
 using static Utils;
 public class UnitMovement : NetworkBehaviour
 {
-    public float maxSpeed = 5f;
-    public float acceleration = 5f;
-    public float jumpForce = 10f;
-    public float jumpsquatTime = 0.8f;
-    public float lookSpeedDegrees = 270f;
-    public float sidewaysMoveMultiplier = 0.85f;
-    public float backwardsMoveMultiplier = 0.7f;
+    public UnitProperties props;
     Rigidbody rb;
     ControlManager controller;
+    LifeManager lifeManager;
     StateMachine<PlayerMovementState> movement;
     CapsuleCollider col;
 
@@ -28,7 +23,7 @@ public class UnitMovement : NetworkBehaviour
         controller.spawnControl();
         col = GetComponentInChildren<CapsuleCollider>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
-        
+        lifeManager = GetComponent<LifeManager>();
     }
 
 
@@ -41,8 +36,16 @@ public class UnitMovement : NetworkBehaviour
 	{
         if (isServer)
         {
-            setGround();
-            movement.tick();
+            if (!lifeManager.IsDead)
+            {
+                setGround();
+                movement.tick();
+            }
+            else
+            {
+                planarVelocity = Vector3.zero;
+            }
+            
         }
     }
 
@@ -75,12 +78,16 @@ public class UnitMovement : NetworkBehaviour
 
     public void jump()
 	{
-        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.y);
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce, rb.velocity.y);
 	}
+    public void applyForce(Vector3 force)
+    {
+        rb.AddForce(force, ForceMode.Impulse);
+    }
 
     public void move(Vector3 desiredDirection, float speedMultiplier, float accMultiplier)
 	{
-        float potentialSpeed = maxSpeed * speedMultiplier;
+        float potentialSpeed = props.maxSpeed * speedMultiplier;
         float desiredSpeed;
 		if (grounded)
 		{
@@ -93,7 +100,7 @@ public class UnitMovement : NetworkBehaviour
             desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
         }
         Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
-        float frameMagnitude = acceleration * accMultiplier * Time.fixedDeltaTime;
+        float frameMagnitude = props.acceleration * accMultiplier * Time.fixedDeltaTime;
         Vector3 diff = desiredVeloicity - planarVelocity;
 		if (diff.magnitude <= frameMagnitude)
 		{
@@ -109,7 +116,7 @@ public class UnitMovement : NetworkBehaviour
     public void rotate(float desiredAngle, float speedMultiplier)
 	{
         float diff = desiredAngle - currentLookAngle;
-        float frameMagnitude = lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
+        float frameMagnitude = props.lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
         diff = normalizeAngle(diff);
         if (Mathf.Abs(diff) <= frameMagnitude)
 		{

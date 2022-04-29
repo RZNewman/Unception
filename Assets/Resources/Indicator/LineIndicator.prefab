@@ -337,6 +337,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6897395458525162673}
   - component: {fileID: 94961322917027556}
+  - component: {fileID: 336076003641667913}
   m_Layer: 0
   m_Name: LineIndicator
   m_TagString: Untagged
@@ -380,3 +381,14 @@ MonoBehaviour:
   square: {fileID: 5579881023169716809}
   circle: {fileID: 56151708433871743}
   progress: {fileID: 8089819108946529632}
+--- !u!210 &336076003641667913
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8249178311684600747}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

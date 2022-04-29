@@ -48,7 +48,7 @@ public class FreeState : PlayerMovementState
 		}
 		if (inp.jump && mover.grounded)
 		{
-			return new StateTransition(new JumpsquatState(mover, mover.jumpsquatTime), true);
+			return new StateTransition(new JumpsquatState(mover, mover.props.jumpsquatTime), true);
 		}
 		return base.transition();
 	}

@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1243a4859d94f68449eb520587ac87da, type: 3}
-  m_Name: BasicAttack1
+  m_Script: {fileID: 11500000, guid: d93b44362e9c00a43831a5d031796450, type: 3}
+  m_Name: HumanProps
   m_EditorClassIdentifier: 
-  windup: 0.8
-  winddown: 0.5
-  data: {fileID: 11400000, guid: ad5b947f66cec7f4c82b0fe32cf06866, type: 2}
+  maxSpeed: 7
+  acceleration: 20
+  jumpForce: 20
+  jumpsquatTime: 0.4
+  lookSpeedDegrees: 270
+  sidewaysMoveMultiplier: 0.85
+  backwardsMoveMultiplier: 0.7

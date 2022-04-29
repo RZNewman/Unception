@@ -16,6 +16,8 @@ public interface UnitControl
 
         public void reset()
 		{
+            move = Vector2.zero;
+            look = Vector2.zero;
             jump = false;
             attacks = new AttackKey[0];
 		}

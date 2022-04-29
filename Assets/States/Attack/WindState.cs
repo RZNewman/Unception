@@ -35,10 +35,10 @@ public class WindState : AttackState
 
 	public override void exit(bool expired)
 	{
-		if (hasIndicator)
-        {
-			Object.Destroy(indicator);
-		}
+		//if (hasIndicator)
+  //      {
+		//	//Object.Destroy(indicator);
+		//}
 	}
 
 }

@@ -18,8 +18,12 @@ public abstract class PlayerMovementState : State
 
 	protected void defaultLook(UnitInput inp, float mult = 1.0f)
 	{
-		float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
-		mover.rotate(desiredAngle, 1.0f * mult);
+		if(inp.look!= Vector2.zero)
+        {
+			float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
+			mover.rotate(desiredAngle, 1.0f * mult);
+		}
+		
 	}
 
 	protected void defaultMove(UnitInput inp, float mult = 1.0f)
@@ -30,11 +34,11 @@ public abstract class PlayerMovementState : State
 		float force = 1.0f * mult;
 		if (angleDiff > 90)
 		{
-			force *= Mathf.Lerp(mover.sidewaysMoveMultiplier, mover.backwardsMoveMultiplier, (angleDiff - 90) / 90);
+			force *= Mathf.Lerp(mover.props.sidewaysMoveMultiplier, mover.props.backwardsMoveMultiplier, (angleDiff - 90) / 90);
 		}
 		else
 		{
-			force *= Mathf.Lerp(1.0f, mover.sidewaysMoveMultiplier, angleDiff / 90);
+			force *= Mathf.Lerp(1.0f, mover.props.sidewaysMoveMultiplier, angleDiff / 90);
 		}
 
 		if (!mover.grounded)

@@ -8,6 +8,8 @@ public class AiHandler : MonoBehaviour, UnitControl
 {
 	UnitInput currentInput;
 	AggroHandler aggro;
+	UnitMovement mover;
+	GameObject rotatingBody;
 	public UnitInput getUnitInuput()
 	{
 		return currentInput;
@@ -17,6 +19,8 @@ public class AiHandler : MonoBehaviour, UnitControl
 		currentInput = new UnitInput();
 		currentInput.reset();
 		aggro = GetComponent<AggroHandler>();
+		mover = GetComponentInParent<UnitMovement>();
+		rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
 	}
     public void reset()
     {
@@ -30,13 +34,30 @@ public class AiHandler : MonoBehaviour, UnitControl
 			GameObject target = aggro.getTopTarget();
 			if (target)
 			{
-				Vector3 diff = target.transform.position - transform.position;
-				diff.y = 0;
-				diff.Normalize();
-				Vector2 inpVec = vec2input(diff);
+				Vector3 rawDiff = target.transform.position - transform.position;
+				Vector3 planarDiff = rawDiff;
+				planarDiff.y = 0;
+				Vector3 inpDiff = planarDiff;
+				inpDiff.Normalize();
+				Vector2 inpVec = vec2input(inpDiff);
 				currentInput.move = inpVec;
 				currentInput.look = inpVec;
+
+				//TODO SMART ABILITY
+				if (planarDiff.magnitude <= 5 && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < 45) 
+                {
+					currentInput.attacks = new AttackKey[] {AttackKey.One};
+                }
+                else
+                {
+					currentInput.attacks = new AttackKey[0];
+                }
+
 			}
+            else
+            {
+				currentInput.reset();
+            }
 		}
 		
 	}

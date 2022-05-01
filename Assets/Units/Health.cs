@@ -6,13 +6,14 @@ using UnityEngine;
 public class Health : NetworkBehaviour, BarValue
 {
     [SyncVar]
-    public float maxHealth;
+    float maxHealth;
 
     [SyncVar]
     float currentHealth;
     // Start is called before the first frame update
     void Start()
     {
+        maxHealth = GetComponent<UnitPropsHolder>().props.maxHealth;
         currentHealth = maxHealth;
     }
 

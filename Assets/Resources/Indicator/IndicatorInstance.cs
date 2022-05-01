@@ -17,11 +17,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     protected void Update()
     {
         currentTime -= Time.deltaTime;
-        if (currentTime < 0)
-        {
-            Destroy(gameObject);
-        }
-        setCurrentProgress((maxTime - currentTime) / maxTime);
+        setCurrentProgress(Mathf.Max(maxTime - currentTime, 0) / maxTime);
 
         setLocalPosition();
     }

@@ -6,7 +6,7 @@ using static UnitControl;
 using static Utils;
 public class UnitMovement : NetworkBehaviour
 {
-    public UnitProperties props;
+    UnitPropsHolder propHolder;
     Rigidbody rb;
     ControlManager controller;
     LifeManager lifeManager;
@@ -20,12 +20,19 @@ public class UnitMovement : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         controller = GetComponent<ControlManager>();
-        controller.spawnControl();
         col = GetComponentInChildren<CapsuleCollider>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
+        propHolder = GetComponent<UnitPropsHolder>();
     }
 
+    public UnitProperties props
+    {
+        get
+        {
+            return propHolder.props;
+        }
+    }
 
     // Update is called once per frame
     void Update()

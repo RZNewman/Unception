@@ -27,7 +27,7 @@ public class AttackingState : PlayerMovementState
 
 	public override void exit(bool expired)
 	{
-		//TODO ability kill current instance
+		attackMachine.exit();
 	}
 	public override void tick()
 	{

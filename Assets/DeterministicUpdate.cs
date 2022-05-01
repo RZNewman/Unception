@@ -10,6 +10,7 @@ public class DeterministicUpdate : NetworkBehaviour
     public void register(UnitUpdateOrder unit)
     {
         unitList.Add(unit);
+        
     }
     public void unregister(UnitUpdateOrder unit)
     {

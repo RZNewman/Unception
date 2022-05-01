@@ -14,7 +14,7 @@ public class LifeManager : MonoBehaviour
     {
         get
         {
-            return GetComponent<ControlManager>().isPlayer;
+            return GetComponent<ControlManager>().IsPlayer;
         }
     }
     bool isDead = false;

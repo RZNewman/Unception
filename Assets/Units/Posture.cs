@@ -6,15 +6,15 @@ using UnityEngine;
 public class Posture : NetworkBehaviour, BarValue
 {
     [SyncVar]
-    public float maxPostureBase;
+    float maxPostureBase;
     [SyncVar]
     float currentPosture;
     [SyncVar]
     float currentPostureCeiling;
 
-    public float passivePostureRecover;
-    public float stunnedPostureRecover;
-    public float stunnedPostureRecoverAcceleration;
+    float passivePostureRecover;
+    float stunnedPostureRecover;
+    float stunnedPostureRecoverAcceleration;
     float currentPostureRecover;
     static float postureStunBufferPercent = 0.5f;
     static float postureCeilingRecoverPercent = 0.025f;
@@ -40,6 +40,12 @@ public class Posture : NetworkBehaviour, BarValue
     // Start is called before the first frame update
     void Start()
     {
+        UnitProperties props = GetComponent<UnitPropsHolder>().props;
+        maxPostureBase = props.maxPosture;
+        passivePostureRecover = props.passivePostureRecover;
+        stunnedPostureRecover = props.stunnedPostureRecover;
+        stunnedPostureRecoverAcceleration = props.stunnedPostureRecoverAcceleration;
+
         currentPosture = 0;
     }
 

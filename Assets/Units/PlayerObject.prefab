@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 5017510892263704221}
   - component: {fileID: 4552042485861014661}
   - component: {fileID: 2345667375283208870}
+  - component: {fileID: 7926023165869227859}
   m_Layer: 7
   m_Name: PlayerObject
   m_TagString: Untagged
@@ -93,7 +94,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
   currentLookAngle: 0
 --- !u!114 &935787168308635777
 MonoBehaviour:
@@ -247,6 +247,7 @@ MonoBehaviour:
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   abilitiesToCreate:
   - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
+  - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}
 --- !u!114 &3406968442906714346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,6 +305,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9158bf0da701264885c7b5cfb841bca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7926023165869227859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563495925269500109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 246bda10cdaa5aa4594221f499d9b8e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
 --- !u!1 &4921098641576344319
 GameObject:
   m_ObjectHideFlags: 0

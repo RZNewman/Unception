@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f643975b88c98544385613dd8e3125bb, type: 3}
-  m_Name: BasicAData
+  m_Name: B2Data
   m_EditorClassIdentifier: 
-  length: 3
-  width: 5
-  knockback: 8
-  damage: 5
-  stagger: 60
+  length: 6
+  width: 3
+  knockback: 16
+  damage: 25
+  stagger: 70
   knockBackType: 0

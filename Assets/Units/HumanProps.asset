@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93b44362e9c00a43831a5d031796450, type: 3}
   m_Name: HumanProps
   m_EditorClassIdentifier: 
+  isPlayer: 1
   maxSpeed: 7
   acceleration: 20
   jumpForce: 20
@@ -19,3 +20,11 @@ MonoBehaviour:
   lookSpeedDegrees: 270
   sidewaysMoveMultiplier: 0.85
   backwardsMoveMultiplier: 0.7
+  maxHealth: 100
+  maxPosture: 65
+  passivePostureRecover: 10
+  stunnedPostureRecover: 20
+  stunnedPostureRecoverAcceleration: 30
+  abilitiesToCreate:
+  - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
+  - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}

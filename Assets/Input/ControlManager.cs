@@ -16,10 +16,22 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 	UnitInput lastInput;
 
 	[SyncVar]
-    public bool isPlayer = true;
+    bool isPlayer = true;
+
+	UnitPropsHolder propHolder;
+	public bool IsPlayer
+    {
+        get
+        {
+			return isPlayer;
+        }
+    }
 
 	void Start()
 	{
+		propHolder = GetComponent<UnitPropsHolder>();
+		isPlayer = propHolder.props.isPlayer;
+		spawnControl();
 		currentInput = new UnitInput();
 		currentInput.reset();
 	}

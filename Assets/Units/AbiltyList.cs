@@ -6,13 +6,15 @@ using static UnitControl;
 public class AbiltyList : MonoBehaviour
 {
 	public GameObject AbilityRootPre;
-    public List<AttackBlock> abilitiesToCreate;
 
-    Dictionary<AttackKey, GameObject> instancedAbilitites;
+
+	List<AttackBlock> abilitiesToCreate;
+	Dictionary<AttackKey, GameObject> instancedAbilitites;
 
 	private void Start()
 	{
 		instancedAbilitites = new Dictionary<AttackKey, GameObject>();
+		abilitiesToCreate = GetComponent<UnitPropsHolder>().props.abilitiesToCreate;
 		defaultAbilities();
 	}
 	void defaultAbilities()

@@ -40,6 +40,10 @@ public class StateMachine<T> where T: State
         currentState.tick();
 
     }
+    public void exit()
+    {
+        currentState.exit(false);
+    }
 
     public T state()
 	{

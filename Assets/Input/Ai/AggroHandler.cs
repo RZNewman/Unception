@@ -25,6 +25,7 @@ public class AggroHandler : MonoBehaviour
 			if (!aggro.Contains(them))
 			{
 				aggro.Add(them);
+	
 			}
 
 		}

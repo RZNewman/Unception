@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class Utils 
@@ -22,6 +23,23 @@ public static class Utils
 	{
 		return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 	}
+
+
+
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
     public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
     {
         // create matrix

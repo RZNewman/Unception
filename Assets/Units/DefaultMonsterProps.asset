@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93b44362e9c00a43831a5d031796450, type: 3}
   m_Name: DefaultMonsterProps
   m_EditorClassIdentifier: 
+  isPlayer: 0
   maxSpeed: 5
   acceleration: 15
   jumpForce: 20
@@ -19,3 +20,10 @@ MonoBehaviour:
   lookSpeedDegrees: 90
   sidewaysMoveMultiplier: 0.1
   backwardsMoveMultiplier: 0
+  maxHealth: 50
+  maxPosture: 40
+  passivePostureRecover: 10
+  stunnedPostureRecover: 20
+  stunnedPostureRecoverAcceleration: 30
+  abilitiesToCreate:
+  - {fileID: 11400000, guid: a8df585da1927da48af29fdbce5927f1, type: 2}

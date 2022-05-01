@@ -25,6 +25,7 @@ public class WindState : AttackState
 				target.transform
 				);
 			IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
+			i.setTeam(controller.GetComponentInParent<TeamOwnership>().getTeam());
 			i.setTrackingBody(target);
 			i.reposition(attackData);
 			i.setTime(currentDurration);

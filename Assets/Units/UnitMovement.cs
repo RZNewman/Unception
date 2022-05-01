@@ -93,7 +93,7 @@ public class UnitMovement : NetworkBehaviour
 
     public void jump()
 	{
-        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce, rb.velocity.y);
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce, rb.velocity.z);
 	}
     public void applyForce(Vector3 force)
     {
@@ -130,19 +130,36 @@ public class UnitMovement : NetworkBehaviour
         }
         Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
         Vector3 diff = desiredVeloicity - planarVelocity;
-
-        float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        accMultiplier *=airMultiplier* lookMultiplierDiff;
-        float frameMagnitude = props.acceleration * accMultiplier * Time.fixedDeltaTime;
-		if (diff.magnitude <= frameMagnitude)
+        float stoppingMagnitude = Vector3.Dot(diff, -planarVelocity);
+        stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
+        Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
+        float stoppingMult = accMultiplier * airMultiplier;
+        float stoppingFrameMag = props.decceleration *stoppingMult * Time.fixedDeltaTime;
+        
+        if (stoppingDir.magnitude <= stoppingFrameMag)
 		{
-            planarVelocity = desiredVeloicity;
+            planarVelocity += stoppingDir;
 
         }
 		else
 		{
-            planarVelocity += diff.normalized * frameMagnitude;
+            planarVelocity += stoppingDir.normalized * stoppingFrameMag;
 		}
+
+        diff = desiredVeloicity - planarVelocity;
+        float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
+        float addingMult = accMultiplier * airMultiplier * lookMultiplierDiff;
+        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime;
+
+        if (diff.magnitude <= addingFrameMag)
+        {
+            planarVelocity =desiredVeloicity;
+
+        }
+        else
+        {
+            planarVelocity += diff.normalized * addingFrameMag;
+        }
 
     }
 

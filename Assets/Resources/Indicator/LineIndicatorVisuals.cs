@@ -34,6 +34,13 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     }
 
+    public override void setColor(Color color)
+    {
+        square.GetComponent<SpriteRenderer>().color = color;
+        circle.GetComponent<SpriteRenderer>().color = color;
+        progress.GetComponent<SpriteRenderer>().color = color;
+    }
+
     protected override void setCurrentProgress(float percent)
     {
         float length_percent = length * percent;

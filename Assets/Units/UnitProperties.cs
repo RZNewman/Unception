@@ -8,6 +8,7 @@ public class UnitProperties : ScriptableObject
 
     public float maxSpeed = 5f;
     public float acceleration = 5f;
+    public float decceleration = 5f;
     public float jumpForce = 10f;
     public float jumpsquatTime = 0.8f;
     public float lookSpeedDegrees = 270f;

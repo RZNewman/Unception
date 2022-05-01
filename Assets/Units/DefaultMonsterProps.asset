@@ -15,15 +15,16 @@ MonoBehaviour:
   isPlayer: 0
   maxSpeed: 5
   acceleration: 15
+  decceleration: 15
   jumpForce: 20
   jumpsquatTime: 0.4
   lookSpeedDegrees: 90
   sidewaysMoveMultiplier: 0.1
   backwardsMoveMultiplier: 0
-  maxHealth: 50
+  maxHealth: 400
   maxPosture: 40
-  passivePostureRecover: 10
-  stunnedPostureRecover: 20
-  stunnedPostureRecoverAcceleration: 30
+  passivePostureRecover: 20
+  stunnedPostureRecover: 40
+  stunnedPostureRecoverAcceleration: 60
   abilitiesToCreate:
   - {fileID: 11400000, guid: a8df585da1927da48af29fdbce5927f1, type: 2}

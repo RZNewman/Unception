@@ -6,8 +6,12 @@ public abstract class IndicatorInstance : MonoBehaviour
 {
     public float maxTime;
     public float currentTime;
+
+    uint teamOwner;
     public abstract void reposition(AttackData data);
     protected abstract void setCurrentProgress(float percent);
+
+    public abstract void setColor(Color color);
     public virtual void setTime(float maxTime)
     {
         this.maxTime = maxTime;
@@ -48,5 +52,22 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         trackingBody = track;
         setLocalPosition();
+    }
+    public void setTeam(uint team)
+    {
+        teamOwner = team;
+        updateColor();
+    }
+
+    void updateColor()
+    {
+        if(teamOwner == 1u)
+        {
+            setColor(GameColors.FriendIndicator);
+        }
+        else
+        {
+            setColor(GameColors.EnemyIndicator);
+        }
     }
 }

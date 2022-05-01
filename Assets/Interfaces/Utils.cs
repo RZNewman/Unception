@@ -24,6 +24,17 @@ public static class Utils
 		return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 	}
 
+    public static float GaussRandom(float min, float max, int balance=2)
+    {
+        float total = 0;
+        for(int i = 0; i < balance; i++)
+        {
+            total += Random.value;
+        }
+        float value = total / balance;
+        return min + (max- min) * value;
+
+    }
 
 
     private static System.Random rng = new System.Random();

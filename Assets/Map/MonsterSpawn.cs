@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateValues;
 
 
 public class MonsterSpawn : NetworkBehaviour
@@ -13,6 +14,8 @@ public class MonsterSpawn : NetworkBehaviour
     
     List<Vector3> buildRequests = new List<Vector3>();
     bool ready = false;
+
+
     public void spawnCreatures(Vector3 position)
     {
         if (ready)
@@ -42,7 +45,8 @@ public class MonsterSpawn : NetworkBehaviour
     public override void OnStartServer()
     {
         ready = true;
-        foreach(Vector3 position in buildRequests)
+        float[] typeValues = generateRandomValues(4);
+        foreach (Vector3 position in buildRequests)
         {
             instanceCreature(position);
         }

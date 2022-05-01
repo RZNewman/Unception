@@ -5,7 +5,7 @@ using UnityEngine;
 public class ActionState : AttackState
 {
 	AttackData attackData;
-	public ActionState(AttackController c, AttackData data) : base(c)
+	public ActionState(Ability c, AttackData data) : base(c)
 	{
 		attackData = data;
 	}
@@ -19,6 +19,7 @@ public class ActionState : AttackState
             {
 				Health h = o.GetComponentInParent<Health>();
 				h.takeDamage(attackData.damage);
+				o.GetComponentInParent<Posture>().takeStagger(attackData.stagger);
                 switch (attackData.knockBackType)
                 {
 					case AttackData.KnockBackType.inDirection:
@@ -34,11 +35,6 @@ public class ActionState : AttackState
 			}
 			
         }
-	}
-
-	public override void exit(bool expired)
-	{
-		
 	}
 
 	public override StateTransition transition()

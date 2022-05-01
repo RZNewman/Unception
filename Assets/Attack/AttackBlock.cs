@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class AttackBlock : ScriptableObject
 {
-	public abstract List<AttackState> buildStates(AttackController controller);
+	public abstract List<AttackState> buildStates(Ability controller);
 }

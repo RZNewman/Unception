@@ -3,37 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : NetworkBehaviour
+public class Health : NetworkBehaviour, BarValue
 {
     [SyncVar]
     public float maxHealth;
 
-    float currenthealth;
+    [SyncVar]
+    float currentHealth;
     // Start is called before the first frame update
     void Start()
     {
-        currenthealth = maxHealth;
+        currentHealth = maxHealth;
     }
 
     public void takeDamage(float damage)
     {
-        currenthealth -= damage;
+        currentHealth -= damage;
     }
 
     // Update is called once per frame
-    void Update()
+    public void ServerUpdate()
     {
-        if(currenthealth <= 0)
+        if(currentHealth <= 0)
         {
             GetComponent<LifeManager>().die();
 
         }
     }
-    public float percent
+
+    public BarValue.BarData getBarFill()
     {
-        get
+        return new BarValue.BarData
         {
-            return Mathf.Clamp01(currenthealth / maxHealth);
-        }
+            color = Color.red,
+            fillPercent = Mathf.Clamp01(currentHealth / maxHealth),
+        };
     }
+
 }

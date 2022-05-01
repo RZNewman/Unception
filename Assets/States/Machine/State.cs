@@ -41,7 +41,7 @@ public abstract class State
         duration = t;
     }
 
-    public abstract void enter();
+    public virtual void enter() {}
     public virtual void tick()
 	{
         if (durationType == DurrationType.Timed)
@@ -58,6 +58,6 @@ public abstract class State
 
         return new StateTransition(null, false);
 	}
-    public abstract void exit(bool expired);
+    public virtual void exit(bool expired) { }
 
 }

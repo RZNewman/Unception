@@ -20,7 +20,7 @@ public class AbiltyList : MonoBehaviour
 		for(int i=0; i < abilitiesToCreate.Count; i++)
 		{
 			GameObject o = Instantiate(AbilityRootPre, transform);
-			o.GetComponent<AttackController>().setFormat(abilitiesToCreate[i]);
+			o.GetComponent<Ability>().setFormat(abilitiesToCreate[i]);
 			AttackKey k = (AttackKey)i;
 			instancedAbilitites.Add(k, o);
 		}

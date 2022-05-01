@@ -32,21 +32,29 @@ public class UnitMovement : NetworkBehaviour
     {
 		
     }
-	private void FixedUpdate()
+	public void ServerUpdate()
 	{
-        if (isServer)
-        {
-            if (!lifeManager.IsDead)
-            {
-                setGround();
-                movement.tick();
-            }
-            else
-            {
-                planarVelocity = Vector3.zero;
-            }
-            
+        if (!lifeManager.IsDead)
+        {           
+            movement.tick();
         }
+        else
+        {
+            planarVelocity = Vector3.zero;
+        }
+    }
+    public void ServerTransition()
+    {
+        if (!lifeManager.IsDead)
+        {
+            setGround();
+            movement.transition();
+        }
+        
+    }
+    public Posture posture
+    {
+        get { return GetComponent<Posture>(); }
     }
 
 	public UnitInput input
@@ -85,8 +93,22 @@ public class UnitMovement : NetworkBehaviour
         rb.AddForce(force, ForceMode.Impulse);
     }
 
-    public void move(Vector3 desiredDirection, float speedMultiplier, float accMultiplier)
+    public void move(UnitInput inp, float speedMultiplier=1.0f, float accMultiplier =1.0f)
 	{
+        float lookMultiplier = toMoveMultiplier(inp.move);
+        float airMultiplier=1.0f;
+
+        
+
+        if (!grounded)
+        {
+            airMultiplier = 0.6f;
+        }
+        Vector3 desiredDirection = input2vec(inp.move);
+
+        speedMultiplier *= lookMultiplier* airMultiplier;
+        
+
         float potentialSpeed = props.maxSpeed * speedMultiplier;
         float desiredSpeed;
 		if (grounded)
@@ -100,8 +122,11 @@ public class UnitMovement : NetworkBehaviour
             desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
         }
         Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
-        float frameMagnitude = props.acceleration * accMultiplier * Time.fixedDeltaTime;
         Vector3 diff = desiredVeloicity - planarVelocity;
+
+        float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
+        accMultiplier *=airMultiplier* lookMultiplierDiff;
+        float frameMagnitude = props.acceleration * accMultiplier * Time.fixedDeltaTime;
 		if (diff.magnitude <= frameMagnitude)
 		{
             planarVelocity = desiredVeloicity;
@@ -113,8 +138,33 @@ public class UnitMovement : NetworkBehaviour
 		}
 
     }
-    public void rotate(float desiredAngle, float speedMultiplier)
+
+    float toMoveMultiplier(Vector2 inputMove)
+    {
+        if(inputMove == Vector2.zero)
+        {
+            return 1f;
+        }
+        float inputAngle = -Vector2.SignedAngle(Vector2.up, inputMove);
+        float angleDiff = Mathf.Abs(normalizeAngle(inputAngle - currentLookAngle));
+
+
+        if (angleDiff > 90)
+        {
+            return  Mathf.Lerp(props.sidewaysMoveMultiplier, props.backwardsMoveMultiplier, (angleDiff - 90) / 90);
+        }
+        else
+        {
+            return Mathf.Lerp(1.0f, props.sidewaysMoveMultiplier, angleDiff / 90);
+        }
+    }
+    public void rotate(UnitInput inp, float speedMultiplier = 1.0f)
 	{
+        if (inp.look == Vector2.zero)
+        {
+            return;
+        }
+        float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;
         float frameMagnitude = props.lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
         diff = normalizeAngle(diff);

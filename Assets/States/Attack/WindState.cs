@@ -7,10 +7,10 @@ public class WindState : AttackState
 	GameObject indicator;
 	AttackData attackData;
 	bool hasIndicator = false;
-	public WindState(AttackController c, float t) : base(c, t)
+	public WindState(Ability c, float t) : base(c, t)
 	{
 	}
-	public WindState(AttackController c, float t, AttackData data) : base(c, t)
+	public WindState(Ability c, float t, AttackData data) : base(c, t)
 	{
 		attackData = data;
 		hasIndicator = true;

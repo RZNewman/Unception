@@ -8,11 +8,6 @@ public class JumpsquatState : PlayerMovementState
 	{
 
 	}
-	public override void enter()
-	{
-
-	}
-
 	public override void exit(bool expired)
 	{
 		if (expired)
@@ -21,12 +16,13 @@ public class JumpsquatState : PlayerMovementState
 		}
 		
 	}
-
-	public override void tick()
+	public override StateTransition transition()
 	{
-		base.tick();
-
-		
+		if (mover.posture.isStunned)
+		{
+			return new StateTransition(new StunnedState(mover), true);
+		}
+		return base.transition();
 	}
 
 

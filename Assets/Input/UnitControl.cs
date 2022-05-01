@@ -21,6 +21,16 @@ public interface UnitControl
             jump = false;
             attacks = new AttackKey[0];
 		}
+        public static UnitInput zero()
+        {
+            return new UnitInput
+            {
+                move = Vector2.zero,
+                look = Vector2.zero,
+                jump = false,
+                attacks = new AttackKey[0],
+            };
+        }
 	}
     [Serializable]
     public enum AttackKey:byte

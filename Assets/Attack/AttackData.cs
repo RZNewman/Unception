@@ -9,6 +9,7 @@ public class AttackData : ScriptableObject
     public float width;
     public float knockback;
     public float damage;
+    public float stagger;
     public KnockBackType knockBackType;
     
     public enum KnockBackType

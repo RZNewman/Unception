@@ -8,7 +8,7 @@ public class BasicBlock : AttackBlock
 	public float winddown;
 	public AttackData data;
 
-	public override List<AttackState> buildStates(AttackController controller)
+	public override List<AttackState> buildStates(Ability controller)
 	{
 		List<AttackState> states = new List<AttackState>();
 

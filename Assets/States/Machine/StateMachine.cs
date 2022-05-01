@@ -14,25 +14,29 @@ public class StateMachine<T> where T: State
         currentState = defaultBuilder();
         currentState.enter();
     }
-
-    public void tick()
-	{
+    public void transition()
+    {
         StateTransition t = currentState.transition();
-		if (t.shouldTrasition)
-		{
+        if (t.shouldTrasition)
+        {
             T nextState;
-            if(t.nextState == null)
-			{
+            if (t.nextState == null)
+            {
                 nextState = defaultBuilder();
             }
-			else
-			{
+            else
+            {
                 nextState = (T)t.nextState;
-			}
+            }
             currentState.exit(t.expired);
             currentState = nextState;
             currentState.enter();
-		}
+        }
+    }
+
+    public void tick()
+	{
+        
         currentState.tick();
 
     }

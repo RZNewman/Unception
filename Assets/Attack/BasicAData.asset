@@ -15,5 +15,6 @@ MonoBehaviour:
   length: 3
   width: 5
   knockback: 8
-  damage: 20
+  damage: 5
+  stagger: 60
   knockBackType: 0

@@ -18,7 +18,8 @@ public static class InstantHit
         RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, q, 0.0f, LayerMask.GetMask("Players"));
         RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
 
-        //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance,Color.red,5.0f);
+        Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
+        Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
         //DrawBox(boxCenter, q,boxHalfs*2, Color.blue);
         //Debug.Break();
 

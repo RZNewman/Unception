@@ -11,39 +11,27 @@ public class FreeState : PlayerMovementState
 
 	}
 
-	public override void enter()
-	{
-		
-	}
-
-	public override void exit(bool expired)
-	{
-		
-	}
-
 	public override void tick()
 	{
 		base.tick();
 		UnitInput inp = mover.input;
 
-		defaultLook(inp);
-		defaultMove(inp);
-
-
-
-
-
+		mover.rotate(inp);
+		mover.move(inp);
 
 	}
 	public override StateTransition transition()
 	{
-		
+        if (mover.posture.isStunned)
+        {
+			return new StateTransition(new StunnedState(mover), true);
+        }
 		UnitInput inp = mover.input;
 		AttackKey[] atks = inp.attacks;
 		if (atks.Length > 0)
 		{
 			//TODO eat keys and find ability off cooldown
-			AttackController a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[0]).GetComponent<AttackController>();
+			Ability a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[0]).GetComponent<Ability>();
 			return new StateTransition(new AttackingState(mover, a), true);
 		}
 		if (inp.jump && mover.grounded)

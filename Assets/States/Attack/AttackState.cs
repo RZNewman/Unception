@@ -4,14 +4,14 @@ using UnityEngine;
 
 public abstract class AttackState : State
 {
-	protected AttackController controller;
+	protected Ability controller;
 	public float moveMultiplier =0.5f;
 	public float lookMultiplier = 0.5f;
-	public AttackState(AttackController c) : base()
+	public AttackState(Ability c) : base()
 	{
 		controller = c;
 	}
-	public AttackState(AttackController c, float t) : base(t)
+	public AttackState(Ability c, float t) : base(t)
 	{
 		controller = c;
 	}

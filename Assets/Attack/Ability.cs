@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Ability : MonoBehaviour
 {
-    AttackController controller;
+    AttackBlock attackFormat;
+    GameObject rotatingBody;
     // Start is called before the first frame update
     void Start()
     {
-        controller = GetComponent<AttackController>();
+        rotatingBody = transform.parent.GetComponentInChildren<UnitRotation>().gameObject;
     }
 
     // Update is called once per frame
@@ -16,9 +17,17 @@ public class Ability : MonoBehaviour
     {
         
     }
-    public void cast()
+    public List<AttackState> cast()
 	{
-        controller.buildAttack();
-	}
+        return attackFormat.buildStates(this);
+    }
+    public void setFormat(AttackBlock b)
+    {
+        attackFormat = b;
+    }
+    public GameObject getSpawnBody()
+    {
+        return rotatingBody;
+    }
 
 }

@@ -17,4 +17,9 @@ public class BasicBlock : AttackBlock
 		states.Add(new WindState(controller,winddown));
 		return states;
 	}
+
+    public override AiHandler.EffectiveDistance GetEffectiveDistance()
+    {
+        return data.GetEffectiveDistance();
+    }
 }

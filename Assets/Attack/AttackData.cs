@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AiHandler;
 
 public class AttackData : ScriptableObject
 {
@@ -17,9 +18,11 @@ public class AttackData : ScriptableObject
         inDirection,
         fromCenter
     }
-    // Update is called once per frame
-    void Update()
+
+
+    public EffectiveDistance GetEffectiveDistance()
     {
-        
+        Vector2 max = new Vector2(length, width / 2);
+        return new EffectiveDistance(max.magnitude, Vector2.Angle(max, Vector2.right));
     }
 }

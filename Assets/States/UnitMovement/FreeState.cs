@@ -31,7 +31,7 @@ public class FreeState : PlayerMovementState
 		if (atks.Length > 0)
 		{
 			//TODO eat keys and find ability off cooldown
-			Ability a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[0]).GetComponent<Ability>();
+			Ability a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[0]);
 			return new StateTransition(new AttackingState(mover, a), true);
 		}
 		if (inp.jump && mover.grounded)

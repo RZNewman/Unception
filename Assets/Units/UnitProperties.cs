@@ -23,4 +23,6 @@ public class UnitProperties : ScriptableObject
     public float stunnedPostureRecoverAcceleration;
 
     public List<AttackBlock> abilitiesToCreate;
+
+    public Material material;
 }

@@ -35,6 +35,15 @@ public static class Utils
         return min + (max- min) * value;
 
     }
+    public static float GaussRandomFloat(float min, float max, float balance = 0.5f)
+    {
+        balance = Mathf.Clamp01(balance);
+        float total = Random.value;
+        float balancer = Random.value;
+        total += (balancer - total) * 0.5f * balance;
+        return min + (max - min) * total;
+
+    }
 
 
     private static System.Random rng = new System.Random();

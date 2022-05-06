@@ -553,6 +553,7 @@ GameObject:
   - component: {fileID: 2124122340}
   - component: {fileID: 2124122342}
   - component: {fileID: 2124122343}
+  - component: {fileID: 2124122344}
   m_Layer: 0
   m_Name: MapRoot
   m_TagString: Untagged
@@ -604,7 +605,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   UnitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
-  monsterProps: {fileID: 11400000, guid: f725e60791ea2f34a9f6304782d29e50, type: 2}
+  testBlock: {fileID: 11400000, guid: a8df585da1927da48af29fdbce5927f1, type: 2}
 --- !u!114 &2124122343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,3 +623,16 @@ MonoBehaviour:
   visible: 0
   m_AssetId: 
   hasSpawned: 0
+--- !u!114 &2124122344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2124122339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9b013f0c62ddd54b88707c92a4027de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HumanProps
   m_EditorClassIdentifier: 
   isPlayer: 1
-  maxSpeed: 7
+  maxSpeed: 9
   acceleration: 20
   decceleration: 20
   jumpForce: 20
@@ -29,3 +29,4 @@ MonoBehaviour:
   abilitiesToCreate:
   - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
   - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}
+  material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}

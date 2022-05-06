@@ -102,21 +102,24 @@ public class MapGenerator : MonoBehaviour
     }
     tileIndex pickNextTile()
     {
-        tileIndex t = tiles[tiles.Count - 1];
+        int chosenIndex = tiles.Count - 1;
+        tileIndex t = tiles[chosenIndex];
         tileIndex n = pickValidNeighbor(t);
         if (t.x != n.x || t.y != n.y)
         {
             return n;
         }
-        while (true)
+        while (chosenIndex>=0)
         {
-            t = tiles[Random.Range(0,tiles.Count)];
+            chosenIndex--;
+            t = tiles[Random.Range(0,chosenIndex)];
             n = pickValidNeighbor(t);
             if (t.x != n.x || t.y != n.y)
             {
                 return n;
             }
         }
+        throw new System.Exception("Cant generate");
         
     }
 

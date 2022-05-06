@@ -10,18 +10,25 @@ public static class GenerateValues
     struct Value
     {
         public float val;
+        public float width;
     }
-
-
 
     public static float[] generateRandomValues(int valueCount)
     {
+        return generateRandomRanges(Enumerable.Repeat(1f,valueCount).ToArray());
+    }
+
+
+    public static float[] generateRandomRanges(float[] ranges)
+    {
+        int valueCount = ranges.Length;
         Value[] values = new Value[valueCount];
         for (int i = 0; i < valueCount; i++)
         {
             values[i] = new Value
             {
                 val = 0.5f,
+                width = ranges[i],
             };
         }
 
@@ -35,59 +42,96 @@ public static class GenerateValues
 
         while(unassinged.Count > 0)
         {
-            List<int> drainCandidates = unassinged.Concat(drained).ToList();
-            int drain = selectValueIndex(drainCandidates, values);
-            if (unassinged.Contains(drain))
+            int element = selectValueIndex(unassinged, values);
+            bool elementBoosted = Random.value > 0.5f;
+            unassinged.Remove(element);
+
+            List<int> candidates = new List<int>(unassinged);
+            if (elementBoosted)
             {
-                unassinged.Remove(drain);
-                drained.Add(drain);
+                candidates = candidates.Concat(drained).ToList();
+            }
+            else
+            {
+                candidates = candidates.Concat(boosted).ToList();
+            }
+            int alternate = selectValueIndex(candidates, values, !elementBoosted);
+
+            int boost, drain;
+            if (elementBoosted)
+            {          
+                boosted.Add(element);
+                if (unassinged.Contains(alternate))
+                {
+                    unassinged.Remove(alternate);
+                    drained.Add(alternate);
+                }
+                boost = element;
+                drain = alternate;
+            }
+            else
+            {
+                drained.Add(element);
+                if (unassinged.Contains(alternate))
+                {
+                    unassinged.Remove(alternate);
+                    boosted.Add(alternate);
+                }
+                boost = alternate;
+                drain = element;
             }
 
-            List<int> boostCandidates = unassinged.Concat(boosted).ToList();
-            int boost = selectValueIndex(boostCandidates, values, true);
-            if (unassinged.Contains(boost))
-            {
-                unassinged.Remove(boost);
-                boosted.Add(boost);
-            }
 
-            float maxTransfer = Mathf.Min(values[drain].val, 1 - values[boost].val);
-            float transfer = Mathf.Abs(GaussRandom(0, 1)-0.5f)* maxTransfer;
+            float maxTransfer = Mathf.Min(
+                worth(values[drain]),
+                worth(values[boost], true)
+                );
+            
+            float transfer = Mathf.Abs(GaussRandom(0,1)-0.5f)*2* maxTransfer;
+            //Debug.Log(drain + " ->>>> "+transfer +" > "+ boost);
             values[drain].val-=transfer;
             values[boost].val+=transfer; 
         }
 
 
         float[] output = new float[valueCount];
+        //string debug = "";
         for(int i = 0; i < valueCount; i++) 
         {
             Value v = values[i];
-            //Debug.Log(v.val);
+            //debug += v.val+", ";
             output[i] = v.val;
         }
+        //Debug.Log(debug);
         return output;
     }
-    static int selectValueIndex(List<int> indices, Value[] values, bool reverse =false)
+    static int selectValueIndex(List<int> indices, Value[] values, bool boosted =false)
     {
-        float drainSum;
-        if (reverse)
-        {
-            drainSum = indices.Sum((valueIndex) => 1-values[valueIndex].val);
-        }
-        else
-        {
-            drainSum = indices.Sum((valueIndex) => values[valueIndex].val);
-        }
+        float drainSum = indices.Sum((valueIndex) => worth(values[valueIndex], boosted));
+
         
         float selection = Random.Range(0, drainSum);
         int currentIndex = -1;
         while (selection > 0)
         {
             currentIndex++;
-            selection -= values[currentIndex].val;
+            selection -= worth(values[indices[currentIndex]], boosted);
         }
         if (currentIndex == -1) { currentIndex = 0; }
-        return currentIndex;
+        return indices[currentIndex];
+    }
+
+    static float worth(Value val, bool boosted = false)
+    {
+        if (boosted)
+        {
+            return 1 - val.val - (1 - val.width) / 2;       
+        }
+        else
+        {
+            return val.val - (1 - val.width) / 2;
+        }
+        
     }
 
 

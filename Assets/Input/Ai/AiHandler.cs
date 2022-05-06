@@ -10,6 +10,17 @@ public class AiHandler : MonoBehaviour, UnitControl
 	AggroHandler aggro;
 	UnitMovement mover;
 	GameObject rotatingBody;
+
+	public struct EffectiveDistance
+    {
+		public float distance;
+		public float angle;
+		public EffectiveDistance(float distance, float angle)
+        {
+			this.distance = distance;
+			this.angle = angle;
+        }
+    }
 	public UnitInput getUnitInuput()
 	{
 		return currentInput;
@@ -43,8 +54,8 @@ public class AiHandler : MonoBehaviour, UnitControl
 				currentInput.move = inpVec;
 				currentInput.look = inpVec;
 
-				//TODO SMART ABILITY
-				if (planarDiff.magnitude <= 5 && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < 45) 
+				EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
+				if (planarDiff.magnitude <= eff.distance && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < eff.angle) 
                 {
 					currentInput.attacks = new AttackKey[] {AttackKey.One};
                 }

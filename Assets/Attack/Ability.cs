@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AiHandler;
 
 public class Ability : MonoBehaviour
 {
@@ -28,6 +29,11 @@ public class Ability : MonoBehaviour
     public GameObject getSpawnBody()
     {
         return rotatingBody;
+    }
+
+    public EffectiveDistance GetEffectiveDistance()
+    {
+        return attackFormat.GetEffectiveDistance();
     }
 
 }

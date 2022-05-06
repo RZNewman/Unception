@@ -231,7 +231,6 @@ MonoBehaviour:
   syncInterval: 0.1
   playerControlPre: {fileID: 8128567364782770289, guid: fc470eec306071949b1fed933eee5fe7, type: 3}
   aiControlPre: {fileID: 8128567364782770289, guid: 50812bee5fddb40498f81cbf7fcd9cf3, type: 3}
-  isPlayer: 1
 --- !u!114 &5637484679755635814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,9 +244,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
-  abilitiesToCreate:
-  - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
-  - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}
 --- !u!114 &3406968442906714346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +270,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  maxHealth: 100
 --- !u!114 &4552042485861014661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,10 +284,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  maxPostureBase: 65
-  passivePostureRecover: 10
-  stunnedPostureRecover: 20
-  stunnedPostureRecoverAcceleration: 30
 --- !u!114 &2345667375283208870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,6 +563,7 @@ GameObject:
   - component: {fileID: 4512510762536359130}
   - component: {fileID: 870533751555018789}
   - component: {fileID: 1703162061332982843}
+  - component: {fileID: 1691330701121575484}
   m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
@@ -669,6 +661,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003b8237c816eef45a426414a825b41a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1691330701121575484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799749292365394098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 770a754236cdb874ab864db5294907b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targets:
+  - {fileID: 6799749292365394098}
 --- !u!1001 &1009136740330545146
 PrefabInstance:
   m_ObjectHideFlags: 0

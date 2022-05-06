@@ -9,11 +9,11 @@ public class AbiltyList : MonoBehaviour
 
 
 	List<AttackBlock> abilitiesToCreate;
-	Dictionary<AttackKey, GameObject> instancedAbilitites;
+	Dictionary<AttackKey, Ability> instancedAbilitites;
 
 	private void Start()
 	{
-		instancedAbilitites = new Dictionary<AttackKey, GameObject>();
+		instancedAbilitites = new Dictionary<AttackKey, Ability>();
 		abilitiesToCreate = GetComponent<UnitPropsHolder>().props.abilitiesToCreate;
 		defaultAbilities();
 	}
@@ -22,14 +22,15 @@ public class AbiltyList : MonoBehaviour
 		for(int i=0; i < abilitiesToCreate.Count; i++)
 		{
 			GameObject o = Instantiate(AbilityRootPre, transform);
-			o.GetComponent<Ability>().setFormat(abilitiesToCreate[i]);
+			Ability a = o.GetComponent<Ability>();
+			a.setFormat(abilitiesToCreate[i]);
 			AttackKey k = (AttackKey)i;
-			instancedAbilitites.Add(k, o);
+			instancedAbilitites.Add(k, a);
 		}
 	}
 
 
-	public GameObject getAbility(AttackKey key)
+	public Ability getAbility(AttackKey key)
 	{
         return instancedAbilitites[key];
 	}

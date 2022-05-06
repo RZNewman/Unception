@@ -5,10 +5,12 @@ using UnityEngine;
 using static GenerateValues;
 
 
+
 public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
-    public UnitProperties monsterProps;
+    public AttackBlock testBlock;
+    List<UnitProperties> monsterProps = new List<UnitProperties>();
 
     float tileSize = 20;
     
@@ -33,11 +35,13 @@ public class MonsterSpawn : NetworkBehaviour
         int monsterNumber = Random.Range(0, 4);
         for (int i = 0; i < monsterNumber; i++)
         {
+            UnitProperties props = monsterProps[Random.Range(0,monsterProps.Count)];
             float halfSize = tileSize / 2;
             Vector3 offset = new Vector3(Random.Range(-halfSize,halfSize), 0, Random.Range(-halfSize, halfSize));
             offset *= 0.9f;
             GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity);
-            o.GetComponent<UnitPropsHolder>().props = monsterProps;
+            o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180, 180);
+            o.GetComponent<UnitPropsHolder>().props = props;
             NetworkServer.Spawn(o);
         }
     }
@@ -45,7 +49,9 @@ public class MonsterSpawn : NetworkBehaviour
     public override void OnStartServer()
     {
         ready = true;
-        float[] typeValues = generateRandomValues(4);
+        SharedMaterials mats = GetComponent<SharedMaterials>();
+        monsterProps.Add(GenerateUnit.generate(mats));
+        monsterProps.Add(GenerateUnit.generate(mats));
         foreach (Vector3 position in buildRequests)
         {
             instanceCreature(position);

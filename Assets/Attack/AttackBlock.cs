@@ -8,4 +8,6 @@ public abstract class AttackBlock : ScriptableObject
 	public abstract List<AttackState> buildStates(Ability controller);
 
 	public abstract EffectiveDistance GetEffectiveDistance();
+
+	public abstract float getCooldown();
 }

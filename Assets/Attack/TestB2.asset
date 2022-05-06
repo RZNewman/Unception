@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: TestB2
   m_EditorClassIdentifier: 
   windup: 0.8
-  winddown: 0.5
+  winddown: 0.2
+  cooldown: 4
   data: {fileID: 11400000, guid: bc4f6e42aa2b1da488b11d68b8f1d105, type: 2}

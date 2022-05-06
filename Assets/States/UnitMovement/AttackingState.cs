@@ -27,6 +27,7 @@ public class AttackingState : PlayerMovementState
 
 	public override void exit(bool expired)
 	{
+		castingAbility.startCooldown();
 		attackMachine.exit();
 	}
 	public override void tick()

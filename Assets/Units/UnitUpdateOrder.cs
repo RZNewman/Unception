@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitUpdateOrder : MonoBehaviour
+public class UnitUpdateOrder : NetworkBehaviour
 {
     UnitMovement move;
     Health health;
@@ -10,10 +11,14 @@ public class UnitUpdateOrder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FindObjectOfType<DeterministicUpdate>().register(this);
-        health = GetComponent<Health>();
-        posture = GetComponent<Posture>();
-        move = GetComponent<UnitMovement>();
+        if (isServer)
+        {
+            FindObjectOfType<DeterministicUpdate>().register(this);
+            health = GetComponent<Health>();
+            posture = GetComponent<Posture>();
+            move = GetComponent<UnitMovement>();
+        }
+        
     }
 
     private void OnDestroy()

@@ -14,6 +14,10 @@ public class UnitRotation : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
+        if (movement.isServer)
+        {
+            transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
+        }
     }
+        
 }

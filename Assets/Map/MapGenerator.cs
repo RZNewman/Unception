@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapGenerator : MonoBehaviour
+public class MapGenerator : NetworkBehaviour
 {
     public GameObject tilePre;
     public GameObject wallPre;
@@ -22,8 +23,12 @@ public class MapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        spawner = GetComponent<MonsterSpawn>();
-        buildGrid();
+        if (isServer)
+        {
+            spawner = GetComponent<MonsterSpawn>();
+            buildGrid();
+        }
+        
     }
 
 
@@ -54,8 +59,10 @@ public class MapGenerator : MonoBehaviour
                 if (tileLayout[x, y])
                 {
                     Vector3 pos = new Vector3(x * 20, 0, y * 20);
-                    Instantiate(tilePre, transform.position+pos, Quaternion.identity,transform);
+                    GameObject t =  Instantiate(tilePre, transform.position+pos, Quaternion.identity,transform);
+                    t.GetComponent<ClientAdoption>().parent = gameObject;
                     spawner.spawnCreatures(transform.position + pos+ Vector3.up*3);
+                    NetworkServer.Spawn(t);
                 }
             }
         }
@@ -70,25 +77,32 @@ public class MapGenerator : MonoBehaviour
                 Vector3 pos = new Vector3(x * 20, 0, y * 20);
                 if (tileLayout[x, y] && tileLayout[x, y+1])
                 {
-
-                    Instantiate(doorPre, transform.position + pos, Quaternion.identity, transform);
+                    GameObject t = Instantiate(doorPre, transform.position + pos, Quaternion.identity, transform);
+                    t.GetComponent<ClientAdoption>().parent = gameObject;
+                    NetworkServer.Spawn(t);
                 }
                 else if (tileLayout[x, y] || tileLayout[x, y+1])
                 {
 
-                    Instantiate(wallPre, transform.position + pos, Quaternion.identity, transform);
+                    GameObject t = Instantiate(wallPre, transform.position + pos, Quaternion.identity, transform);
+                    t.GetComponent<ClientAdoption>().parent = gameObject;
+                    NetworkServer.Spawn(t);
                 }
 
                 Quaternion q = Quaternion.AngleAxis(90, Vector3.up);
                 if (tileLayout[x, y] && tileLayout[x + 1, y])
                 {
 
-                    Instantiate(doorPre, transform.position + pos, q, transform);
+                    GameObject t = Instantiate(doorPre, transform.position + pos, q, transform);
+                    t.GetComponent<ClientAdoption>().parent = gameObject;
+                    NetworkServer.Spawn(t);
                 }
                 else if (tileLayout[x, y] || tileLayout[x + 1, y])
                 {
 
-                    Instantiate(wallPre, transform.position + pos, q, transform);
+                    GameObject t = Instantiate(wallPre, transform.position + pos, q, transform);
+                    t.GetComponent<ClientAdoption>().parent = gameObject;
+                    NetworkServer.Spawn(t);
                 }
             }
         }

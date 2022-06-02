@@ -14,8 +14,17 @@ public class LocalPlayer : NetworkBehaviour
 		{
             Instantiate(localCameraPre, transform);
             Instantiate(localClickPre, transform);
+            if (isClientOnly)
+            {
+                CmdAddClient();
+            }
+            
         }
     }
 
-
+    [Command]
+    void CmdAddClient()
+    {
+        FindObjectOfType<SharedMaterials>().SyncVisuals(connectionToClient);
+    }
 }

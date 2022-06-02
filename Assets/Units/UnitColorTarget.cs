@@ -9,7 +9,12 @@ public class UnitColorTarget : MonoBehaviour
 
     private void Start()
     {
-        Material material = GetComponentInParent<UnitPropsHolder>().props.material;
+        SharedMaterials mats = FindObjectOfType<SharedMaterials>();
+        mats.getVisuals(GetComponentInParent<UnitPropsHolder>().props.visualsId, colorTargets);
+    }
+    private void colorTargets(Material material)
+    {
+        Debug.Log(material + "called");
         foreach (GameObject target in targets)
         {
             target.GetComponent<MeshRenderer>().material = material;

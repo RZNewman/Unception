@@ -9,14 +9,19 @@ using static GenerateValues;
 public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
-    public AttackBlock testBlock;
-    List<UnitProperties> monsterProps = new List<UnitProperties>();
+    List<UnitData> monsterProps = new List<UnitData>();
 
     float tileSize = 20;
     
     List<Vector3> buildRequests = new List<Vector3>();
     bool ready = false;
 
+
+    struct UnitData
+    {
+        public UnitProperties props;
+        public List<AttackBlock> abilitites;
+    }
 
     public void spawnCreatures(Vector3 position)
     {
@@ -35,13 +40,16 @@ public class MonsterSpawn : NetworkBehaviour
         int monsterNumber = Random.Range(0, 4);
         for (int i = 0; i < monsterNumber; i++)
         {
-            UnitProperties props = monsterProps[Random.Range(0,monsterProps.Count)];
+            UnitData data = monsterProps[Random.Range(0,monsterProps.Count)];
             float halfSize = tileSize / 2;
             Vector3 offset = new Vector3(Random.Range(-halfSize,halfSize), 0, Random.Range(-halfSize, halfSize));
             offset *= 0.9f;
             GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity);
             o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180, 180);
-            o.GetComponent<UnitPropsHolder>().props = props;
+            o.GetComponent<UnitPropsHolder>().props = data.props;
+            AbiltyList al = o.GetComponent<AbiltyList>();
+            al.clear();
+            al.addAbility(data.abilitites);
             NetworkServer.Spawn(o);
         }
     }
@@ -50,11 +58,24 @@ public class MonsterSpawn : NetworkBehaviour
     {
         ready = true;
         SharedMaterials mats = GetComponent<SharedMaterials>();
-        monsterProps.Add(GenerateUnit.generate(mats));
-        monsterProps.Add(GenerateUnit.generate(mats));
+        mats.addVisuals(Color.white);
+        monsterProps.Add(createType());
+        monsterProps.Add(createType());
+        //TODO Spawn ready monster props
         foreach (Vector3 position in buildRequests)
         {
             instanceCreature(position);
         }
     }
+
+    UnitData createType()
+    {
+        SharedMaterials mats = GetComponent<SharedMaterials>();
+        UnitData u = new UnitData();
+        u.props = GenerateUnit.generate(mats);
+        u.abilitites = new List<AttackBlock>();
+        u.abilitites.Add(GenerateAttack.generate());
+        return u;
+    }
+
 }

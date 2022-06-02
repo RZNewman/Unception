@@ -24,8 +24,8 @@ MonoBehaviour:
   maxHealth: 1000
   maxPosture: 65
   passivePostureRecover: 20
-  stunnedPostureRecover: 40
-  stunnedPostureRecoverAcceleration: 60
+  stunnedPostureRecover: 65
+  stunnedPostureRecoverAcceleration: 65
   abilitiesToCreate:
   - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
   - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}

@@ -87,6 +87,10 @@ public class InputHandler : MonoBehaviour, UnitControl
     static float cameraRayMax = 100f;
     void setLocalLook()
 	{
+        if (!Camera.main)
+        {
+            return;
+        }
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit info;
         Vector3 dir;

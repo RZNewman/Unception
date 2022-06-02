@@ -8,19 +8,19 @@ public class AbiltyList : MonoBehaviour
 	public GameObject AbilityRootPre;
 
 
-	List<AttackBlock> abilitiesToCreate;
+	public List<AttackBlock> abilitiesToCreate;
 	Dictionary<AttackKey, Ability> instancedAbilitites;
 
 	private void Start()
 	{
 		instancedAbilitites = new Dictionary<AttackKey, Ability>();
-		abilitiesToCreate = GetComponent<UnitPropsHolder>().props.abilitiesToCreate;
-		defaultAbilities();
+		createAbilities();
 	}
-	void defaultAbilities()
+	void createAbilities()
 	{
 		for(int i=0; i < abilitiesToCreate.Count; i++)
 		{
+			//TODO Spawn abilities
 			GameObject o = Instantiate(AbilityRootPre, transform);
 			Ability a = o.GetComponent<Ability>();
 			a.setFormat(abilitiesToCreate[i]);
@@ -28,7 +28,18 @@ public class AbiltyList : MonoBehaviour
 			instancedAbilitites.Add(k, a);
 		}
 	}
-
+	public void addAbility(AttackBlock block)
+    {
+		abilitiesToCreate.Add(block);
+    }
+	public void addAbility(List<AttackBlock> blocks)
+	{
+		abilitiesToCreate.AddRange(blocks);
+	}
+	public void clear()
+    {
+		abilitiesToCreate = new List<AttackBlock>();
+    }
 
 	public Ability getAbility(AttackKey key)
 	{

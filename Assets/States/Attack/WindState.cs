@@ -20,6 +20,7 @@ public class WindState : AttackState
 		if (hasIndicator)
         {
 			GameObject target = controller.getSpawnBody();
+			//TODO Spawn indicator
 			indicator = Object.Instantiate(
 				Resources.Load("Indicator/LineIndicator") as GameObject, 
 				target.transform

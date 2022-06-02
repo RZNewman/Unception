@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gravity : MonoBehaviour
+public class Gravity : NetworkBehaviour 
 {
     // Start is called before the first frame
     public float gravity = -9.81f;
@@ -19,7 +20,7 @@ public class Gravity : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!movement.grounded && !lifeManager.IsDead)
+        if (isServer && !movement.grounded && !lifeManager.IsDead)
 		{
             rb.velocity += new Vector3(0, gravity, 0) *Time.fixedDeltaTime;
 		}

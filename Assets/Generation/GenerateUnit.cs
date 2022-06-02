@@ -34,14 +34,11 @@ public static class GenerateUnit
         properties.maxHealth = health;
 
         properties.maxPosture = posture;
-        properties.passivePostureRecover = posture*0.5f;
+        properties.passivePostureRecover = posture*0.3f;
         properties.stunnedPostureRecover = posture;
         properties.stunnedPostureRecoverAcceleration = posture*1.5f;
 
-        properties.abilitiesToCreate = new List<AttackBlock>();
-        properties.abilitiesToCreate.Add(GenerateAttack.generate());
-
-        properties.material = mats.addMaterial(new Color(Random.value, Random.value, Random.value));
+        properties.visualsId = mats.addVisuals(new Color(Random.value, Random.value, Random.value));
 
         return properties;
     }

@@ -15,11 +15,14 @@ public class Posture : NetworkBehaviour, BarValue
     float passivePostureRecover;
     float stunnedPostureRecover;
     float stunnedPostureRecoverAcceleration;
+
+
     float currentPostureRecover;
     static float postureStunBufferPercent = 0.5f;
     static float postureCeilingRecoverPercent = 0.025f;
+    [SyncVar]
     bool stunned = false;
-
+    [SyncVar]
     float currentStunHighestPosture;
 
     public bool isStunned

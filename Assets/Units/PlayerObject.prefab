@@ -134,10 +134,10 @@ MonoBehaviour:
   clientAuthority: 0
   sendInterval: 0.05
   syncPosition: 1
-  syncRotation: 1
+  syncRotation: 0
   syncScale: 0
   interpolatePosition: 1
-  interpolateRotation: 1
+  interpolateRotation: 0
   interpolateScale: 0
   bufferTimeMultiplier: 1
   bufferSizeLimit: 64
@@ -170,8 +170,8 @@ MonoBehaviour:
   syncPosition: 0
   syncRotation: 1
   syncScale: 0
-  interpolatePosition: 1
-  interpolateRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 0
   interpolateScale: 0
   bufferTimeMultiplier: 1
   bufferSizeLimit: 64
@@ -244,6 +244,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
+  abilitiesToCreate:
+  - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
+  - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}
 --- !u!114 &3406968442906714346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,6 +299,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9158bf0da701264885c7b5cfb841bca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &7926023165869227859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,6 +313,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246bda10cdaa5aa4594221f499d9b8e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
 --- !u!1 &4921098641576344319
 GameObject:

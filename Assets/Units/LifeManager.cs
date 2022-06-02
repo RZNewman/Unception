@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LifeManager : MonoBehaviour
+public class LifeManager : NetworkBehaviour
 {
     GameObject unitBody;
 
@@ -34,7 +35,13 @@ public class LifeManager : MonoBehaviour
         else
         {
             Destroy(unitBody);
+            RpcBodyDestroy();
         }
 
+    }
+    [ClientRpc]
+    void RpcBodyDestroy()
+    {
+        Destroy(unitBody);
     }
 }

@@ -25,7 +25,7 @@ public static class GenerateAttack
         float width = 0.5f + 4f * widthVal;
         float knockback = 0f + 15f * knockbackVal;
         float damage = 60f + 50f * damageVal;
-        float stagger = 20f + 40f * staggerVal;
+        float stagger = 30f + 70f * staggerVal;
 
         block.windup = windup;
         block.winddown = winddown;

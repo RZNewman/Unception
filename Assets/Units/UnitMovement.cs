@@ -37,7 +37,10 @@ public class UnitMovement : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-		
+        if (isClientOnly)
+        {
+            setGround();
+        }
     }
 	public void ServerUpdate()
 	{

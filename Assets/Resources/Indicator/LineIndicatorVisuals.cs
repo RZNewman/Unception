@@ -12,7 +12,7 @@ public class LineIndicatorVisuals : IndicatorInstance
     float length;
     float width;
     // Start is called before the first frame update
-    public override void reposition(AttackData data)
+    protected override void repositionImpl()
     {
         length = data.length;
         width = data.width;

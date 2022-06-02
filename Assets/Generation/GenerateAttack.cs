@@ -7,7 +7,7 @@ public static class GenerateAttack
 {
     public static AttackBlock generate()
     {
-        BasicBlock block = ScriptableObject.CreateInstance<BasicBlock>();
+        AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         AttackData attackData = ScriptableObject.CreateInstance<AttackData>();
 
         float[] typeValues = generateRandomValues(7);

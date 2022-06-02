@@ -39,7 +39,7 @@ public class CompoundCollider : MonoBehaviour
             }
         }
         colliding.Add(col);
-        Debug.Log("Collide");
+
         callback(col);
 
     }

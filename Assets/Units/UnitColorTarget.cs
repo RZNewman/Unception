@@ -14,7 +14,7 @@ public class UnitColorTarget : MonoBehaviour
     }
     private void colorTargets(Material material)
     {
-        Debug.Log(material + "called");
+
         foreach (GameObject target in targets)
         {
             target.GetComponent<MeshRenderer>().material = material;

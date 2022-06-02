@@ -1,14 +1,27 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class IndicatorInstance : MonoBehaviour
+public abstract class IndicatorInstance : NetworkBehaviour
 {
+    [SyncVar]
     public float maxTime;
+    [SyncVar]
     public float currentTime;
 
+    [SyncVar]
     uint teamOwner;
-    public abstract void reposition(AttackData data);
+
+    [SyncVar]
+    protected AttackData data;
+    public  void reposition(AttackData aData)
+    {
+        data = aData;
+        repositionImpl();
+    }
+
+    protected abstract void repositionImpl();
     protected abstract void setCurrentProgress(float percent);
 
     public abstract void setColor(Color color);
@@ -16,6 +29,14 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         this.maxTime = maxTime;
         currentTime = maxTime;
+    }
+    private void Start()
+    {
+        if (isClientOnly)
+        {
+            repositionImpl();
+            updateColor();
+        }
     }
 
     protected void Update()
@@ -28,8 +49,9 @@ public abstract class IndicatorInstance : MonoBehaviour
 
     void setLocalPosition()
     {
-        if (trackingBody)
+        if (transform.parent)
         {
+            GameObject trackingBody = transform.parent.gameObject;
             UnitMovement master = trackingBody.GetComponentInParent<UnitMovement>();
             Size s = trackingBody.GetComponentInChildren<Size>();
             Quaternion q = Quaternion.LookRotation(-master.floorNormal, trackingBody.transform.forward);
@@ -47,12 +69,7 @@ public abstract class IndicatorInstance : MonoBehaviour
             //TODO indcator width should change based on the slope
         }
     }
-    GameObject trackingBody;
-    public void setTrackingBody(GameObject track)
-    {
-        trackingBody = track;
-        setLocalPosition();
-    }
+
     public void setTeam(uint team)
     {
         teamOwner = team;

@@ -61,7 +61,6 @@ public class MonsterSpawn : NetworkBehaviour
         mats.addVisuals(Color.white);
         monsterProps.Add(createType());
         monsterProps.Add(createType());
-        //TODO Spawn ready monster props
         foreach (Vector3 position in buildRequests)
         {
             instanceCreature(position);

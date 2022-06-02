@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +28,13 @@ public class WindState : AttackState
 				);
 			IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
 			i.setTeam(controller.GetComponentInParent<TeamOwnership>().getTeam());
-			i.setTrackingBody(target);
 			i.reposition(attackData);
 			i.setTime(currentDurration);
+			ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
+			adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
+			adoptee.useSubBody = true;
+			NetworkServer.Spawn(indicator);
+
 
 		}
 		

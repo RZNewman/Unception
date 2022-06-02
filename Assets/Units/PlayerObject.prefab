@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 4552042485861014661}
   - component: {fileID: 2345667375283208870}
   - component: {fileID: 7926023165869227859}
+  - component: {fileID: 973865255900791963}
   m_Layer: 7
   m_Name: PlayerObject
   m_TagString: Untagged
@@ -214,6 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c52ae49ccfe564eb25dd410b85124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   gravity: -40
 --- !u!114 &2082401580106628794
 MonoBehaviour:
@@ -243,6 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 845232b2c44ed07458669e984f1e899c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   abilitiesToCreate:
   - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
@@ -259,6 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa34f8f4c364d8a4cba593fe8d602ffa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &5017510892263704221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,6 +323,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
+--- !u!114 &973865255900791963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563495925269500109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1afe8fac7bc5c294f82c399f735dc589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subBody: {fileID: 5094729095307488736}
 --- !u!1 &4921098641576344319
 GameObject:
   m_ObjectHideFlags: 0

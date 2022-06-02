@@ -295,6 +295,7 @@ MonoBehaviour:
   - {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
   - {fileID: 9188171244486232376, guid: 5b5ef168dddad9a40ae5dcda2d9b78e1, type: 3}
   - {fileID: 8362817911430590472, guid: e1e0b54e7d36aa445adf9b90fbc8ac71, type: 3}
+  - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
 --- !u!4 &449408942
 Transform:
   m_ObjectHideFlags: 0
@@ -669,4 +670,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9b013f0c62ddd54b88707c92a4027de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}

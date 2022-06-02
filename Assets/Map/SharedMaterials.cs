@@ -47,7 +47,6 @@ public class SharedMaterials : NetworkBehaviour
     void SyncVisuals(int index, Color c)
     {
         makeVisualInstance(index, c);
-        Debug.Log(index + "synced");
         if (pending.ContainsKey(index))
         {
             foreach (OnVisuals callback in pending[index])
@@ -70,7 +69,6 @@ public class SharedMaterials : NetworkBehaviour
         
         if (materials.ContainsKey(index))
         {
-            Debug.Log(index + "instant");
             callback(materials[index].material);
         }
         else

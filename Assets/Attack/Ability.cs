@@ -1,13 +1,16 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
 
-public class Ability : MonoBehaviour
+public class Ability : NetworkBehaviour
 {
+    [SyncVar]
     AttackBlock attackFormat;
     GameObject rotatingBody;
 
+    [SyncVar]
     public float cooldownCurrent=0;
     public bool cooldownTicking =false;
     // Start is called before the first frame update

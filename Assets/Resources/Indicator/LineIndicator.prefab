@@ -338,6 +338,7 @@ GameObject:
   - component: {fileID: 6897395458525162673}
   - component: {fileID: 94961322917027556}
   - component: {fileID: 336076003641667913}
+  - component: {fileID: -5437572410320500980}
   m_Layer: 0
   m_Name: LineIndicator
   m_TagString: Untagged
@@ -375,6 +376,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c75f1834d4266c342b52fde7247f02db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   maxTime: 0
   currentTime: 0
   mask: {fileID: 119453764573812069}
@@ -392,3 +395,19 @@ SortingGroup:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &-5437572410320500980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8249178311684600747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd9624e78be07345b4ba33954b33d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  parent: {fileID: 0}
+  useSubBody: 0

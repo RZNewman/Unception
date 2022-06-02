@@ -9,6 +9,10 @@ public class ClientAdoption : NetworkBehaviour
     [SyncVar]
     public GameObject parent;
 
+    [HideInInspector]
+    [SyncVar]
+    public bool useSubBody = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,7 +20,14 @@ public class ClientAdoption : NetworkBehaviour
         {
             Vector3 position = transform.position;
             Quaternion rotation = transform.rotation;
-            transform.parent = parent.transform;
+            if (useSubBody)
+            {
+                transform.parent = parent.GetComponent<ClientAdoptor>().subBody.transform;
+            }
+            else
+            {
+                transform.parent = parent.transform;
+            }
             transform.localPosition = position;
             transform.localRotation = rotation;
         }

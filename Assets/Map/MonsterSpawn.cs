@@ -9,6 +9,8 @@ using static GenerateValues;
 public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
+    public GameObject PackPre;
+    public GameObject PackTagPre;
     List<UnitData> monsterProps = new List<UnitData>();
 
     float tileSize = 20;
@@ -38,6 +40,7 @@ public class MonsterSpawn : NetworkBehaviour
     void instanceCreature(Vector3 position)
     {
         int monsterNumber = Random.Range(0, 4);
+        Pack p = Instantiate(PackPre).GetComponent<Pack>();
         for (int i = 0; i < monsterNumber; i++)
         {
             UnitData data = monsterProps[Random.Range(0,monsterProps.Count)];
@@ -50,6 +53,7 @@ public class MonsterSpawn : NetworkBehaviour
             AbiltyList al = o.GetComponent<AbiltyList>();
             al.clear();
             al.addAbility(data.abilitites);
+            Instantiate(PackTagPre, o.transform).GetComponent<PackTag>().owner = p;
             NetworkServer.Spawn(o);
         }
     }

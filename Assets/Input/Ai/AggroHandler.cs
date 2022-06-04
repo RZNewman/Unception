@@ -9,11 +9,19 @@ public class AggroHandler : MonoBehaviour
 	[HideInInspector]
 	public List<GameObject> aggro;
 
+	Pack pack;
+
 	private void Start()
 	{
 		aggro = new List<GameObject>();
 		SphereCollider col = GetComponent<SphereCollider>();
 		col.radius = aggroRadius;
+		pack = transform.parent.GetComponentInChildren<PackTag>().owner;
+        if (pack)
+        {
+			pack.addToPack(this);
+		}
+		
 	}
 	private void OnTriggerEnter(Collider other)
 	{
@@ -25,8 +33,19 @@ public class AggroHandler : MonoBehaviour
 			if (!aggro.Contains(them))
 			{
 				aggro.Add(them);
-	
+                if (pack)
+                {
+					pack.packAggro(them);
+                }
 			}
+
+		}
+	}
+	public void addAggro(GameObject target)
+    {
+		if (!aggro.Contains(target))
+		{
+			aggro.Add(target);
 
 		}
 	}

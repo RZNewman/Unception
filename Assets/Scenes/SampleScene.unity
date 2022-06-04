@@ -1293,6 +1293,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   UnitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
+  PackPre: {fileID: 3694861992469580249, guid: e356917f25b672a4bbea9b4dcadc3e56, type: 3}
+  PackTagPre: {fileID: 4500528443326720493, guid: afb0dc4502d4fc74ab2939a7b9a670f0, type: 3}
 --- !u!114 &2124122343
 MonoBehaviour:
   m_ObjectHideFlags: 0

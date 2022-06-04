@@ -23,6 +23,7 @@ public abstract class State
 	}
     DurrationType durationType;
     float duration;
+    float startingDuration;
 
     protected float currentDurration
     {
@@ -31,6 +32,14 @@ public abstract class State
             return duration;
         }
     }
+    protected float maxDuration
+    {
+        get
+        {
+           return startingDuration;
+        }
+    }
+
     public State()
 	{
         durationType = DurrationType.None;
@@ -39,6 +48,7 @@ public abstract class State
     {
         durationType = DurrationType.Timed;
         duration = t;
+        startingDuration = t;
     }
 
     public virtual void enter() {}

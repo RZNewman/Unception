@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  abilityIconPrefab: {fileID: 7976420225584091790, guid: 8c1e5a10627054e4db75c73e7b7d16e0, type: 3}
   cooldownCurrent: 0
   cooldownTicking: 0
 --- !u!114 &-8531309415781236864
@@ -63,3 +64,4 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   parent: {fileID: 0}
+  useSubBody: 0

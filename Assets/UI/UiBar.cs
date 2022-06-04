@@ -26,6 +26,8 @@ public class UiBar : MonoBehaviour
 
     void fill(BarData data)
     {
+        barFront.gameObject.SetActive(data.active);
+        barBack.gameObject.SetActive(data.active);
         barFront.GetComponent<Image>().color = data.color;
         barFront.sizeDelta = new Vector2(data.fillPercent, barFront.sizeDelta.y);
         barBack.sizeDelta = new Vector2(1- data.fillPercent, barFront.sizeDelta.y);

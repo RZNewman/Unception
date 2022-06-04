@@ -6,9 +6,12 @@ using static AiHandler;
 
 public class Ability : NetworkBehaviour
 {
+
     [SyncVar]
     AttackBlock attackFormat;
     GameObject rotatingBody;
+
+    public GameObject abilityIconPrefab;
 
     [SyncVar]
     public float cooldownCurrent=0;
@@ -17,6 +20,13 @@ public class Ability : NetworkBehaviour
     void Start()
     {
         rotatingBody = transform.parent.GetComponentInChildren<UnitRotation>().gameObject;
+        if (GetComponentInParent<LocalPlayer>().isLocalPlayer)
+        {
+            GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
+            GameObject icon = Instantiate(abilityIconPrefab, bar.transform);
+            icon.GetComponent<UiAbility>().setTarget(this);
+        }
+        
     }
 
     // Update is called once per frame
@@ -32,9 +42,16 @@ public class Ability : NetworkBehaviour
             cooldownCurrent = 0;
         }
     }
+    public float cooldownMax
+    {
+        get
+        {
+            return attackFormat.getCooldown();
+        }
+    }
     public List<AttackState> cast()
 	{
-        cooldownCurrent = attackFormat.getCooldown();
+        cooldownCurrent = cooldownMax;
         return attackFormat.buildStates(this);
     }
     public void startCooldown()

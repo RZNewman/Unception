@@ -8,19 +8,19 @@ public class WindState : AttackState
 	GameObject indicator;
 	AttackData attackData;
 	bool hasIndicator = false;
-	public WindState(Ability c, float t) : base(c, t)
-	{
-	}
-	public WindState(Ability c, float t, AttackData data) : base(c, t)
+	
+	public WindState(Ability c, float t, AttackData data = null) : base(c, t)
 	{
 		attackData = data;
-		hasIndicator = true;
+		hasIndicator = data != null;
 	}
 	public override void enter()
 	{
+		GameObject target = controller.getSpawnBody();
+		target.GetComponentInParent<Cast>().setTarget(this);
 		if (hasIndicator)
         {
-			GameObject target = controller.getSpawnBody();
+			
 			//TODO Spawn indicator
 			indicator = Object.Instantiate(
 				Resources.Load("Indicator/LineIndicator") as GameObject, 
@@ -42,11 +42,22 @@ public class WindState : AttackState
 
 	public override void exit(bool expired)
 	{
-        if (hasIndicator)
+		GameObject target = controller.getSpawnBody();
+		target.GetComponentInParent<Cast>().removeTarget();
+		if (hasIndicator)
         {
 			//TODO local client destroy
             Object.Destroy(indicator);
         }
     }
 
+	public BarValue.BarData getProgress()
+    {
+		return new BarValue.BarData
+		{
+			color = hasIndicator ? Color.cyan: new Color(0,0.6f,1),
+			fillPercent = Mathf.Clamp01(hasIndicator ? 1 - (currentDurration / maxDuration): currentDurration / maxDuration),
+			active = true,
+		};
+	}
 }

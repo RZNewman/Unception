@@ -8,6 +8,7 @@ public interface BarValue
     {
         public Color color;
         public float fillPercent;
+        public bool active;
     }
     public BarData getBarFill();
 }

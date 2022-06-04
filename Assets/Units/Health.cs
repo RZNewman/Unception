@@ -38,6 +38,7 @@ public class Health : NetworkBehaviour, BarValue
         {
             color = Color.red,
             fillPercent = Mathf.Clamp01(currentHealth / maxHealth),
+            active = true,
         };
     }
 

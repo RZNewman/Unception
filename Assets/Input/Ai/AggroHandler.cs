@@ -26,18 +26,22 @@ public class AggroHandler : MonoBehaviour
 	private void OnTriggerEnter(Collider other)
 	{
 		GameObject them = other.gameObject;
-		uint thierTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
+		uint theirTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
 		uint myTeam = GetComponentInParent<TeamOwnership>().getTeam();
-		if (myTeam != thierTeam)
+		if (myTeam != theirTeam)
 		{
-			if (!aggro.Contains(them))
-			{
-				aggro.Add(them);
-                if (pack)
-                {
+            if (pack)
+            {
+				if (!aggro.Contains(them))
+				{
 					pack.packAggro(them);
-                }
+				}
 			}
+            else
+            {
+				addAggro(them);
+            }
+			
 
 		}
 	}
@@ -46,7 +50,7 @@ public class AggroHandler : MonoBehaviour
 		if (!aggro.Contains(target))
 		{
 			aggro.Add(target);
-
+			GetComponentInParent<Combat>().aggro(target.GetComponentInParent<Combat>().gameObject);
 		}
 	}
 

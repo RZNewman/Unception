@@ -7,6 +7,9 @@ public class LifeManager : NetworkBehaviour
 {
     GameObject unitBody;
 
+    public delegate void OnDeath();
+
+    List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
     private void Start()
     {
         unitBody = GetComponentInChildren<Size>().gameObject;
@@ -24,10 +27,19 @@ public class LifeManager : NetworkBehaviour
     {
         get { return isDead; }
     }
+
+    public void suscribeDeath(OnDeath d)
+    {
+        OnDeathCallbacks.Add(d);
+    }
     
     public void die()
     {
         isDead = true;
+        foreach(OnDeath c in OnDeathCallbacks)
+        {
+            c();
+        }
         if (!isPlayer)
         {
             Destroy(gameObject);

@@ -18,6 +18,7 @@ public class MonsterSpawn : NetworkBehaviour
     List<Vector3> buildRequests = new List<Vector3>();
     bool ready = false;
 
+    Transform floor;
 
     struct UnitData
     {
@@ -36,18 +37,22 @@ public class MonsterSpawn : NetworkBehaviour
             buildRequests.Add(position);
         }
     }
+    public void setFloor(Transform f)
+    {
+        floor = f;
+    }
 
     void instanceCreature(Vector3 position)
     {
         int monsterNumber = Random.Range(0, 4);
-        Pack p = Instantiate(PackPre).GetComponent<Pack>();
+        Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         for (int i = 0; i < monsterNumber; i++)
         {
             UnitData data = monsterProps[Random.Range(0,monsterProps.Count)];
             float halfSize = tileSize / 2;
             Vector3 offset = new Vector3(Random.Range(-halfSize,halfSize), 0, Random.Range(-halfSize, halfSize));
             offset *= 0.9f;
-            GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity);
+            GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity,floor);
             o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180, 180);
             o.GetComponent<UnitPropsHolder>().props = data.props;
             AbiltyList al = o.GetComponent<AbiltyList>();

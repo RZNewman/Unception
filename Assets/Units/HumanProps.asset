@@ -25,8 +25,5 @@ MonoBehaviour:
   maxPosture: 65
   passivePostureRecover: 20
   stunnedPostureRecover: 65
-  stunnedPostureRecoverAcceleration: 65
-  abilitiesToCreate:
-  - {fileID: 11400000, guid: 89a15d75621d53d45b9ca90d68d48f37, type: 2}
-  - {fileID: 11400000, guid: a43175e7a5897e242860c1326261197b, type: 2}
-  material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  stunnedPostureRecoverAcceleration: 120
+  visualsId: 0

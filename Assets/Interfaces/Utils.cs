@@ -13,7 +13,12 @@ public static class Utils
 	{
 		return new Vector2(world.x, world.z);
 	}
-	public static float normalizeAngle(float angle)
+
+    public static bool V(this MapGenerator.tileType value)
+    {
+        return value != MapGenerator.tileType.None;
+    }
+    public static float normalizeAngle(float angle)
 	{
 		if (angle > 180) angle -= 360;
 		if (angle < -180) angle += 360;

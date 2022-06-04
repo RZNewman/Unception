@@ -2,22 +2,40 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Utils;
 
 public class MapGenerator : NetworkBehaviour
 {
     public GameObject tilePre;
     public GameObject wallPre;
     public GameObject doorPre;
-    static int gridSize = 10;
+    public GameObject holePre;
+    public GameObject endPre;
+    public GameObject floorRootPre;
 
-    bool[,] tileLayout = new bool[gridSize, gridSize];
+    static int gridSize = 10;
+    static int tilesPerFloor = 30;
+
+    GameObject currentFloor;
+    GameObject lastFloor;
+    Vector3 floorOffset = Vector3.zero;
+
+    public enum tileType
+    {
+        None,
+        Full,
+        Hole
+    }
+
+
+    tileType[,] tileLayout;
 
     struct tileIndex
     {
         public int x;
         public int y;
     }
-    List<tileIndex> tiles = new List<tileIndex>();
+    List<tileIndex> tiles;
 
     MonsterSpawn spawner;
     // Start is called before the first frame update
@@ -31,20 +49,43 @@ public class MapGenerator : NetworkBehaviour
         
     }
 
+    public void buildNewLevel(Vector3 worldPos)
+    {
+        lastFloor = currentFloor;
+        floorOffset = worldPos- transform.position;
+        buildGrid();
+    }
+    public void cleanupLevel()
+    {
+        Destroy(lastFloor);
+    }
+
 
     void buildGrid()
     {
+        tileLayout = new tileType[gridSize, gridSize];
+        tiles = new List<tileIndex>();
+
+        currentFloor = Instantiate(floorRootPre, transform.position+floorOffset, Quaternion.identity, transform);
+        spawner.setFloor(currentFloor.transform);
+        int rootX = Random.Range(0, gridSize - 1);
+        int rootY = Random.Range(0, gridSize - 1);
+        Vector3 diff = new Vector3(rootX * 20, 0, rootY * 20);
+        currentFloor.transform.localPosition += -diff;
         tileIndex root = new tileIndex
         {
-            x = 0,
-            y = 0,
+            x = rootX,
+            y = rootY,
         };
         buildTile(root);
-        for(int i = 0; i < 30; i++)
+        tileIndex t;
+        for (int i = 0; i < tilesPerFloor; i++)
         {
-            tileIndex t = pickNextTile();
+            t = pickNextTile();
             buildTile(t);
         }
+        t = pickNextTile();
+        buildTile(t, true);
 
         instanceGrid();
         instanceWalls();
@@ -52,17 +93,32 @@ public class MapGenerator : NetworkBehaviour
 
     void instanceGrid()
     {
-        for(int x = 0; x < tileLayout.GetLength(0); x++)
+        Vector3 floorPos = currentFloor.transform.position;
+        for (int x = 0; x < tileLayout.GetLength(0); x++)
         {
             for(int y = 0; y < tileLayout.GetLength(1); y++)
             {
-                if (tileLayout[x, y])
+                if (tileLayout[x, y].V())
                 {
                     Vector3 pos = new Vector3(x * 20, 0, y * 20);
-                    GameObject t =  Instantiate(tilePre, transform.position+pos, Quaternion.identity,transform);
-                    t.GetComponent<ClientAdoption>().parent = gameObject;
-                    spawner.spawnCreatures(transform.position + pos+ Vector3.up*3);
+                    bool isFull = tileLayout[x, y] == tileType.Full;
+                    GameObject prefab = isFull ? tilePre : holePre;
+                    GameObject t =  Instantiate(prefab, floorPos + pos, Quaternion.identity, currentFloor.transform);
+                    //t.GetComponent<ClientAdoption>().parent = gameObject;
                     NetworkServer.Spawn(t);
+                    if (isFull)
+                    {
+                        spawner.spawnCreatures(floorPos + pos + Vector3.up * 3);
+                    }
+                    else
+                    {
+                        t = Instantiate(endPre, floorPos + pos + Vector3.down*20, Quaternion.identity, currentFloor.transform);
+                        t.GetComponent<NextLevel>().setGen(this);
+                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        NetworkServer.Spawn(t);
+                    }
+                    
+                    
                 }
             }
         }
@@ -70,48 +126,101 @@ public class MapGenerator : NetworkBehaviour
 
     void instanceWalls()
     {
-        for (int x = 0; x < tileLayout.GetLength(0)-1; x++)
+        Quaternion up = Quaternion.identity;
+        Quaternion right = Quaternion.AngleAxis(90, Vector3.up);
+        Quaternion down = Quaternion.AngleAxis(180, Vector3.up);
+        Quaternion left = Quaternion.AngleAxis(270, Vector3.up);
+
+        Vector3 floorPos = currentFloor.transform.position;
+
+        for (int x = 0; x < tileLayout.GetLength(0); x++)
         {
-            for (int y = 0; y < tileLayout.GetLength(1)-1; y++)
+            for (int y = 0; y < tileLayout.GetLength(1); y++)
             {
                 Vector3 pos = new Vector3(x * 20, 0, y * 20);
-                if (tileLayout[x, y] && tileLayout[x, y+1])
-                {
-                    GameObject t = Instantiate(doorPre, transform.position + pos, Quaternion.identity, transform);
-                    t.GetComponent<ClientAdoption>().parent = gameObject;
-                    NetworkServer.Spawn(t);
-                }
-                else if (tileLayout[x, y] || tileLayout[x, y+1])
-                {
 
-                    GameObject t = Instantiate(wallPre, transform.position + pos, Quaternion.identity, transform);
-                    t.GetComponent<ClientAdoption>().parent = gameObject;
-                    NetworkServer.Spawn(t);
-                }
-
-                Quaternion q = Quaternion.AngleAxis(90, Vector3.up);
-                if (tileLayout[x, y] && tileLayout[x + 1, y])
+                if(y< tileLayout.GetLength(1) - 1)
                 {
+                    if (tileLayout[x, y].V() && tileLayout[x, y + 1].V())
+                    {
+                        GameObject t = Instantiate(doorPre, floorPos + pos, up, currentFloor.transform);
+                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        NetworkServer.Spawn(t);
+                    }
+                    else if (tileLayout[x, y].V() || tileLayout[x, y + 1].V())
+                    {
 
-                    GameObject t = Instantiate(doorPre, transform.position + pos, q, transform);
-                    t.GetComponent<ClientAdoption>().parent = gameObject;
-                    NetworkServer.Spawn(t);
+                        GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
+                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        NetworkServer.Spawn(t);
+                    }
                 }
-                else if (tileLayout[x, y] || tileLayout[x + 1, y])
+                
+
+                if(x< tileLayout.GetLength(0) - 1)
                 {
+                    if (tileLayout[x, y].V() && tileLayout[x + 1, y].V())
+                    {
 
-                    GameObject t = Instantiate(wallPre, transform.position + pos, q, transform);
-                    t.GetComponent<ClientAdoption>().parent = gameObject;
-                    NetworkServer.Spawn(t);
+                        GameObject t = Instantiate(doorPre, floorPos + pos, right, currentFloor.transform);
+                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        NetworkServer.Spawn(t);
+                    }
+                    else if (tileLayout[x, y].V() || tileLayout[x + 1, y].V())
+                    {
+
+                        GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
+                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        NetworkServer.Spawn(t);
+                    }
                 }
+                
+            }
+        }
+        for (int x = 0; x < tileLayout.GetLength(0); x++)
+        {
+            int y = 0;
+            Vector3 pos = new Vector3(x * 20, 0, y * 20);
+            if (tileLayout[x, y].V())
+            {
+                GameObject t = Instantiate(wallPre, floorPos + pos, down, currentFloor.transform);
+                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                NetworkServer.Spawn(t);
+            }
+            y = tileLayout.GetLength(1) - 1;
+            pos = new Vector3(x * 20, 0, y * 20);
+            if (tileLayout[x, y].V())
+            {
+                GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
+                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                NetworkServer.Spawn(t);
+            }
+        }
+        for (int y = 0; y < tileLayout.GetLength(1); y++)
+        {
+            int x = 0;
+            Vector3 pos = new Vector3(x * 20, 0, y * 20);
+            if (tileLayout[x, y].V())
+            {
+                GameObject t = Instantiate(wallPre, floorPos + pos, left, currentFloor.transform);
+                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                NetworkServer.Spawn(t);
+            }
+            x = tileLayout.GetLength(0) - 1;
+            pos = new Vector3(x * 20, 0, y * 20);
+            if (tileLayout[x, y].V())
+            {
+                GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
+                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                NetworkServer.Spawn(t);
             }
         }
     }
 
 
-    void buildTile(tileIndex i)
+    void buildTile(tileIndex i, bool hole = false)
     {
-        tileLayout[i.x, i.y] = true;
+        tileLayout[i.x, i.y] = hole? tileType.Hole :tileType.Full;
         tiles.Add(i);
     }
     tileIndex pickNextTile()
@@ -176,7 +285,7 @@ public class MapGenerator : NetworkBehaviour
     }
     bool isTileEmpty(tileIndex i)
     {
-        return !tileLayout[i.x, i.y];
+        return !tileLayout[i.x, i.y].V();
     }
     
 

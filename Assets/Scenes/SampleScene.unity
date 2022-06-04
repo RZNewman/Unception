@@ -1261,9 +1261,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  tilePre: {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
+  tilePre: {fileID: 6715917580406317018, guid: 2d03b46cabba84a4bafdbcfa721089ff, type: 3}
   wallPre: {fileID: 8362817911430590472, guid: e1e0b54e7d36aa445adf9b90fbc8ac71, type: 3}
   doorPre: {fileID: 9188171244486232376, guid: 5b5ef168dddad9a40ae5dcda2d9b78e1, type: 3}
+  holePre: {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
+  endPre: {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
+  floorRootPre: {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
 --- !u!4 &2124122341
 Transform:
   m_ObjectHideFlags: 0

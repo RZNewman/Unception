@@ -25,6 +25,10 @@ public class DeterministicUpdate : NetworkBehaviour
         }
         foreach (UnitUpdateOrder unit in unitList)
         {
+            unit.staminaTick();
+        }
+        foreach (UnitUpdateOrder unit in unitList)
+        {
             unit.postureTick();
         }
         foreach (UnitUpdateOrder unit in unitList)

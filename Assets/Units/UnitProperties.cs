@@ -17,12 +17,16 @@ public class UnitProperties : ScriptableObject
     public float dashDistance = 3f;
     public float dashSpeed = 9f;
 
+
     public float maxHealth;
 
     public float maxPosture;
     public float passivePostureRecover;
     public float stunnedPostureRecover;
     public float stunnedPostureRecoverAcceleration;
+
+    public float maxStamina;
+    public float staminaRecover;
 
     public int visualsId;
 }

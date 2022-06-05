@@ -7,6 +7,7 @@ public class UnitUiReference : MonoBehaviour
     public UiBar healthbar;
     public UiBar staggerbar;
     public UiBar castbar;
+    public UiBar staminaBar;
     public GameObject unitTarget;
 
     private void Start()
@@ -22,6 +23,10 @@ public class UnitUiReference : MonoBehaviour
         healthbar.source = unitTarget.GetComponentInParent<Health>();
         staggerbar.source = unitTarget.GetComponentInParent<Posture>();
         castbar.source = unitTarget.GetComponentInParent<Cast>();
+        if (staminaBar)
+        {
+            staminaBar.source = unitTarget.GetComponentInParent<Stamina>();
+        }
     }
     public void setTarget(GameObject t)
     {

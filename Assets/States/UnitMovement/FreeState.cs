@@ -41,8 +41,10 @@ public class FreeState : PlayerMovementState
 			}
             
 		}
-        if (inp.dash)
+		Stamina s = mover.GetComponent<Stamina>();
+        if (inp.dash && s.stamina > Stamina.dashCost)
         {
+			s.spendStamina(Stamina.dashCost);
 			DashOptions o = mover.baseDash();
 			return new StateTransition(new DashState(mover, o), true);
         }

@@ -11,6 +11,7 @@ public interface UnitControl
         public Vector2 move;
         public Vector2 look;
         public bool jump;
+        public bool dash;
         public AttackKey[] attacks;
         
 
@@ -19,6 +20,7 @@ public interface UnitControl
             move = Vector2.zero;
             look = Vector2.zero;
             jump = false;
+            dash = false;
             attacks = new AttackKey[0];
 		}
         public static UnitInput zero()
@@ -28,6 +30,7 @@ public interface UnitControl
                 move = Vector2.zero,
                 look = Vector2.zero,
                 jump = false,
+                dash = false,
                 attacks = new AttackKey[0],
             };
         }

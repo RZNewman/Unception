@@ -14,6 +14,8 @@ public class UnitProperties : ScriptableObject
     public float lookSpeedDegrees = 270f;
     public float sidewaysMoveMultiplier = 0.85f;
     public float backwardsMoveMultiplier = 0.7f;
+    public float dashDistance = 3f;
+    public float dashSpeed = 9f;
 
     public float maxHealth;
 

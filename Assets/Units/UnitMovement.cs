@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static DashState;
 using static UnitControl;
 using static Utils;
 public class UnitMovement : NetworkBehaviour
@@ -185,6 +186,56 @@ public class UnitMovement : NetworkBehaviour
             planarVelocity += diff.normalized * addingFrameMag;
         }
 
+    }
+    public enum DashControl
+    {
+        Forward,
+        Backward,
+        Input,
+    }
+    public DashOptions baseDash()
+    {
+        return new DashOptions
+        {
+            dashDistance = props.dashDistance,
+            dashSpeed = props.dashSpeed,
+            control = DashControl.Input,
+            ending = DashEndMomentum.Walk,
+        };
+    }
+    public void dash(UnitInput inp, float dashSpeed, DashControl control)
+    {
+        Vector3 desiredDirection;
+        switch (control)
+        {
+            case DashControl.Forward:
+                desiredDirection = getSpawnBody().transform.forward;
+                break;
+            case DashControl.Backward:
+                desiredDirection = -getSpawnBody().transform.forward;
+                break;
+            case DashControl.Input:
+                desiredDirection = input2vec(inp.move);
+                break;
+            default:
+                desiredDirection = Vector3.zero;
+                break;
+        }
+        planarVelocity = desiredDirection*dashSpeed;
+
+    }
+    public void setToWalkSpeed()
+    {
+        float lookMultiplier = toMoveMultiplier(vec2input(planarVelocity));
+        float airMultiplier = 1.0f;
+        if (!grounded)
+        {
+            airMultiplier = 0.6f;
+        };
+
+        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier;
+
+        planarVelocity = planarVelocity.normalized * potentialSpeed;
     }
 
     float toMoveMultiplier(Vector2 inputMove)

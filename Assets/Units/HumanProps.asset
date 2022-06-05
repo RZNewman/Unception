@@ -21,6 +21,8 @@ MonoBehaviour:
   lookSpeedDegrees: 270
   sidewaysMoveMultiplier: 0.85
   backwardsMoveMultiplier: 0.7
+  dashDistance: 3
+  dashSpeed: 30
   maxHealth: 1000
   maxPosture: 65
   passivePostureRecover: 20

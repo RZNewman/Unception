@@ -16,6 +16,7 @@ public class Combat : NetworkBehaviour
         {
             active.Add(other);
             other.GetComponent<Combat>().addTarget(gameObject);
+            
         }
     }
 

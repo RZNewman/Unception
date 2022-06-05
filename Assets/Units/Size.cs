@@ -8,7 +8,13 @@ public class Size : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        col = GetComponent<CapsuleCollider>();   
+        col = GetComponent<CapsuleCollider>();
+        Collider stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<Collider>();
+        Physics.IgnoreCollision(col, stopper);
+    }
+    public Collider coll
+    {
+        get { return col; }
     }
 
     public float indicatorHeight

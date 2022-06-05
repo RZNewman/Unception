@@ -62,6 +62,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.move = move;
 
         currentInput.jump |= Input.GetKey(KeyCode.Space);
+        currentInput.dash |= Input.GetKey(KeyCode.LeftShift);
 
         HashSet<AttackKey> atks = new HashSet<AttackKey>();
         foreach (AttackKey k in currentInput.attacks)

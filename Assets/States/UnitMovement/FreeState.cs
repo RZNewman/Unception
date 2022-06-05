@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static DashState;
 using static UnitControl;
 using static Utils;
 
@@ -40,6 +41,11 @@ public class FreeState : PlayerMovementState
 			}
             
 		}
+        if (inp.dash)
+        {
+			DashOptions o = mover.baseDash();
+			return new StateTransition(new DashState(mover, o), true);
+        }
 		if (inp.jump && mover.grounded)
 		{
 			return new StateTransition(new JumpsquatState(mover, mover.props.jumpsquatTime), true);

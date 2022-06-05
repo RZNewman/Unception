@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnitControl;
 
-public abstract class AttackState : State
+public abstract class AttackState : PlayerMovementState
 {
-	protected Ability controller;
-	public float moveMultiplier =0.5f;
-	public float lookMultiplier = 0.5f;
-	public AttackState(Ability c) : base()
+
+	public AttackState(UnitMovement m) : base(m)
 	{
-		controller = c;
+		moveMultiplier = 0.5f;
+		lookMultiplier = 0.5f;
 	}
-	public AttackState(Ability c, float t) : base(t)
+	public AttackState(UnitMovement m, float t) : base(m, t)
 	{
-		controller = c;
+		moveMultiplier = 0.5f;
+		lookMultiplier = 0.5f;
+	}
+
+    public override void tick()
+    {
+		base.tick();
+		UnitInput inp = mover.input;
+
+
+		mover.rotate(inp, lookMultiplier);
+		mover.move(inp, moveMultiplier, moveMultiplier);
+
+
 	}
 }

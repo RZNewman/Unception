@@ -9,14 +9,14 @@ public class WindState : AttackState
 	AttackData attackData;
 	bool hasIndicator = false;
 	
-	public WindState(Ability c, float t, AttackData data = null) : base(c, t)
+	public WindState(UnitMovement m, float t, AttackData data = null) : base(m, t)
 	{
 		attackData = data;
 		hasIndicator = data != null;
 	}
 	public override void enter()
 	{
-		GameObject target = controller.getSpawnBody();
+		GameObject target = mover.getSpawnBody();
 		target.GetComponentInParent<Cast>().setTarget(this);
 		if (hasIndicator)
         {
@@ -27,7 +27,7 @@ public class WindState : AttackState
 				target.transform
 				);
 			IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
-			i.setTeam(controller.GetComponentInParent<TeamOwnership>().getTeam());
+			i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
 			i.reposition(attackData);
 			i.setTime(currentDurration);
 			ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
@@ -42,7 +42,7 @@ public class WindState : AttackState
 
 	public override void exit(bool expired)
 	{
-		GameObject target = controller.getSpawnBody();
+		GameObject target = mover.getSpawnBody();
 		target.GetComponentInParent<Cast>().removeTarget();
 		if (hasIndicator)
         {

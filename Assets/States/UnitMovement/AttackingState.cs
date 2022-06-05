@@ -7,10 +7,10 @@ public class AttackingState : PlayerMovementState
 {
 	Ability castingAbility;
 
-	StateMachine<AttackState> attackMachine;
+	StateMachine<PlayerMovementState> attackMachine;
 	bool ended = false;
 
-	List<AttackState> currentStates;
+	List<PlayerMovementState> currentStates;
 	
 
 	public AttackingState(UnitMovement m, Ability atk) : base(m)
@@ -20,8 +20,8 @@ public class AttackingState : PlayerMovementState
 
 	public override void enter()
 	{
-		currentStates = castingAbility.cast();
-		attackMachine = new StateMachine<AttackState>(getNextState);
+		currentStates = castingAbility.cast(mover);
+		attackMachine = new StateMachine<PlayerMovementState>(getNextState);
 		
 	}
 
@@ -33,12 +33,6 @@ public class AttackingState : PlayerMovementState
 	public override void tick()
 	{
 		base.tick();
-		UnitInput inp = mover.input;
-
-
-		mover.rotate(inp, attackMachine.state().lookMultiplier);
-		mover.move(inp, attackMachine.state().moveMultiplier, attackMachine.state().moveMultiplier);
-
 		
 		attackMachine.tick();
 
@@ -59,16 +53,16 @@ public class AttackingState : PlayerMovementState
 		return base.transition();
 	}
 
-	AttackState getNextState()
+	PlayerMovementState getNextState()
 	{
 		if (currentStates.Count > 0)
 		{
-			AttackState s = currentStates[0];
+			PlayerMovementState s = currentStates[0];
 			currentStates.RemoveAt(0);
 			return s;
 		}
 		ended = true;
-		return new WindState(castingAbility, 1f);
+		return new WindState(mover, 1f);
 	}
 
 

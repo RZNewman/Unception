@@ -9,7 +9,6 @@ public class Ability : NetworkBehaviour
 
     [SyncVar]
     AttackBlock attackFormat;
-    GameObject rotatingBody;
 
     public GameObject abilityIconPrefab;
 
@@ -19,7 +18,6 @@ public class Ability : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rotatingBody = transform.parent.GetComponentInChildren<UnitRotation>().gameObject;
         if (GetComponentInParent<LocalPlayer>().isLocalPlayer)
         {
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
@@ -49,10 +47,10 @@ public class Ability : NetworkBehaviour
             return attackFormat.getCooldown();
         }
     }
-    public List<AttackState> cast()
+    public List<PlayerMovementState> cast(UnitMovement mover)
 	{
         cooldownCurrent = cooldownMax;
-        return attackFormat.buildStates(this);
+        return attackFormat.buildStates(mover);
     }
     public void startCooldown()
     {
@@ -69,10 +67,7 @@ public class Ability : NetworkBehaviour
     {
         attackFormat = b;
     }
-    public GameObject getSpawnBody()
-    {
-        return rotatingBody;
-    }
+    
 
     public EffectiveDistance GetEffectiveDistance()
     {

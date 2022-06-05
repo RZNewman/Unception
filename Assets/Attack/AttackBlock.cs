@@ -9,9 +9,9 @@ public class AttackBlock : ScriptableObject
 	public float cooldown;
 	public AttackData data;
 
-	public List<AttackState> buildStates(Ability controller)
+	public List<PlayerMovementState> buildStates(UnitMovement controller)
 	{
-		List<AttackState> states = new List<AttackState>();
+		List<PlayerMovementState> states = new List<PlayerMovementState>();
 
 		states.Add(new WindState(controller, windup, data));
 		states.Add(new ActionState(controller, data));

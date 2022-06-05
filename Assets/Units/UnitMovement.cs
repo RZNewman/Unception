@@ -42,6 +42,11 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
+    public GameObject getSpawnBody()
+    {
+        return GetComponentInChildren<UnitRotation>().gameObject;
+    }
+
     // Update is called once per frame
     void Update()
     {

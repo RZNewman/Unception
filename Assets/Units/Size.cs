@@ -14,14 +14,32 @@ public class Size : MonoBehaviour
     public float indicatorHeight
     {
         get {
-            return (col.height / 2) - 0.01f;
+            float dist;
+            if(col.direction == 2)
+            {
+                dist = col.radius - 0.01f;
+            }
+            else
+            {
+                dist = (col.height / 2) - 0.01f;
+            }
+            return dist * transform.lossyScale.y;
         }
     }
     public float indicatorForward
     {
         get
         {
-            return col.radius;
+            float dist;
+            if (col.direction == 2)
+            {
+                dist = col.height / 2;
+            }
+            else
+            {
+                dist = col.radius;
+            }
+            return dist * transform.lossyScale.z;
         }
     }
 }

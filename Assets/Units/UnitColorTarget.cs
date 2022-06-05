@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SharedMaterials;
+using System.Linq;
 
 public class UnitColorTarget : MonoBehaviour
 {
-    public List<GameObject> targets;
+    public GameObject[] targets;
 
 
-    private void Start()
+    public void colorTargets(Material[] materials)
     {
-        SharedMaterials mats = FindObjectOfType<SharedMaterials>();
-        mats.getVisuals(GetComponentInParent<UnitPropsHolder>().props.visualsId, colorTargets);
-    }
-    private void colorTargets(Material material)
-    {
-
-        foreach (GameObject target in targets)
+        for(int i = 0; i < targets.Length; i++)
         {
-            target.GetComponent<MeshRenderer>().material = material;
+            GameObject target = targets[i];
+            target.GetComponent<Renderer>().material = materials[i];
         }
+
+        
+        
+    }
+    public Material[] getSource()
+    {
+        return targets.Select((t)=>t.GetComponent<Renderer>().sharedMaterial).ToArray();
     }
 }

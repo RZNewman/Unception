@@ -53,7 +53,7 @@ public class MonsterSpawn : NetworkBehaviour
             Vector3 offset = new Vector3(Random.Range(-halfSize,halfSize), 0, Random.Range(-halfSize, halfSize));
             offset *= 0.9f;
             GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity,floor);
-            o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180, 180);
+            o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
             o.GetComponent<UnitPropsHolder>().props = data.props;
             AbiltyList al = o.GetComponent<AbiltyList>();
             al.clear();
@@ -67,7 +67,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         ready = true;
         SharedMaterials mats = GetComponent<SharedMaterials>();
-        mats.addVisuals(Color.white);
+        mats.addVisuals(true);
         monsterProps.Add(createType());
         monsterProps.Add(createType());
         foreach (Vector3 position in buildRequests)

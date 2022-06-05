@@ -28,15 +28,19 @@ public class Health : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void ServerUpdate()
     {
-        if (!combat.inCombat)
+        if (!GetComponent<LifeManager>().IsDead)
         {
-            currentHealth = maxHealth;
-        }
-        if(currentHealth <= 0)
-        {
-            GetComponent<LifeManager>().die();
+            if (!combat.inCombat)
+            {
+                currentHealth = maxHealth;
+            }
+            if (currentHealth <= 0)
+            {
+                GetComponent<LifeManager>().die();
 
+            }
         }
+        
     }
 
     public BarValue.BarData getBarFill()

@@ -11,7 +11,7 @@ public class UnitMovement : NetworkBehaviour
     ControlManager controller;
     LifeManager lifeManager;
     StateMachine<PlayerMovementState> movement;
-    CapsuleCollider col;
+    ModelLoader model;
 
     [HideInInspector]
     public float currentLookAngle=0;
@@ -20,10 +20,18 @@ public class UnitMovement : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         controller = GetComponent<ControlManager>();
-        col = GetComponentInChildren<CapsuleCollider>();
+        model = GetComponent<ModelLoader>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
         propHolder = GetComponent<UnitPropsHolder>();
+        lifeManager.suscribeDeath(cleanup);
+    }
+    CapsuleCollider col
+    {
+        get
+        {
+            return model.col;
+        }
     }
 
     public UnitProperties props
@@ -37,14 +45,18 @@ public class UnitMovement : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isClientOnly)
+        if (isClientOnly && model.modelLoaded)
         {
             setGround();
         }
     }
 	public void ServerUpdate()
 	{
-        if (!lifeManager.IsDead)
+        if (!model.modelLoaded)
+        {
+            return;
+        }
+        else if (!lifeManager.IsDead)
         {           
             movement.tick();
         }
@@ -55,12 +67,16 @@ public class UnitMovement : NetworkBehaviour
     }
     public void ServerTransition()
     {
-        if (!lifeManager.IsDead)
+        if (!lifeManager.IsDead && model.modelLoaded)
         {
             setGround();
             movement.transition();
         }
         
+    }
+    void cleanup()
+    {
+        movement.exit();
     }
     public Posture posture
     {

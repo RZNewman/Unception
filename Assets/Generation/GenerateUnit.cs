@@ -38,7 +38,7 @@ public static class GenerateUnit
         properties.stunnedPostureRecover = posture;
         properties.stunnedPostureRecoverAcceleration = posture*2.0f;
 
-        properties.visualsId = mats.addVisuals(new Color(Random.value, Random.value, Random.value));
+        properties.visualsId = mats.addVisuals();
 
         return properties;
     }

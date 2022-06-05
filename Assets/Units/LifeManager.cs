@@ -5,14 +5,20 @@ using UnityEngine;
 
 public class LifeManager : NetworkBehaviour
 {
-    GameObject unitBody;
+    GameObject unitBody
+    {
+        get
+        {
+            return GetComponentInChildren<Size>().gameObject;
+        }
+    }
 
     public delegate void OnDeath();
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
+
     private void Start()
     {
-        unitBody = GetComponentInChildren<Size>().gameObject;
     }
     bool isPlayer
     {
@@ -54,6 +60,10 @@ public class LifeManager : NetworkBehaviour
     [ClientRpc]
     void RpcBodyDestroy()
     {
-        Destroy(unitBody);
+        if (isClientOnly)
+        {
+            Destroy(unitBody);
+        }
+        
     }
 }

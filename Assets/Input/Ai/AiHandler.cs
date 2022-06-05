@@ -54,8 +54,10 @@ public class AiHandler : MonoBehaviour, UnitControl
 				currentInput.move = inpVec;
 				currentInput.look = inpVec;
 
+				float edgeDiffMag  = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().indicatorForward - target.GetComponent<Size>().indicatorForward;
+
 				EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
-				if (planarDiff.magnitude <= eff.distance && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < eff.angle) 
+				if (edgeDiffMag <= eff.distance && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < eff.angle) 
                 {
 					currentInput.attacks = new AttackKey[] {AttackKey.One};
                 }

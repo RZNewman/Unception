@@ -68,8 +68,8 @@ public class MapGenerator : NetworkBehaviour
 
         currentFloor = Instantiate(floorRootPre, transform.position+floorOffset, Quaternion.identity, transform);
         spawner.setFloor(currentFloor.transform);
-        int rootX = Random.Range(0, gridSize - 1);
-        int rootY = Random.Range(0, gridSize - 1);
+        int rootX = Random.Range(0, gridSize);
+        int rootY = Random.Range(0, gridSize);
         Vector3 diff = new Vector3(rootX * 20, 0, rootY * 20);
         currentFloor.transform.localPosition += -diff;
         tileIndex root = new tileIndex
@@ -86,7 +86,7 @@ public class MapGenerator : NetworkBehaviour
         }
         t = pickNextTile();
         buildTile(t, true);
-
+        //TODO Coroutine
         instanceGrid();
         instanceWalls();
     }

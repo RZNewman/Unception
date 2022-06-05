@@ -5,71 +5,117 @@ using UnityEngine;
 
 public class SharedMaterials : NetworkBehaviour
 {
-    public Shader shader;
-    struct builtMaterial
+    public List<string> enemyModels;
+    public struct visualsSource
     {
-        public Color source;
-        public Material material;
+        public Color color;
+        public string modelName;
+        public float lank;
     }
 
-    public delegate void OnVisuals(Material mat);
+    public struct visualsBuilt
+    {
+        public Material[] materials;
+        public GameObject modelPrefab;
+    }
 
-    Dictionary<int, builtMaterial> materials = new Dictionary<int, builtMaterial>();
+    public struct visualsData
+    {
+        public visualsSource source;
+        public visualsBuilt built;
+    }
+
+    public delegate void OnVisuals(visualsData mat);
+
+    Dictionary<int, visualsData> dataLookup = new Dictionary<int, visualsData>();
     Dictionary<int, List<OnVisuals>> pending = new Dictionary<int, List<OnVisuals>>();
 
     [Server]
-    public int addVisuals(Color c)
+    public int addVisuals(bool forPlayer = false)
     {
-        int index = materials.Count;
-        makeVisualInstance(index, c);
-        RpcSyncVisuals(index, c);
+        visualsSource source;
+        if (forPlayer)
+        {
+            source = new visualsSource
+            {
+                color = Color.white,
+                modelName = "Lizard",
+                lank =  1,
+            };
+        }
+        else
+        {
+            Color c = new Color(Random.value, Random.value, Random.value);
+            float lank = Random.Range(0, 2f);
+            source = new visualsSource
+            {
+                color = c,
+                lank = lank,
+                modelName = enemyModels[Random.Range(0,enemyModels.Count)],
+            };
+        } 
+        int index = dataLookup.Count;
+        makeVisualInstance(index, source);
+        RpcSyncVisuals(index, source);
         return index;
     }
     public void SyncVisuals(NetworkConnection conn)
     {
-        foreach(int index in materials.Keys)
+        foreach(int index in dataLookup.Keys)
         {
-            TargetSyncVisuals(conn, index, materials[index].source);
+            TargetSyncVisuals(conn, index, dataLookup[index].source);
         }
     }
 
     [ClientRpc]
-    void RpcSyncVisuals(int index, Color c)
+    void RpcSyncVisuals(int index, visualsSource s)
     {
-        SyncVisuals(index, c);
+        SyncVisuals(index, s);
     }
     [TargetRpc]
-    void TargetSyncVisuals(NetworkConnection conn, int index, Color c)
+    void TargetSyncVisuals(NetworkConnection conn, int index, visualsSource s)
     {
-        SyncVisuals(index, c);
+        SyncVisuals(index, s);
     }
     [Client]
-    void SyncVisuals(int index, Color c)
+    void SyncVisuals(int index, visualsSource s)
     {
-        makeVisualInstance(index, c);
+        makeVisualInstance(index, s);
         if (pending.ContainsKey(index))
         {
             foreach (OnVisuals callback in pending[index])
             {
-                callback(materials[index].material);
+                callback(dataLookup[index]);
             }
         }
     }
-    void makeVisualInstance(int index, Color c)
+    void makeVisualInstance(int index, visualsSource s)
     {
-        Material m = new Material(shader);
-        m.SetColor(Shader.PropertyToID("_Color"), c);
-        builtMaterial built = new builtMaterial();
-        built.source = c;
-        built.material = m;
-        materials.Add(index, built);
+        GameObject modelPrefab = Resources.Load("Models/" + s.modelName) as GameObject;
+        Material[] mats = modelPrefab.GetComponent<UnitColorTarget>().getSource();
+        Material[] outMats = new Material[mats.Length];
+        for(int i = 0; i < mats.Length; i++)
+        {
+            Material m = new Material(mats[i]);
+            m.SetColor(Shader.PropertyToID("_Color"), s.color);
+            outMats[i] = m;
+        }
+        
+        visualsData data = new visualsData();
+        data.source = s;
+        data.built = new visualsBuilt
+        {
+            materials = outMats,
+            modelPrefab= modelPrefab,
+        };
+        dataLookup.Add(index, data);
     }
     public void getVisuals(int index, OnVisuals callback)
     {
         
-        if (materials.ContainsKey(index))
+        if (dataLookup.ContainsKey(index))
         {
-            callback(materials[index].material);
+            callback(dataLookup[index]);
         }
         else
         {

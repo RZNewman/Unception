@@ -19,7 +19,8 @@ public class ActionState : AttackState
 			if(o.GetComponentInParent<TeamOwnership>().getTeam()!= mover.GetComponent<TeamOwnership>().getTeam())
             {
 				Health h = o.GetComponentInParent<Health>();
-				h.takeDamage(attackData.damage);
+				o.GetComponentInParent<Combat>().getHit(mover.gameObject);
+				h.takeDamage(attackData.damageMult * mover.GetComponent<Power>().power);
 				o.GetComponentInParent<Posture>().takeStagger(attackData.stagger);
                 switch (attackData.knockBackType)
                 {

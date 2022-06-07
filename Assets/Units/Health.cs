@@ -15,7 +15,7 @@ public class Health : NetworkBehaviour, BarValue
     // Start is called before the first frame update
     void Start()
     {
-        maxHealth = GetComponent<UnitPropsHolder>().props.maxHealth;
+        maxHealth = GetComponent<UnitPropsHolder>().props.maxHealthMult * GetComponent<Power>().power;
         currentHealth = maxHealth;
         combat = GetComponent<Combat>();
     }

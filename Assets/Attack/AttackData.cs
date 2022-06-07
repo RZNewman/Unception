@@ -9,7 +9,7 @@ public class AttackData : ScriptableObject
     public float length;
     public float width;
     public float knockback;
-    public float damage;
+    public float damageMult;
     public float stagger;
     public KnockBackType knockBackType;
     

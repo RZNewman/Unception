@@ -33,7 +33,7 @@ public class ModelLoader : MonoBehaviour
         body.GetComponent<UnitColorTarget>().colorTargets(data.built.materials);
         float height = (data.source.lank - 1f) * max_lank + 1;
         float width = -(data.source.lank - 1f) * max_lank + 1;
-        body.transform.localScale = new Vector3(width, height, width);
+        body.GetComponent<Size>().setBaseSize(new Vector3(width, height, width));
         _col = body.GetComponent<CapsuleCollider>();
         loaded = true;
     }

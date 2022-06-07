@@ -18,7 +18,7 @@ public class UnitProperties : ScriptableObject
     public float dashSpeed = 9f;
 
 
-    public float maxHealth;
+    public float maxHealthMult;
 
     public float maxPosture;
     public float passivePostureRecover;

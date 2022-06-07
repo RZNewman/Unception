@@ -5,13 +5,25 @@ using UnityEngine;
 public class Size : MonoBehaviour
 {
     CapsuleCollider col;
+    Vector3 baseSize;
     // Start is called before the first frame update
     void Start()
     {
         col = GetComponent<CapsuleCollider>();
-        Collider stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<Collider>();
+        transform.localScale = baseSize * GetComponentInParent<Power>().downscaled/Power.baseDownscale;
+        CapsuleCollider stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<CapsuleCollider>();
         Physics.IgnoreCollision(col, stopper);
+        stopper.transform.parent = transform;
+        stopper.transform.localScale = Vector3.one;
+        stopper.radius = colliderWidth + 0.1f;
+        stopper.height = colliderHeight * 2 + 0.1f;
     }
+
+    public void setBaseSize(Vector3 size)
+    {
+        baseSize = size;
+    }
+
     public Collider coll
     {
         get { return col; }
@@ -20,32 +32,46 @@ public class Size : MonoBehaviour
     public float indicatorHeight
     {
         get {
-            float dist;
-            if(col.direction == 2)
+            float dist = colliderHeight - 0.01f;
+    
+            return dist * transform.lossyScale.y;
+        }
+    }
+
+    float colliderHeight
+    {
+        get
+        {
+            if (col.direction == 2)
             {
-                dist = col.radius - 0.01f;
+                return col.radius;
             }
             else
             {
-                dist = (col.height / 2) - 0.01f;
+                return col.height / 2;
             }
-            return dist * transform.lossyScale.y;
+        }
+    }
+    float colliderWidth
+    {
+        get
+        {
+            if (col.direction == 2)
+            {
+                return col.height / 2;
+            }
+            else
+            {
+                return col.radius;
+            }
         }
     }
     public float indicatorForward
     {
         get
         {
-            float dist;
-            if (col.direction == 2)
-            {
-                dist = col.height / 2;
-            }
-            else
-            {
-                dist = col.radius;
-            }
-            return dist * transform.lossyScale.z;
+            
+            return colliderWidth * transform.lossyScale.z;
         }
     }
 }

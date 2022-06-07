@@ -5,7 +5,7 @@ using static GenerateValues;
 
 public static class GenerateUnit 
 {
-    public static UnitProperties generate(SharedMaterials mats)
+    public static UnitProperties generate(SharedMaterials mats, float power)
     {
         UnitProperties properties = ScriptableObject.CreateInstance<UnitProperties>();
         properties.isPlayer =false;
@@ -17,10 +17,13 @@ public static class GenerateUnit
         float healthVal = typeValues[2];
         float postureVal = typeValues[3];
 
-        float speed = 3f + 5f * speedVal;
+        float downscaledBase = Power.baseDownscale;
+        float downscaledPower = Power.downscalePower(power);
+
+        float speed = (3f + 5f * speedVal) /downscaledBase * downscaledPower;
         float turn = 75f + 60f * turnVal;
-        float health = 300f + 300f * healthVal;
-        float posture = 30f + 30f * postureVal;
+        float health = 3f + 3f * healthVal;
+        float posture = (30f + 30f * postureVal) / downscaledBase * downscaledPower;
 
         properties.maxSpeed = speed;
         properties.acceleration = speed*3;
@@ -31,7 +34,7 @@ public static class GenerateUnit
         properties.sidewaysMoveMultiplier = 0.1f;
         properties.backwardsMoveMultiplier = 0.0f;
 
-        properties.maxHealth = health;
+        properties.maxHealthMult = health;
 
         properties.maxPosture = posture;
         properties.passivePostureRecover = posture*0.3f;

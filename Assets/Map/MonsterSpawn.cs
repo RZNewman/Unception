@@ -22,6 +22,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     struct UnitData
     {
+        public float power;
         public UnitProperties props;
         public List<AttackBlock> abilitites;
     }
@@ -54,6 +55,7 @@ public class MonsterSpawn : NetworkBehaviour
             offset *= 0.9f;
             GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity,floor);
             o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
+            o.GetComponent<Power>().power = data.power;
             o.GetComponent<UnitPropsHolder>().props = data.props;
             AbiltyList al = o.GetComponent<AbiltyList>();
             al.clear();
@@ -68,21 +70,22 @@ public class MonsterSpawn : NetworkBehaviour
         ready = true;
         SharedMaterials mats = GetComponent<SharedMaterials>();
         mats.addVisuals(true);
-        monsterProps.Add(createType());
-        monsterProps.Add(createType());
+        monsterProps.Add(createType(100));
+        monsterProps.Add(createType(300));
         foreach (Vector3 position in buildRequests)
         {
             instanceCreature(position);
         }
     }
 
-    UnitData createType()
+    UnitData createType(float power)
     {
         SharedMaterials mats = GetComponent<SharedMaterials>();
         UnitData u = new UnitData();
-        u.props = GenerateUnit.generate(mats);
+        u.power = power;
+        u.props = GenerateUnit.generate(mats, power);
         u.abilitites = new List<AttackBlock>();
-        u.abilitites.Add(GenerateAttack.generate());
+        u.abilitites.Add(GenerateAttack.generate(power));
         return u;
     }
 

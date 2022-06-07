@@ -6,9 +6,11 @@ using UnityEngine;
 public class Combat : NetworkBehaviour
 {
     public readonly SyncList<GameObject> active = new SyncList<GameObject>();
+
+    GameObject lastUnitHitBy;
     private void Start()
     {
-        GetComponent<LifeManager>().suscribeDeath(clearAggro);
+        GetComponent<LifeManager>().suscribeDeath(onDeath);
     }
     public void aggro(GameObject other)
     {
@@ -16,7 +18,7 @@ public class Combat : NetworkBehaviour
         {
             active.Add(other);
             other.GetComponent<Combat>().addTarget(gameObject);
-            
+            //TODO Aggro handler adds a callback here, to aggro the pack when hit
         }
     }
 
@@ -29,6 +31,18 @@ public class Combat : NetworkBehaviour
         }
     }
 
+    void onDeath()
+    {
+        rewardKiller();
+        clearAggro();
+    }
+    void rewardKiller()
+    {
+        if (lastUnitHitBy)
+        {
+            lastUnitHitBy.GetComponent<Power>().absorb(GetComponent<Power>());
+        }
+    }
     void clearAggro()
     {
         foreach (GameObject other in active)
@@ -40,6 +54,15 @@ public class Combat : NetworkBehaviour
     void removeTarget(GameObject other)
     {
         active.Remove(other);
+        if (lastUnitHitBy && lastUnitHitBy == other)
+        {
+            lastUnitHitBy = null;
+        }
+    }
+    public void getHit(GameObject other)
+    {
+        lastUnitHitBy = other;
+        aggro(other);
     }
 
     public bool inCombat

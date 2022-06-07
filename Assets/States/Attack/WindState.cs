@@ -20,8 +20,6 @@ public class WindState : AttackState
 		target.GetComponentInParent<Cast>().setTarget(this);
 		if (hasIndicator)
         {
-			
-			//TODO Spawn indicator
 			indicator = Object.Instantiate(
 				Resources.Load("Indicator/LineIndicator") as GameObject, 
 				target.transform
@@ -46,7 +44,6 @@ public class WindState : AttackState
 		target.GetComponentInParent<Cast>().removeTarget();
 		if (hasIndicator)
         {
-			//TODO local client destroy
             Object.Destroy(indicator);
         }
     }

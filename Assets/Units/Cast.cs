@@ -16,6 +16,7 @@ public class Cast : MonoBehaviour, BarValue
                 active = false,
             };
         }
+        //TODO cast bar client
         return target.getProgress();
     }
 

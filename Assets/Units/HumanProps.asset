@@ -29,5 +29,5 @@ MonoBehaviour:
   stunnedPostureRecover: 65
   stunnedPostureRecoverAcceleration: 120
   maxStamina: 65
-  staminaRecover: 15
+  staminaRecover: 8
   visualsId: 0

@@ -113,7 +113,7 @@ public class UnitMovement : NetworkBehaviour
 
     public void jump()
 	{
-        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce, rb.velocity.z);
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce *power.scale(), rb.velocity.z);
 	}
     public void applyForce(Vector3 force)
     {
@@ -136,7 +136,7 @@ public class UnitMovement : NetworkBehaviour
         speedMultiplier *= lookMultiplier* airMultiplier;
         
 
-        float potentialSpeed = props.maxSpeed * speedMultiplier;
+        float potentialSpeed = props.maxSpeed * speedMultiplier * power.scale();
         float desiredSpeed;
 		if (grounded)
 		{
@@ -154,7 +154,7 @@ public class UnitMovement : NetworkBehaviour
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
         float stoppingMult = accMultiplier * airMultiplier;
-        float stoppingFrameMag = props.decceleration *stoppingMult * Time.fixedDeltaTime;
+        float stoppingFrameMag = props.decceleration *stoppingMult * Time.fixedDeltaTime * power.scale();
         
         if (stoppingDir.magnitude <= stoppingFrameMag)
 		{
@@ -169,7 +169,7 @@ public class UnitMovement : NetworkBehaviour
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
         float addingMult = accMultiplier * airMultiplier * lookMultiplierDiff;
-        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime;
+        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * power.scale();
 
         if (diff.magnitude <= addingFrameMag)
         {
@@ -192,8 +192,8 @@ public class UnitMovement : NetworkBehaviour
     {
         return new DashOptions
         {
-            dashDistance = props.dashDistance,
-            dashSpeed = props.dashSpeed,
+            dashDistance = props.dashDistance * power.scale(),
+            dashSpeed = props.dashSpeed * power.scale(),
             control = DashControl.Input,
             ending = DashEndMomentum.Walk,
         };
@@ -228,7 +228,7 @@ public class UnitMovement : NetworkBehaviour
             airMultiplier = 0.6f;
         };
 
-        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier;
+        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * power.scale();
 
         planarVelocity = planarVelocity.normalized * potentialSpeed;
     }

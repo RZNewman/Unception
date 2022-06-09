@@ -17,9 +17,7 @@ public static class GenerateUnit
         float healthVal = typeValues[2];
         float postureVal = typeValues[3];
 
-        float scale = Power.scale(power);
-
-        float speed = (3f + 5f * speedVal) * scale;
+        float speed = (3f + 5f * speedVal);
         float turn = 75f + 60f * turnVal;
         float health = 3f + 3f * healthVal;
         float posture = (30f + 30f * postureVal);

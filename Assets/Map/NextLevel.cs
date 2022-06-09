@@ -17,13 +17,14 @@ public class NextLevel : MonoBehaviour
         uint theirTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
         if (theirTeam == 1u)
         {
-            StartCoroutine(makeNextLevel());
+            float playerPower = them.GetComponentInParent<Power>().power;
+            StartCoroutine(makeNextLevel(playerPower));
         }
     }
 
-    IEnumerator makeNextLevel()
+    IEnumerator makeNextLevel(float power)
     {
-        gen.buildNewLevel(transform.position + Vector3.down * 20);
+        gen.buildNewLevel(transform.position + Vector3.down * 20, power);
         yield return new WaitForSecondsRealtime(2.5f);
         //TODO teleport non-local players
         gen.cleanupLevel();

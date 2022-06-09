@@ -32,6 +32,7 @@ public class Power : NetworkBehaviour
     void addPower(float power)
     {
         currentPower += power;
+        //TODO network updates for client on sync
         foreach(OnPowerUpdate callback in OnPowerUpdateCallbacks)
         {
             callback(this);

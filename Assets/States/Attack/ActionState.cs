@@ -13,7 +13,7 @@ public class ActionState : AttackState
 	{
 		GameObject body = mover.getSpawnBody();
 		Size s =  body.GetComponentInChildren<Size>();
-		List<GameObject> hits = InstantHit.LineAttack(body.transform, s.indicatorForward, attackData.length, attackData.width);
+		List<GameObject> hits = InstantHit.LineAttack(body.transform, s.scaledRadius,s.scaledHalfHeight, attackData.length, attackData.width);
 		foreach(GameObject o in hits)
         {
 			if(o.GetComponentInParent<TeamOwnership>().getTeam()!= mover.GetComponent<TeamOwnership>().getTeam())

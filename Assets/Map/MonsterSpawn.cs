@@ -55,7 +55,7 @@ public class MonsterSpawn : NetworkBehaviour
             offset *= 0.9f;
             GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity,floor);
             o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
-            o.GetComponent<Power>().power = data.power;
+            o.GetComponent<Power>().setPower(data.power);
             o.GetComponent<UnitPropsHolder>().props = data.props;
             AbiltyList al = o.GetComponent<AbiltyList>();
             al.clear();

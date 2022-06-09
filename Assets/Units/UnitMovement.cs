@@ -13,6 +13,7 @@ public class UnitMovement : NetworkBehaviour
     LifeManager lifeManager;
     StateMachine<PlayerMovementState> movement;
     ModelLoader model;
+    Power power;
 
     [HideInInspector]
     public float currentLookAngle=0;
@@ -20,19 +21,13 @@ public class UnitMovement : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        power = GetComponent<Power>();
         controller = GetComponent<ControlManager>();
         model = GetComponent<ModelLoader>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
         propHolder = GetComponent<UnitPropsHolder>();
         lifeManager.suscribeDeath(cleanup);
-    }
-    CapsuleCollider col
-    {
-        get
-        {
-            return model.col;
-        }
     }
 
     public UnitProperties props
@@ -284,7 +279,7 @@ public class UnitMovement : NetworkBehaviour
 
         RaycastHit rout;
 
-        bool terrain = Physics.SphereCast(transform.position, col.radius, -transform.up, out rout, 1.01f, LayerMask.GetMask("Terrain"));
+        bool terrain = Physics.SphereCast(transform.position, model.size.scaledRadius, -transform.up, out rout, model.size.scaledHalfHeight * 1.01f, LayerMask.GetMask("Terrain"));
         float angle = Vector3.Angle(Vector3.up, rout.normal);
 
         ground = terrain && angle < 45;
@@ -308,7 +303,7 @@ public class UnitMovement : NetworkBehaviour
             if (ground)
             {
                 float mag = Vector3.Dot(rb.velocity, groundNormal);
-                return mag <= 0.05f;
+                return mag <= 0.05f *power.scale();
             }
             return false;
 

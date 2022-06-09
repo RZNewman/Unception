@@ -6,17 +6,23 @@ public class Size : MonoBehaviour
 {
     CapsuleCollider col;
     Vector3 baseSize;
+    CapsuleCollider stopper;
     // Start is called before the first frame update
     void Start()
     {
         col = GetComponent<CapsuleCollider>();
-        transform.localScale = baseSize * GetComponentInParent<Power>().downscaled/Power.baseDownscale;
-        CapsuleCollider stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<CapsuleCollider>();
+        stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<CapsuleCollider>();
         Physics.IgnoreCollision(col, stopper);
         stopper.transform.parent = transform;
         stopper.transform.localScale = Vector3.one;
         stopper.radius = colliderWidth + 0.1f;
-        stopper.height = colliderHeight * 2 + 0.1f;
+        stopper.height = colliderHalfHeight * 2 + 0.1f;
+        GetComponentInParent<Power>().subscribePower(updateSize);
+    }
+
+    void updateSize(Power p)
+    {
+        transform.localScale = baseSize * p.scale();
     }
 
     public void setBaseSize(Vector3 size)
@@ -32,13 +38,19 @@ public class Size : MonoBehaviour
     public float indicatorHeight
     {
         get {
-            float dist = colliderHeight - 0.01f;
-    
-            return dist * transform.lossyScale.y;
+            return scaledHalfHeight * 0.99f;
         }
     }
 
-    float colliderHeight
+    public float scaledHalfHeight
+    {
+        get
+        {
+            return colliderHalfHeight * transform.lossyScale.y;
+        }
+    }
+
+    float colliderHalfHeight
     {
         get
         {
@@ -66,7 +78,7 @@ public class Size : MonoBehaviour
             }
         }
     }
-    public float indicatorForward
+    public float scaledRadius
     {
         get
         {

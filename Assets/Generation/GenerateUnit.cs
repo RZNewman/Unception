@@ -17,13 +17,12 @@ public static class GenerateUnit
         float healthVal = typeValues[2];
         float postureVal = typeValues[3];
 
-        float downscaledBase = Power.baseDownscale;
-        float downscaledPower = Power.downscalePower(power);
+        float scale = Power.scale(power);
 
-        float speed = (3f + 5f * speedVal) /downscaledBase * downscaledPower;
+        float speed = (3f + 5f * speedVal) * scale;
         float turn = 75f + 60f * turnVal;
         float health = 3f + 3f * healthVal;
-        float posture = (30f + 30f * postureVal) / downscaledBase * downscaledPower;
+        float posture = (30f + 30f * postureVal);
 
         properties.maxSpeed = speed;
         properties.acceleration = speed*3;

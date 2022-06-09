@@ -64,7 +64,7 @@ public abstract class IndicatorInstance : NetworkBehaviour
             forward.Normalize();
 
             transform.localPosition = s.indicatorHeight * Vector3.down
-                + s.indicatorForward * forward;
+                + s.scaledRadius * forward;
 
             //TODO indcator width should change based on the slope
         }

@@ -6,7 +6,7 @@ using static SharedMaterials;
 public class ModelLoader : MonoBehaviour
 {
     bool loaded = false;
-    CapsuleCollider _col;
+    Size s;
     public bool modelLoaded
     {
         get
@@ -14,9 +14,9 @@ public class ModelLoader : MonoBehaviour
             return loaded;
         }
     }
-    public CapsuleCollider col
+    public Size size
     {
-        get { return _col; }
+        get { return s; }
     }
     private void Start()
     {
@@ -33,8 +33,9 @@ public class ModelLoader : MonoBehaviour
         body.GetComponent<UnitColorTarget>().colorTargets(data.built.materials);
         float height = (data.source.lank - 1f) * max_lank + 1;
         float width = -(data.source.lank - 1f) * max_lank + 1;
-        body.GetComponent<Size>().setBaseSize(new Vector3(width, height, width));
-        _col = body.GetComponent<CapsuleCollider>();
+        s = body.GetComponent<Size>();
+        s.setBaseSize(new Vector3(width, height, width));
+
         loaded = true;
     }
 }

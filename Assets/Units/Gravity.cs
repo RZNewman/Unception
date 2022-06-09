@@ -11,12 +11,14 @@ public class Gravity : NetworkBehaviour
     Rigidbody rb;
     LifeManager lifeManager;
     ModelLoader model;
+    Power power;
     void Start()
     {
         movement = GetComponent<UnitMovement>();
         rb = GetComponent<Rigidbody>();
         lifeManager = GetComponent<LifeManager>();
         model = GetComponent<ModelLoader>();
+        power = GetComponent<Power>();
     }
 
     // Update is called once per frame
@@ -24,7 +26,7 @@ public class Gravity : NetworkBehaviour
     {
         if (isServer && !movement.grounded && !lifeManager.IsDead && model.modelLoaded)
 		{
-            rb.velocity += new Vector3(0, gravity, 0) *Time.fixedDeltaTime;
+            rb.velocity += new Vector3(0, gravity, 0) *Time.fixedDeltaTime * power.scale();
 		}
     }
 }

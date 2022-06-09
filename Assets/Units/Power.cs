@@ -6,11 +6,41 @@ using Mirror;
 public class Power : NetworkBehaviour
 {
     [SyncVar]
-    public float power;
+    float currentPower =100;
 
     static float factorDownscale = 1.3f;
-    public static float basePower = 100;
+    public readonly static float basePower = 100;
 
+    public delegate void OnPowerUpdate(Power p);
+
+    List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();
+
+    public void subscribePower(OnPowerUpdate callback)
+    {
+        OnPowerUpdateCallbacks.Add(callback);
+        callback(this);
+    }
+
+    public float power
+    {
+        get
+        {
+            return currentPower;
+        }
+    }
+
+    void addPower(float power)
+    {
+        currentPower += power;
+        foreach(OnPowerUpdate callback in OnPowerUpdateCallbacks)
+        {
+            callback(this);
+        }
+    }
+    public void setPower(float power)
+    {
+        currentPower = power;
+    }
     public static float baseDownscale
     {
         get
@@ -22,8 +52,17 @@ public class Power : NetworkBehaviour
     {
         get
         {
-            return downscalePower(power);
+            return downscalePower(currentPower);
         }
+    }
+    public float scale()
+    {
+        return scale(currentPower);
+    }
+
+    public static float scale(float power)
+    {
+        return downscalePower(power) / baseDownscale;
     }
 
     public static float downscalePower(float power)
@@ -32,6 +71,6 @@ public class Power : NetworkBehaviour
     }
     public void absorb(Power other)
     {
-        power += other.power * 0.5f;
+        addPower( other.currentPower * 0.5f);
     }
 }

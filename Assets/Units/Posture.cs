@@ -25,6 +25,7 @@ public class Posture : NetworkBehaviour, BarValue
     [SyncVar]
     float currentStunHighestPosture;
 
+    UnitProperties props;
     public bool isStunned
     {
         get
@@ -43,14 +44,32 @@ public class Posture : NetworkBehaviour, BarValue
     // Start is called before the first frame update
     void Start()
     {
-        UnitProperties props = GetComponent<UnitPropsHolder>().props;
-        maxPostureBase = props.maxPosture;
-        passivePostureRecover = props.passivePostureRecover;
-        stunnedPostureRecover = props.stunnedPostureRecover;
-        stunnedPostureRecoverAcceleration = props.stunnedPostureRecoverAcceleration;
+        props = GetComponent<UnitPropsHolder>().props;
+       
 
         currentPosture = 0;
+        maxPostureBase = props.maxPosture;
+        currentPostureCeiling = props.maxPosture;
+        
+        GetComponent<Power>().subscribePower(updateMaxPosture);
     }
+    void updateMaxPosture(Power p)
+    {
+        float lastMax = maxPostureBase;
+
+
+        maxPostureBase = props.maxPosture * p.scale();
+        passivePostureRecover = props.passivePostureRecover * p.scale();
+        stunnedPostureRecover = props.stunnedPostureRecover * p.scale();
+        stunnedPostureRecoverAcceleration = props.stunnedPostureRecoverAcceleration * p.scale();
+
+        float proportion = maxPostureBase / lastMax;
+
+        currentPosture *= proportion;
+        currentPostureCeiling *= proportion;
+        currentStunHighestPosture *= proportion;
+    }
+
 
     public void takeStagger(float damage)
     {
@@ -75,7 +94,7 @@ public class Posture : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void ServerUpdate()
     {
-        //Recover ciling limit based on max
+        //Recover ceiling limit based on max
         if(currentPostureCeiling > maxPostureBase)
         {
             currentPostureCeiling -= maxPostureBase * postureCeilingRecoverPercent * Time.fixedDeltaTime;

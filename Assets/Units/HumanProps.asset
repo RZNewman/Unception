@@ -23,7 +23,7 @@ MonoBehaviour:
   backwardsMoveMultiplier: 0.7
   dashDistance: 5
   dashSpeed: 30
-  maxHealth: 1000
+  maxHealthMult: 10
   maxPosture: 65
   passivePostureRecover: 20
   stunnedPostureRecover: 65

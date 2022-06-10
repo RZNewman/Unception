@@ -12,30 +12,39 @@ public class MonsterSpawn : NetworkBehaviour
     public GameObject PackPre;
     public GameObject PackTagPre;
     List<UnitData> monsterProps = new List<UnitData>();
-
-    float tileSize = 20;
     
-    List<Vector3> buildRequests = new List<Vector3>();
+    List<SpawnData> buildRequests = new List<SpawnData>();
     bool ready = false;
 
     Transform floor;
 
+    float lastPowerAdded = Power.basePower/2;
     struct UnitData
     {
         public float power;
         public UnitProperties props;
         public List<AttackBlock> abilitites;
     }
-
-    public void spawnCreatures(Vector3 position)
+    struct SpawnData
     {
+        public Vector3 spawnPosition;
+        public float zoneSize;
+    }
+
+    public void spawnCreatures(Vector3 position, float zoneSize)
+    {
+        SpawnData d = new SpawnData
+        {
+            spawnPosition = position,
+            zoneSize = zoneSize,
+        };
         if (ready)
         {
-            instanceCreature(position);
+            instanceCreature(d);
         }
         else
         {
-            buildRequests.Add(position);
+            buildRequests.Add(d);
         }
     }
     public void setFloor(Transform f)
@@ -43,17 +52,17 @@ public class MonsterSpawn : NetworkBehaviour
         floor = f;
     }
 
-    void instanceCreature(Vector3 position)
+    void instanceCreature(SpawnData spawnData)
     {
         int monsterNumber = Random.Range(0, 4);
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         for (int i = 0; i < monsterNumber; i++)
         {
-            UnitData data = monsterProps[Random.Range(0,monsterProps.Count)];
-            float halfSize = tileSize / 2;
+            UnitData data = monsterProps[Random.Range(Mathf.Max(0, monsterProps.Count-3), monsterProps.Count)];
+            float halfSize = spawnData.zoneSize / 2;
             Vector3 offset = new Vector3(Random.Range(-halfSize,halfSize), 0, Random.Range(-halfSize, halfSize));
             offset *= 0.9f;
-            GameObject o = Instantiate(UnitPre, position+offset, Quaternion.identity,floor);
+            GameObject o = Instantiate(UnitPre, spawnData.spawnPosition + offset, Quaternion.identity,floor);
             o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
             o.GetComponent<Power>().setPower(data.power);
             o.GetComponent<UnitPropsHolder>().props = data.props;
@@ -70,11 +79,19 @@ public class MonsterSpawn : NetworkBehaviour
         ready = true;
         SharedMaterials mats = GetComponent<SharedMaterials>();
         mats.addVisuals(true);
-        monsterProps.Add(createType(100));
-        monsterProps.Add(createType(300));
-        foreach (Vector3 position in buildRequests)
+        setSpawnPower(100);
+        foreach (SpawnData position in buildRequests)
         {
             instanceCreature(position);
+        }
+    }
+
+    public void setSpawnPower(float power)
+    {
+        while(lastPowerAdded <= power)
+        {
+            lastPowerAdded *= 2;
+            monsterProps.Add(createType(lastPowerAdded));
         }
     }
 

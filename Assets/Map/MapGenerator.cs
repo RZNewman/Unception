@@ -17,7 +17,7 @@ public class MapGenerator : NetworkBehaviour
     static int tilesPerFloor = 30;
     static float baseTileSize = 20;
     float currentFloorScale = 1;
-
+    float currentFloorPower;
     float tileSize
     {
         get
@@ -62,7 +62,9 @@ public class MapGenerator : NetworkBehaviour
 
     public void buildNewLevel(Vector3 worldPos, float power)
     {
+        currentFloorPower = power;
         currentFloorScale = Power.scale(power);
+        spawner.setSpawnPower(power);
         lastFloor = currentFloor;
         floorOffset = worldPos- transform.position;
         buildGrid();
@@ -121,7 +123,7 @@ public class MapGenerator : NetworkBehaviour
                     NetworkServer.Spawn(t);
                     if (isFull)
                     {
-                        spawner.spawnCreatures(floorPos + pos + Vector3.up * 3);
+                        spawner.spawnCreatures(floorPos + pos + Vector3.up * 3, tileSize);
                     }
                     else
                     {

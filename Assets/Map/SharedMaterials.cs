@@ -70,7 +70,11 @@ public class SharedMaterials : NetworkBehaviour
     [ClientRpc]
     void RpcSyncVisuals(int index, visualsSource s)
     {
-        SyncVisuals(index, s);
+        if (isClientOnly)
+        {
+            SyncVisuals(index, s);
+        }
+        
     }
     [TargetRpc]
     void TargetSyncVisuals(NetworkConnection conn, int index, visualsSource s)

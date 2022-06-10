@@ -57,6 +57,17 @@ public class LifeManager : NetworkBehaviour
         }
 
     }
+    private void OnDestroy()
+    {
+        if (!isDead)
+        {
+            foreach (OnDeath c in OnDeathCallbacks)
+            {
+                c();
+            }
+        }
+        
+    }
     [ClientRpc]
     void RpcBodyDestroy()
     {

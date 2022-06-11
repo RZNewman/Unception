@@ -65,6 +65,7 @@ public class MapGenerator : NetworkBehaviour
         currentFloorPower = power;
         currentFloorScale = Power.scale(power);
         spawner.setSpawnPower(power);
+        spawner.upDifficulty();
         lastFloor = currentFloor;
         floorOffset = worldPos- transform.position;
         buildGrid();
@@ -123,7 +124,11 @@ public class MapGenerator : NetworkBehaviour
                     NetworkServer.Spawn(t);
                     if (isFull)
                     {
-                        spawner.spawnCreatures(floorPos + pos + Vector3.up * 3, tileSize);
+                        if (Random.value < 0.65f)
+                        {
+                            spawner.spawnCreatures(floorPos + pos + Vector3.up * 3, tileSize);
+                        }
+                        
                     }
                     else
                     {

@@ -72,6 +72,12 @@ public class Power : NetworkBehaviour
     }
     public void absorb(Power other)
     {
-        addPower( other.currentPower * 0.5f);
+        float gathered = other.currentPower * 0.2f;
+        if (gathered < currentPower)
+        {
+            //closes the gap for catchup exp
+            gathered *= MonsterSpawn.scaledPowerRewardFactor(currentPower, other.currentPower);
+        }
+        addPower( gathered);
     }
 }

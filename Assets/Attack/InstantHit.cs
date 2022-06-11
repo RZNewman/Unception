@@ -27,11 +27,11 @@ public static class InstantHit
 
         //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
         //Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
-        DrawBox(boxCenter, q,boxHalfs*2, Color.blue);
-        Debug.DrawLine(capsuleStart, capsuleEnd, Color.red);
-        Debug.DrawLine(capsuleStart, capsuleStart+ body.forward*maxDistance, Color.red);
-        Debug.DrawLine(capsuleEnd, capsuleEnd + body.forward * maxDistance, Color.red);
-        Debug.Break();
+        //DrawBox(boxCenter, q,boxHalfs*2, Color.blue);
+        //Debug.DrawLine(capsuleStart, capsuleEnd, Color.red);
+        //Debug.DrawLine(capsuleStart, capsuleStart+ body.forward*maxDistance, Color.red);
+        //Debug.DrawLine(capsuleEnd, capsuleEnd + body.forward * maxDistance, Color.red);
+        //Debug.Break();
 
         foreach (RaycastHit hit in boxHits)
         {

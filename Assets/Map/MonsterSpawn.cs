@@ -122,8 +122,7 @@ public class MonsterSpawn : NetworkBehaviour
     }
     public static float scaledPowerRewardFactor(float mypower, float otherPower)
     {
-        //TODO fix
-        return weightedPower(otherPower) / weightedPower(mypower);
+        return mypower / (weightedPower(mypower) / weightedPower(otherPower));
     }
     int maxInstances(float power, float poolWeighted)
     {

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class UnitUiReference : MonoBehaviour
 {
     public UiBar healthbar;
     public UiBar staggerbar;
     public UiBar castbar;
     public UiBar staminaBar;
+    public UiText powerDisplay;
     public GameObject unitTarget;
 
     private void Start()
@@ -26,6 +28,10 @@ public class UnitUiReference : MonoBehaviour
         if (staminaBar)
         {
             staminaBar.source = unitTarget.GetComponentInParent<Stamina>();
+        }
+        if (powerDisplay)
+        {
+            powerDisplay.source = unitTarget.GetComponentInParent<Power>();
         }
     }
     public void setTarget(GameObject t)

@@ -1463,7 +1463,7 @@ MonoBehaviour:
   staggerbar: {fileID: 611554315}
   castbar: {fileID: 989755308}
   staminaBar: {fileID: 160574674}
-  powerDisplay: {fileID: 0}
+  powerDisplay: {fileID: 1734199346}
   unitTarget: {fileID: 0}
 --- !u!1 &2124122339
 GameObject:

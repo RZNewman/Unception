@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 
 public class AttackBlock : ScriptableObject
 {
@@ -8,6 +9,8 @@ public class AttackBlock : ScriptableObject
 	public float winddown;
 	public float cooldown;
 	public AttackData data;
+	public AttackGenerationValues source;
+	public bool scales;
 
 	public List<PlayerMovementState> buildStates(UnitMovement controller)
 	{

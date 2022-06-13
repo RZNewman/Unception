@@ -120,7 +120,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         return Mathf.Pow(power, lowerUnitPowerFactor);
     }
-    public static float scaledPowerRewardFactor(float mypower, float otherPower)
+    public static float scaledPowerReward(float mypower, float otherPower)
     {
         return mypower / (weightedPower(mypower) / weightedPower(otherPower));
     }
@@ -135,7 +135,7 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<Power>().setPower(unitData.power);
         o.GetComponent<UnitPropsHolder>().props = unitData.props;
         AbiltyList al = o.GetComponent<AbiltyList>();
-        al.clear();
+        //al.clear();
         al.addAbility(unitData.abilitites);
         Instantiate(PackTagPre, o.transform).GetComponent<PackTag>().owner = p;
         NetworkServer.Spawn(o);

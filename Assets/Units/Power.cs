@@ -95,7 +95,7 @@ public class Power : NetworkBehaviour, TextValue
         if (other.currentPower < currentPower)
         {
             //closes the gap for catchup exp
-            gathered = MonsterSpawn.scaledPowerRewardFactor(currentPower, other.currentPower);
+            gathered = MonsterSpawn.scaledPowerReward(currentPower, other.currentPower);
         }
         else
         {

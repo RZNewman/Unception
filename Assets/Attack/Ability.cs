@@ -66,6 +66,14 @@ public class Ability : NetworkBehaviour
     public void setFormat(AttackBlock b)
     {
         attackFormat = b;
+        if (attackFormat.scales)
+        {
+            GetComponentInParent<Power>().subscribePower(scaleAbility);
+        }
+    }
+    void scaleAbility(Power p)
+    {
+        attackFormat = GenerateAttack.regenerate(attackFormat, p.power);
     }
     
 

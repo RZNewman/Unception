@@ -5,6 +5,7 @@ using UnityEngine;
 public class AggroHandler : MonoBehaviour
 {
 	public float aggroRadius = 15f;
+	SphereCollider col;
 
 	[HideInInspector]
 	public List<GameObject> aggro;
@@ -14,15 +15,20 @@ public class AggroHandler : MonoBehaviour
 	private void Start()
 	{
 		aggro = new List<GameObject>();
-		SphereCollider col = GetComponent<SphereCollider>();
-		col.radius = aggroRadius;
+		col = GetComponent<SphereCollider>();
+		
 		pack = transform.parent.GetComponentInChildren<PackTag>().owner;
         if (pack)
         {
 			pack.addToPack(this);
 		}
+		GetComponentInParent<Power>().subscribePower(setRadius);
 		
 	}
+	void setRadius(Power p)
+    {
+		col.radius = aggroRadius * p.scale();
+    }
 	private void OnTriggerEnter(Collider other)
 	{
 		GameObject them = other.gameObject;

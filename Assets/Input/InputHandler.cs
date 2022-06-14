@@ -9,7 +9,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
 
     UnitInput currentInput;
-
+    Power power;
 
 
     public UnitInput getUnitInuput()
@@ -27,6 +27,10 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.reset();
     }
 
+    private void Start()
+    {
+        power = GetComponentInParent<Power>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -79,13 +83,27 @@ public class InputHandler : MonoBehaviour, UnitControl
         {
             atks.Add(AttackKey.Two);
         }
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            atks.Add(AttackKey.Three);
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            atks.Add(AttackKey.Four);
+        }
         currentInput.attacks = new AttackKey[atks.Count];  
         atks.CopyTo(currentInput.attacks);
 
         setLocalLook();
     }
 
-    static float cameraRayMax = 100f;
+    float cameraRayMax
+    {
+        get
+        {
+            return 100f * power.scale();
+        }
+    }
     void setLocalLook()
 	{
         if (!Camera.main)

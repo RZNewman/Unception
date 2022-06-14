@@ -39,7 +39,9 @@ public interface UnitControl
     public enum AttackKey:byte
 	{
         One =0,
-        Two
+        Two,
+        Three,
+        Four,
 	}
     public UnitInput getUnitInuput();
 

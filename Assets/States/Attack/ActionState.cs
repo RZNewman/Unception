@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 
 public class ActionState : AttackState
 {
-	AttackData attackData;
-	public ActionState(UnitMovement m, AttackData data) : base(m)
+	HitInstanceData attackData;
+	public ActionState(UnitMovement m, HitInstanceData data) : base(m)
 	{
 		attackData = data;
 	}
@@ -24,10 +25,10 @@ public class ActionState : AttackState
 				o.GetComponentInParent<Posture>().takeStagger(attackData.stagger);
                 switch (attackData.knockBackType)
                 {
-					case AttackData.KnockBackType.inDirection:
+					case KnockBackType.inDirection:
 						o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockback* mover.getSpawnBody().transform.forward);
 						break;
-					case AttackData.KnockBackType.fromCenter:
+					case KnockBackType.fromCenter:
 						Vector3 dir = o.transform.position - mover.transform.position;
 						dir.y = 0;
 						dir.Normalize();

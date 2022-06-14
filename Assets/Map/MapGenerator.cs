@@ -35,6 +35,7 @@ public class MapGenerator : NetworkBehaviour
     {
         None,
         Full,
+        Safe,
         Hole
     }
 
@@ -92,7 +93,7 @@ public class MapGenerator : NetworkBehaviour
             x = rootX,
             y = rootY,
         };
-        buildTile(root);
+        buildTile(root, tileType.Safe);
         tileIndex t;
         for (int i = 0; i < tilesPerFloor; i++)
         {
@@ -100,7 +101,7 @@ public class MapGenerator : NetworkBehaviour
             buildTile(t);
         }
         t = pickNextTile();
-        buildTile(t, true);
+        buildTile(t, tileType.Hole);
         //TODO Coroutine
         instanceGrid();
         instanceWalls();
@@ -116,13 +117,13 @@ public class MapGenerator : NetworkBehaviour
                 if (tileLayout[x, y].V())
                 {
                     Vector3 pos = new Vector3(x * tileSize, 0, y * tileSize);
-                    bool isFull = tileLayout[x, y] == tileType.Full;
-                    GameObject prefab = isFull ? tilePre : holePre;
+                    tileType type = tileLayout[x, y];
+                    GameObject prefab = type == tileType.Hole ? holePre : tilePre;
                     GameObject t =  Instantiate(prefab, floorPos + pos, Quaternion.identity, currentFloor.transform);
                     t.transform.localScale = Vector3.one * currentFloorScale;
                     //t.GetComponent<ClientAdoption>().parent = gameObject;
                     NetworkServer.Spawn(t);
-                    if (isFull)
+                    if (type == tileType.Full)
                     {
                         if (Random.value < 0.65f)
                         {
@@ -130,7 +131,7 @@ public class MapGenerator : NetworkBehaviour
                         }
                         
                     }
-                    else
+                    if(type == tileType.Hole)
                     {
                         t = Instantiate(endPre, floorPos + pos + Vector3.down* tileSize, Quaternion.identity, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
@@ -247,9 +248,9 @@ public class MapGenerator : NetworkBehaviour
     }
 
 
-    void buildTile(tileIndex i, bool hole = false)
+    void buildTile(tileIndex i, tileType type = tileType.Full)
     {
-        tileLayout[i.x, i.y] = hole? tileType.Hole :tileType.Full;
+        tileLayout[i.x, i.y] = type;
         tiles.Add(i);
     }
     tileIndex pickNextTile()

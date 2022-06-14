@@ -32,7 +32,9 @@ public class LocalPlayer : NetworkBehaviour
         List<AttackBlock> attackBlocks = new List<AttackBlock>();
         for (int i = 0; i < attacksToGenerate; i++)
         {
-            attackBlocks.Add(GenerateAttack.generate(power, true));
+            AttackBlock b = GenerateAttack.generate(power, i == 0);
+            b.scales = true;
+            attackBlocks.Add(b);
         }
         GetComponent<AbiltyList>().addAbility(attackBlocks);
     }

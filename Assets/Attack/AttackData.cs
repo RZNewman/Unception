@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
+using static GenerateAttack;
 
 public class AttackData : ScriptableObject
 {
@@ -13,11 +14,7 @@ public class AttackData : ScriptableObject
     public float stagger;
     public KnockBackType knockBackType;
     
-    public enum KnockBackType
-    {
-        inDirection,
-        fromCenter
-    }
+    
 
 
     public EffectiveDistance GetEffectiveDistance()

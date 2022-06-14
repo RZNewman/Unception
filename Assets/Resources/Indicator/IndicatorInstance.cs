@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 
 public abstract class IndicatorInstance : NetworkBehaviour
 {
@@ -14,8 +15,8 @@ public abstract class IndicatorInstance : NetworkBehaviour
     uint teamOwner;
 
     [SyncVar]
-    protected AttackData data;
-    public  void reposition(AttackData aData)
+    protected HitInstanceData data;
+    public  void reposition(HitInstanceData aData)
     {
         data = aData;
         repositionImpl();

@@ -1570,3 +1570,5 @@ MonoBehaviour:
   enemyModels:
   - Viper
   - Undead
+  - Mummy
+  - Goblin

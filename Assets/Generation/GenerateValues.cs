@@ -87,7 +87,7 @@ public static class GenerateValues
                 worth(values[boost], true)
                 );
             
-            float transfer = Mathf.Abs(GaussRandom(0,1)-0.5f)*2* maxTransfer;
+            float transfer = GaussRandomDecline(0, maxTransfer);
             //Debug.Log(drain + " ->>>> "+transfer +" > "+ boost);
             values[drain].val-=transfer;
             values[boost].val+=transfer; 

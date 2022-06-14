@@ -24,7 +24,7 @@ public class MonsterSpawn : NetworkBehaviour
     static float Ai2PlayerPowerFactor = 2.0f;
     static float lowerUnitPowerFactor = 1.5f;
 
-    static int maxPackSize = 16;
+    static int maxPackSize = 8;
 
     float difficultyMultiplier = 1f;
     struct UnitData
@@ -184,7 +184,7 @@ public class MonsterSpawn : NetworkBehaviour
         u.power = power;
         u.props = GenerateUnit.generate(mats, power);
         u.abilitites = new List<AttackBlock>();
-        u.abilitites.Add(GenerateAttack.generate(power));
+        u.abilitites.Add(GenerateAttack.generate(power, true));
         return u;
     }
 

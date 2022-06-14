@@ -5,30 +5,27 @@ using static GenerateAttack;
 
 public class AttackBlock : ScriptableObject
 {
-	public float windup;
-	public float winddown;
-	public float cooldown;
-	public AttackData data;
-	public AttackGenerationValues source;
+	public GenerationAttack source;
+	public AttackInstanceData instance;
 	public bool scales;
 
 	public List<PlayerMovementState> buildStates(UnitMovement controller)
 	{
 		List<PlayerMovementState> states = new List<PlayerMovementState>();
 
-		states.Add(new WindState(controller, windup, data));
-		states.Add(new ActionState(controller, data));
-		states.Add(new WindState(controller,winddown));
+		states.Add(new WindState(controller, instance.windup, instance.hit));
+		states.Add(new ActionState(controller, instance.hit));
+		states.Add(new WindState(controller, instance.winddown));
 		return states;
 	}
 
     public float getCooldown()
     {
-        return cooldown;
+        return instance.cooldown;
     }
 
     public AiHandler.EffectiveDistance GetEffectiveDistance()
     {
-        return data.GetEffectiveDistance();
+        return instance.hit.GetEffectiveDistance();
     }
 }

@@ -2,17 +2,33 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 
 public class WindState : AttackState
 {
 	GameObject indicator;
-	AttackData attackData;
+	HitInstanceData attackData;
 	bool hasIndicator = false;
-	
-	public WindState(UnitMovement m, float t, AttackData data = null) : base(m, t)
+
+	public WindState(UnitMovement m, float d) : base(m, d)
+	{
+		//Only for defaults
+		hasIndicator = false;
+	}
+
+	public WindState(UnitMovement m, WindInstanceData d) : base(m, d.duration)
+	{
+		hasIndicator = false;
+		moveMultiplier = d.moveMult;
+		lookMultiplier = d.turnMult;
+	}
+
+	public WindState(UnitMovement m, WindInstanceData d, HitInstanceData data) : base(m, d.duration)
 	{
 		attackData = data;
-		hasIndicator = data != null;
+		hasIndicator = true;
+		moveMultiplier = d.moveMult;
+		lookMultiplier = d.turnMult;
 	}
 	public override void enter()
 	{

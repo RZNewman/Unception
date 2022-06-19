@@ -100,13 +100,19 @@ public static class GenerateAttack
         }
     }
 
+    static readonly int hitbaseValues = 5;
     static GenerationHit createHit()
     {
         Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
-        //TODO only sometimes
-        typeValues = augment(typeValues, new float[] { 0.5f });
+        List<HitAugment> augments = new List<HitAugment>();
 
-        return new GenerationHit
+        if (Random.value < 0.1f)
+        {
+            typeValues = augment(typeValues, new float[] { 0.5f });
+            augments.Add(HitAugment.Knockup);
+        }
+
+        GenerationHit hit =  new GenerationHit
         {
             length = typeValues[0].val,
             width = typeValues[1].val,
@@ -114,8 +120,32 @@ public static class GenerateAttack
             damageMult = typeValues[3].val,
             stagger = typeValues[4].val,
             knockUp = typeValues[5].val,
-
         };
+        //TODO knockback dir
+        hit = augmentHit(hit, augments, typeValues);
+
+        return hit;
+
+
+    }
+    enum HitAugment
+    {
+        Knockup,
+    }
+
+    static GenerationHit augmentHit(GenerationHit hit, List<HitAugment> augs, Value[] values )
+    {
+        for (int i = 0; i < augs.Count; i++)
+        {
+            HitAugment aug = augs[i];
+            switch (aug)
+            {
+                case HitAugment.Knockup:
+                    hit.knockUp = values[hitbaseValues + i].val;
+                    break;
+            }
+        }
+        return hit;
     }
     static HitInstanceData populateHit(GenerationHit hit, float power, float strength)
     {

@@ -7,6 +7,7 @@
 [Bb]uilds.app/
 Assets/AssetStoreTools*
 Assets/HEROIC FANTASY*
+!Assets/HEROIC FANTASY*.meta
 [Bb]uild*.zip
 [Uu]ser[Ss]ettings/
 

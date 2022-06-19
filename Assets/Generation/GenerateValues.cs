@@ -7,28 +7,28 @@ using static Utils;
 public static class GenerateValues 
 {
 
-    struct Value
+    public struct Value
     {
         public float val;
-        public float width;
+        public float equivalence;
     }
 
-    public static float[] generateRandomValues(int valueCount)
+    public static Value[] generateRandomValues(int valueCount)
     {
-        return generateRandomRanges(Enumerable.Repeat(1f,valueCount).ToArray());
+        return generateRandomValues(Enumerable.Repeat(1f,valueCount).ToArray());
     }
 
 
-    public static float[] generateRandomRanges(float[] ranges)
+    public static Value[] generateRandomValues(float[] worths)
     {
-        int valueCount = ranges.Length;
+        int valueCount = worths.Length;
         Value[] values = new Value[valueCount];
         for (int i = 0; i < valueCount; i++)
         {
             values[i] = new Value
             {
                 val = 0.5f,
-                width = ranges[i],
+                equivalence = worths[i],
             };
         }
 
@@ -81,29 +81,54 @@ public static class GenerateValues
                 drain = element;
             }
 
-
-            float maxTransfer = Mathf.Min(
-                worth(values[drain]),
-                worth(values[boost], true)
-                );
-            
-            float transfer = GaussRandomDecline(0, maxTransfer);
-            //Debug.Log(drain + " ->>>> "+transfer +" > "+ boost);
-            values[drain].val-=transfer;
-            values[boost].val+=transfer; 
+            values = transfer(values, boost, drain);
         }
 
 
-        float[] output = new float[valueCount];
-        //string debug = "";
-        for(int i = 0; i < valueCount; i++) 
+        return values;
+    }
+    static Value[] transfer(Value[] values, int drain, int boost)
+    {
+        float transferFactor = GaussRandomDecline(0, 1);
+        float ratio = values[drain].equivalence / values[boost].equivalence;
+        float maxTransfer = Mathf.Min(
+            worth(values[drain]),
+            worth(values[boost], true) / ratio
+            );
+
+        float transfer = maxTransfer * transferFactor;
+        //Debug.Log(drain + " ->>>> "+transfer +" > "+ boost);
+        values[drain].val -= transfer;
+        values[boost].val += transfer / ratio;
+        return values;
+    }
+    public static Value[] augment(Value[] prevValues, float [] equivs)
+    {
+        int oldCount = prevValues.Length;
+        int newCount = equivs.Length;
+        Value[] newValues = new Value[oldCount + newCount];
+        for(int i = 0; i < oldCount; i++)
         {
-            Value v = values[i];
-            //debug += v.val+", ";
-            output[i] = v.val;
+            newValues[i] = prevValues[i];
         }
-        //Debug.Log(debug);
-        return output;
+        for (int i = oldCount; i < newValues.Length; i++)
+        {
+            newValues[i] = new Value
+            {
+                val = 0f,
+                equivalence = equivs[i],
+            };
+        }
+
+        for (int i = oldCount; i < newValues.Length; i++)
+        {
+            int oldDrain = Random.Range(0, oldCount-1);
+            newValues = transfer(newValues, oldDrain, i);
+        }
+
+
+        return newValues;
+
     }
     static int selectValueIndex(List<int> indices, Value[] values, bool boosted =false)
     {
@@ -125,11 +150,11 @@ public static class GenerateValues
     {
         if (boosted)
         {
-            return 1 - val.val - (1 - val.width) / 2;       
+            return 1 - val.val ;       
         }
         else
         {
-            return val.val - (1 - val.width) / 2;
+            return val.val;
         }
         
     }

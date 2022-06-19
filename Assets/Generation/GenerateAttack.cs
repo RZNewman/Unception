@@ -75,6 +75,7 @@ public static class GenerateAttack
         public float damageMult;
         public float stagger;
         public float knockBackType;
+        public float knockUp;
 
     }
     public enum KnockBackType
@@ -90,6 +91,7 @@ public static class GenerateAttack
         public float damageMult;
         public float stagger;
         public KnockBackType knockBackType;
+        public float knockUp;
 
         public EffectiveDistance GetEffectiveDistance()
         {
@@ -100,15 +102,18 @@ public static class GenerateAttack
 
     static GenerationHit createHit()
     {
-        float[] typeValues = generateRandomValues(5);
+        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
+        //TODO only sometimes
+        typeValues = augment(typeValues, new float[] { 0.5f });
 
         return new GenerationHit
         {
-            length = typeValues[0],
-            width = typeValues[1],
-            knockback = typeValues[2],
-            damageMult = typeValues[3],
-            stagger = typeValues[4],
+            length = typeValues[0].val,
+            width = typeValues[1].val,
+            knockback = typeValues[2].val,
+            damageMult = typeValues[3].val,
+            stagger = typeValues[4].val,
+            knockUp = typeValues[5].val,
 
         };
     }
@@ -116,11 +121,12 @@ public static class GenerateAttack
     {
         float scale = Power.scale(power);
 
-        float length = asRange(hit.length, 0.5f, 2) * scale * strength;
-        float width = asRange(hit.width, 0.5f, 2) * scale * strength;
+        float length = (0.5f + asRange(hit.length, 0, 2) * strength) * scale;
+        float width = (0.5f + asRange(hit.width, 0.5f, 2) * strength) * scale;
         float knockback = asRange(hit.knockback, 0, 4) * scale * strength;
-        float damage = asRange(hit.damageMult, 0.3f, 0.7f) * strength;
+        float damage = 0.3f + asRange(hit.damageMult, 0f, 0.7f) * strength;
         float stagger = asRange(hit.stagger, 0f, 70f) * scale * strength;
+        float knockUp = asRange(hit.knockUp, 0, 20) * scale * strength;
 
         return new HitInstanceData
         {
@@ -130,6 +136,7 @@ public static class GenerateAttack
             knockBackType = KnockBackType.inDirection,
             damageMult = damage,
             stagger = stagger,
+            knockUp = knockUp,
 
         };
 

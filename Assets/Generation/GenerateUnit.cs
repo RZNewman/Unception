@@ -11,11 +11,11 @@ public static class GenerateUnit
         properties.isPlayer =false;
 
 
-        float[] typeValues = generateRandomRanges(new float[] {1f,.4f,1f,1f});
-        float speedVal = typeValues[0];
-        float turnVal = typeValues[1];
-        float healthVal = typeValues[2];
-        float postureVal = typeValues[3];
+        Value[] typeValues = generateRandomValues(new float[] {0.9f,.4f,1f,0.9f});
+        float speedVal = typeValues[0].val;
+        float turnVal = typeValues[1].val;
+        float healthVal = typeValues[2].val;
+        float postureVal = typeValues[3].val;
 
         float speed = (3f + 5f * speedVal);
         float turn = 75f + 60f * turnVal;

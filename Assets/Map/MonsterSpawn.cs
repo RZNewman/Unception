@@ -67,7 +67,6 @@ public class MonsterSpawn : NetworkBehaviour
         List<UnitData> packProps = new List<UnitData>();
         float propsSelect = Random.value;
         int startIndex = 0;
-        //TODO set start index based on power
         if(propsSelect < 0.5f)
         {
             //mode: single
@@ -92,7 +91,6 @@ public class MonsterSpawn : NetworkBehaviour
         {
             UnitData data = packProps[i];
             int maxInstance = maxInstances(data.power, powerPoolWeighted);
-            //TODO limit maxInstance with lookahead
             int instance;
             if(i == 0)
             {

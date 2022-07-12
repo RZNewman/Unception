@@ -105,8 +105,8 @@ public static class GenerateValues
     public static Value[] augment(Value[] prevValues, float [] equivs)
     {
         int oldCount = prevValues.Length;
-        int newCount = equivs.Length;
-        Value[] newValues = new Value[oldCount + newCount];
+        int addedCount = equivs.Length;
+        Value[] newValues = new Value[oldCount + addedCount];
         for(int i = 0; i < oldCount; i++)
         {
             newValues[i] = prevValues[i];
@@ -116,7 +116,7 @@ public static class GenerateValues
             newValues[i] = new Value
             {
                 val = 0f,
-                equivalence = equivs[i],
+                equivalence = equivs[i-oldCount],
             };
         }
 

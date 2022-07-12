@@ -35,7 +35,7 @@ public class ActionState : AttackState
 						o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockback * dir);
 						break;
 				}
-				//TODO knockup
+				o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockUp * Vector3.up);
 			}
 			
         }

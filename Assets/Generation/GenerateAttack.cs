@@ -106,7 +106,7 @@ public static class GenerateAttack
         Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
         List<HitAugment> augments = new List<HitAugment>();
 
-        if (Random.value < 0.1f)
+        if (Random.value < 0.2f)
         {
             typeValues = augment(typeValues, new float[] { 0.5f });
             augments.Add(HitAugment.Knockup);
@@ -119,7 +119,6 @@ public static class GenerateAttack
             knockback = typeValues[2].val,
             damageMult = typeValues[3].val,
             stagger = typeValues[4].val,
-            knockUp = typeValues[5].val,
         };
         //TODO knockback dir
         hit = augmentHit(hit, augments, typeValues);
@@ -156,7 +155,7 @@ public static class GenerateAttack
         float knockback = asRange(hit.knockback, 0, 4) * scale * strength;
         float damage = 0.3f + asRange(hit.damageMult, 0f, 0.7f) * strength;
         float stagger = asRange(hit.stagger, 0f, 70f) * scale * strength;
-        float knockUp = asRange(hit.knockUp, 0, 20) * scale * strength;
+        float knockUp = asRange(hit.knockUp, 0, 30) * scale * strength;
 
         return new HitInstanceData
         {

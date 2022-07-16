@@ -7,7 +7,7 @@ using static GenerateAttack;
 public class WindState : AttackState
 {
 	GameObject indicator;
-	HitInstanceData attackData;
+	InstanceDataPreview previewData;
 	bool hasIndicator = false;
 
 	public WindState(UnitMovement m, float d) : base(m, d)
@@ -23,9 +23,9 @@ public class WindState : AttackState
 		lookMultiplier = d.turnMult;
 	}
 
-	public WindState(UnitMovement m, WindInstanceData d, HitInstanceData data) : base(m, d.duration)
+	public WindState(UnitMovement m, WindInstanceData d, InstanceDataPreview data) : base(m, d.duration)
 	{
-		attackData = data;
+		previewData = data;
 		hasIndicator = true;
 		moveMultiplier = d.moveMult;
 		lookMultiplier = d.turnMult;
@@ -36,23 +36,33 @@ public class WindState : AttackState
 		target.GetComponentInParent<Cast>().setTarget(this);
 		if (hasIndicator)
         {
-			indicator = Object.Instantiate(
-				Resources.Load("Indicator/LineIndicator") as GameObject, 
-				target.transform
-				);
-			IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
-			i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
-			i.reposition(attackData);
-			i.setTime(currentDurration);
-			ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
-			adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
-			adoptee.useSubBody = true;
-			NetworkServer.Spawn(indicator);
-
+			
+			buildIndicator(target);
 
 		}
 		
 	}
+
+	void buildIndicator(GameObject target)
+    {
+        switch (previewData)
+        {
+			case HitInstanceData attackData:
+				indicator = Object.Instantiate(
+				Resources.Load("Indicator/LineIndicator") as GameObject,
+					target.transform
+				);
+				IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
+				i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
+				i.reposition(attackData);
+				i.setTime(currentDurration);
+				ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
+				adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
+				adoptee.useSubBody = true;
+				NetworkServer.Spawn(indicator);
+				break;
+        }
+    }
 
 	public override void exit(bool expired)
 	{

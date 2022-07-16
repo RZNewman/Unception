@@ -8,14 +8,57 @@ using static AiHandler;
 
 public static class GenerateAttack 
 {
-    public struct GenerationWind
+    public abstract class GenerationData
+    {
+        public virtual WindInstanceData getWindInstance()
+        {
+            return null;
+        }
+        public abstract InstanceData populate(float power, float strength);
+    }
+    public abstract class InstanceData
+    {
+
+    }
+
+    public abstract class InstanceDataPreview : InstanceData
+    {
+
+    }
+    public class WindGenerationData : GenerationData
     {
         public float duration;
         public float moveMult;
         public float turnMult;
 
+        public override InstanceData populate(float power, float strength)
+        {
+            return populateRaw();
+        }
+        public WindInstanceData populateRaw()
+        {
+            float moveMag = asRange(this.moveMult, 0, 1.5f);
+            bool moveDir = Random.value < 0.2f;
+            float moveMult = moveDir ? 1 + moveMag : 1 / (1 + moveMag);
+
+            float turnMag = asRange(this.turnMult, 0, 1.5f);
+            bool turnDir = Random.value < 0.2f;
+            float turnMult = turnDir ? 1 + turnMag : 1 / (1 + turnMag);
+            return new WindInstanceData
+            {
+                duration = asRange(this.duration, 0.2f, 5f),
+                moveMult = moveMult,
+                turnMult = turnMult,
+            };
+        }
+        public override WindInstanceData getWindInstance()
+        {
+            return populateRaw();
+        }
+
+        
     }
-    public struct WindInstanceData
+    public class WindInstanceData : InstanceData
     {
         public float duration;
         public float moveMult;
@@ -24,8 +67,9 @@ public static class GenerateAttack
     //value added for 100% reduced effect (50% speed)
     static readonly float moveValue = 0.15f;
     static readonly float turnValue = 0.07f;
-    static public float getWindValue(params WindInstanceData[] winds)
+    static public float getWindValue(params GenerationData[] stages)
     {
+        WindInstanceData[] winds = stages.Select(s => s.getWindInstance()).Where(i => i!= null).ToArray();
         float totalTime = winds.Sum(x=> x.duration);
         float avgMove = winds.Sum(x=> x.moveMult *x.duration)/totalTime;
         float avgTurn = winds.Sum(x => x.turnMult * x.duration) / totalTime;
@@ -41,33 +85,16 @@ public static class GenerateAttack
 
         return totalTime * moveMult * turnMult;
     }
-    static GenerationWind createWind()
+    static WindGenerationData createWind()
     {
-        return new GenerationWind
+        return new WindGenerationData
         {
             duration = GaussRandomDecline(0, 1,5),
             moveMult = GaussRandomDecline(0, 1),
             turnMult = GaussRandomDecline(0, 1),
         };
     }
-    static WindInstanceData populateWind(GenerationWind wind)
-    {
-        float moveMag = asRange( wind.moveMult, 0, 1.5f);
-        bool moveDir = Random.value < 0.2f;
-        float moveMult = moveDir ? 1 + moveMag : 1 / (1 + moveMag);
-
-        float turnMag = asRange(wind.turnMult, 0, 1.5f);
-        bool turnDir = Random.value < 0.2f;
-        float turnMult = turnDir ? 1 + turnMag : 1 / (1 + turnMag);
-        return new WindInstanceData
-        {
-            duration = asRange(wind.duration, 0.2f, 5f),
-            moveMult = moveMult,
-            turnMult = turnMult,
-        };
-    }
-    
-    public struct GenerationHit
+    public class HitGenerationData : GenerationData
     {
         public float length;
         public float width;
@@ -77,13 +104,38 @@ public static class GenerateAttack
         public float knockBackType;
         public float knockUp;
 
+        public override InstanceData populate( float power, float strength)
+        {
+            float scale = Power.scale(power);
+
+            float length = (0.5f + asRange(this.length, 0, 2) * strength) * scale;
+            float width = (0.5f + asRange(this.width, 0.5f, 2) * strength) * scale;
+            float knockback = asRange(this.knockback, 0, 4) * scale * strength;
+            float damage = 0.3f + asRange(this.damageMult, 0f, 0.7f) * strength;
+            float stagger = asRange(this.stagger, 0f, 70f) * scale * strength;
+            float knockUp = asRange(this.knockUp, 0, 30) * scale * strength;
+
+            return new HitInstanceData
+            {
+                length = length,
+                width = width,
+                knockback = knockback,
+                knockBackType = KnockBackType.inDirection,
+                damageMult = damage,
+                stagger = stagger,
+                knockUp = knockUp,
+
+            };
+
+        }
+
     }
     public enum KnockBackType
     {
         inDirection,
         fromCenter
     }
-    public struct HitInstanceData
+    public class HitInstanceData : InstanceDataPreview
     {
         public float length;
         public float width;
@@ -101,7 +153,7 @@ public static class GenerateAttack
     }
 
     static readonly int hitbaseValues = 5;
-    static GenerationHit createHit()
+    static HitGenerationData createHit()
     {
         Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
         List<HitAugment> augments = new List<HitAugment>();
@@ -112,7 +164,7 @@ public static class GenerateAttack
             augments.Add(HitAugment.Knockup);
         }
 
-        GenerationHit hit =  new GenerationHit
+        HitGenerationData hit =  new HitGenerationData
         {
             length = typeValues[0].val,
             width = typeValues[1].val,
@@ -132,7 +184,7 @@ public static class GenerateAttack
         Knockup,
     }
 
-    static GenerationHit augmentHit(GenerationHit hit, List<HitAugment> augs, Value[] values )
+    static HitGenerationData augmentHit(HitGenerationData hit, List<HitAugment> augs, Value[] values )
     {
         for (int i = 0; i < augs.Count; i++)
         {
@@ -146,62 +198,33 @@ public static class GenerateAttack
         }
         return hit;
     }
-    static HitInstanceData populateHit(GenerationHit hit, float power, float strength)
-    {
-        float scale = Power.scale(power);
 
-        float length = (0.5f + asRange(hit.length, 0, 2) * strength) * scale;
-        float width = (0.5f + asRange(hit.width, 0.5f, 2) * strength) * scale;
-        float knockback = asRange(hit.knockback, 0, 4) * scale * strength;
-        float damage = 0.3f + asRange(hit.damageMult, 0f, 0.7f) * strength;
-        float stagger = asRange(hit.stagger, 0f, 70f) * scale * strength;
-        float knockUp = asRange(hit.knockUp, 0, 30) * scale * strength;
-
-        return new HitInstanceData
-        {
-            length = length,
-            width = width,
-            knockback = knockback,
-            knockBackType = KnockBackType.inDirection,
-            damageMult = damage,
-            stagger = stagger,
-            knockUp = knockUp,
-
-        };
-
-    }
     //TODO tree + network
-    public struct GenerationAttack
+    public struct AttackGenerationData
     {
-        public GenerationWind windup;
-        public GenerationWind winddown;
+        public GenerationData[] stages;
         public float cooldown;
-        public GenerationHit hit;
     }
     public struct AttackInstanceData
     {
-        public WindInstanceData windup;
-        public WindInstanceData winddown;
+        public InstanceData[] stages;
         public float cooldown;
-        public HitInstanceData hit;
     }
 
-    static AttackInstanceData populateAttack(GenerationAttack atk, float power)
+    static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
-        WindInstanceData up = populateWind(atk.windup);
-        WindInstanceData down = populateWind(atk.winddown);
-        float strength = getWindValue(up, down);
+        float strength = getWindValue(atk.stages);
 
         float cooldownTime = asRange(atk.cooldown, 0, 30);
         float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 +1) + 1; 
 
         strength *= cooldownStrength;
+
         return new AttackInstanceData
         {
-            windup = up,
-            winddown = down,
+
             cooldown = cooldownTime,
-            hit = populateHit(atk.hit, power,strength),
+            stages = atk.stages.Select(s =>s.populate(power, strength)).ToArray(),
 
         };
 
@@ -210,16 +233,14 @@ public static class GenerateAttack
     public static AttackBlock generate(float power, bool noCooldown)
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
+        
+        GenerationData[] stages = new GenerationData[] { createWind(), createHit(), createWind() };
 
         
-
-        
-        GenerationAttack atk = new GenerationAttack
+        AttackGenerationData atk = new AttackGenerationData
         {
-            windup = createWind(),
-            winddown = createWind(),
+            stages = stages,
             cooldown = noCooldown? 0 : GaussRandomDecline(0, 1, 4),
-            hit = createHit(),
         };
         block.source = atk;
         return regenerate(block, power);
@@ -227,7 +248,7 @@ public static class GenerateAttack
     }
     public static AttackBlock regenerate(AttackBlock block, float power)
     {
-        GenerationAttack atk = block.source;
+        AttackGenerationData atk = block.source;
         block.instance = populateAttack(atk, power);
         //Debug.Log(atk);
         //Debug.Log(block.instance);

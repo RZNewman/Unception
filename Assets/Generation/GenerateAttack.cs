@@ -6,7 +6,7 @@ using System.Linq;
 using static Utils;
 using static AiHandler;
 
-public static class GenerateAttack 
+public static class GenerateAttack
 {
     public abstract class GenerationData
     {
@@ -23,7 +23,7 @@ public static class GenerateAttack
 
     public abstract class InstanceDataPreview : InstanceData
     {
-
+        public abstract EffectiveDistance GetEffectiveDistance();
     }
     public class WindGenerationData : GenerationData
     {
@@ -56,7 +56,7 @@ public static class GenerateAttack
             return populateRaw();
         }
 
-        
+
     }
     public class WindInstanceData : InstanceData
     {
@@ -69,15 +69,15 @@ public static class GenerateAttack
     static readonly float turnValue = 0.07f;
     static public float getWindValue(params GenerationData[] stages)
     {
-        WindInstanceData[] winds = stages.Select(s => s.getWindInstance()).Where(i => i!= null).ToArray();
-        float totalTime = winds.Sum(x=> x.duration);
-        float avgMove = winds.Sum(x=> x.moveMult *x.duration)/totalTime;
+        WindInstanceData[] winds = stages.Select(s => s.getWindInstance()).Where(i => i != null).ToArray();
+        float totalTime = winds.Sum(x => x.duration);
+        float avgMove = winds.Sum(x => x.moveMult * x.duration) / totalTime;
         float avgTurn = winds.Sum(x => x.turnMult * x.duration) / totalTime;
 
 
-        float moveMagnitude = Mathf.Max(avgMove, 1 / avgMove)-1;
+        float moveMagnitude = Mathf.Max(avgMove, 1 / avgMove) - 1;
         float moveDirection = avgMove > 1 ? -1 : 1;
-        float moveMult = moveMagnitude * moveValue *moveDirection + 1;
+        float moveMult = moveMagnitude * moveValue * moveDirection + 1;
 
         float turnMagnitude = Mathf.Max(avgTurn, 1 / avgTurn) - 1;
         float turnDirection = avgTurn > 1 ? -1 : 1;
@@ -89,7 +89,7 @@ public static class GenerateAttack
     {
         return new WindGenerationData
         {
-            duration = GaussRandomDecline(0, 1,5),
+            duration = GaussRandomDecline(0, 1, 5),
             moveMult = GaussRandomDecline(0, 1),
             turnMult = GaussRandomDecline(0, 1),
         };
@@ -104,7 +104,7 @@ public static class GenerateAttack
         public float knockBackType;
         public float knockUp;
 
-        public override InstanceData populate( float power, float strength)
+        public override InstanceData populate(float power, float strength)
         {
             float scale = Power.scale(power);
 
@@ -145,7 +145,7 @@ public static class GenerateAttack
         public KnockBackType knockBackType;
         public float knockUp;
 
-        public EffectiveDistance GetEffectiveDistance()
+        public override EffectiveDistance GetEffectiveDistance()
         {
             Vector2 max = new Vector2(length, width / 2);
             return new EffectiveDistance(max.magnitude, Vector2.Angle(max, Vector2.right));
@@ -164,7 +164,7 @@ public static class GenerateAttack
             augments.Add(HitAugment.Knockup);
         }
 
-        HitGenerationData hit =  new HitGenerationData
+        HitGenerationData hit = new HitGenerationData
         {
             length = typeValues[0].val,
             width = typeValues[1].val,
@@ -184,7 +184,7 @@ public static class GenerateAttack
         Knockup,
     }
 
-    static HitGenerationData augmentHit(HitGenerationData hit, List<HitAugment> augs, Value[] values )
+    static HitGenerationData augmentHit(HitGenerationData hit, List<HitAugment> augs, Value[] values)
     {
         for (int i = 0; i < augs.Count; i++)
         {
@@ -216,7 +216,7 @@ public static class GenerateAttack
         float strength = getWindValue(atk.stages);
 
         float cooldownTime = asRange(atk.cooldown, 0, 30);
-        float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 +1) + 1; 
+        float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 + 1) + 1;
 
         strength *= cooldownStrength;
 
@@ -224,7 +224,7 @@ public static class GenerateAttack
         {
 
             cooldown = cooldownTime,
-            stages = atk.stages.Select(s =>s.populate(power, strength)).ToArray(),
+            stages = atk.stages.Select(s => s.populate(power, strength)).ToArray(),
 
         };
 
@@ -233,14 +233,14 @@ public static class GenerateAttack
     public static AttackBlock generate(float power, bool noCooldown)
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
-        
+
         GenerationData[] stages = new GenerationData[] { createWind(), createHit(), createWind() };
 
-        
+
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages,
-            cooldown = noCooldown? 0 : GaussRandomDecline(0, 1, 4),
+            cooldown = noCooldown ? 0 : GaussRandomDecline(0, 1, 4),
         };
         block.source = atk;
         return regenerate(block, power);

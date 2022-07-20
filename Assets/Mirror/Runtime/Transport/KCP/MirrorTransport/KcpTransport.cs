@@ -1,10 +1,10 @@
 //#if MIRROR <- commented out because MIRROR isn't defined on first import yet
+using Mirror;
 using System;
 using System.Linq;
 using System.Net;
-using UnityEngine;
-using Mirror;
 using Unity.Collections;
+using UnityEngine;
 
 namespace kcp2k
 {
@@ -76,7 +76,7 @@ namespace kcp2k
             if (debugLog)
                 Log.Info = Debug.Log;
             else
-                Log.Info = _ => {};
+                Log.Info = _ => { };
             Log.Warning = Debug.LogWarning;
             Log.Error = Debug.LogError;
 
@@ -189,7 +189,7 @@ namespace kcp2k
         {
             server.Send(connectionId, segment, ToKcpChannel(channelId));
         }
-        public override void ServerDisconnect(int connectionId) =>  server.Disconnect(connectionId);
+        public override void ServerDisconnect(int connectionId) => server.Disconnect(connectionId);
         public override string ServerGetClientAddress(int connectionId) => server.GetClientAddress(connectionId);
         public override void ServerStop() => server.Stop();
         public override void ServerEarlyUpdate()
@@ -203,7 +203,7 @@ namespace kcp2k
         public override void ServerLateUpdate() => server.TickOutgoing();
 
         // common
-        public override void Shutdown() {}
+        public override void Shutdown() { }
 
         // max message size
         public override int GetMaxPacketSize(int channelId = Channels.Reliable)
@@ -270,7 +270,7 @@ namespace kcp2k
             return $"{(bytes / (1024f * 1024f * 1024f)):F2} GB";
         }
 
-// OnGUI allocates even if it does nothing. avoid in release.
+        // OnGUI allocates even if it does nothing. avoid in release.
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         void OnGUI()
         {

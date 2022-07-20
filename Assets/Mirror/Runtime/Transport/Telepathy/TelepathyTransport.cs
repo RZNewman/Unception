@@ -81,7 +81,7 @@ namespace Mirror
         }
 
         // client
-        private void CreateClient() 
+        private void CreateClient()
         {
             // create client
             client = new Telepathy.Client(clientMaxMessageSize);
@@ -104,7 +104,7 @@ namespace Mirror
             client.ReceiveQueueLimit = clientReceiveQueueLimit;
         }
         public override bool ClientConnected() => client != null && client.Connected;
-        public override void ClientConnect(string address) 
+        public override void ClientConnect(string address)
         {
             CreateClient();
             client.Connect(address, port);
@@ -120,7 +120,7 @@ namespace Mirror
             client.Connect(uri.Host, serverPort);
         }
         public override void ClientSend(ArraySegment<byte> segment, int channelId) => client?.Send(segment);
-        public override void ClientDisconnect() 
+        public override void ClientDisconnect()
         {
             client?.Disconnect();
             client = null;
@@ -150,11 +150,11 @@ namespace Mirror
             return builder.Uri;
         }
         public override bool ServerActive() => server != null && server.Active;
-        public override void ServerStart() 
+        public override void ServerStart()
         {
             // create server
             server = new Telepathy.Server(serverMaxMessageSize);
-            
+
             // server hooks
             // other systems hook into transport events in OnCreate or
             // OnStartRunning in no particular order. the only way to avoid
@@ -172,7 +172,7 @@ namespace Mirror
             server.ReceiveTimeout = ReceiveTimeout;
             server.SendQueueLimit = serverSendQueueLimitPerConnection;
             server.ReceiveQueueLimit = serverReceiveQueueLimitPerConnection;
-            
+
             server.Start(port);
         }
 
@@ -197,7 +197,7 @@ namespace Mirror
                 return "unknown";
             }
         }
-        public override void ServerStop() 
+        public override void ServerStop()
         {
             server?.Stop();
             server = null;

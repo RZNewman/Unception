@@ -1,9 +1,7 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Gravity : NetworkBehaviour 
+public class Gravity : NetworkBehaviour
 {
     // Start is called before the first frame
     public float gravity = -9.81f;
@@ -25,8 +23,8 @@ public class Gravity : NetworkBehaviour
     void FixedUpdate()
     {
         if (isServer && !movement.grounded && !lifeManager.IsDead && model.modelLoaded)
-		{
-            rb.velocity += new Vector3(0, gravity, 0) *Time.fixedDeltaTime * power.scale();
-		}
+        {
+            rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scale();
+        }
     }
 }

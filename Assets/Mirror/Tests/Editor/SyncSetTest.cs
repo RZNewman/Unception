@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 namespace Mirror.Tests
 {
@@ -62,7 +62,7 @@ namespace Mirror.Tests
         [Test]
         public void CurlyBracesConstructor()
         {
-            SyncHashSet<int> set = new SyncHashSet<int>{1,2,3};
+            SyncHashSet<int> set = new SyncHashSet<int> { 1, 2, 3 };
             Assert.That(set.Count, Is.EqualTo(3));
         }
 
@@ -80,7 +80,7 @@ namespace Mirror.Tests
         {
             serverSyncSet.Clear();
             SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new string[] {}));
+            Assert.That(clientSyncSet, Is.EquivalentTo(new string[] { }));
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace Mirror.Tests
         {
             serverSyncSet.ExceptWith(serverSyncSet);
             SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new String[] {}));
+            Assert.That(clientSyncSet, Is.EquivalentTo(new String[] { }));
         }
 
         [Test]
@@ -238,7 +238,7 @@ namespace Mirror.Tests
         {
             serverSyncSet.SymmetricExceptWith(serverSyncSet);
             SerializeDeltaTo(serverSyncSet, clientSyncSet);
-            Assert.That(clientSyncSet, Is.EquivalentTo(new String[] {}));
+            Assert.That(clientSyncSet, Is.EquivalentTo(new String[] { }));
         }
 
         [Test]

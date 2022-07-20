@@ -1,8 +1,8 @@
+using Mirror.Tests.RemoteAttrributeTest;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Mirror.Tests.RemoteAttrributeTest;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Mirror.Tests
@@ -158,7 +158,7 @@ namespace Mirror.Tests
         public void TestReading0LengthBytesAndSize()
         {
             NetworkWriter writer = new NetworkWriter();
-            writer.WriteBytesAndSize(new byte[] {});
+            writer.WriteBytesAndSize(new byte[] { });
             NetworkReader reader = new NetworkReader(writer.ToArray());
             Assert.That(reader.ReadBytesAndSize().Length, Is.EqualTo(0));
         }
@@ -167,7 +167,7 @@ namespace Mirror.Tests
         public void TestReading0LengthBytes()
         {
             NetworkWriter writer = new NetworkWriter();
-            writer.WriteBytes(new byte[] {}, 0, 0);
+            writer.WriteBytes(new byte[] { }, 0, 0);
             NetworkReader reader = new NetworkReader(writer.ToArray());
             Assert.That(reader.ReadBytes(0).Length, Is.EqualTo(0));
         }
@@ -185,7 +185,7 @@ namespace Mirror.Tests
         {
             void EnsureThrows(Action<NetworkReader> read, byte[] data = null)
             {
-                Assert.Throws<System.IO.EndOfStreamException>(() => read(new NetworkReader(data ?? new byte[] {})));
+                Assert.Throws<System.IO.EndOfStreamException>(() => read(new NetworkReader(data ?? new byte[] { })));
             }
             // Try reading more than there is data to be read from
             // This should throw EndOfStreamException always
@@ -1291,7 +1291,8 @@ namespace Mirror.Tests
             WriteBadArray();
 
             NetworkReader reader = new NetworkReader(writer.ToArray());
-            Assert.Throws<EndOfStreamException>(() => {
+            Assert.Throws<EndOfStreamException>(() =>
+            {
                 _ = reader.ReadArray<int>();
             });
 

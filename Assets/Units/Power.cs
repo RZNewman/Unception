@@ -1,13 +1,11 @@
-using System.Collections;
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
-using System;
 
 public class Power : NetworkBehaviour, TextValue
 {
     [SyncVar]
-    float currentPower =100;
+    float currentPower = 100;
 
     int currentDecimalPlaces = 0;
     public MetricName currentMetricScale
@@ -51,7 +49,7 @@ public class Power : NetworkBehaviour, TextValue
     }
     void setMetricScale()
     {
-        while(currentPower > Mathf.Pow(10, currentDecimalPlaces+1))
+        while (currentPower > Mathf.Pow(10, currentDecimalPlaces + 1))
         {
             currentDecimalPlaces++;
         }
@@ -102,7 +100,7 @@ public class Power : NetworkBehaviour, TextValue
             gathered = other.currentPower;
         }
         gathered *= 0.2f;
-        addPower( gathered);
+        addPower(gathered);
     }
 
     public TextValue.TextData getText()
@@ -136,7 +134,7 @@ public class Power : NetworkBehaviour, TextValue
         nintillion,
         dectillion,
     }
-    string  metricSymbol()
+    string metricSymbol()
     {
         switch (currentMetricScale)
         {
@@ -159,7 +157,7 @@ public class Power : NetworkBehaviour, TextValue
 
 
 
-public enum MetricPrefix
+    public enum MetricPrefix
     {
         zero = 0,
         kilo,

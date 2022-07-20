@@ -71,7 +71,7 @@ namespace Telepathy
         public bool Active => listenerThread != null && listenerThread.IsAlive;
 
         // constructor
-        public Server(int MaxMessageSize) : base(MaxMessageSize) {}
+        public Server(int MaxMessageSize) : base(MaxMessageSize) { }
 
         // the listener thread's listen function
         // note: no maxConnections parameter. high level API should handle that.
@@ -248,7 +248,7 @@ namespace Telepathy
                 TcpClient client = kvp.Value.client;
                 // close the stream if not closed yet. it may have been closed
                 // by a disconnect already, so use try/catch
-                try { client.GetStream().Close(); } catch {}
+                try { client.GetStream().Close(); } catch { }
                 client.Close();
             }
 

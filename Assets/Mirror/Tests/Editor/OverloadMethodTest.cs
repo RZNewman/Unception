@@ -16,8 +16,8 @@ namespace Mirror.Tests.MessageTests
         public int someValue;
 
         // Weaver should ignore these methods because they have two args
-        public void Serialize(NetworkWriter writer, int AnotherValue) {}
-        public void Deserialize(NetworkReader reader, int AnotherValue) {}
+        public void Serialize(NetworkWriter writer, int AnotherValue) { }
+        public void Deserialize(NetworkReader reader, int AnotherValue) { }
     }
 
     public class OverloadMethodTest

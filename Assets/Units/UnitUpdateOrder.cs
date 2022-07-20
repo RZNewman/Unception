@@ -1,7 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class UnitUpdateOrder : NetworkBehaviour
 {
@@ -20,7 +17,7 @@ public class UnitUpdateOrder : NetworkBehaviour
             move = GetComponent<UnitMovement>();
             stamina = GetComponent<Stamina>();
         }
-        
+
     }
 
     private void OnDestroy()
@@ -30,7 +27,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         {
             master.unregister(this);
         }
-        
+
     }
 
 

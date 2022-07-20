@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -59,7 +59,7 @@ namespace Mirror.Tests
             SyncVar<int> field = 42;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = 1337;
             Assert.That(field.Value, Is.EqualTo(1337));
@@ -121,7 +121,7 @@ namespace Mirror.Tests
             field.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = 1337;
             Assert.That(called, Is.EqualTo(1));
@@ -163,7 +163,7 @@ namespace Mirror.Tests
             field.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             // setting a different value will call the hook
             field.Value = 1337;
@@ -186,7 +186,7 @@ namespace Mirror.Tests
             field.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             // create reader with data
             NetworkWriter writer = new NetworkWriter();
@@ -213,7 +213,7 @@ namespace Mirror.Tests
             fieldWithHook.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            fieldWithHook.OnDirty = () => {};
+            fieldWithHook.OnDirty = () => { };
 
             // create reader with data
             NetworkWriter writer = new NetworkWriter();

@@ -1,5 +1,5 @@
-using System;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -193,7 +193,7 @@ namespace Mirror.Tests.ClientSceneTests
             Guid guid = GuidForOverload(overload);
 
             NetworkClient.spawnHandlers.Add(guid, x => null);
-            NetworkClient.unspawnHandlers.Add(guid, x => {});
+            NetworkClient.unspawnHandlers.Add(guid, x => { });
 
             string msg = OverloadWithHandler(overload)
                 ? $"Replacing existing spawnHandlers for prefab '{validPrefab.name}' with assetId '{guid}'"

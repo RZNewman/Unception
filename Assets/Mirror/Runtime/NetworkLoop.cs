@@ -69,7 +69,7 @@ namespace Mirror
             // recursively keep looking
             if (playerLoop.subSystemList != null)
             {
-                for(int i = 0; i < playerLoop.subSystemList.Length; ++i)
+                for (int i = 0; i < playerLoop.subSystemList.Length; ++i)
                 {
                     int index = FindPlayerLoopEntryIndex(function, playerLoop.subSystemList[i], playerLoopSystemType);
                     if (index != -1) return index;
@@ -117,7 +117,8 @@ namespace Mirror
                 // => PlayerLoopSystem has native IntPtr loop members
                 // => forgetting to clear those would cause undefined behaviour!
                 // see also: https://github.com/vis2k/Mirror/pull/2652
-                PlayerLoopSystem system = new PlayerLoopSystem {
+                PlayerLoopSystem system = new PlayerLoopSystem
+                {
                     type = ownerType,
                     updateDelegate = function
                 };
@@ -148,7 +149,7 @@ namespace Mirror
             // recursively keep looking
             if (playerLoop.subSystemList != null)
             {
-                for(int i = 0; i < playerLoop.subSystemList.Length; ++i)
+                for (int i = 0; i < playerLoop.subSystemList.Length; ++i)
                 {
                     if (AddToPlayerLoop(function, ownerType, ref playerLoop.subSystemList[i], playerLoopSystemType, addMode))
                         return true;

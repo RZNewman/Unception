@@ -46,7 +46,7 @@ namespace Mirror
         // instead of
         //   SyncVarNetworkBehaviour = new SyncVarNetworkBehaviour(null);
         public SyncVarNetworkBehaviour(T value = null)
-            : base(NetworkBehaviourToULong(value)) {}
+            : base(NetworkBehaviourToULong(value)) { }
 
         // implicit conversion: NetworkBehaviour value = SyncFieldNetworkBehaviour
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

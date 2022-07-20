@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -1004,9 +1004,9 @@ namespace Mirror.Tests
         }
 
         [Test, Ignore("NetworkServerTest.SendCommand does it already")]
-        public void HandleCommand() {}
+        public void HandleCommand() { }
 
         [Test, Ignore("RpcTests do it already")]
-        public void HandleRpc() {}
+        public void HandleRpc() { }
     }
 }

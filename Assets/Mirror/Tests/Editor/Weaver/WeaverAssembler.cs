@@ -60,19 +60,19 @@ namespace Mirror.Weaver.Tests
             {
                 File.Delete(projPathFile);
             }
-            catch {}
+            catch { }
 
             try
             {
                 File.Delete(Path.ChangeExtension(projPathFile, ".pdb"));
             }
-            catch {}
+            catch { }
 
             try
             {
                 File.Delete(Path.ChangeExtension(projPathFile, ".dll.mdb"));
             }
-            catch {}
+            catch { }
         }
 
         // clear all settings except for referenced assemblies (which are cleared with ClearReferences)
@@ -115,7 +115,7 @@ namespace Mirror.Weaver.Tests
             // -> we can't set member variables because Unity creates a new
             //    ILPP instance internally and invokes it
             // -> define is passed through ILPP though, and avoids static state.
-            assemblyBuilder.additionalDefines = new []{ILPostProcessorHook.IgnoreDefine};
+            assemblyBuilder.additionalDefines = new[] { ILPostProcessorHook.IgnoreDefine };
 #endif
 
             assemblyBuilder.buildFinished += delegate (string assemblyPath, CompilerMessage[] compilerMessages)

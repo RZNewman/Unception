@@ -1,6 +1,6 @@
-using System;
 using Mirror.Tests.RemoteAttrributeTest;
 using NUnit.Framework;
+using System;
 
 namespace Mirror.Tests
 {

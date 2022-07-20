@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Mono.CecilX;
+using System.Collections.Generic;
 using Unity.CompilationPipeline.Common.Diagnostics;
 
 namespace Mirror.Weaver

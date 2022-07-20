@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using static GenerateValues;
 using System.Linq;
-using static Utils;
+using UnityEngine;
 using static AiHandler;
+using static GenerateValues;
+using static Utils;
 
 public static class GenerateAttack
 {

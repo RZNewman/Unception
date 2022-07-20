@@ -40,7 +40,7 @@ namespace Mirror.Tests
             SyncVarNetworkIdentity field = new SyncVarNetworkIdentity(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = serverIdentity;
             Assert.That(field.Value, Is.EqualTo(serverIdentity));
@@ -125,7 +125,7 @@ namespace Mirror.Tests
             field.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = serverIdentity;
             Assert.That(called, Is.EqualTo(1));
@@ -175,7 +175,7 @@ namespace Mirror.Tests
             SyncVarNetworkIdentity field = new SyncVarNetworkIdentity(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.OnDeserializeAll(reader);
             Assert.That(field.Value, Is.EqualTo(serverIdentity));
@@ -191,7 +191,7 @@ namespace Mirror.Tests
             SyncVarNetworkIdentity field = new SyncVarNetworkIdentity(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.OnDeserializeDelta(reader);
             Assert.That(field.Value, Is.EqualTo(serverIdentity));

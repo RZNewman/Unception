@@ -69,7 +69,7 @@ namespace Mirror
         // instead of
         //   SyncVarNetworkIdentity = new SyncVarNetworkIdentity(null);
         public SyncVarNetworkIdentity(NetworkIdentity value = null)
-            : base(value != null ? value.netId : 0) {}
+            : base(value != null ? value.netId : 0) { }
 
         // implicit conversion: NetworkIdentity value = SyncFieldNetworkIdentity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

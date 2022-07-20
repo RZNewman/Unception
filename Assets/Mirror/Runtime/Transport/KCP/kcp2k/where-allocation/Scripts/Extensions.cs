@@ -27,7 +27,7 @@ namespace WhereAllocation
             // obvious that IPEndPointNonAlloc.Create does NOT create a new
             // IPEndPoint. it saves the result in IPEndPointNonAlloc.temp!
             EndPoint casted = remoteEndPoint;
-            return  socket.ReceiveFrom(buffer, offset, size, socketFlags, ref casted);
+            return socket.ReceiveFrom(buffer, offset, size, socketFlags, ref casted);
         }
 
         // same as above, different parameters

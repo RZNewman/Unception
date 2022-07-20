@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static BarValue;
@@ -12,7 +10,7 @@ public class UiBar : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -30,6 +28,6 @@ public class UiBar : MonoBehaviour
         barBack.gameObject.SetActive(data.active);
         barFront.GetComponent<Image>().color = data.color;
         barFront.sizeDelta = new Vector2(data.fillPercent, barFront.sizeDelta.y);
-        barBack.sizeDelta = new Vector2(1- data.fillPercent, barFront.sizeDelta.y);
+        barBack.sizeDelta = new Vector2(1 - data.fillPercent, barFront.sizeDelta.y);
     }
 }

@@ -1,8 +1,6 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GenerateValues;
 
 
 
@@ -12,14 +10,14 @@ public class MonsterSpawn : NetworkBehaviour
     public GameObject PackPre;
     public GameObject PackTagPre;
     List<UnitData> monsterProps = new List<UnitData>();
-    
+
     List<SpawnData> buildRequests = new List<SpawnData>();
     bool ready = false;
 
     Transform floor;
 
-    float lastPowerAdded = Power.basePower/2;
-    float spawnPower=100;
+    float lastPowerAdded = Power.basePower / 2;
+    float spawnPower = 100;
 
     static float Ai2PlayerPowerFactor = 2.0f;
     static float lowerUnitPowerFactor = 1.5f;
@@ -62,12 +60,12 @@ public class MonsterSpawn : NetworkBehaviour
 
     void instancePack(SpawnData spawnData)
     {
-        float difficulty = (1f + Random.value*0.6f) *difficultyMultiplier;
+        float difficulty = (1f + Random.value * 0.6f) * difficultyMultiplier;
         float powerPoolWeighted = weightedPool(difficulty);
         List<UnitData> packProps = new List<UnitData>();
         float propsSelect = Random.value;
         int startIndex = 0;
-        if(propsSelect < 0.5f)
+        if (propsSelect < 0.5f)
         {
             //mode: single
             packProps.Add(monsterProps[Random.Range(startIndex, monsterProps.Count)]);
@@ -75,7 +73,7 @@ public class MonsterSpawn : NetworkBehaviour
         else
         {
             //mode: multi
-            for(int i = startIndex; i < monsterProps.Count; i++)
+            for (int i = startIndex; i < monsterProps.Count; i++)
             {
                 if (Random.value < 0.5f)
                 {
@@ -87,27 +85,27 @@ public class MonsterSpawn : NetworkBehaviour
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         float halfSize = spawnData.zoneSize / 2;
-        for(int i = packProps.Count-1; i >= 0; i--)
+        for (int i = packProps.Count - 1; i >= 0; i--)
         {
             UnitData data = packProps[i];
             int maxInstance = maxInstances(data.power, powerPoolWeighted);
             int instance;
-            if(i == 0)
+            if (i == 0)
             {
                 instance = maxInstance;
             }
             else
             {
-                instance = Random.Range(0, maxInstance+1);
+                instance = Random.Range(0, maxInstance + 1);
             }
             powerPoolWeighted -= weightedPower(data.power) * instance;
-            for(int j = 0; j < instance; j++)
+            for (int j = 0; j < instance; j++)
             {
                 Vector3 offset = new Vector3(Random.Range(-halfSize, halfSize), 0, Random.Range(-halfSize, halfSize));
                 offset *= 0.9f;
                 InstanceCreature(spawnData, data, offset, p);
             }
-            
+
         }
     }
     float weightedPool(float difficulty)
@@ -149,13 +147,13 @@ public class MonsterSpawn : NetworkBehaviour
         {
             instancePack(position);
         }
-        
+
     }
 
     public void setSpawnPower(float power)
     {
         spawnPower = power;
-        while(lastPowerAdded < power*5)
+        while (lastPowerAdded < power * 5)
         {
             lastPowerAdded *= 2;
             monsterProps.Add(createType(lastPowerAdded));
@@ -164,7 +162,7 @@ public class MonsterSpawn : NetworkBehaviour
         for (int i = 0; i < monsterProps.Count; i++)
         {
             UnitData data = monsterProps[0];
-            if(maxInstances(data.power,pool)> maxPackSize)
+            if (maxInstances(data.power, pool) > maxPackSize)
             {
                 monsterProps.RemoveAt(0);
             }

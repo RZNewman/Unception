@@ -118,7 +118,7 @@ namespace Mirror
             }
         }
 
-// OnGUI allocates even if it does nothing. avoid in release.
+        // OnGUI allocates even if it does nothing. avoid in release.
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         // slider from dotsnet. it's nice to play around with in the benchmark
         // demo.

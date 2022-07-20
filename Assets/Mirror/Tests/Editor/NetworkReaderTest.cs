@@ -1,5 +1,5 @@
-using System.IO;
 using NUnit.Framework;
+using System.IO;
 
 namespace Mirror.Tests
 {
@@ -28,14 +28,14 @@ namespace Mirror.Tests
         public void SetBuffer()
         {
             // start with an initial buffer
-            byte[] firstBuffer = {0xFF};
+            byte[] firstBuffer = { 0xFF };
             NetworkReader reader = new NetworkReader(firstBuffer);
 
             // read one byte so we modify position
             reader.ReadByte();
 
             // set another buffer
-            byte[] secondBuffer = {0x42};
+            byte[] secondBuffer = { 0x42 };
             reader.SetBuffer(secondBuffer);
 
             // was position reset?
@@ -48,7 +48,7 @@ namespace Mirror.Tests
         [Test]
         public void Remaining()
         {
-            byte[] bytes = {0x00, 0x01};
+            byte[] bytes = { 0x00, 0x01 };
             NetworkReader reader = new NetworkReader(bytes);
             Assert.That(reader.Remaining, Is.EqualTo(2));
 

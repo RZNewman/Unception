@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Posture : NetworkBehaviour, BarValue
@@ -45,12 +43,12 @@ public class Posture : NetworkBehaviour, BarValue
     void Start()
     {
         props = GetComponent<UnitPropsHolder>().props;
-       
+
 
         currentPosture = 0;
         maxPostureBase = props.maxPosture;
         currentPostureCeiling = props.maxPosture;
-        
+
         GetComponent<Power>().subscribePower(updateMaxPosture);
     }
     void updateMaxPosture(Power p)
@@ -74,7 +72,7 @@ public class Posture : NetworkBehaviour, BarValue
     public void takeStagger(float damage)
     {
         currentPosture += damage;
-        if(!stunned && currentPosture > currentPostureCeiling)
+        if (!stunned && currentPosture > currentPostureCeiling)
         {
             stunned = true;
             currentPostureCeiling = currentPosture + postureBuffer;
@@ -83,7 +81,7 @@ public class Posture : NetworkBehaviour, BarValue
         }
         if (stunned)
         {
-            if(currentPosture> currentStunHighestPosture)
+            if (currentPosture > currentStunHighestPosture)
             {
                 currentStunHighestPosture = currentPosture;
             }
@@ -95,11 +93,11 @@ public class Posture : NetworkBehaviour, BarValue
     public void ServerUpdate()
     {
         //Recover ceiling limit based on max
-        if(currentPostureCeiling > maxPostureBase)
+        if (currentPostureCeiling > maxPostureBase)
         {
             currentPostureCeiling -= maxPostureBase * postureCeilingRecoverPercent * Time.fixedDeltaTime;
         }
-        if(currentPostureCeiling < maxPostureBase)
+        if (currentPostureCeiling < maxPostureBase)
         {
             currentPostureCeiling = maxPostureBase;
         }
@@ -107,7 +105,7 @@ public class Posture : NetworkBehaviour, BarValue
         //set current recover b.o. stun
         if (stunned)
         {
-            currentPostureRecover += stunnedPostureRecoverAcceleration *Time.fixedDeltaTime;
+            currentPostureRecover += stunnedPostureRecoverAcceleration * Time.fixedDeltaTime;
         }
         else
         {
@@ -115,15 +113,15 @@ public class Posture : NetworkBehaviour, BarValue
         }
 
         //change posture
-        if(currentPosture > 0)
+        if (currentPosture > 0)
         {
-            currentPosture -= currentPostureRecover *Time.fixedDeltaTime;
+            currentPosture -= currentPostureRecover * Time.fixedDeltaTime;
         }
-        if (stunned && currentPosture <=0)
+        if (stunned && currentPosture <= 0)
         {
             stunned = false;
         }
-        if(currentPosture < 0)
+        if (currentPosture < 0)
         {
             currentPosture = 0;
         }

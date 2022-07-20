@@ -199,7 +199,7 @@ namespace Mirror
         public static Ray? ReadRayNullable(this NetworkReader reader) => reader.ReadBlittableNullable<Ray>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Matrix4x4 ReadMatrix4x4(this NetworkReader reader)=> reader.ReadBlittable<Matrix4x4>();
+        public static Matrix4x4 ReadMatrix4x4(this NetworkReader reader) => reader.ReadBlittable<Matrix4x4>();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix4x4? ReadMatrix4x4Nullable(this NetworkReader reader) => reader.ReadBlittableNullable<Matrix4x4>();
 

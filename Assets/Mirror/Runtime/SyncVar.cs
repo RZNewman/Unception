@@ -85,8 +85,8 @@ namespace Mirror
         // deadlock. prevent it with a simple 'are we inside the hook' bool.
         bool hookGuard;
 
-        public override void ClearChanges() {}
-        public override void Reset() {}
+        public override void ClearChanges() { }
+        public override void Reset() { }
 
         // ctor from value <T> and OnChanged hook.
         // it was always called 'hook'. let's keep naming for convenience.

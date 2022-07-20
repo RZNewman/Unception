@@ -1,12 +1,12 @@
-using System;
-using System.IO;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.IO;
 using UnityEngine;
 
 namespace Mirror.Tests
 {
-    public class MyMiddleware : MiddlewareTransport {}
+    public class MyMiddleware : MiddlewareTransport { }
 
     [Description("Test to make sure inner methods are called when using Middleware Transport")]
     public class MiddlewareTransportTest

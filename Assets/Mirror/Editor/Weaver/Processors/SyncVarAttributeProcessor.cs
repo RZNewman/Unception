@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 using Mono.CecilX.Rocks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mirror.Weaver
 {
@@ -252,7 +252,7 @@ namespace Mirror.Weaver
             FieldReference fr;
             if (fd.DeclaringType.HasGenericParameters)
             {
-               fr = fd.MakeHostInstanceGeneric();
+                fr = fd.MakeHostInstanceGeneric();
             }
             else
             {
@@ -268,7 +268,7 @@ namespace Mirror.Weaver
                 }
                 else
                 {
-                  netIdFieldReference = netFieldId;
+                    netIdFieldReference = netFieldId;
                 }
             }
 

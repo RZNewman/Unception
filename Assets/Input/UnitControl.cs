@@ -1,28 +1,26 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public interface UnitControl
 {
     [Serializable]
     public struct UnitInput
-	{
+    {
         public Vector2 move;
         public Vector2 look;
         public bool jump;
         public bool dash;
         public AttackKey[] attacks;
-        
+
 
         public void reset()
-		{
+        {
             move = Vector2.zero;
             look = Vector2.zero;
             jump = false;
             dash = false;
             attacks = new AttackKey[0];
-		}
+        }
         public static UnitInput zero()
         {
             return new UnitInput
@@ -34,15 +32,15 @@ public interface UnitControl
                 attacks = new AttackKey[0],
             };
         }
-	}
+    }
     [Serializable]
-    public enum AttackKey:byte
-	{
-        One =0,
+    public enum AttackKey : byte
+    {
+        One = 0,
         Two,
         Three,
         Four,
-	}
+    }
     public UnitInput getUnitInuput();
 
     public void refreshInput();

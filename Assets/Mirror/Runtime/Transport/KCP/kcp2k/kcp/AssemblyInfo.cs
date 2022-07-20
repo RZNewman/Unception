@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("kcp2k.Tests")]
+[assembly: InternalsVisibleTo("kcp2k.Tests")] 

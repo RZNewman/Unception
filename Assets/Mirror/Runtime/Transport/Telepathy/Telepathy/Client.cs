@@ -113,7 +113,7 @@ namespace Telepathy
         public int ReceivePipeCount => state != null ? state.receivePipe.TotalCount : 0;
 
         // constructor
-        public Client(int MaxMessageSize) : base(MaxMessageSize) {}
+        public Client(int MaxMessageSize) : base(MaxMessageSize) { }
 
         // the thread function
         // STATIC to avoid sharing state!
@@ -236,7 +236,8 @@ namespace Telepathy
             //    too long, which is especially good in games
             // -> this way we don't async client.BeginConnect, which seems to
             //    fail sometimes if we connect too many clients too fast
-            state.receiveThread = new Thread(() => {
+            state.receiveThread = new Thread(() =>
+            {
                 ReceiveThreadFunction(state, ip, port, MaxMessageSize, NoDelay, SendTimeout, ReceiveTimeout, ReceiveQueueLimit);
             });
             state.receiveThread.IsBackground = true;

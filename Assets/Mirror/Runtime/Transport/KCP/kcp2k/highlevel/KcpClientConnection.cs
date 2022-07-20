@@ -51,7 +51,7 @@ namespace kcp2k
 
                 socket.SetReceiveBufferToOSLimit();
                 socket.SetSendBufferToOSLimit();
-                Log.Info($"KcpClient: RecvBuf = {initialReceive}=>{socket.ReceiveBufferSize} ({socket.ReceiveBufferSize/initialReceive}x) SendBuf = {initialSend}=>{socket.SendBufferSize} ({socket.SendBufferSize/initialSend}x) increased to OS limits!");
+                Log.Info($"KcpClient: RecvBuf = {initialReceive}=>{socket.ReceiveBufferSize} ({socket.ReceiveBufferSize / initialReceive}x) SendBuf = {initialSend}=>{socket.SendBufferSize} ({socket.SendBufferSize / initialSend}x) increased to OS limits!");
             }
             // otherwise still log the defaults for info.
             else Log.Info($"KcpClient: RecvBuf = {socket.ReceiveBufferSize} SendBuf = {socket.SendBufferSize}. If connections drop under heavy load, enable {nameof(maximizeSendReceiveBuffersToOSLimit)} to increase it to OS limit. If they still drop, increase the OS limit.");
@@ -126,7 +126,7 @@ namespace kcp2k
                 }
             }
             // this is fine, the socket might have been closed in the other end
-            catch (SocketException) {}
+            catch (SocketException) { }
         }
 
         protected override void Dispose()

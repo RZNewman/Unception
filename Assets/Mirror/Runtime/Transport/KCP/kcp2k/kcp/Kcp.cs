@@ -15,7 +15,7 @@ namespace kcp2k
         public const int RTO_DEF = 200;            // default RTO
         public const int RTO_MAX = 60000;          // maximum RTO
         public const int CMD_PUSH = 81;            // cmd: push data
-        public const int CMD_ACK  = 82;            // cmd: ack
+        public const int CMD_ACK = 82;            // cmd: ack
         public const int CMD_WASK = 83;            // cmd: window probe (ask)
         public const int CMD_WINS = 84;            // cmd: window size (tell)
         public const int ASK_SEND = 1;             // need to send CMD_WASK
@@ -407,7 +407,7 @@ namespace kcp2k
         // appends an ack.
         void AckPush(uint sn, uint ts)
         {
-            acklist.Add(new AckItem{ serialNumber = sn, timestamp = ts });
+            acklist.Add(new AckItem { serialNumber = sn, timestamp = ts });
         }
 
         // ikcp_parse_data

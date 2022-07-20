@@ -1,5 +1,5 @@
-using System;
 using NUnit.Framework;
+using System;
 
 namespace Mirror.Tests.RemoteAttrributeTest
 {
@@ -14,7 +14,7 @@ namespace Mirror.Tests.RemoteAttrributeTest
         }
     }
 
-    class VirtualNoOverrideTargetRpc : VirtualTargetRpc {}
+    class VirtualNoOverrideTargetRpc : VirtualTargetRpc { }
 
     class VirtualOverrideTargetRpc : VirtualTargetRpc
     {

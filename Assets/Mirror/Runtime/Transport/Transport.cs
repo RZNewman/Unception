@@ -136,8 +136,8 @@ namespace Mirror
         //
         // => see NetworkLoop.cs for detailed explanations!
 #pragma warning disable UNT0001 // Empty Unity message
-        public void Update() {}
-        public void LateUpdate() {}
+        public void Update() { }
+        public void LateUpdate() { }
 #pragma warning restore UNT0001 // Empty Unity message
 
         /// <summary>
@@ -152,10 +152,10 @@ namespace Mirror
         //    them from NetworkClient/Server
         // => VIRTUAL for now so we can take our time to convert transports
         //    without breaking anything.
-        public virtual void ClientEarlyUpdate() {}
-        public virtual void ServerEarlyUpdate() {}
-        public virtual void ClientLateUpdate() {}
-        public virtual void ServerLateUpdate() {}
+        public virtual void ClientEarlyUpdate() { }
+        public virtual void ServerEarlyUpdate() { }
+        public virtual void ClientLateUpdate() { }
+        public virtual void ServerLateUpdate() { }
 
         /// <summary>Shut down the transport, both as client and server</summary>
         public abstract void Shutdown();

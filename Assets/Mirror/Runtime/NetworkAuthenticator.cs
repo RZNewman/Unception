@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Mirror
 {
-    [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnectionToClient> {}
+    [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnectionToClient> { }
 
     /// <summary>Base class for implementing component-based authentication during the Connect phase</summary>
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-authenticators")]
@@ -20,13 +20,13 @@ namespace Mirror
         public UnityEvent OnClientAuthenticated = new UnityEvent();
 
         /// <summary>Called when server starts, used to register message handlers if needed.</summary>
-        public virtual void OnStartServer() {}
+        public virtual void OnStartServer() { }
 
         /// <summary>Called when server stops, used to unregister message handlers if needed.</summary>
-        public virtual void OnStopServer() {}
+        public virtual void OnStopServer() { }
 
         /// <summary>Called on server from OnServerAuthenticateInternal when a client needs to authenticate</summary>
-        public virtual void OnServerAuthenticate(NetworkConnectionToClient conn) {}
+        public virtual void OnServerAuthenticate(NetworkConnectionToClient conn) { }
 
         protected void ServerAccept(NetworkConnectionToClient conn)
         {
@@ -39,13 +39,13 @@ namespace Mirror
         }
 
         /// <summary>Called when client starts, used to register message handlers if needed.</summary>
-        public virtual void OnStartClient() {}
+        public virtual void OnStartClient() { }
 
         /// <summary>Called when client stops, used to unregister message handlers if needed.</summary>
-        public virtual void OnStopClient() {}
+        public virtual void OnStopClient() { }
 
         /// <summary>Called on client from OnClientAuthenticateInternal when a client needs to authenticate</summary>
-        public virtual void OnClientAuthenticate() {}
+        public virtual void OnClientAuthenticate() { }
 
         protected void ClientAccept()
         {
@@ -60,7 +60,7 @@ namespace Mirror
             // disconnect the client
             NetworkClient.connection.Disconnect();
         }
-        
+
         // Reset() instead of OnValidate():
         // Any NetworkAuthenticator assigns itself to the NetworkManager, this is fine on first adding it, 
         // but if someone intentionally sets Authenticator to null on the NetworkManager again then the 

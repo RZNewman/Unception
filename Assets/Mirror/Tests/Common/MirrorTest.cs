@@ -1,7 +1,7 @@
 // base class for networking tests to make things easier.
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Mirror.Tests

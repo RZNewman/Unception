@@ -4,7 +4,7 @@ namespace Mirror.Tests
 {
     public class LocalConnectionTest : MirrorTest
     {
-        struct TestMessage : NetworkMessage {}
+        struct TestMessage : NetworkMessage { }
 
         LocalConnectionToClient connectionToClient;
         LocalConnectionToServer connectionToServer;

@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static GenerateAttack;
 
@@ -16,7 +14,7 @@ public abstract class IndicatorInstance : NetworkBehaviour
 
     [SyncVar]
     protected HitInstanceData data;
-    public  void reposition(HitInstanceData aData)
+    public void reposition(HitInstanceData aData)
     {
         data = aData;
         repositionImpl();
@@ -79,7 +77,7 @@ public abstract class IndicatorInstance : NetworkBehaviour
 
     void updateColor()
     {
-        if(teamOwner == 1u)
+        if (teamOwner == 1u)
         {
             setColor(GameColors.FriendIndicator);
         }

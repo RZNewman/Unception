@@ -2,9 +2,9 @@
 // is replaced with:
 // public int Networkhealth { get; set; } properties.
 // this class processes all access to 'health' and replaces it with 'Networkhealth'
-using System;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
+using System;
 
 namespace Mirror.Weaver
 {

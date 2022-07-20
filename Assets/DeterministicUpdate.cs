@@ -1,7 +1,5 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class DeterministicUpdate : NetworkBehaviour
 {
@@ -10,7 +8,7 @@ public class DeterministicUpdate : NetworkBehaviour
     public void register(UnitUpdateOrder unit)
     {
         unitList.Add(unit);
-        
+
     }
     public void unregister(UnitUpdateOrder unit)
     {
@@ -19,7 +17,7 @@ public class DeterministicUpdate : NetworkBehaviour
 
     void FixedUpdate()
     {
-        foreach(UnitUpdateOrder unit in unitList)
+        foreach (UnitUpdateOrder unit in unitList)
         {
             unit.healthTick();
         }

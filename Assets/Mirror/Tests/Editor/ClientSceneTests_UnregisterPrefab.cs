@@ -25,7 +25,7 @@ namespace Mirror.Tests.ClientSceneTests
         [Test]
         public void RemovesUnSpawnHandlerFromDictionary()
         {
-            NetworkClient.unspawnHandlers.Add(validPrefabGuid, new UnSpawnDelegate(x => {}));
+            NetworkClient.unspawnHandlers.Add(validPrefabGuid, new UnSpawnDelegate(x => { }));
             NetworkClient.UnregisterPrefab(validPrefab);
             Assert.IsFalse(NetworkClient.unspawnHandlers.ContainsKey(validPrefabGuid));
         }

@@ -76,7 +76,7 @@ namespace Mirror
         // instead of
         //   SyncVarGameObject = new SyncVarGameObject(null);
         public SyncVarGameObject(GameObject value = null)
-            : base(GetNetId(value)) {}
+            : base(GetNetId(value)) { }
 
         // helper function to get netId from GameObject (if any)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

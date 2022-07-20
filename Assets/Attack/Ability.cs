@@ -1,5 +1,4 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
@@ -13,8 +12,8 @@ public class Ability : NetworkBehaviour
     public GameObject abilityIconPrefab;
 
     [SyncVar]
-    public float cooldownCurrent=0;
-    public bool cooldownTicking =false;
+    public float cooldownCurrent = 0;
+    public bool cooldownTicking = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +23,7 @@ public class Ability : NetworkBehaviour
             GameObject icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
         }
-        
+
     }
 
     // Update is called once per frame
@@ -32,9 +31,9 @@ public class Ability : NetworkBehaviour
     {
         if (cooldownCurrent > 0 && cooldownTicking)
         {
-            cooldownCurrent-= Time.fixedDeltaTime;
+            cooldownCurrent -= Time.fixedDeltaTime;
         }
-        if(cooldownCurrent<= 0)
+        if (cooldownCurrent <= 0)
         {
             cooldownTicking = false;
             cooldownCurrent = 0;
@@ -48,7 +47,7 @@ public class Ability : NetworkBehaviour
         }
     }
     public List<PlayerMovementState> cast(UnitMovement mover)
-	{
+    {
         cooldownCurrent = cooldownMax;
         return attackFormat.buildStates(mover);
     }
@@ -75,7 +74,7 @@ public class Ability : NetworkBehaviour
     {
         attackFormat = GenerateAttack.regenerate(attackFormat, p.power);
     }
-    
+
 
     public EffectiveDistance GetEffectiveDistance()
     {

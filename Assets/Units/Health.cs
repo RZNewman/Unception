@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Health : NetworkBehaviour, BarValue
@@ -48,14 +46,14 @@ public class Health : NetworkBehaviour, BarValue
 
             }
         }
-        
+
     }
 
     public BarValue.BarData getBarFill()
     {
         return new BarValue.BarData
         {
-            color = combat.inCombat ? Color.red: new Color(1,0.5f,0),
+            color = combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
             fillPercent = Mathf.Clamp01(currentHealth / maxHealth),
             active = true,
         };

@@ -4,13 +4,13 @@
 // Unity.CompilationPipeline reference is only resolved if assembly name is
 // Unity.*.CodeGen:
 // https://forum.unity.com/threads/how-does-unity-do-codegen-and-why-cant-i-do-it-myself.853867/#post-5646937
-using System.IO;
-using System.Linq;
 // to use Mono.CecilX here, we need to 'override references' in the
 // Unity.Mirror.CodeGen assembly definition file in the Editor, and add CecilX.
 // otherwise we get a reflection exception with 'file not found: CecilX'.
 using Mono.CecilX;
 using Mono.CecilX.Cil;
+using System.IO;
+using System.Linq;
 using Unity.CompilationPipeline.Common.ILPostProcessing;
 // IMPORTANT: 'using UnityEngine' does not work in here.
 // Unity gives "(0,0): error System.Security.SecurityException: ECall methods must be packaged into a system module."
@@ -71,7 +71,8 @@ namespace Mirror.Weaver
                 // "(0,0): error Mono.CecilX.Cil.SymbolsNotFoundException: No symbol found for file: "
                 using (MemoryStream symbols = new MemoryStream(compiledAssembly.InMemoryAssembly.PdbData))
                 {
-                    ReaderParameters readerParameters = new ReaderParameters{
+                    ReaderParameters readerParameters = new ReaderParameters
+                    {
                         SymbolStream = symbols,
                         ReadWrite = true,
                         ReadSymbols = true,

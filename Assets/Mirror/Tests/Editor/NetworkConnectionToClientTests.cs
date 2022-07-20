@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 namespace Mirror.Tests
 {
@@ -12,7 +12,8 @@ namespace Mirror.Tests
         public override void SetUp()
         {
             base.SetUp();
-            transport.OnClientDataReceived = (message, channelId) => {
+            transport.OnClientDataReceived = (message, channelId) =>
+            {
                 byte[] array = new byte[message.Count];
                 Buffer.BlockCopy(message.Array, message.Offset, array, 0, message.Count);
                 clientReceived.Add(array);
@@ -35,7 +36,7 @@ namespace Mirror.Tests
         {
             // create connection and send
             NetworkConnectionToClient connection = new NetworkConnectionToClient(42);
-            byte[] message = {0x01, 0x02};
+            byte[] message = { 0x01, 0x02 };
             connection.Send(new ArraySegment<byte>(message));
 
             // Send() should only add to batch, not send anything yet
@@ -65,7 +66,7 @@ namespace Mirror.Tests
             NetworkConnectionToClient connection = new NetworkConnectionToClient(42);
 
             // send and update big message
-            byte[] message = {0x01, 0x02};
+            byte[] message = { 0x01, 0x02 };
             connection.Send(new ArraySegment<byte>(message));
             connection.Update();
             UpdateTransport();
@@ -78,7 +79,7 @@ namespace Mirror.Tests
             clientReceived.Clear();
 
             // send a smaller message
-            message = new byte[]{0xFF};
+            message = new byte[] { 0xFF };
             connection.Send(new ArraySegment<byte>(message));
             connection.Update();
             UpdateTransport();

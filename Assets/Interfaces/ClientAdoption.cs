@@ -1,9 +1,7 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ClientAdoption : NetworkBehaviour 
+public class ClientAdoption : NetworkBehaviour
 {
     [HideInInspector]
     [SyncVar]
@@ -31,12 +29,12 @@ public class ClientAdoption : NetworkBehaviour
             transform.localPosition = position;
             transform.localRotation = rotation;
         }
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

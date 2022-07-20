@@ -1,6 +1,6 @@
-using System;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace Mirror.Tests
 {

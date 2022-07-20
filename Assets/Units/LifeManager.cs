@@ -1,5 +1,4 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,11 +37,11 @@ public class LifeManager : NetworkBehaviour
     {
         OnDeathCallbacks.Add(d);
     }
-    
+
     public void die()
     {
         isDead = true;
-        foreach(OnDeath c in OnDeathCallbacks)
+        foreach (OnDeath c in OnDeathCallbacks)
         {
             c();
         }
@@ -66,7 +65,7 @@ public class LifeManager : NetworkBehaviour
                 c();
             }
         }
-        
+
     }
     [ClientRpc]
     void RpcBodyDestroy()
@@ -75,6 +74,6 @@ public class LifeManager : NetworkBehaviour
         {
             Destroy(unitBody);
         }
-        
+
     }
 }

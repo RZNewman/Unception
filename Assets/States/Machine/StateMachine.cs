@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using static State;
 
-public class StateMachine<T> where T: State
+public class StateMachine<T> where T : State
 {
     T currentState;
     Func<T> defaultBuilder;
@@ -35,8 +32,8 @@ public class StateMachine<T> where T: State
     }
 
     public void tick()
-	{
-        
+    {
+
         currentState.tick();
 
     }
@@ -46,7 +43,7 @@ public class StateMachine<T> where T: State
     }
 
     public T state()
-	{
+    {
         return currentState;
-	}
+    }
 }

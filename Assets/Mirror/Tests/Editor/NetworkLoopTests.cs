@@ -26,7 +26,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_EarlyUpdate_Beginning()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(EarlyUpdate), NetworkLoop.AddMode.Beginning);
@@ -40,7 +40,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_EarlyUpdate_End()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(EarlyUpdate), NetworkLoop.AddMode.End);
@@ -54,7 +54,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_Update_Beginning()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(Update), NetworkLoop.AddMode.Beginning);
@@ -68,7 +68,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_Update_End()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(Update), NetworkLoop.AddMode.End);
@@ -82,7 +82,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_PreLateUpdate_Beginning()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(PreLateUpdate), NetworkLoop.AddMode.Beginning);
@@ -96,7 +96,7 @@ namespace Mirror.Tests
         [Test]
         public void AddToPlayerLoop_PreLateUpdate_End()
         {
-            void Function() {}
+            void Function() { }
 
             // add our function
             bool result = NetworkLoop.AddToPlayerLoop(Function, typeof(NetworkLoopTests), ref playerLoop, typeof(PreLateUpdate), NetworkLoop.AddMode.End);

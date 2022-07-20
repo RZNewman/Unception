@@ -1,5 +1,5 @@
-using System;
 using NUnit.Framework;
+using System;
 
 namespace Mirror.Tests.RemoteAttrributeTest
 {
@@ -12,7 +12,7 @@ namespace Mirror.Tests.RemoteAttrributeTest
             onVirtualSendInt?.Invoke(someInt);
     }
 
-    class VirtualNoOverrideCommand : VirtualCommand {}
+    class VirtualNoOverrideCommand : VirtualCommand { }
 
     class VirtualOverrideCommand : VirtualCommand
     {

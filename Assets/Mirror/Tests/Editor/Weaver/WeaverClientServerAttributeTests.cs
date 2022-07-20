@@ -1,8 +1,8 @@
-using System.IO;
-using System.Linq;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 using NUnit.Framework;
+using System.IO;
+using System.Linq;
 
 namespace Mirror.Weaver.Tests
 {

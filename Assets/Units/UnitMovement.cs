@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static DashState;
 using static UnitControl;
@@ -16,7 +14,7 @@ public class UnitMovement : NetworkBehaviour
     Power power;
 
     [HideInInspector]
-    public float currentLookAngle=0;
+    public float currentLookAngle = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,14 +49,14 @@ public class UnitMovement : NetworkBehaviour
             setGround();
         }
     }
-	public void ServerUpdate()
-	{
+    public void ServerUpdate()
+    {
         if (!model.modelLoaded)
         {
             return;
         }
         else if (!lifeManager.IsDead)
-        {           
+        {
             movement.tick();
         }
         else
@@ -73,7 +71,7 @@ public class UnitMovement : NetworkBehaviour
             setGround();
             movement.transition();
         }
-        
+
     }
     void cleanup()
     {
@@ -84,23 +82,23 @@ public class UnitMovement : NetworkBehaviour
         get { return GetComponent<Posture>(); }
     }
 
-	public UnitInput input
-	{
-		get
-		{
+    public UnitInput input
+    {
+        get
+        {
             return controller.GetUnitInput();
-		}
-	}
+        }
+    }
     public Vector3 planarVelocity
-	{
-		get
-		{
+    {
+        get
+        {
             Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
             Quaternion rot = Quaternion.AngleAxis(-Vector3.Angle(groundNormal, Vector3.up), Vector3.Cross(Vector3.up, groundNormal));
             return rot * plane3;
         }
-		set
-		{
+        set
+        {
             Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
             Vector3 vertdiff = rb.velocity - plane3;
 
@@ -109,23 +107,23 @@ public class UnitMovement : NetworkBehaviour
             Vector3 plane3New = rot * move3;
             rb.velocity = plane3New + vertdiff;
         }
-	}
+    }
 
     public void jump()
-	{
-        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce *power.scale(), rb.velocity.z);
-	}
+    {
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scale(), rb.velocity.z);
+    }
     public void applyForce(Vector3 force)
     {
         rb.AddForce(force, ForceMode.Impulse);
     }
 
-    public void move(UnitInput inp, float speedMultiplier=1.0f, float accMultiplier =1.0f)
-	{
+    public void move(UnitInput inp, float speedMultiplier = 1.0f, float accMultiplier = 1.0f)
+    {
         float lookMultiplier = toMoveMultiplier(inp.move);
-        float airMultiplier=1.0f;
+        float airMultiplier = 1.0f;
 
-        
+
 
         if (!grounded)
         {
@@ -133,18 +131,18 @@ public class UnitMovement : NetworkBehaviour
         }
         Vector3 desiredDirection = input2vec(inp.move);
 
-        speedMultiplier *= lookMultiplier* airMultiplier;
-        
+        speedMultiplier *= lookMultiplier * airMultiplier;
+
 
         float potentialSpeed = props.maxSpeed * speedMultiplier * power.scale();
         float desiredSpeed;
-		if (grounded)
-		{
+        if (grounded)
+        {
             desiredSpeed = potentialSpeed;
 
         }
         else
-		{
+        {
             float usefulSpeed = Mathf.Max(Vector3.Dot(planarVelocity, desiredDirection), 0);
             desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
         }
@@ -154,17 +152,17 @@ public class UnitMovement : NetworkBehaviour
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
         float stoppingMult = accMultiplier * airMultiplier;
-        float stoppingFrameMag = props.decceleration *stoppingMult * Time.fixedDeltaTime * power.scale();
-        
+        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * power.scale();
+
         if (stoppingDir.magnitude <= stoppingFrameMag)
-		{
+        {
             planarVelocity += stoppingDir;
 
         }
-		else
-		{
+        else
+        {
             planarVelocity += stoppingDir.normalized * stoppingFrameMag;
-		}
+        }
 
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
@@ -173,7 +171,7 @@ public class UnitMovement : NetworkBehaviour
 
         if (diff.magnitude <= addingFrameMag)
         {
-            planarVelocity =desiredVeloicity;
+            planarVelocity = desiredVeloicity;
 
         }
         else
@@ -216,7 +214,7 @@ public class UnitMovement : NetworkBehaviour
                 desiredDirection = Vector3.zero;
                 break;
         }
-        planarVelocity = desiredDirection*dashSpeed;
+        planarVelocity = desiredDirection * dashSpeed;
 
     }
     public void setToWalkSpeed()
@@ -235,7 +233,7 @@ public class UnitMovement : NetworkBehaviour
 
     float toMoveMultiplier(Vector2 inputMove)
     {
-        if(inputMove == Vector2.zero)
+        if (inputMove == Vector2.zero)
         {
             return 1f;
         }
@@ -245,7 +243,7 @@ public class UnitMovement : NetworkBehaviour
 
         if (angleDiff > 90)
         {
-            return  Mathf.Lerp(props.sidewaysMoveMultiplier, props.backwardsMoveMultiplier, (angleDiff - 90) / 90);
+            return Mathf.Lerp(props.sidewaysMoveMultiplier, props.backwardsMoveMultiplier, (angleDiff - 90) / 90);
         }
         else
         {
@@ -253,7 +251,7 @@ public class UnitMovement : NetworkBehaviour
         }
     }
     public void rotate(UnitInput inp, float speedMultiplier = 1.0f)
-	{
+    {
         if (inp.look == Vector2.zero)
         {
             return;
@@ -263,14 +261,14 @@ public class UnitMovement : NetworkBehaviour
         float frameMagnitude = props.lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
         diff = normalizeAngle(diff);
         if (Mathf.Abs(diff) <= frameMagnitude)
-		{
+        {
             currentLookAngle = desiredAngle;
-		}
-		else
-		{
+        }
+        else
+        {
             currentLookAngle += frameMagnitude * Mathf.Sign(diff);
-		}
-	}
+        }
+    }
 
     bool ground = false;
     Vector3 groundNormal;
@@ -303,7 +301,7 @@ public class UnitMovement : NetworkBehaviour
             if (ground)
             {
                 float mag = Vector3.Dot(rb.velocity, groundNormal);
-                return mag <= 0.05f *power.scale();
+                return mag <= 0.05f * power.scale();
             }
             return false;
 

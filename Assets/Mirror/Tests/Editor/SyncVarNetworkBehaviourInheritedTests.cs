@@ -58,7 +58,7 @@ namespace Mirror.Tests
             SyncVarNetworkBehaviour<EmptyBehaviour> field = new SyncVarNetworkBehaviour<EmptyBehaviour>(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = serverComponent;
             Assert.That(field.Value, Is.EqualTo(serverComponent));
@@ -143,7 +143,7 @@ namespace Mirror.Tests
             field.Callback += OnChanged;
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.Value = serverComponent;
             Assert.That(called, Is.EqualTo(1));
@@ -196,7 +196,7 @@ namespace Mirror.Tests
             SyncVarNetworkBehaviour<EmptyBehaviour> field = new SyncVarNetworkBehaviour<EmptyBehaviour>(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.OnDeserializeAll(reader);
             Assert.That(field.Value, Is.EqualTo(serverComponent));
@@ -213,7 +213,7 @@ namespace Mirror.Tests
             SyncVarNetworkBehaviour<EmptyBehaviour> field = new SyncVarNetworkBehaviour<EmptyBehaviour>(null);
 
             // avoid 'not initialized' exception
-            field.OnDirty = () => {};
+            field.OnDirty = () => { };
 
             field.OnDeserializeDelta(reader);
             Assert.That(field.Value, Is.EqualTo(serverComponent));

@@ -1,5 +1,3 @@
-using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnitControl;
@@ -13,12 +11,12 @@ public class InputHandler : MonoBehaviour, UnitControl
 
 
     public UnitInput getUnitInuput()
-	{
+    {
         return currentInput;
-	}
+    }
 
-	// Start is called before the first frame update
-	public void init()
+    // Start is called before the first frame update
+    public void init()
     {
         currentInput.reset();
     }
@@ -34,22 +32,22 @@ public class InputHandler : MonoBehaviour, UnitControl
     // Update is called once per frame
     void Update()
     {
-		
+
 
     }
     public void refreshInput()
-	{
+    {
         setLocalInput();
-        
+
     }
 
     void setLocalInput()
-	{
+    {
         Vector2 move = Vector2.zero;
-		if (Input.GetKey(KeyCode.W))
-		{
+        if (Input.GetKey(KeyCode.W))
+        {
             move += Vector2.up;
-		}
+        }
         if (Input.GetKey(KeyCode.S))
         {
             move += Vector2.down;
@@ -70,11 +68,11 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         HashSet<AttackKey> atks = new HashSet<AttackKey>();
         foreach (AttackKey k in currentInput.attacks)
-		{
+        {
 
             atks.Add(k);
-			
-		}
+
+        }
         if (Input.GetMouseButton(0))
         {
             atks.Add(AttackKey.One);
@@ -91,7 +89,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         {
             atks.Add(AttackKey.Four);
         }
-        currentInput.attacks = new AttackKey[atks.Count];  
+        currentInput.attacks = new AttackKey[atks.Count];
         atks.CopyTo(currentInput.attacks);
 
         setLocalLook();
@@ -105,7 +103,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         }
     }
     void setLocalLook()
-	{
+    {
         if (!Camera.main)
         {
             return;
@@ -113,13 +111,14 @@ public class InputHandler : MonoBehaviour, UnitControl
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit info;
         Vector3 dir;
-        if(Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain"))){
-            
+        if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain")))
+        {
+
             dir = info.point - transform.position;
-            
-		}
+
+        }
         else
-		{
+        {
             Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("ClickPlane"));
             dir = info.point - transform.position;
 
@@ -129,6 +128,6 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.look = vec2input(dir);
 
     }
-    
+
 
 }

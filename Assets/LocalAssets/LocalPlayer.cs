@@ -1,5 +1,4 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,8 +10,8 @@ public class LocalPlayer : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		if (isLocalPlayer)
-		{
+        if (isLocalPlayer)
+        {
             Instantiate(localCameraPre, transform);
             Instantiate(localClickPre, transform);
             GameObject.FindGameObjectWithTag("LocalCanvas").GetComponent<UnitUiReference>().setTarget(gameObject);
@@ -22,7 +21,7 @@ public class LocalPlayer : NetworkBehaviour
             {
                 CmdAddClient();
             }
-            
+
         }
     }
     [Command]
@@ -43,6 +42,6 @@ public class LocalPlayer : NetworkBehaviour
     void CmdAddClient()
     {
         FindObjectOfType<SharedMaterials>().SyncVisuals(connectionToClient);
-        
+
     }
 }

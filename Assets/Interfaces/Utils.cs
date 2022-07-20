@@ -1,39 +1,37 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public static class Utils 
+public static class Utils
 {
     public static Vector3 input2vec(Vector2 inp)
-	{
-		return new Vector3(inp.x, 0, inp.y);
-	}
-	public static Vector2 vec2input(Vector3 world)
-	{
-		return new Vector2(world.x, world.z);
-	}
+    {
+        return new Vector3(inp.x, 0, inp.y);
+    }
+    public static Vector2 vec2input(Vector3 world)
+    {
+        return new Vector2(world.x, world.z);
+    }
 
     public static bool V(this MapGenerator.tileType value)
     {
         return value != MapGenerator.tileType.None;
     }
     public static float normalizeAngle(float angle)
-	{
-		if (angle > 180) angle -= 360;
-		if (angle < -180) angle += 360;
-		return angle;
-	}
-	public static Vector3 positiveVector(Vector3 v)
-	{
-		return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
-	}
+    {
+        if (angle > 180) angle -= 360;
+        if (angle < -180) angle += 360;
+        return angle;
+    }
+    public static Vector3 positiveVector(Vector3 v)
+    {
+        return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
+    }
 
-    public static float GaussRandom(float min, float max, float balance=2)
+    public static float GaussRandom(float min, float max, float balance = 2)
     {
         float total = 0;
         int fullBalance = Mathf.FloorToInt(balance);
-        for(int i = 0; i < fullBalance; i++)
+        for (int i = 0; i < fullBalance; i++)
         {
             total += Random.value;
         }
@@ -41,7 +39,7 @@ public static class Utils
 
         float lastBalance = Random.value;
         value += (lastBalance - value) * (balance - fullBalance) / balance;
-        return min + (max- min) * value;
+        return min + (max - min) * value;
 
     }
     public static float GaussRandomDecline(float min, float max, float balance = 2)

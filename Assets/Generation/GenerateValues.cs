@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static Utils;
 
-public static class GenerateValues 
+public static class GenerateValues
 {
 
     public struct Value
@@ -15,7 +14,7 @@ public static class GenerateValues
 
     public static Value[] generateRandomValues(int valueCount)
     {
-        return generateRandomValues(Enumerable.Repeat(1f,valueCount).ToArray());
+        return generateRandomValues(Enumerable.Repeat(1f, valueCount).ToArray());
     }
 
 
@@ -40,7 +39,7 @@ public static class GenerateValues
             unassinged.Add(i);
         }
 
-        while(unassinged.Count > 0)
+        while (unassinged.Count > 0)
         {
             int element = selectValueIndex(unassinged, values);
             bool elementBoosted = Random.value > 0.5f;
@@ -59,7 +58,7 @@ public static class GenerateValues
 
             int boost, drain;
             if (elementBoosted)
-            {          
+            {
                 boosted.Add(element);
                 if (unassinged.Contains(alternate))
                 {
@@ -102,12 +101,12 @@ public static class GenerateValues
         values[boost].val += transfer / ratio;
         return values;
     }
-    public static Value[] augment(Value[] prevValues, float [] equivs)
+    public static Value[] augment(Value[] prevValues, float[] equivs)
     {
         int oldCount = prevValues.Length;
         int addedCount = equivs.Length;
         Value[] newValues = new Value[oldCount + addedCount];
-        for(int i = 0; i < oldCount; i++)
+        for (int i = 0; i < oldCount; i++)
         {
             newValues[i] = prevValues[i];
         }
@@ -116,13 +115,13 @@ public static class GenerateValues
             newValues[i] = new Value
             {
                 val = 0f,
-                equivalence = equivs[i-oldCount],
+                equivalence = equivs[i - oldCount],
             };
         }
 
         for (int i = oldCount; i < newValues.Length; i++)
         {
-            int oldDrain = Random.Range(0, oldCount-1);
+            int oldDrain = Random.Range(0, oldCount - 1);
             newValues = transfer(newValues, oldDrain, i);
         }
 
@@ -130,11 +129,11 @@ public static class GenerateValues
         return newValues;
 
     }
-    static int selectValueIndex(List<int> indices, Value[] values, bool boosted =false)
+    static int selectValueIndex(List<int> indices, Value[] values, bool boosted = false)
     {
         float drainSum = indices.Sum((valueIndex) => worth(values[valueIndex], boosted));
 
-        
+
         float selection = Random.Range(0, drainSum);
         int currentIndex = -1;
         while (selection > 0)
@@ -150,13 +149,13 @@ public static class GenerateValues
     {
         if (boosted)
         {
-            return 1 - val.val ;       
+            return 1 - val.val;
         }
         else
         {
             return val.val;
         }
-        
+
     }
 
 

@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GeneratedReaderWriter.CreatesForStructList

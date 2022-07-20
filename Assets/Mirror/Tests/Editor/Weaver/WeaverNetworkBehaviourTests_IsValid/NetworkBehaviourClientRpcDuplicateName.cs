@@ -6,9 +6,9 @@ namespace WeaverNetworkBehaviourTests.NetworkBehaviourClientRpcDuplicateName
     {
         // remote call overloads are now supported
         [ClientRpc]
-        public void RpcWithSameName(int abc) {}
+        public void RpcWithSameName(int abc) { }
 
         [ClientRpc]
-        public void RpcWithSameName(int abc, int def) {}
+        public void RpcWithSameName(int abc, int def) { }
     }
 }

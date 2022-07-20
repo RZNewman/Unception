@@ -244,7 +244,7 @@ namespace Mirror.Discovery
         bool hasMulticastLock;
 #endif
         void BeginMulticastLock()
-		{
+        {
 #if UNITY_ANDROID
             if (hasMulticastLock) return;
                 
@@ -273,7 +273,7 @@ namespace Mirror.Discovery
 #endif
         }
 
-#endregion
+        #endregion
 
         #region Client
 

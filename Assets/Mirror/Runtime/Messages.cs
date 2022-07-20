@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Mirror
 {
-    public struct ReadyMessage : NetworkMessage {}
+    public struct ReadyMessage : NetworkMessage { }
 
-    public struct NotReadyMessage : NetworkMessage {}
+    public struct NotReadyMessage : NetworkMessage { }
 
-    public struct AddPlayerMessage : NetworkMessage {}
+    public struct AddPlayerMessage : NetworkMessage { }
 
     public struct SceneMessage : NetworkMessage
     {
@@ -72,9 +72,9 @@ namespace Mirror
         public bool isLocalPlayer;
     }
 
-    public struct ObjectSpawnStartedMessage : NetworkMessage {}
+    public struct ObjectSpawnStartedMessage : NetworkMessage { }
 
-    public struct ObjectSpawnFinishedMessage : NetworkMessage {}
+    public struct ObjectSpawnFinishedMessage : NetworkMessage { }
 
     public struct ObjectDestroyMessage : NetworkMessage
     {

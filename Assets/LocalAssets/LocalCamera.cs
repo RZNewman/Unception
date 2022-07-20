@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LocalCamera : MonoBehaviour
@@ -27,15 +25,15 @@ public class LocalCamera : MonoBehaviour
     }
     private void Update()
     {
-        if(currentTransition < transitionTime)
+        if (currentTransition < transitionTime)
         {
             float targetMag = targetPosition.magnitude;
             float frameMag = Mathf.SmoothStep(lastMag, targetMag, currentTransition / transitionTime);
             transform.localPosition = localPosition.normalized * frameMag;
 
-            currentTransition+= Time.deltaTime;
+            currentTransition += Time.deltaTime;
         }
-        
+
     }
 
 

@@ -1,5 +1,5 @@
-using System;
 using Mirror;
+using System;
 
 namespace GeneratedReaderWriter.CreatesForArraySegment
 {

@@ -1,5 +1,4 @@
 using Mirror;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,7 +39,7 @@ public class SharedMaterials : NetworkBehaviour
             {
                 color = Color.white,
                 modelName = "Lizard",
-                lank =  1,
+                lank = 1,
             };
         }
         else
@@ -51,9 +50,9 @@ public class SharedMaterials : NetworkBehaviour
             {
                 color = c,
                 lank = lank,
-                modelName = enemyModels[Random.Range(0,enemyModels.Count)],
+                modelName = enemyModels[Random.Range(0, enemyModels.Count)],
             };
-        } 
+        }
         int index = dataLookup.Count;
         makeVisualInstance(index, source);
         RpcSyncVisuals(index, source);
@@ -61,7 +60,7 @@ public class SharedMaterials : NetworkBehaviour
     }
     public void SyncVisuals(NetworkConnection conn)
     {
-        foreach(int index in dataLookup.Keys)
+        foreach (int index in dataLookup.Keys)
         {
             TargetSyncVisuals(conn, index, dataLookup[index].source);
         }
@@ -74,7 +73,7 @@ public class SharedMaterials : NetworkBehaviour
         {
             SyncVisuals(index, s);
         }
-        
+
     }
     [TargetRpc]
     void TargetSyncVisuals(NetworkConnection conn, int index, visualsSource s)
@@ -98,25 +97,25 @@ public class SharedMaterials : NetworkBehaviour
         GameObject modelPrefab = Resources.Load("Models/" + s.modelName) as GameObject;
         Material[] mats = modelPrefab.GetComponent<UnitColorTarget>().getSource();
         Material[] outMats = new Material[mats.Length];
-        for(int i = 0; i < mats.Length; i++)
+        for (int i = 0; i < mats.Length; i++)
         {
             Material m = new Material(mats[i]);
             m.SetColor(Shader.PropertyToID("_Color"), s.color);
             outMats[i] = m;
         }
-        
+
         visualsData data = new visualsData();
         data.source = s;
         data.built = new visualsBuilt
         {
             materials = outMats,
-            modelPrefab= modelPrefab,
+            modelPrefab = modelPrefab,
         };
         dataLookup.Add(index, data);
     }
     public void getVisuals(int index, OnVisuals callback)
     {
-        
+
         if (dataLookup.ContainsKey(index))
         {
             callback(dataLookup[index]);
@@ -132,7 +131,7 @@ public class SharedMaterials : NetworkBehaviour
         if (!pending.ContainsKey(index))
         {
             pending.Add(index, new List<OnVisuals>());
-            
+
         }
         pending[index].Add(callback);
     }

@@ -21,7 +21,7 @@ namespace Mirror.Tests.NetworkBehaviourSerialize
         public int SyncField;
     }
 
-    class OverrideBehaviourFromSyncVar : AbstractBehaviour {}
+    class OverrideBehaviourFromSyncVar : AbstractBehaviour { }
 
     class OverrideBehaviourWithSyncVarFromSyncVar : AbstractBehaviour
     {

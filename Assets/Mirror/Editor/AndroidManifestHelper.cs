@@ -1,11 +1,9 @@
 // Android NetworkDiscovery Multicast fix
 // https://github.com/vis2k/Mirror/pull/2887
+using System.Xml;
 using UnityEditor;
-using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using System.Xml;
-using System.IO;
 #if UNITY_ANDROID
 using UnityEditor.Android;
 #endif
@@ -108,6 +106,6 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
         }
     }
 
-    public void OnPostprocessBuild(BuildReport report) {}
-	public void OnPreprocessBuild(BuildReport report) {}
+    public void OnPostprocessBuild(BuildReport report) { }
+    public void OnPreprocessBuild(BuildReport report) { }
 }

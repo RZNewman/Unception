@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitRotation : MonoBehaviour
@@ -19,5 +17,5 @@ public class UnitRotation : MonoBehaviour
             transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
         }
     }
-        
+
 }

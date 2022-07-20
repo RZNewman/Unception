@@ -77,7 +77,7 @@ namespace Mirror
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteLong(this NetworkWriter writer, long value)  => writer.WriteBlittable(value);
+        public static void WriteLong(this NetworkWriter writer, long value) => writer.WriteBlittable(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteLongNullable(this NetworkWriter writer, long? value) => writer.WriteBlittableNullable(value);

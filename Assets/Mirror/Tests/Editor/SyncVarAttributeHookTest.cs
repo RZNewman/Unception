@@ -1,5 +1,5 @@
-using System;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 
 namespace Mirror.Tests.SyncVarAttributeTests
@@ -460,7 +460,7 @@ namespace Mirror.Tests.SyncVarAttributeTests
                 out _, out _, out ImerHook_Ldflda clientObject);
 
             // change it on server
-            serverObject._syncProportions = new Proportions{Array = new byte[]{3, 4}};
+            serverObject._syncProportions = new Proportions { Array = new byte[] { 3, 4 } };
 
             // sync to client
             ProcessMessages();

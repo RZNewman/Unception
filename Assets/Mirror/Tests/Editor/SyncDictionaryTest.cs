@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 namespace Mirror.Tests
 {
@@ -68,7 +68,7 @@ namespace Mirror.Tests
         [Test]
         public void CurlyBracesConstructor()
         {
-            SyncDictionary<int,string> dict = new SyncDictionary<int, string>{{1,"1"}, {2,"2"}, {3,"3"}};
+            SyncDictionary<int, string> dict = new SyncDictionary<int, string> { { 1, "1" }, { 2, "2" }, { 3, "3" } };
             Assert.That(dict.Count, Is.EqualTo(3));
         }
 

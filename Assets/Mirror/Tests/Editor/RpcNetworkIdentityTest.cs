@@ -1,5 +1,5 @@
-using System;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 
 namespace Mirror.Tests.RemoteAttrributeTest
@@ -145,9 +145,9 @@ namespace Mirror.Tests.RemoteAttrributeTest
             clientOwnerComponent.onSendNetworkBehaviourDerivedCalled += actual =>
              {
                  callCount++;
-                // Utils.GetSpawnedInServerOrClient finds the server one before the client one
-                Assert.That(actual, Is.EqualTo(serverExpected));
-                //Assert.That(actual, Is.EqualTo(clientExpected));
+                 // Utils.GetSpawnedInServerOrClient finds the server one before the client one
+                 Assert.That(actual, Is.EqualTo(serverExpected));
+                 //Assert.That(actual, Is.EqualTo(clientExpected));
              };
             serverOwnerComponent.SendNetworkBehaviourDerived(serverExpected);
             ProcessMessages();

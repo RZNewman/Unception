@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Cast : MonoBehaviour, BarValue
@@ -7,7 +5,7 @@ public class Cast : MonoBehaviour, BarValue
     WindState target;
     public BarValue.BarData getBarFill()
     {
-        if(target == null)
+        if (target == null)
         {
             return new BarValue.BarData
             {

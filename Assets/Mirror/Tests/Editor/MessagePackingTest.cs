@@ -1,6 +1,6 @@
-using System;
 using Mirror.Tests.MessageTests;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 
 namespace Mirror.Tests
@@ -8,7 +8,7 @@ namespace Mirror.Tests
     [TestFixture]
     public class MessagePackingTest
     {
-        public struct EmptyMessage : NetworkMessage {}
+        public struct EmptyMessage : NetworkMessage { }
 
         // helper function to pack message into a simple byte[]
         public static byte[] PackToByteArray<T>(T message)

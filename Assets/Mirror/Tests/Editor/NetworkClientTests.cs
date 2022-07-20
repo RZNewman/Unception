@@ -1,5 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 
 namespace Mirror.Tests
 {
@@ -50,7 +50,7 @@ namespace Mirror.Tests
         }
 
         [Test, Ignore("NetworkServerTest.SendClientToServerMessage does it already")]
-        public void Send() {}
+        public void Send() { }
 
         // test to guarantee Disconnect() eventually calls OnClientDisconnected.
         // prevents https://github.com/vis2k/Mirror/issues/2818 forever.
@@ -102,8 +102,8 @@ namespace Mirror.Tests
         {
             // add some test event hooks to make sure they are cleaned up.
             // there used to be a bug where they wouldn't be cleaned up.
-            NetworkClient.OnConnectedEvent = () => {};
-            NetworkClient.OnDisconnectedEvent = () => {};
+            NetworkClient.OnConnectedEvent = () => { };
+            NetworkClient.OnDisconnectedEvent = () => { };
 
             NetworkClient.Shutdown();
 

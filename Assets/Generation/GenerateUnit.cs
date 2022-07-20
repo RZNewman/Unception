@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static GenerateValues;
 
-public static class GenerateUnit 
+public static class GenerateUnit
 {
     public static UnitProperties generate(SharedMaterials mats, float power)
     {
         UnitProperties properties = ScriptableObject.CreateInstance<UnitProperties>();
-        properties.isPlayer =false;
+        properties.isPlayer = false;
 
 
-        Value[] typeValues = generateRandomValues(new float[] {0.9f,.4f,1f,0.9f});
+        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .4f, 1f, 0.9f });
         float speedVal = typeValues[0].val;
         float turnVal = typeValues[1].val;
         float healthVal = typeValues[2].val;
@@ -23,8 +21,8 @@ public static class GenerateUnit
         float posture = (30f + 30f * postureVal);
 
         properties.maxSpeed = speed;
-        properties.acceleration = speed*3;
-        properties.decceleration = speed*2;
+        properties.acceleration = speed * 3;
+        properties.decceleration = speed * 2;
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;
@@ -34,9 +32,9 @@ public static class GenerateUnit
         properties.maxHealthMult = health;
 
         properties.maxPosture = posture;
-        properties.passivePostureRecover = posture*0.3f;
+        properties.passivePostureRecover = posture * 0.3f;
         properties.stunnedPostureRecover = posture;
-        properties.stunnedPostureRecoverAcceleration = posture*2.0f;
+        properties.stunnedPostureRecoverAcceleration = posture * 2.0f;
 
         properties.visualsId = mats.addVisuals();
 

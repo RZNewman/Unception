@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,16 +20,16 @@ public class CompoundCollider : MonoBehaviour
     }
 
     public void setCallback(OnCompoundCollision call)
-	{
+    {
         callback = call;
-	}
+    }
 
     public void checkCollisionEnter(Collider col)
-	{
+    {
         if (colliding.Contains(col))
-		{
+        {
             return;
-		}
+        }
         foreach (FragmentCollider fragment in fragments)
         {
             if (!colliding.Contains(col))
@@ -63,6 +62,6 @@ public class CompoundCollider : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

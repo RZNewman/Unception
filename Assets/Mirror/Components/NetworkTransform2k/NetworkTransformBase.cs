@@ -663,7 +663,7 @@ namespace Mirror
             // buffer limit should be at least multiplier to have enough in there
             bufferSizeLimit = Mathf.Max(bufferTimeMultiplier, bufferSizeLimit);
         }
-        
+
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             // sync target component's position on spawn.
@@ -673,7 +673,7 @@ namespace Mirror
             {
                 if (syncPosition) writer.WriteVector3(targetComponent.localPosition);
                 if (syncRotation) writer.WriteQuaternion(targetComponent.localRotation);
-                if (syncScale)    writer.WriteVector3(targetComponent.localScale);
+                if (syncScale) writer.WriteVector3(targetComponent.localScale);
                 return true;
             }
             return false;
@@ -688,7 +688,7 @@ namespace Mirror
             {
                 if (syncPosition) targetComponent.localPosition = reader.ReadVector3();
                 if (syncRotation) targetComponent.localRotation = reader.ReadQuaternion();
-                if (syncScale)    targetComponent.localScale = reader.ReadVector3();
+                if (syncScale) targetComponent.localScale = reader.ReadVector3();
             }
         }
 

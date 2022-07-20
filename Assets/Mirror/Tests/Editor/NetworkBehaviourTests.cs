@@ -5,13 +5,13 @@ using UnityEngine.TestTools;
 
 namespace Mirror.Tests
 {
-    class EmptyBehaviour : NetworkBehaviour {}
+    class EmptyBehaviour : NetworkBehaviour { }
 
     // we need to inherit from networkbehaviour to test protected functions
     public class NetworkBehaviourDelegateComponent : NetworkBehaviour
     {
-        public static void Delegate(NetworkBehaviour comp, NetworkReader reader, NetworkConnection senderConnection) {}
-        public static void Delegate2(NetworkBehaviour comp, NetworkReader reader, NetworkConnection senderConnection) {}
+        public static void Delegate(NetworkBehaviour comp, NetworkReader reader, NetworkConnection senderConnection) { }
+        public static void Delegate2(NetworkBehaviour comp, NetworkReader reader, NetworkConnection senderConnection) { }
     }
 
     // we need to inherit from networkbehaviour to test protected functions
@@ -172,13 +172,13 @@ namespace Mirror.Tests
         }
 
         [Test, Ignore("NetworkServerTest.SendCommand does it already")]
-        public void SendCommandInternal() {}
+        public void SendCommandInternal() { }
 
         [Test, Ignore("ClientRpcTest.cs tests Rpcs already")]
-        public void SendRPCInternal() {}
+        public void SendRPCInternal() { }
 
         [Test, Ignore("TargetRpcTest.cs tests TargetRpcs already")]
-        public void SendTargetRPCInternal() {}
+        public void SendTargetRPCInternal() { }
 
         [Test]
         public void RegisterDelegateDoesntOverwrite()

@@ -1,14 +1,14 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Mirror.Tests
 {
-    struct TestMessage1 : NetworkMessage {}
+    struct TestMessage1 : NetworkMessage { }
 
     struct VariableSizedMessage : NetworkMessage
     {
@@ -1156,8 +1156,8 @@ namespace Mirror.Tests
 
             // add some test event hooks to make sure they are cleaned up.
             // there used to be a bug where they wouldn't be cleaned up.
-            NetworkServer.OnConnectedEvent = connection => {};
-            NetworkServer.OnDisconnectedEvent = connection => {};
+            NetworkServer.OnConnectedEvent = connection => { };
+            NetworkServer.OnDisconnectedEvent = connection => { };
 
             // set local connection
             NetworkServer.SetLocalConnection(new LocalConnectionToClient());
@@ -1193,14 +1193,14 @@ namespace Mirror.Tests
         public void SendToAll_CalledWhileNotActive_ShouldGiveWarning()
         {
             LogAssert.Expect(LogType.Warning, $"Can not send using NetworkServer.SendToAll<T>(T msg) because NetworkServer is not active");
-            NetworkServer.SendToAll(new NetworkPingMessage {});
+            NetworkServer.SendToAll(new NetworkPingMessage { });
         }
 
         [Test]
         public void SendToReady_CalledWhileNotActive_ShouldGiveWarning()
         {
             LogAssert.Expect(LogType.Warning, $"Can not send using NetworkServer.SendToReady<T>(T msg) because NetworkServer is not active");
-            NetworkServer.SendToReady(new NetworkPingMessage {});
+            NetworkServer.SendToReady(new NetworkPingMessage { });
         }
 
         [Test]
@@ -1258,7 +1258,7 @@ namespace Mirror.Tests
             NetworkServer.Listen(1);
 
             // add a connection that is observed by a null entity
-            NetworkServer.connections[42] = new FakeNetworkConnection{isReady=true};
+            NetworkServer.connections[42] = new FakeNetworkConnection { isReady = true };
             NetworkServer.connections[42].observing.Add(null);
 
             // update
@@ -1279,7 +1279,7 @@ namespace Mirror.Tests
 
             // add a connection that is observed by a destroyed entity
             CreateNetworked(out GameObject go, out NetworkIdentity ni);
-            NetworkServer.connections[42] = new FakeNetworkConnection{isReady=true};
+            NetworkServer.connections[42] = new FakeNetworkConnection { isReady = true };
             NetworkServer.connections[42].observing.Add(ni);
             GameObject.DestroyImmediate(go);
 

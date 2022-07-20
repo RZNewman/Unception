@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Stamina : NetworkBehaviour, BarValue
@@ -55,7 +53,7 @@ public class Stamina : NetworkBehaviour, BarValue
     {
         return new BarValue.BarData
         {
-            color = new Color(0.3f, 0.0f, 1.0f)/ (currentStamina>dashCost? 1.0f:2.0f),
+            color = new Color(0.3f, 0.0f, 1.0f) / (currentStamina > dashCost ? 1.0f : 2.0f),
             fillPercent = Mathf.Clamp01(currentStamina / maxStamina),
             active = true,
         };

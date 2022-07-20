@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Size : MonoBehaviour
@@ -37,7 +35,8 @@ public class Size : MonoBehaviour
 
     public float indicatorHeight
     {
-        get {
+        get
+        {
             return scaledHalfHeight * 0.99f;
         }
     }
@@ -82,7 +81,7 @@ public class Size : MonoBehaviour
     {
         get
         {
-            
+
             return colliderWidth * transform.lossyScale.z;
         }
     }

@@ -9,6 +9,8 @@ public class Ability : NetworkBehaviour
     [SyncVar]
     AttackBlock attackFormat;
 
+    AttackBlockFilled attackFilled;
+
     public GameObject abilityIconPrefab;
 
     [SyncVar]
@@ -22,6 +24,10 @@ public class Ability : NetworkBehaviour
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
             GameObject icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
+        }
+        if (isClientOnly)
+        {
+            fillFormat();
         }
 
     }
@@ -43,13 +49,13 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFormat.getCooldown();
+            return attackFilled.getCooldown();
         }
     }
     public List<PlayerMovementState> cast(UnitMovement mover)
     {
         cooldownCurrent = cooldownMax;
-        return attackFormat.buildStates(mover);
+        return attackFilled.buildStates(mover);
     }
     public void startCooldown()
     {
@@ -65,20 +71,25 @@ public class Ability : NetworkBehaviour
     public void setFormat(AttackBlock b)
     {
         attackFormat = b;
+        fillFormat();
         if (attackFormat.scales)
         {
             GetComponentInParent<Power>().subscribePower(scaleAbility);
         }
     }
+    void fillFormat()
+    {
+        attackFilled = GenerateAttack.fillBlock(attackFormat);
+    }
     void scaleAbility(Power p)
     {
-        attackFormat = GenerateAttack.regenerate(attackFormat, p.power);
+        attackFilled = GenerateAttack.fillBlock(attackFormat, p.power);
     }
 
 
     public EffectiveDistance GetEffectiveDistance()
     {
-        return attackFormat.GetEffectiveDistance();
+        return attackFilled.GetEffectiveDistance();
     }
 
 }

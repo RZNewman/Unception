@@ -242,15 +242,21 @@ public static class GenerateAttack
             cooldown = noCooldown ? 0 : GaussRandomDecline(0, 1, 4),
         };
         block.source = atk;
-        return regenerate(block, power);
+        block.power = power;
+        return block;
 
     }
-    public static AttackBlock regenerate(AttackBlock block, float power)
+    public static AttackBlockFilled fillBlock(AttackBlock block, float power = -1)
     {
+        if (power < 0)
+        {
+            power = block.power;
+        }
+        AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;
-        block.instance = populateAttack(atk, power);
+        filled.instance = populateAttack(atk, power);
         //Debug.Log(atk);
         //Debug.Log(block.instance);
-        return block;
+        return filled;
     }
 }

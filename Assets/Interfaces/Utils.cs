@@ -27,7 +27,7 @@ public static class Utils
         return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
     }
 
-    public static float GaussRandom(float min, float max, float balance = 2)
+    public static float GaussRandom(float balance = 2)
     {
         float total = 0;
         int fullBalance = Mathf.FloorToInt(balance);
@@ -39,15 +39,14 @@ public static class Utils
 
         float lastBalance = Random.value;
         value += (lastBalance - value) * (balance - fullBalance) / balance;
-        return min + (max - min) * value;
+        return value;
 
     }
-    public static float GaussRandomDecline(float min, float max, float balance = 2)
+    public static float GaussRandomDecline(float balance = 2)
     {
-        float value = Mathf.Abs(GaussRandom(0, 1, balance) - 0.5f) * 2;
-        return min + (max - min) * value;
+        return Mathf.Abs(GaussRandom(balance) - 0.5f) * 2;
     }
-    public static float asRange(float value, float min, float max)
+    public static float asRange(this float value, float min, float max)
     {
         value = Mathf.Clamp01(value);
         return min + (max - min) * value;

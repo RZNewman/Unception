@@ -36,16 +36,16 @@ public static class GenerateAttack
         }
         public WindInstanceData populateRaw()
         {
-            float moveMag = asRange(this.moveMult, 0, 1.5f);
-            bool moveDir = Random.value < 0.2f;
+            float moveMag = this.moveMult.asRange(-3.0f, 1f);
+            bool moveDir = moveMag >= 0;
             float moveMult = moveDir ? 1 + moveMag : 1 / (1 + moveMag);
 
-            float turnMag = asRange(this.turnMult, 0, 1.5f);
-            bool turnDir = Random.value < 0.2f;
+            float turnMag = this.turnMult.asRange(-3.0f, 1f);
+            bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 + turnMag);
             return new WindInstanceData
             {
-                duration = asRange(this.duration, 0.2f, 5f),
+                duration = this.duration.asRange(0.2f, 4f),
                 moveMult = moveMult,
                 turnMult = turnMult,
             };
@@ -84,13 +84,13 @@ public static class GenerateAttack
 
         return totalTime * moveMult * turnMult;
     }
-    static WindGenerationData createWind()
+    static WindGenerationData createWind(float durrationLimit = 1.0f)
     {
         return new WindGenerationData
         {
-            duration = GaussRandomDecline(0, 1, 5),
-            moveMult = GaussRandomDecline(0, 1),
-            turnMult = GaussRandomDecline(0, 1),
+            duration = GaussRandomDecline(5) * durrationLimit,
+            moveMult = GaussRandomDecline(3),
+            turnMult = GaussRandomDecline(3),
         };
     }
     public class HitGenerationData : GenerationData
@@ -107,12 +107,12 @@ public static class GenerateAttack
         {
             float scale = Power.scale(power);
 
-            float length = (0.5f + asRange(this.length, 0, 2) * strength) * scale;
-            float width = (0.5f + asRange(this.width, 0.5f, 2) * strength) * scale;
-            float knockback = asRange(this.knockback, 0, 4) * scale * strength;
-            float damage = 0.3f + asRange(this.damageMult, 0f, 0.7f) * strength;
-            float stagger = asRange(this.stagger, 0f, 70f) * scale * strength;
-            float knockUp = asRange(this.knockUp, 0, 30) * scale * strength;
+            float length = (0.5f + this.length.asRange(0, 2) * strength) * scale;
+            float width = (0.5f + this.width.asRange(0.5f, 2) * strength) * scale;
+            float knockback = this.knockback.asRange(0, 4) * scale * strength;
+            float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
+            float stagger = this.stagger.asRange(0f, 70f) * scale * strength;
+            float knockUp = this.knockUp.asRange(0, 30) * scale * strength;
 
             return new HitInstanceData
             {
@@ -214,7 +214,7 @@ public static class GenerateAttack
     {
         float strength = getWindValue(atk.stages);
 
-        float cooldownTime = asRange(atk.cooldown, 0, 30);
+        float cooldownTime = atk.cooldown.asRange(0, 30);
         float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 + 1) + 1;
 
         strength *= cooldownStrength;
@@ -233,13 +233,13 @@ public static class GenerateAttack
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
 
-        GenerationData[] stages = new GenerationData[] { createWind(), createHit(), createWind() };
+        GenerationData[] stages = new GenerationData[] { createWind(), createHit(), createWind(0.5f) };
 
 
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages,
-            cooldown = noCooldown ? 0 : GaussRandomDecline(0, 1, 4),
+            cooldown = noCooldown ? 0 : GaussRandomDecline(4),
         };
         block.source = atk;
         block.power = power;

@@ -88,7 +88,7 @@ public static class GenerateValues
     }
     static Value[] transfer(Value[] values, int drain, int boost)
     {
-        float transferFactor = GaussRandomDecline(0, 1);
+        float transferFactor = GaussRandomDecline();
         float ratio = values[drain].equivalence / values[boost].equivalence;
         float maxTransfer = Mathf.Min(
             worth(values[drain]),

@@ -1,6 +1,8 @@
 using Mirror;
 using UnityEngine;
 using static GenerateAttack;
+using static GenerateHit;
+using static GenerateWind;
 
 public class WindState : AttackState
 {
@@ -24,7 +26,7 @@ public class WindState : AttackState
     public WindState(UnitMovement m, WindInstanceData d, InstanceDataPreview data) : base(m, d.duration)
     {
         previewData = data;
-        hasIndicator = true;
+        hasIndicator = data != null;
         moveMultiplier = d.moveMult;
         lookMultiplier = d.turnMult;
     }

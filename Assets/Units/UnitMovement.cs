@@ -1,6 +1,7 @@
 using Mirror;
 using UnityEngine;
 using static DashState;
+using static GenerateDash;
 using static UnitControl;
 using static Utils;
 public class UnitMovement : NetworkBehaviour
@@ -180,20 +181,15 @@ public class UnitMovement : NetworkBehaviour
         }
 
     }
-    public enum DashControl
+
+    public DashInstanceData baseDash()
     {
-        Forward,
-        Backward,
-        Input,
-    }
-    public DashOptions baseDash()
-    {
-        return new DashOptions
+        return new DashInstanceData
         {
-            dashDistance = props.dashDistance * power.scale(),
-            dashSpeed = props.dashSpeed * power.scale(),
+            distance = props.dashDistance * power.scale(),
+            speed = props.dashSpeed * power.scale(),
             control = DashControl.Input,
-            ending = DashEndMomentum.Walk,
+            endMomentum = DashEndMomentum.Walk,
         };
     }
     public void dash(UnitInput inp, float dashSpeed, DashControl control)

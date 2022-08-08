@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GenerateAttack;
+using static GenerateHit;
+using static GenerateWind;
+using static GenerateDash;
 
 public class AttackBlockFilled : ScriptableObject
 {
@@ -21,11 +24,15 @@ public class AttackBlockFilled : ScriptableObject
                     preview = null;
                     break;
                 case InstanceDataPreview pre:
-                    preview = pre;
+                    //preview = pre;
                     switch (pre)
                     {
                         case HitInstanceData hit:
                             states.Add(new ActionState(controller, hit));
+                            preview = pre;
+                            break;
+                        case DashInstanceData dash:
+                            states.Add(new DashState(controller, dash));
                             break;
                     }
                     break;

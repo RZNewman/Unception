@@ -1,6 +1,7 @@
 using Mirror;
 using UnityEngine;
 using static GenerateAttack;
+using static GenerateHit;
 
 public abstract class IndicatorInstance : NetworkBehaviour
 {

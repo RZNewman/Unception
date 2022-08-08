@@ -1,27 +1,16 @@
 using UnityEngine;
+using static GenerateDash;
 using static UnitControl;
 using static UnitMovement;
 
 public class DashState : PlayerMovementState
 {
-    DashOptions opts;
+    DashInstanceData opts;
     bool isAttack;
     UnitInput inpSnapshot;
 
-    public enum DashEndMomentum
-    {
-        Full,
-        Walk,
-        Stop
-    }
-    public struct DashOptions
-    {
-        public float dashSpeed;
-        public float dashDistance;
-        public DashControl control;
-        public DashEndMomentum ending;
-    }
-    public DashState(UnitMovement m, DashOptions o, bool attack = false) : base(m, o.dashDistance / o.dashSpeed)
+
+    public DashState(UnitMovement m, DashInstanceData o, bool attack = false) : base(m, o.distance / o.speed)
     {
         opts = o;
         isAttack = attack;
@@ -35,7 +24,7 @@ public class DashState : PlayerMovementState
     {
         if (expired)
         {
-            switch (opts.ending)
+            switch (opts.endMomentum)
             {
                 case DashEndMomentum.Full:
                     break;
@@ -70,7 +59,7 @@ public class DashState : PlayerMovementState
     {
         base.tick();
 
-        mover.dash(inpSnapshot, opts.dashSpeed, opts.control);
+        mover.dash(inpSnapshot, opts.speed, opts.control);
 
     }
 }

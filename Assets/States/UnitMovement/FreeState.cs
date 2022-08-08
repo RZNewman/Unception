@@ -1,4 +1,5 @@
 using static DashState;
+using static GenerateDash;
 using static UnitControl;
 
 public class FreeState : PlayerMovementState
@@ -41,7 +42,7 @@ public class FreeState : PlayerMovementState
         if (inp.dash && s.stamina > Stamina.dashCost)
         {
             s.spendStamina(Stamina.dashCost);
-            DashOptions o = mover.baseDash();
+            DashInstanceData o = mover.baseDash();
             return new StateTransition(new DashState(mover, o), true);
         }
         if (inp.jump && mover.grounded)

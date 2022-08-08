@@ -9,12 +9,14 @@ public static class SystemClassReaders
     }
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
+        float strengthFactor = reader.ReadFloat();
         GenerationDataClass c = (GenerationDataClass)reader.ReadByte();
         switch (c)
         {
             case GenerationDataClass.Hit:
-                return new GenerateAttack.HitGenerationData
+                return new GenerateHit.HitGenerationData
                 {
+                    strengthFactor = strengthFactor,
                     length = reader.ReadFloat(),
                     width = reader.ReadFloat(),
                     knockback = reader.ReadFloat(),
@@ -24,11 +26,19 @@ public static class SystemClassReaders
                     knockUp = reader.ReadFloat(),
                 };
             case GenerationDataClass.Wind:
-                return new GenerateAttack.WindGenerationData
+                return new GenerateWind.WindGenerationData
                 {
+                    strengthFactor = strengthFactor,
                     duration = reader.ReadFloat(),
                     moveMult = reader.ReadFloat(),
                     turnMult = reader.ReadFloat(),
+                };
+            case GenerationDataClass.Dash:
+                return new GenerateDash.DashGenerationData
+                {
+                    strengthFactor = strengthFactor,
+                    speed = reader.ReadFloat(),
+                    distance = reader.ReadFloat(),
                 };
             default:
                 return null;

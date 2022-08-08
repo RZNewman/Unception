@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static GenerateAttack;
+using static GenerateHit;
 
 public class ActionState : AttackState
 {

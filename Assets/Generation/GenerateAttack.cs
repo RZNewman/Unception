@@ -4,11 +4,15 @@ using UnityEngine;
 using static AiHandler;
 using static GenerateValues;
 using static Utils;
+using static GenerateWind;
+using static GenerateHit;
+using static GenerateDash;
 
 public static class GenerateAttack
 {
     public abstract class GenerationData
     {
+        public float strengthFactor = 1;
         public virtual WindInstanceData getWindInstance()
         {
             return null;
@@ -24,45 +28,7 @@ public static class GenerateAttack
     {
         public abstract EffectiveDistance GetEffectiveDistance();
     }
-    public class WindGenerationData : GenerationData
-    {
-        public float duration;
-        public float moveMult;
-        public float turnMult;
 
-        public override InstanceData populate(float power, float strength)
-        {
-            return populateRaw();
-        }
-        public WindInstanceData populateRaw()
-        {
-            float moveMag = this.moveMult.asRange(-3.0f, 1f);
-            bool moveDir = moveMag >= 0;
-            float moveMult = moveDir ? 1 + moveMag : 1 / (1 + moveMag);
-
-            float turnMag = this.turnMult.asRange(-3.0f, 1f);
-            bool turnDir = turnMag >= 0;
-            float turnMult = turnDir ? 1 + turnMag : 1 / (1 + turnMag);
-            return new WindInstanceData
-            {
-                duration = this.duration.asRange(0.2f, 4f),
-                moveMult = moveMult,
-                turnMult = turnMult,
-            };
-        }
-        public override WindInstanceData getWindInstance()
-        {
-            return populateRaw();
-        }
-
-
-    }
-    public class WindInstanceData : InstanceData
-    {
-        public float duration;
-        public float moveMult;
-        public float turnMult;
-    }
     //value added for 100% reduced effect (50% speed)
     static readonly float moveValue = 0.15f;
     static readonly float turnValue = 0.07f;
@@ -84,119 +50,8 @@ public static class GenerateAttack
 
         return totalTime * moveMult * turnMult;
     }
-    static WindGenerationData createWind(float durrationLimit = 1.0f)
-    {
-        return new WindGenerationData
-        {
-            duration = GaussRandomDecline(5) * durrationLimit,
-            moveMult = GaussRandomDecline(3),
-            turnMult = GaussRandomDecline(3),
-        };
-    }
-    public class HitGenerationData : GenerationData
-    {
-        public float length;
-        public float width;
-        public float knockback;
-        public float damageMult;
-        public float stagger;
-        public float knockBackType;
-        public float knockUp;
-
-        public override InstanceData populate(float power, float strength)
-        {
-            float scale = Power.scale(power);
-
-            float length = (0.5f + this.length.asRange(0, 2) * strength) * scale;
-            float width = (0.5f + this.width.asRange(0.5f, 2) * strength) * scale;
-            float knockback = this.knockback.asRange(0, 4) * scale * strength;
-            float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
-            float stagger = this.stagger.asRange(0f, 70f) * scale * strength;
-            float knockUp = this.knockUp.asRange(0, 30) * scale * strength;
-
-            return new HitInstanceData
-            {
-                length = length,
-                width = width,
-                knockback = knockback,
-                knockBackType = KnockBackType.inDirection,
-                damageMult = damage,
-                stagger = stagger,
-                knockUp = knockUp,
-
-            };
-
-        }
-
-    }
-    public enum KnockBackType
-    {
-        inDirection,
-        fromCenter
-    }
-    public class HitInstanceData : InstanceDataPreview
-    {
-        public float length;
-        public float width;
-        public float knockback;
-        public float damageMult;
-        public float stagger;
-        public KnockBackType knockBackType;
-        public float knockUp;
-
-        public override EffectiveDistance GetEffectiveDistance()
-        {
-            Vector2 max = new Vector2(length, width / 2);
-            return new EffectiveDistance(max.magnitude, Vector2.Angle(max, Vector2.right));
-        }
-    }
-
-    static readonly int hitbaseValues = 5;
-    static HitGenerationData createHit()
-    {
-        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
-        List<HitAugment> augments = new List<HitAugment>();
-
-        if (Random.value < 0.2f)
-        {
-            typeValues = augment(typeValues, new float[] { 0.5f });
-            augments.Add(HitAugment.Knockup);
-        }
-
-        HitGenerationData hit = new HitGenerationData
-        {
-            length = typeValues[0].val,
-            width = typeValues[1].val,
-            knockback = typeValues[2].val,
-            damageMult = typeValues[3].val,
-            stagger = typeValues[4].val,
-        };
-        //TODO knockback dir
-        hit = augmentHit(hit, augments, typeValues);
-
-        return hit;
 
 
-    }
-    enum HitAugment
-    {
-        Knockup,
-    }
-
-    static HitGenerationData augmentHit(HitGenerationData hit, List<HitAugment> augs, Value[] values)
-    {
-        for (int i = 0; i < augs.Count; i++)
-        {
-            HitAugment aug = augs[i];
-            switch (aug)
-            {
-                case HitAugment.Knockup:
-                    hit.knockUp = values[hitbaseValues + i].val;
-                    break;
-            }
-        }
-        return hit;
-    }
 
     //TODO tree + network
     public struct AttackGenerationData
@@ -223,7 +78,7 @@ public static class GenerateAttack
         {
 
             cooldown = cooldownTime,
-            stages = atk.stages.Select(s => s.populate(power, strength)).ToArray(),
+            stages = atk.stages.Select(s => s.populate(power, strength * s.strengthFactor)).ToArray(),
 
         };
 
@@ -233,12 +88,18 @@ public static class GenerateAttack
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
 
-        GenerationData[] stages = new GenerationData[] { createWind(), createHit(), createWind(0.5f) };
+        List<GenerationData> stages = new List<GenerationData>();
+
+        stages.Add(createWind());
+
+        stages.AddRange(getEffect());
+
+        stages.Add(createWind(0.5f));
 
 
         AttackGenerationData atk = new AttackGenerationData
         {
-            stages = stages,
+            stages = stages.ToArray(),
             cooldown = noCooldown ? 0 : GaussRandomDecline(4),
         };
         block.source = atk;
@@ -246,6 +107,31 @@ public static class GenerateAttack
         return block;
 
     }
+
+    static List<GenerationData> getEffect()
+    {
+        List<GenerationData> effects = new List<GenerationData>();
+        float gen = Random.value;
+
+        if (gen < 0.2f)
+        {
+            DashGenerationData d = createDash();
+            HitGenerationData h = createHit();
+
+            float hitValue = Random.value.asRange(0.2f, 0.8f);
+            h.strengthFactor = hitValue;
+            d.strengthFactor = 1 - hitValue;
+
+            effects.Add(d);
+            effects.Add(h);
+        }
+        else
+        {
+            effects.Add(createHit());
+        }
+        return effects;
+    }
+
     public static AttackBlockFilled fillBlock(AttackBlock block, float power = -1)
     {
         if (power < 0)

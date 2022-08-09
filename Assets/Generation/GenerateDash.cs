@@ -30,7 +30,7 @@ public static class GenerateDash
             float scale = Power.scale(power);
 
             float speed = this.speed.asRange(15f, 50f) * scale * strength;
-            float distance = this.distance.asRange(2f, 12f) * scale * strength;
+            float distance = this.distance.asRange(2f, 8f) * scale * strength;
 
             return new DashInstanceData
             {
@@ -52,10 +52,9 @@ public static class GenerateDash
         public DashControl control;
         public DashEndMomentum endMomentum;
 
-        //TODO this isnt an attack
         public override EffectiveDistance GetEffectiveDistance()
         {
-            return new EffectiveDistance(distance, 0);
+            return new EffectiveDistance(distance, 0, EffectiveDistanceType.Modifier);
         }
         public override IndicatorOffsets GetIndicatorOffsets()
         {

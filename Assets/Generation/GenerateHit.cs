@@ -23,7 +23,7 @@ public static class GenerateHit
         {
             float scale = Power.scale(power);
 
-            float length = (0.5f + this.length.asRange(0, 2) * strength) * scale;
+            float length = (0.5f + this.length.asRange(0, 2.5f) * strength) * scale;
             float width = (0.5f + this.width.asRange(0.5f, 2) * strength) * scale;
             float knockback = this.knockback.asRange(0, 4) * scale * strength;
             float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
@@ -63,7 +63,7 @@ public static class GenerateHit
         public override EffectiveDistance GetEffectiveDistance()
         {
             Vector2 max = new Vector2(length, width / 2);
-            return new EffectiveDistance(max.magnitude, Vector2.Angle(max, Vector2.right));
+            return new EffectiveDistance(max.magnitude, max.y);
         }
     }
 

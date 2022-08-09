@@ -9,14 +9,32 @@ public class AiHandler : MonoBehaviour, UnitControl
     UnitMovement mover;
     GameObject rotatingBody;
 
+    public enum EffectiveDistanceType
+    {
+        None,
+        Hit,
+        Modifier
+    }
     public struct EffectiveDistance
     {
         public float distance;
-        public float angle;
-        public EffectiveDistance(float distance, float angle)
+        public float width;
+        public EffectiveDistanceType type;
+        public EffectiveDistance(float distance, float width, EffectiveDistanceType t = EffectiveDistanceType.Hit)
         {
             this.distance = distance;
-            this.angle = angle;
+            this.width = width;
+            this.type = t;
+        }
+
+        public EffectiveDistance sum(EffectiveDistance other)
+        {
+            return new EffectiveDistance
+            {
+                distance = other.distance + distance,
+                width = other.width + width,
+                type = other.type,
+            };
         }
     }
     public UnitInput getUnitInuput()
@@ -55,7 +73,8 @@ public class AiHandler : MonoBehaviour, UnitControl
                 float edgeDiffMag = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().scaledRadius - target.GetComponent<Size>().scaledRadius;
 
                 EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
-                if ((edgeDiffMag <= eff.distance || eff.distance == 0) && Vector3.Angle(planarDiff, rotatingBody.transform.forward) < eff.angle)
+                Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;
+                if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width)
                 {
                     currentInput.attacks = new AttackKey[] { AttackKey.One };
                 }

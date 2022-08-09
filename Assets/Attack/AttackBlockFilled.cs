@@ -50,20 +50,46 @@ public class AttackBlockFilled : ScriptableObject
 
     public AiHandler.EffectiveDistance GetEffectiveDistance()
     {
+        AiHandler.EffectiveDistance saved = new AiHandler.EffectiveDistance
+        {
+            width = 0,
+            distance = 0,
+            type = AiHandler.EffectiveDistanceType.None
+        };
+
         foreach (InstanceData data in instance.stages)
         {
+            AiHandler.EffectiveDistance e;
             switch (data)
             {
                 case InstanceDataEffect pre:
-                    return pre.GetEffectiveDistance();
+                    e = pre.GetEffectiveDistance();
+                    if (e.type == AiHandler.EffectiveDistanceType.Hit)
+                    {
+                        if (saved.type != AiHandler.EffectiveDistanceType.None)
+                        {
+                            return new AiHandler.EffectiveDistance
+                            {
+                                width = e.width + saved.width,
+                                distance = e.distance + saved.distance,
+                                type = AiHandler.EffectiveDistanceType.Hit,
+                            };
+                        }
+                        else
+                        {
+                            return e;
+                        }
+
+                    }
+                    else
+                    {
+                        saved = saved.sum(e);
+                    };
+                    break;
             }
         }
 
-        return new AiHandler.EffectiveDistance
-        {
-            angle = 180,
-            distance = 0,
-        };
+        return saved;
     }
 }
 

@@ -13,15 +13,8 @@ public abstract class IndicatorInstance : NetworkBehaviour
     [SyncVar]
     uint teamOwner;
 
-    [SyncVar]
-    protected HitInstanceData data;
-    public void reposition(HitInstanceData aData)
-    {
-        data = aData;
-        repositionImpl();
-    }
 
-    protected abstract void repositionImpl();
+    protected abstract void reposition();
     protected abstract void setCurrentProgress(float percent);
 
     public abstract void setColor(Color color);
@@ -30,11 +23,16 @@ public abstract class IndicatorInstance : NetworkBehaviour
         this.maxTime = maxTime;
         currentTime = maxTime;
     }
+    Vector3 localOffset;
+    public void setLocalOffset(Vector3 offset)
+    {
+        localOffset = offset;
+    }
     private void Start()
     {
         if (isClientOnly)
         {
-            repositionImpl();
+            reposition();
             updateColor();
         }
     }
@@ -64,7 +62,7 @@ public abstract class IndicatorInstance : NetworkBehaviour
             forward.Normalize();
 
             transform.localPosition = s.indicatorHeight * Vector3.down
-                + s.scaledRadius * forward;
+                + s.scaledRadius * forward + localOffset;
 
             //TODO indcator width should change based on the slope
         }

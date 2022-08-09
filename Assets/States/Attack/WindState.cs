@@ -3,12 +3,29 @@ using UnityEngine;
 using static GenerateAttack;
 using static GenerateHit;
 using static GenerateWind;
+using static GenerateDash;
+using System.Collections.Generic;
 
 public class WindState : AttackState
 {
-    GameObject indicator;
-    InstanceDataPreview previewData;
+    List<GameObject> indicators = new List<GameObject>();
+    List<InstanceDataEffect> previewData;
     bool hasIndicator = false;
+
+    public struct IndicatorOffsets
+    {
+        public float time;
+        public Vector3 distance;
+
+        public IndicatorOffsets sum(IndicatorOffsets b)
+        {
+            return new IndicatorOffsets
+            {
+                time = time + b.time,
+                distance = distance + b.distance,
+            };
+        }
+    }
 
     public WindState(UnitMovement m, float d) : base(m, d)
     {
@@ -23,10 +40,10 @@ public class WindState : AttackState
         lookMultiplier = d.turnMult;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d, InstanceDataPreview data) : base(m, d.duration)
+    public WindState(UnitMovement m, WindInstanceData d, List<InstanceDataEffect> previews) : base(m, d.duration)
     {
-        previewData = data;
-        hasIndicator = data != null;
+        previewData = previews;
+        hasIndicator = previews.Count > 0;
         moveMultiplier = d.moveMult;
         lookMultiplier = d.turnMult;
     }
@@ -37,31 +54,60 @@ public class WindState : AttackState
         if (hasIndicator)
         {
 
-            buildIndicator(target);
+            buildIndicator(target, mover.GetComponent<Power>().scale());
 
         }
 
     }
 
-    void buildIndicator(GameObject target)
+    void buildIndicator(GameObject target, float scale)
     {
-        switch (previewData)
+        IndicatorOffsets offsets = new IndicatorOffsets
         {
-            case HitInstanceData attackData:
-                indicator = Object.Instantiate(
-                Resources.Load("Indicator/LineIndicator") as GameObject,
-                    target.transform
-                );
-                IndicatorInstance i = indicator.GetComponent<IndicatorInstance>();
-                i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
-                i.reposition(attackData);
-                i.setTime(currentDurration);
-                ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
-                adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
-                adoptee.useSubBody = true;
-                NetworkServer.Spawn(indicator);
-                break;
+            distance = Vector2.zero,
+            time = 0,
+        };
+        foreach (InstanceDataEffect preview in previewData)
+        {
+            IndicatorInstance i;
+            GameObject indicator;
+            switch (preview)
+            {
+                case HitInstanceData attackData:
+                    indicator = Object.Instantiate(
+                    Resources.Load("Indicator/LineIndicator") as GameObject,
+                        target.transform
+                    );
+                    LineIndicatorVisuals l = indicator.GetComponent<LineIndicatorVisuals>();
+                    l.setPosition(attackData);
+                    i = l;
+                    break;
+                case DashInstanceData dashData:
+                    indicator = Object.Instantiate(
+                    Resources.Load("Indicator/DashIndicator") as GameObject,
+                        target.transform
+                    );
+                    DashIndicatorVisuals d = indicator.GetComponent<DashIndicatorVisuals>();
+                    d.setPosition(dashData, scale);
+                    i = d;
+                    break;
+                default:
+                    throw new System.Exception("Indicator not assigned!");
+            }
+            i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
+            i.setLocalOffset(offsets.distance);
+            i.setTime(currentDurration + offsets.time);
+            ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
+            adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
+            adoptee.useSubBody = true;
+            NetworkServer.Spawn(indicator);
+            indicators.Add(indicator);
+            offsets = offsets.sum(preview.GetIndicatorOffsets());
         }
+
+
+
+
     }
 
     public override void exit(bool expired)
@@ -70,7 +116,11 @@ public class WindState : AttackState
         target.GetComponentInParent<Cast>().removeTarget();
         if (hasIndicator)
         {
-            Object.Destroy(indicator);
+            foreach (GameObject indicator in indicators)
+            {
+                Object.Destroy(indicator);
+            }
+
         }
     }
 

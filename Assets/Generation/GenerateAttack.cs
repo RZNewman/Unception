@@ -7,6 +7,7 @@ using static Utils;
 using static GenerateWind;
 using static GenerateHit;
 using static GenerateDash;
+using static WindState;
 
 public static class GenerateAttack
 {
@@ -24,9 +25,18 @@ public static class GenerateAttack
 
     }
 
-    public abstract class InstanceDataPreview : InstanceData
+    public abstract class InstanceDataEffect : InstanceData
     {
         public abstract EffectiveDistance GetEffectiveDistance();
+
+        public virtual IndicatorOffsets GetIndicatorOffsets()
+        {
+            return new IndicatorOffsets
+            {
+                distance = Vector3.zero,
+                time = 0,
+            };
+        }
     }
 
     //value added for 100% reduced effect (50% speed)
@@ -113,7 +123,7 @@ public static class GenerateAttack
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
 
-        if (gen < 0.2f)
+        if (gen < 0.5f)
         {
             DashGenerationData d = createDash();
             HitGenerationData h = createHit();

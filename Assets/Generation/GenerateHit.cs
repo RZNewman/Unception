@@ -50,7 +50,7 @@ public static class GenerateHit
         inDirection,
         fromCenter
     }
-    public class HitInstanceData : InstanceDataPreview
+    public class HitInstanceData : InstanceDataEffect
     {
         public float length;
         public float width;

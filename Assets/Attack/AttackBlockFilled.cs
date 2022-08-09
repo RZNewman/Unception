@@ -13,28 +13,27 @@ public class AttackBlockFilled : ScriptableObject
     {
         List<PlayerMovementState> states = new List<PlayerMovementState>();
 
-        InstanceDataPreview preview = null;
+        List<InstanceDataEffect> previews = new List<InstanceDataEffect>();
         for (int i = instance.stages.Length - 1; i >= 0; i--)
         {
             InstanceData data = instance.stages[i];
             switch (data)
             {
                 case WindInstanceData w:
-                    states.Add(new WindState(controller, w, preview));
-                    preview = null;
+                    states.Add(new WindState(controller, w, previews));
+                    previews = new List<InstanceDataEffect>();
                     break;
-                case InstanceDataPreview pre:
-                    //preview = pre;
-                    switch (pre)
+                case InstanceDataEffect e:
+                    switch (e)
                     {
                         case HitInstanceData hit:
                             states.Add(new ActionState(controller, hit));
-                            preview = pre;
                             break;
                         case DashInstanceData dash:
                             states.Add(new DashState(controller, dash));
                             break;
                     }
+                    previews.Insert(0, e);
                     break;
 
             }
@@ -55,7 +54,7 @@ public class AttackBlockFilled : ScriptableObject
         {
             switch (data)
             {
-                case InstanceDataPreview pre:
+                case InstanceDataEffect pre:
                     return pre.GetEffectiveDistance();
             }
         }

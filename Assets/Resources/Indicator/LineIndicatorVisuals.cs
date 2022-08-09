@@ -1,7 +1,13 @@
+using Mirror;
 using UnityEngine;
+using static GenerateHit;
 
 public class LineIndicatorVisuals : IndicatorInstance
 {
+    [SyncVar]
+    protected HitInstanceData data;
+
+
     public GameObject mask;
     public GameObject square;
     public GameObject circle;
@@ -10,10 +16,18 @@ public class LineIndicatorVisuals : IndicatorInstance
     float length;
     float width;
     // Start is called before the first frame update
-    protected override void repositionImpl()
+
+    public void setPosition(HitInstanceData hit)
     {
-        length = data.length;
-        width = data.width;
+        data = hit;
+        reposition();
+    }
+    protected override void reposition()
+    {
+        HitInstanceData hit = (HitInstanceData)data;
+
+        length = hit.length;
+        width = hit.width;
 
         square.transform.localScale = new Vector3(width, length);
         square.transform.localPosition = new Vector3(0, length / 2);

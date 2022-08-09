@@ -4,6 +4,7 @@ using UnityEngine;
 using static AiHandler;
 using static GenerateAttack;
 using static GenerateValues;
+using static WindState;
 
 public static class GenerateDash
 {
@@ -44,7 +45,7 @@ public static class GenerateDash
 
 
     }
-    public class DashInstanceData : InstanceDataPreview
+    public class DashInstanceData : InstanceDataEffect
     {
         public float speed;
         public float distance;
@@ -55,6 +56,14 @@ public static class GenerateDash
         public override EffectiveDistance GetEffectiveDistance()
         {
             return new EffectiveDistance(distance, 0);
+        }
+        public override IndicatorOffsets GetIndicatorOffsets()
+        {
+            return new IndicatorOffsets
+            {
+                distance = new Vector3(0, 0, distance),
+                time = distance / speed,
+            };
         }
     }
     public static DashGenerationData createDash()

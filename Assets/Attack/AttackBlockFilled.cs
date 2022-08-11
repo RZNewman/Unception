@@ -9,37 +9,31 @@ using static GenerateDash;
 public class AttackBlockFilled : ScriptableObject
 {
     public AttackInstanceData instance;
-    public List<PlayerMovementState> buildStates(UnitMovement controller)
+    public List<AttackStageState> buildStates(UnitMovement controller)
     {
-        List<PlayerMovementState> states = new List<PlayerMovementState>();
 
-        List<InstanceDataEffect> previews = new List<InstanceDataEffect>();
-        for (int i = instance.stages.Length - 1; i >= 0; i--)
+
+        List<AttackStageState> states = new List<AttackStageState>();
+        for (int i = 0; i < instance.stages.Length; i++)
         {
             InstanceData data = instance.stages[i];
             switch (data)
             {
                 case WindInstanceData w:
-                    states.Add(new WindState(controller, w, previews));
-                    previews = new List<InstanceDataEffect>();
+                    bool last = i == instance.stages.Length - 1;
+                    states.Add(new WindState(controller, w, last));
                     break;
-                case InstanceDataEffect e:
-                    switch (e)
-                    {
-                        case HitInstanceData hit:
-                            states.Add(new ActionState(controller, hit));
-                            break;
-                        case DashInstanceData dash:
-                            states.Add(new DashState(controller, dash));
-                            break;
-                    }
-                    previews.Insert(0, e);
+                case HitInstanceData hit:
+                    states.Add(new ActionState(controller, hit));
                     break;
+                case DashInstanceData dash:
+                    states.Add(new DashState(controller, dash));
+                    break;
+
 
             }
         }
 
-        states.Reverse();
         return states;
     }
 
@@ -60,33 +54,30 @@ public class AttackBlockFilled : ScriptableObject
         foreach (InstanceData data in instance.stages)
         {
             AiHandler.EffectiveDistance e;
-            switch (data)
-            {
-                case InstanceDataEffect pre:
-                    e = pre.GetEffectiveDistance();
-                    if (e.type == AiHandler.EffectiveDistanceType.Hit)
-                    {
-                        if (saved.type != AiHandler.EffectiveDistanceType.None)
-                        {
-                            return new AiHandler.EffectiveDistance
-                            {
-                                width = e.width + saved.width,
-                                distance = e.distance + saved.distance,
-                                type = AiHandler.EffectiveDistanceType.Hit,
-                            };
-                        }
-                        else
-                        {
-                            return e;
-                        }
 
-                    }
-                    else
+            e = data.GetEffectiveDistance();
+            if (e.type == AiHandler.EffectiveDistanceType.Hit)
+            {
+                if (saved.type != AiHandler.EffectiveDistanceType.None)
+                {
+                    return new AiHandler.EffectiveDistance
                     {
-                        saved = saved.sum(e);
+                        width = e.width + saved.width,
+                        distance = e.distance + saved.distance,
+                        type = AiHandler.EffectiveDistanceType.Hit,
                     };
-                    break;
+                }
+                else
+                {
+                    return e;
+                }
+
             }
+            else
+            {
+                saved = saved.sum(e);
+            };
+
         }
 
         return saved;

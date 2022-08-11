@@ -6,8 +6,7 @@ using static GenerateDash;
 
 public class DashIndicatorVisuals : IndicatorInstance
 {
-    [SyncVar]
-    protected DashInstanceData data;
+    protected DashState state;
 
     public GameObject line;
     public GameObject tip;
@@ -22,16 +21,16 @@ public class DashIndicatorVisuals : IndicatorInstance
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
-    public void setPosition(DashInstanceData dash, float scale)
+    public void setSource(DashState dash, float scale)
     {
-        data = dash;
+        state = dash;
         this.scale = scale;
         reposition();
     }
 
     protected override void reposition()
     {
-        DashInstanceData dash = (DashInstanceData)data;
+        DashInstanceData dash = state.getSource();
 
         length = dash.distance;
         float width = 0.1f * scale;

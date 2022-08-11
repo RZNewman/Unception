@@ -81,6 +81,7 @@ public class Posture : NetworkBehaviour, BarValue
         }
         if (stunned)
         {
+            currentPostureCeiling += damage;
             if (currentPosture > currentStunHighestPosture)
             {
                 currentStunHighestPosture = currentPosture;

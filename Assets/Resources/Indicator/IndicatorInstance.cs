@@ -1,14 +1,15 @@
 using Mirror;
 using UnityEngine;
+using static Cast;
 using static GenerateAttack;
 using static GenerateHit;
 
 public abstract class IndicatorInstance : NetworkBehaviour
 {
     [SyncVar]
-    public float maxTime;
+    public float maxTime = 0;
     [SyncVar]
-    public float currentTime;
+    public IndicatorOffsets currentOffsets;
 
     [SyncVar]
     uint teamOwner;
@@ -18,15 +19,14 @@ public abstract class IndicatorInstance : NetworkBehaviour
     protected abstract void setCurrentProgress(float percent);
 
     public abstract void setColor(Color color);
-    public virtual void setTime(float maxTime)
+
+    public void setLocalOffsets(IndicatorOffsets offsets)
     {
-        this.maxTime = maxTime;
-        currentTime = maxTime;
-    }
-    Vector3 localOffset;
-    public void setLocalOffset(Vector3 offset)
-    {
-        localOffset = offset;
+        currentOffsets = offsets;
+        if (offsets.time > maxTime)
+        {
+            maxTime = offsets.time;
+        }
     }
     private void Start()
     {
@@ -37,10 +37,19 @@ public abstract class IndicatorInstance : NetworkBehaviour
         }
     }
 
-    protected void Update()
+    public void ServerUpdate()
     {
-        currentTime -= Time.deltaTime;
-        setCurrentProgress(Mathf.Max(maxTime - currentTime, 0) / maxTime);
+        float progress;
+        if (maxTime == 0)
+        {
+            progress = 0;
+        }
+        else
+        {
+            progress = Mathf.Max(maxTime - currentOffsets.time, 0) / maxTime;
+        }
+
+        setCurrentProgress(progress);
 
         setLocalPosition();
     }
@@ -62,7 +71,7 @@ public abstract class IndicatorInstance : NetworkBehaviour
             forward.Normalize();
 
             transform.localPosition = s.indicatorHeight * Vector3.down
-                + s.scaledRadius * forward + localOffset;
+                + s.scaledRadius * forward + currentOffsets.distance;
 
             //TODO indcator width should change based on the slope
         }

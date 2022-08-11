@@ -4,10 +4,10 @@ public class AttackingState : PlayerMovementState
 {
     Ability castingAbility;
 
-    StateMachine<PlayerMovementState> attackMachine;
+    StateMachine<AttackStageState> attackMachine;
     bool ended = false;
 
-    List<PlayerMovementState> currentStates;
+    List<AttackStageState> currentStates;
 
 
     public AttackingState(UnitMovement m, Ability atk) : base(m)
@@ -15,17 +15,20 @@ public class AttackingState : PlayerMovementState
         castingAbility = atk;
     }
 
+    bool init = false;
     public override void enter()
     {
         currentStates = castingAbility.cast(mover);
-        attackMachine = new StateMachine<PlayerMovementState>(getNextState);
-
+        mover.GetComponent<Cast>().buildIndicator(currentStates);
+        attackMachine = new StateMachine<AttackStageState>(getNextState);
+        init = true;
     }
 
     public override void exit(bool expired)
     {
         castingAbility.startCooldown();
         attackMachine.exit();
+        mover.GetComponent<Cast>().killIndicators();
     }
     public override void tick()
     {
@@ -50,12 +53,17 @@ public class AttackingState : PlayerMovementState
         return base.transition();
     }
 
-    PlayerMovementState getNextState()
+    AttackStageState getNextState()
     {
         if (currentStates.Count > 0)
         {
-            PlayerMovementState s = currentStates[0];
+            AttackStageState s = currentStates[0];
             currentStates.RemoveAt(0);
+            if (init)
+            {
+                mover.GetComponent<Cast>().nextStage();
+            }
+
             return s;
         }
         ended = true;

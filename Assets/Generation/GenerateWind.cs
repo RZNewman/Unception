@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Cast;
 using static GenerateAttack;
 using static Utils;
+using static WindState;
 
 public static class GenerateWind
 {

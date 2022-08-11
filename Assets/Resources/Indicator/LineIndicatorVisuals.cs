@@ -4,8 +4,8 @@ using static GenerateHit;
 
 public class LineIndicatorVisuals : IndicatorInstance
 {
-    [SyncVar]
-    protected HitInstanceData data;
+    //TODO RZN Client sync on state
+    protected ActionState state;
 
 
     public GameObject mask;
@@ -17,14 +17,14 @@ public class LineIndicatorVisuals : IndicatorInstance
     float width;
     // Start is called before the first frame update
 
-    public void setPosition(HitInstanceData hit)
+    public void setSource(ActionState s)
     {
-        data = hit;
+        state = s;
         reposition();
     }
     protected override void reposition()
     {
-        HitInstanceData hit = (HitInstanceData)data;
+        HitInstanceData hit = state.getSource();
 
         length = hit.length;
         width = hit.width;

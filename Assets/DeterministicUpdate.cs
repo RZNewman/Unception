@@ -37,5 +37,9 @@ public class DeterministicUpdate : NetworkBehaviour
         {
             unit.moveTick();
         }
+        foreach (UnitUpdateOrder unit in unitList)
+        {
+            unit.IndicatorTick();
+        }
     }
 }

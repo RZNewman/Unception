@@ -52,7 +52,7 @@ public class Ability : NetworkBehaviour
             return attackFilled.getCooldown();
         }
     }
-    public List<PlayerMovementState> cast(UnitMovement mover)
+    public List<AttackStageState> cast(UnitMovement mover)
     {
         cooldownCurrent = cooldownMax;
         return attackFilled.buildStates(mover);

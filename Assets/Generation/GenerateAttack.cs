@@ -8,6 +8,7 @@ using static GenerateWind;
 using static GenerateHit;
 using static GenerateDash;
 using static WindState;
+using static Cast;
 
 public static class GenerateAttack
 {
@@ -22,19 +23,13 @@ public static class GenerateAttack
     }
     public abstract class InstanceData
     {
-
-    }
-
-    public abstract class InstanceDataEffect : InstanceData
-    {
-        public abstract EffectiveDistance GetEffectiveDistance();
-
-        public virtual IndicatorOffsets GetIndicatorOffsets()
+        public virtual EffectiveDistance GetEffectiveDistance()
         {
-            return new IndicatorOffsets
+            return new EffectiveDistance()
             {
-                distance = Vector3.zero,
-                time = 0,
+                distance = 0,
+                width = 0,
+                type = EffectiveDistanceType.None,
             };
         }
     }

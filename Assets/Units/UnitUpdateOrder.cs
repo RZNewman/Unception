@@ -6,6 +6,7 @@ public class UnitUpdateOrder : NetworkBehaviour
     Health health;
     Posture posture;
     Stamina stamina;
+    Cast cast;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +17,7 @@ public class UnitUpdateOrder : NetworkBehaviour
             posture = GetComponent<Posture>();
             move = GetComponent<UnitMovement>();
             stamina = GetComponent<Stamina>();
+            cast = GetComponent<Cast>();
         }
 
     }
@@ -50,5 +52,9 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void moveTransition()
     {
         move.ServerTransition();
+    }
+    public void IndicatorTick()
+    {
+        cast.ServerUpdate();
     }
 }

@@ -3,7 +3,7 @@ using static GenerateDash;
 using static UnitControl;
 using static UnitMovement;
 
-public class DashState : PlayerMovementState
+public class DashState : AttackStageState
 {
     DashInstanceData opts;
     bool isAttack;
@@ -54,6 +54,10 @@ public class DashState : PlayerMovementState
         }
         return base.transition();
     }
+    public DashInstanceData getSource()
+    {
+        return opts;
+    }
 
     public override void tick()
     {
@@ -61,5 +65,13 @@ public class DashState : PlayerMovementState
 
         mover.dash(inpSnapshot, opts.speed, opts.control);
 
+    }
+    public override Cast.IndicatorOffsets GetIndicatorOffsets()
+    {
+        return new Cast.IndicatorOffsets
+        {
+            distance = Vector3.forward * opts.distance * currentDurration / (opts.distance / opts.speed),
+            time = currentDurration,
+        };
     }
 }

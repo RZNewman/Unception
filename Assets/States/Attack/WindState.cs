@@ -5,131 +5,67 @@ using static GenerateHit;
 using static GenerateWind;
 using static GenerateDash;
 using System.Collections.Generic;
+using static UnitControl;
 
-public class WindState : AttackState
+public class WindState : AttackStageState, BarValue
 {
-    List<GameObject> indicators = new List<GameObject>();
-    List<InstanceDataEffect> previewData;
-    bool hasIndicator = false;
+    bool ending;
 
-    public struct IndicatorOffsets
-    {
-        public float time;
-        public Vector3 distance;
-
-        public IndicatorOffsets sum(IndicatorOffsets b)
-        {
-            return new IndicatorOffsets
-            {
-                time = time + b.time,
-                distance = distance + b.distance,
-            };
-        }
-    }
 
     public WindState(UnitMovement m, float d) : base(m, d)
     {
         //Only for defaults
-        hasIndicator = false;
+        ending = false;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d) : base(m, d.duration)
+    public WindState(UnitMovement m, WindInstanceData d, bool end = false) : base(m, d.duration)
     {
-        hasIndicator = false;
+        ending = end;
         moveMultiplier = d.moveMult;
         lookMultiplier = d.turnMult;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d, List<InstanceDataEffect> previews) : base(m, d.duration)
-    {
-        previewData = previews;
-        hasIndicator = previews.Count > 0;
-        moveMultiplier = d.moveMult;
-        lookMultiplier = d.turnMult;
-    }
     public override void enter()
     {
         GameObject target = mover.getSpawnBody();
         target.GetComponentInParent<Cast>().setTarget(this);
-        if (hasIndicator)
-        {
 
-            buildIndicator(target, mover.GetComponent<Power>().scale());
-
-        }
 
     }
-
-    void buildIndicator(GameObject target, float scale)
+    public override void tick()
     {
-        IndicatorOffsets offsets = new IndicatorOffsets
-        {
-            distance = Vector2.zero,
-            time = 0,
-        };
-        foreach (InstanceDataEffect preview in previewData)
-        {
-            IndicatorInstance i;
-            GameObject indicator;
-            switch (preview)
-            {
-                case HitInstanceData attackData:
-                    indicator = Object.Instantiate(
-                    Resources.Load("Indicator/LineIndicator") as GameObject,
-                        target.transform
-                    );
-                    LineIndicatorVisuals l = indicator.GetComponent<LineIndicatorVisuals>();
-                    l.setPosition(attackData);
-                    i = l;
-                    break;
-                case DashInstanceData dashData:
-                    indicator = Object.Instantiate(
-                    Resources.Load("Indicator/DashIndicator") as GameObject,
-                        target.transform
-                    );
-                    DashIndicatorVisuals d = indicator.GetComponent<DashIndicatorVisuals>();
-                    d.setPosition(dashData, scale);
-                    i = d;
-                    break;
-                default:
-                    throw new System.Exception("Indicator not assigned!");
-            }
-            i.setTeam(mover.GetComponent<TeamOwnership>().getTeam());
-            i.setLocalOffset(offsets.distance);
-            i.setTime(currentDurration + offsets.time);
-            ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
-            adoptee.parent = target.GetComponentInParent<NetworkIdentity>().gameObject;
-            adoptee.useSubBody = true;
-            NetworkServer.Spawn(indicator);
-            indicators.Add(indicator);
-            offsets = offsets.sum(preview.GetIndicatorOffsets());
-        }
+        base.tick();
+        UnitInput inp = mover.input;
 
 
+        mover.rotate(inp, lookMultiplier);
+        mover.move(inp, moveMultiplier, moveMultiplier);
 
 
     }
+
 
     public override void exit(bool expired)
     {
         GameObject target = mover.getSpawnBody();
         target.GetComponentInParent<Cast>().removeTarget();
-        if (hasIndicator)
-        {
-            foreach (GameObject indicator in indicators)
-            {
-                Object.Destroy(indicator);
-            }
-
-        }
     }
 
-    public BarValue.BarData getProgress()
+    public override Cast.IndicatorOffsets GetIndicatorOffsets()
+    {
+        return new Cast.IndicatorOffsets
+        {
+            distance = Vector3.zero,
+            time = currentDurration,
+        };
+    }
+
+    public BarValue.BarData getBarFill()
     {
         return new BarValue.BarData
         {
-            color = hasIndicator ? Color.cyan : new Color(0, 0.6f, 1),
-            fillPercent = Mathf.Clamp01(hasIndicator ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
+            color = !ending ? Color.cyan : new Color(0, 0.6f, 1),
+            fillPercent = Mathf.Clamp01(!ending ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
             active = true,
         };
     }

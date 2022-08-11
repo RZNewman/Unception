@@ -21,10 +21,10 @@ public class DashIndicatorVisuals : IndicatorInstance
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
-    public void setSource(DashState dash, float scale)
+    public void setSource(DashState dash, Power p)
     {
         state = dash;
-        this.scale = scale;
+        scale = p.scale();
         reposition();
     }
 

@@ -27,7 +27,7 @@ public class AttackBlockFilled : ScriptableObject
                     states.Add(new ActionState(controller, hit));
                     break;
                 case DashInstanceData dash:
-                    states.Add(new DashState(controller, dash));
+                    states.Add(new DashState(controller, dash, true));
                     break;
 
 

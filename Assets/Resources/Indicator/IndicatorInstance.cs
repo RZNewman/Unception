@@ -49,8 +49,8 @@ public abstract class IndicatorInstance : NetworkBehaviour
             progress = Mathf.Max(maxTime - currentOffsets.time, 0) / maxTime;
         }
 
+        updateColor();
         setCurrentProgress(progress);
-
         setLocalPosition();
     }
 
@@ -91,7 +91,28 @@ public abstract class IndicatorInstance : NetworkBehaviour
         }
         else
         {
-            setColor(GameColors.EnemyIndicator);
+            Color middle = GameColors.EnemyIndicator;
+            Color low = middle;
+            low.a = 0.1f;
+            Color high = GameColors.EnemyIndicatorHigh;
+
+            float threat = getThreat();
+
+            Color output;
+            if (threat <= 1)
+            {
+                output = Color.Lerp(low, middle, threat);
+            }
+            else
+            {
+                output = Color.Lerp(middle, high, (threat - 1) / 3.0f);
+            }
+            setColor(output);
         }
+    }
+
+    protected virtual float getThreat()
+    {
+        return 1.0f;
     }
 }

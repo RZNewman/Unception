@@ -15,6 +15,7 @@ public class LocalPlayer : NetworkBehaviour
             Instantiate(localCameraPre, transform);
             Instantiate(localClickPre, transform);
             GameObject.FindGameObjectWithTag("LocalCanvas").GetComponent<UnitUiReference>().setTarget(gameObject);
+            FindObjectOfType<GlobalPlayer>().setLocalPlayer(gameObject);
             gameObject.GetComponentInChildren<UnitUiReference>().gameObject.SetActive(false);
             CmdPlayerObject();
             if (isClientOnly)

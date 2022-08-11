@@ -60,4 +60,8 @@ public class LineIndicatorVisuals : IndicatorInstance
         progress.transform.localPosition = new Vector3(0, length_percent / 2);
     }
 
+    protected override float getThreat()
+    {
+        return state.getSource().relativePower / FindObjectOfType<GlobalPlayer>().localPower;
+    }
 }

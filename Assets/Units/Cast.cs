@@ -73,7 +73,7 @@ public class Cast : MonoBehaviour, BarValue
     {
 
         GameObject indicatorBody = GetComponent<UnitMovement>().getSpawnBody();
-        float scale = GetComponent<Power>().scale();
+        Power pow = GetComponent<Power>();
         foreach (AttackStageState stage in stages)
         {
             IndicatorInstance i = null;
@@ -95,7 +95,7 @@ public class Cast : MonoBehaviour, BarValue
                         indicatorBody.transform
                     );
                     DashIndicatorVisuals d = indicator.GetComponent<DashIndicatorVisuals>();
-                    d.setSource(dashData, scale);
+                    d.setSource(dashData, pow);
                     i = d;
                     break;
 

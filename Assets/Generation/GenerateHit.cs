@@ -32,6 +32,8 @@ public static class GenerateHit
 
             return new HitInstanceData
             {
+                relativePower = power * strength,
+
                 length = length,
                 width = width,
                 knockback = knockback,
@@ -52,6 +54,8 @@ public static class GenerateHit
     }
     public class HitInstanceData : InstanceData
     {
+        public float relativePower;
+
         public float length;
         public float width;
         public float knockback;
@@ -59,6 +63,7 @@ public static class GenerateHit
         public float stagger;
         public KnockBackType knockBackType;
         public float knockUp;
+
 
         public override EffectiveDistance GetEffectiveDistance()
         {

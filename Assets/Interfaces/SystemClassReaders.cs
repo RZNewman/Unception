@@ -7,6 +7,15 @@ public static class SystemClassReaders
     {
         return (UnitControl.AttackKey)reader.ReadByte();
     }
+    public static GenerateHit.KnockBackType ReadKnockBackType(this NetworkReader reader)
+    {
+        return (GenerateHit.KnockBackType)reader.ReadByte();
+    }
+    public static GenerateHit.HitType ReadHitType(this NetworkReader reader)
+    {
+        return (GenerateHit.HitType)reader.ReadByte();
+    }
+
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
         float strengthFactor = reader.ReadFloat();
@@ -17,12 +26,13 @@ public static class SystemClassReaders
                 return new GenerateHit.HitGenerationData
                 {
                     strengthFactor = strengthFactor,
+                    type = reader.ReadHitType(),
                     length = reader.ReadFloat(),
                     width = reader.ReadFloat(),
                     knockback = reader.ReadFloat(),
                     damageMult = reader.ReadFloat(),
                     stagger = reader.ReadFloat(),
-                    knockBackType = reader.ReadFloat(),
+                    knockBackType = reader.ReadKnockBackType(),
                     knockUp = reader.ReadFloat(),
                 };
             case GenerationDataClass.Wind:

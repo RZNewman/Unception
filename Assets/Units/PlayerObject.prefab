@@ -255,6 +255,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
+  ProjectilePre: {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
 --- !u!114 &3406968442906714346
 MonoBehaviour:
   m_ObjectHideFlags: 0

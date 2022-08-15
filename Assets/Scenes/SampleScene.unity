@@ -439,6 +439,7 @@ MonoBehaviour:
   - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   - {fileID: 8249178311684600747, guid: 05e06d80a90a323489ea3df1356e6821, type: 3}
   - {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
+  - {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
 --- !u!4 &449408942
 Transform:
   m_ObjectHideFlags: 0
@@ -1006,6 +1007,7 @@ GameObject:
   - component: {fileID: 1202127497}
   - component: {fileID: 1202127496}
   - component: {fileID: 1202127499}
+  - component: {fileID: 1202127500}
   m_Layer: 0
   m_Name: UpdateManager
   m_TagString: Untagged
@@ -1070,6 +1072,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d892e841a70dcd4cb08d7590fff8919, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1202127500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202127495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4ba86a241ddb649a94a1dbdfd127af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
+  ProjectilePre: {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
 --- !u!1001 &1291812986
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -7,6 +7,14 @@ public static class SystemClassWriters
     {
         writer.WriteByte((byte)key);
     }
+    public static void WriteKnockBackType(this NetworkWriter writer, GenerateHit.KnockBackType key)
+    {
+        writer.WriteByte((byte)key);
+    }
+    public static void WriteHitType(this NetworkWriter writer, GenerateHit.HitType key)
+    {
+        writer.WriteByte((byte)key);
+    }
 
 
     public enum GenerationDataClass : byte
@@ -28,12 +36,13 @@ public static class SystemClassWriters
                 break;
             case GenerateHit.HitGenerationData a:
                 writer.WriteByte((byte)GenerationDataClass.Hit);
+                writer.WriteHitType(a.type);
                 writer.WriteFloat(a.length);
                 writer.WriteFloat(a.width);
                 writer.WriteFloat(a.knockback);
                 writer.WriteFloat(a.damageMult);
                 writer.WriteFloat(a.stagger);
-                writer.WriteFloat(a.knockBackType);
+                writer.WriteKnockBackType(a.knockBackType);
                 writer.WriteFloat(a.knockUp);
                 break;
             case GenerateDash.DashGenerationData d:

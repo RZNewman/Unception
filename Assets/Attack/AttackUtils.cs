@@ -1,13 +1,55 @@
+using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public static class InstantHit
+using static GenerateHit;
+
+public static class AttackUtils
 {
-    public static List<GameObject> LineAttack(Transform body, float raduis, float halfHeight, float length, float width)
+    public static void hit(GameObject other, UnitMovement mover, HitInstanceData hitData)
+    {
+        if (other.GetComponentInParent<TeamOwnership>().getTeam() != mover.GetComponent<TeamOwnership>().getTeam())
+        {
+            Health h = other.GetComponentInParent<Health>();
+            other.GetComponentInParent<Combat>().getHit(mover.gameObject);
+            h.takeDamage(hitData.damageMult * mover.GetComponent<Power>().power);
+            other.GetComponentInParent<Posture>().takeStagger(hitData.stagger);
+            switch (hitData.knockBackType)
+            {
+                case KnockBackType.inDirection:
+                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * mover.getSpawnBody().transform.forward);
+                    break;
+                case KnockBackType.fromCenter:
+                    Vector3 dir = other.transform.position - mover.transform.position;
+                    dir.y = 0;
+                    dir.Normalize();
+                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * dir);
+                    break;
+            }
+            other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockUp * Vector3.up);
+        }
+    }
+
+
+
+
+    public static void SpawnProjectile(Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData)
+    {
+        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
+        Vector3 bodyFocus = body.position + body.forward * radius;
+        GameObject instance = GameObject.Instantiate(prefab, bodyFocus, body.rotation);
+        Projectile p = instance.GetComponent<Projectile>();
+        float hitRadius = hitData.width / 2;
+        float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
+        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData);
+        NetworkServer.Spawn(instance);
+    }
+    public static List<GameObject> LineAttack(Transform body, float radius, float halfHeight, float length, float width)
     {
         float playerHeightOversize = halfHeight * 2 * 1.5f;
         List<GameObject> hits = new List<GameObject>();
         List<GameObject> tempHits = new List<GameObject>();
-        Vector3 bodyFocus = body.position + body.forward * raduis;
+        Vector3 bodyFocus = body.position + body.forward * radius;
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
         Vector3 boxCenter = bodyFocus + maxDistance * 0.5f * body.forward;

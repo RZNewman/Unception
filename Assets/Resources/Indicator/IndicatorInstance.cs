@@ -85,30 +85,43 @@ public abstract class IndicatorInstance : NetworkBehaviour
 
     void updateColor()
     {
-        if (teamOwner == 1u)
+        float threat = getThreat();
+        setColor(getIndicatorColor(teamOwner, threat));
+    }
+
+    public static Color getIndicatorColor(uint team, float threat)
+    {
+        if (team == 1u)
         {
-            setColor(GameColors.FriendIndicator);
+            return GameColors.FriendIndicator;
         }
         else
         {
-            Color middle = GameColors.EnemyIndicator;
-            Color low = middle;
-            low.a = 0.1f;
-            Color high = GameColors.EnemyIndicatorHigh;
 
-            float threat = getThreat();
 
-            Color output;
-            if (threat <= 1)
-            {
-                output = Color.Lerp(low, middle, threat);
-            }
-            else
-            {
-                output = Color.Lerp(middle, high, (threat - 1) / 3.0f);
-            }
-            setColor(output);
+
+            return getEnemyThreatColor(threat);
         }
+    }
+
+    public static Color getEnemyThreatColor(float threat)
+    {
+        Color middle = GameColors.EnemyIndicator;
+        Color low = middle;
+        low.a = 0.1f;
+        Color high = GameColors.EnemyIndicatorHigh;
+
+        Color output;
+        if (threat <= 1)
+        {
+            output = Color.Lerp(low, middle, threat);
+        }
+        else
+        {
+            output = Color.Lerp(middle, high, (threat - 1) / 3.0f);
+        }
+        return output;
+
     }
 
     protected virtual float getThreat()

@@ -38,7 +38,7 @@ public class DashIndicatorVisuals : IndicatorInstance
         line.transform.localScale = new Vector3(width, length);
         line.transform.localPosition = new Vector3(0, length / 2);
 
-        Vector3 arrowScale = new Vector3(0.1f, 0.04f) * scale;
+        Vector3 arrowScale = new Vector3(0.5f, 0.2f) * scale;
         tip.transform.localScale = arrowScale;
         tip.transform.localPosition = new Vector3(0, length);
 

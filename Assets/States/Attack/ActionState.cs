@@ -3,6 +3,7 @@ using UnityEngine;
 using static GenerateAttack;
 using static GenerateHit;
 using static UnitControl;
+using static AttackUtils;
 
 public class ActionState : AttackStageState
 {
@@ -15,31 +16,23 @@ public class ActionState : AttackStageState
     {
         GameObject body = mover.getSpawnBody();
         Size s = body.GetComponentInChildren<Size>();
-        List<GameObject> hits = InstantHit.LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
-        foreach (GameObject o in hits)
+        switch (attackData.type)
         {
-            if (o.GetComponentInParent<TeamOwnership>().getTeam() != mover.GetComponent<TeamOwnership>().getTeam())
-            {
-                Health h = o.GetComponentInParent<Health>();
-                o.GetComponentInParent<Combat>().getHit(mover.gameObject);
-                h.takeDamage(attackData.damageMult * mover.GetComponent<Power>().power);
-                o.GetComponentInParent<Posture>().takeStagger(attackData.stagger);
-                switch (attackData.knockBackType)
-                {
-                    case KnockBackType.inDirection:
-                        o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockback * mover.getSpawnBody().transform.forward);
-                        break;
-                    case KnockBackType.fromCenter:
-                        Vector3 dir = o.transform.position - mover.transform.position;
-                        dir.y = 0;
-                        dir.Normalize();
-                        o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockback * dir);
-                        break;
-                }
-                o.GetComponentInParent<UnitMovement>().applyForce(attackData.knockUp * Vector3.up);
-            }
+            case HitType.Line:
 
+
+                List<GameObject> hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                foreach (GameObject o in hits)
+                {
+                    hit(o, mover, attackData);
+
+                }
+                break;
+            case HitType.Projectile:
+                SpawnProjectile(body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
+                break;
         }
+
     }
 
     public override Cast.IndicatorOffsets GetIndicatorOffsets()

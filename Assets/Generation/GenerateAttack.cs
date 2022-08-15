@@ -118,7 +118,7 @@ public static class GenerateAttack
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
 
-        if (gen < 0.5f)
+        if (gen < 0.2f)
         {
             DashGenerationData d = createDash();
             HitGenerationData h = createHit();

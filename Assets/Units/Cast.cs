@@ -81,13 +81,29 @@ public class Cast : MonoBehaviour, BarValue
             switch (stage)
             {
                 case ActionState attackData:
-                    indicator = Object.Instantiate(
+                    switch (attackData.getSource().type)
+                    {
+                        case HitType.Line:
+                            indicator = Object.Instantiate(
                     Resources.Load("Indicator/LineIndicator") as GameObject,
                         indicatorBody.transform
                     );
-                    LineIndicatorVisuals l = indicator.GetComponent<LineIndicatorVisuals>();
-                    l.setSource(attackData);
-                    i = l;
+                            LineIndicatorVisuals l = indicator.GetComponent<LineIndicatorVisuals>();
+                            l.setSource(attackData);
+                            i = l;
+                            break;
+                        case HitType.Projectile:
+                            indicator = Object.Instantiate(
+                    Resources.Load("Indicator/ProjectileIndicator") as GameObject,
+                        indicatorBody.transform
+                    );
+                            ProjectileIndicatorVisuals p = indicator.GetComponent<ProjectileIndicatorVisuals>();
+                            p.setSource(attackData);
+                            i = p;
+                            break;
+
+                    }
+
                     break;
                 case DashState dashData:
                     indicator = Object.Instantiate(

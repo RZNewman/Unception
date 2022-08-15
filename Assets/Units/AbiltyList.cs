@@ -5,7 +5,6 @@ using static UnitControl;
 
 public class AbiltyList : NetworkBehaviour
 {
-    public GameObject AbilityRootPre;
 
 
     List<AttackBlock> abilitiesToCreate = new List<AttackBlock>();
@@ -31,7 +30,7 @@ public class AbiltyList : NetworkBehaviour
     }
     void instanceAbility(AttackBlock block)
     {
-        GameObject o = Instantiate(AbilityRootPre, transform);
+        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
         a.setFormat(block);
         AttackKey k = (AttackKey)instancedAbilitites.Count;

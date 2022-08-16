@@ -6,21 +6,29 @@ using static GenerateHit;
 
 public static class AttackUtils
 {
-    public static void hit(GameObject other, UnitMovement mover, HitInstanceData hitData)
+    public struct KnockBackVectors
     {
-        if (other.GetComponentInParent<TeamOwnership>().getTeam() != mover.GetComponent<TeamOwnership>().getTeam())
+        public Vector3 center;
+        public Vector3 direction;
+    }
+    public static void hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData)
+    {
+        if (other.GetComponentInParent<TeamOwnership>().getTeam() != team)
         {
             Health h = other.GetComponentInParent<Health>();
-            other.GetComponentInParent<Combat>().getHit(mover.gameObject);
-            h.takeDamage(hitData.damageMult * mover.GetComponent<Power>().power);
+            if (mover)
+            {
+                other.GetComponentInParent<Combat>().getHit(mover.gameObject);
+            }
+            h.takeDamage(hitData.damageMult * power);
             other.GetComponentInParent<Posture>().takeStagger(hitData.stagger);
             switch (hitData.knockBackType)
             {
                 case KnockBackType.inDirection:
-                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * mover.getSpawnBody().transform.forward);
+                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * knockbackData.direction);
                     break;
                 case KnockBackType.fromCenter:
-                    Vector3 dir = other.transform.position - mover.transform.position;
+                    Vector3 dir = other.transform.position - knockbackData.center;
                     dir.y = 0;
                     dir.Normalize();
                     other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * dir);

@@ -17,6 +17,8 @@ public class Projectile : NetworkBehaviour
     float birth;
 
     UnitMovement mover;
+    uint team;
+    float powerSnapshot;
 
     [SyncVar]
     HitInstanceData hitInstance;
@@ -36,6 +38,8 @@ public class Projectile : NetworkBehaviour
     public void init(float terrainRadius, float playerRadius, float halfHeight, UnitMovement m, HitInstanceData hitData)
     {
         mover = m;
+        team = mover.GetComponent<TeamOwnership>().getTeam();
+        powerSnapshot = mover.GetComponent<Power>().power;
         terrainHit.transform.localScale = new Vector3(terrainRadius, terrainRadius, terrainRadius) * 2;
         playerHit.transform.localScale = new Vector3(playerRadius, Mathf.Max(halfHeight / 2, playerRadius / 2), playerRadius) * 2;
         float speed = hitData.length / ProjectileLifetime;
@@ -58,7 +62,7 @@ public class Projectile : NetworkBehaviour
     {
         if (!collided.Contains(other))
         {
-            hit(other.gameObject, mover, hitInstance);
+            hit(other.gameObject, mover, hitInstance, team, powerSnapshot, new KnockBackVectors { center = transform.position, direction = transform.forward });
             collided.Add(other);
         }
 

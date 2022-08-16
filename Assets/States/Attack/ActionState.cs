@@ -24,7 +24,14 @@ public class ActionState : AttackStageState
                 List<GameObject> hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
                 foreach (GameObject o in hits)
                 {
-                    hit(o, mover, attackData);
+                    hit(o, mover, attackData,
+                        mover.GetComponent<TeamOwnership>().getTeam(),
+                        mover.GetComponent<Power>().power,
+                        new KnockBackVectors
+                        {
+                            center = mover.transform.position,
+                            direction = mover.getSpawnBody().transform.forward
+                        });
 
                 }
                 break;

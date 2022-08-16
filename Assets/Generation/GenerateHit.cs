@@ -41,11 +41,11 @@ public static class GenerateHit
             float knockback = this.knockback.asRange(0, 6) * scale * strength;
             float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
             float stagger = this.stagger.asRange(0f, 70f) * scale * strength;
-            float knockUp = this.knockUp.asRange(0, 30) * scale * strength;
+            float knockUp = this.knockUp.asRange(0, 20) * scale * strength;
 
             HitInstanceData baseData = new HitInstanceData
             {
-                relativePower = power * strength,
+                powerByStrength = power * strength,
 
                 length = length,
                 width = width,
@@ -69,7 +69,7 @@ public static class GenerateHit
                     return new HitInstanceData
                     {
                         type = HitType.Projectile,
-                        relativePower = input.relativePower,
+                        powerByStrength = input.powerByStrength,
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,
@@ -89,7 +89,7 @@ public static class GenerateHit
 
     public class HitInstanceData : InstanceData
     {
-        public float relativePower;
+        public float powerByStrength;
 
         public HitType type;
         public float length;

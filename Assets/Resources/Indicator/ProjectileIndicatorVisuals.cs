@@ -50,6 +50,6 @@ public class ProjectileIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().relativePower / FindObjectOfType<GlobalPlayer>().localPower;
+        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
     }
 }

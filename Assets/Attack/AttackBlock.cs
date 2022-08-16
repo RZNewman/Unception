@@ -5,7 +5,7 @@ using static GenerateAttack;
 public class AttackBlock : ScriptableObject
 {
     public AttackGenerationData source;
-    public float power;
+    public float powerAtGeneration;
     public bool scales;
 
 

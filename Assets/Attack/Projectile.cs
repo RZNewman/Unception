@@ -50,7 +50,7 @@ public class Projectile : NetworkBehaviour
     }
     public void setThreatColor()
     {
-        float threat = hitInstance.relativePower / FindObjectOfType<GlobalPlayer>().localPower;
+        float threat = hitInstance.powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
         Color c = getIndicatorColor(mover.GetComponent<TeamOwnership>().getTeam(), threat);
         playerHit.GetComponent<ColorIndividual>().setColor(c);
         c.a = Mathf.Clamp01(c.a + 0.2f);

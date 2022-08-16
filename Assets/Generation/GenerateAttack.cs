@@ -108,7 +108,7 @@ public static class GenerateAttack
             cooldown = noCooldown ? 0 : GaussRandomDecline(4),
         };
         block.source = atk;
-        block.power = power;
+        block.powerAtGeneration = power;
         return block;
 
     }
@@ -141,7 +141,7 @@ public static class GenerateAttack
     {
         if (power < 0)
         {
-            power = block.power;
+            power = block.powerAtGeneration;
         }
         AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;

@@ -7,13 +7,19 @@ public class LocalCamera : MonoBehaviour
     float lastMag = 0;
     readonly float transitionTime = 1f;
     float currentTransition = 1f;
+    Camera cam;
 
+    private void Awake()
+    {
+        cam = GetComponent<Camera>();
+    }
     // Start is called before the first frame update
     void Start()
     {
         localPosition = transform.localPosition;
         lastMag = localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
+
     }
 
     void scaleCameraSize(Power p)
@@ -21,6 +27,7 @@ public class LocalCamera : MonoBehaviour
         targetPosition = localPosition * p.scale();
         currentTransition = 0;
         lastMag = transform.localPosition.magnitude;
+        //cam.nearClipPlane = 1.0f * p.scale();
 
     }
     private void Update()

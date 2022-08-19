@@ -22,18 +22,29 @@ public static class AttackUtils
             }
             h.takeDamage(hitData.damageMult * power);
             other.GetComponentInParent<Posture>().takeStagger(hitData.stagger);
+            Vector3 knockBackVec;
             switch (hitData.knockBackType)
             {
                 case KnockBackType.inDirection:
-                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * knockbackData.direction);
+                    knockBackVec = hitData.knockback * knockbackData.direction;
+
                     break;
                 case KnockBackType.fromCenter:
                     Vector3 dir = other.transform.position - knockbackData.center;
                     dir.y = 0;
                     dir.Normalize();
-                    other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockback * dir);
+                    knockBackVec = hitData.knockback * dir;
+                    break;
+                default:
+                    throw new System.Exception("No kb type");
+            }
+            switch (hitData.knockBackDirection)
+            {
+                case KnockBackDirection.Backward:
+                    knockBackVec *= -1;
                     break;
             }
+            other.GetComponentInParent<UnitMovement>().applyForce(knockBackVec);
             other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockUp * Vector3.up);
         }
     }

@@ -19,8 +19,6 @@ public class ActionState : AttackStageState
         switch (attackData.type)
         {
             case HitType.Line:
-
-
                 List<GameObject> hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
                 foreach (GameObject o in hits)
                 {

@@ -11,12 +11,18 @@ public static class GenerateHit
     public enum HitType : byte
     {
         Line,
-        Projectile
+        Projectile,
+        Ground
     }
     public enum KnockBackType : byte
     {
         inDirection,
         fromCenter
+    }
+    public enum KnockBackDirection : byte
+    {
+        Foward,
+        Backward
     }
     public class HitGenerationData : GenerationData
     {
@@ -28,7 +34,7 @@ public static class GenerateHit
         public float stagger;
         public float knockUp;
         public KnockBackType knockBackType;
-        //public float knockBackDirection;
+        public KnockBackDirection knockBackDirection;
 
 
 
@@ -51,6 +57,7 @@ public static class GenerateHit
                 width = width,
                 knockback = knockback,
                 knockBackType = this.knockBackType,
+                knockBackDirection = this.knockBackDirection,
                 damageMult = damage,
                 stagger = stagger,
                 knockUp = knockUp,
@@ -73,8 +80,23 @@ public static class GenerateHit
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,
-                        length = input.length * 3f,
+                        length = input.length * 4f,
                         width = input.width * 0.4f,
+                        damageMult = input.damageMult * 0.8f,
+                        knockUp = input.knockUp,
+                        stagger = input.stagger,
+
+                    };
+                case HitType.Ground:
+                    return new HitInstanceData
+                    {
+                        type = HitType.Ground,
+                        powerByStrength = input.powerByStrength,
+
+                        knockBackType = input.knockBackType,
+                        knockback = input.knockback,
+                        length = input.length * 2f,
+                        width = input.width * 1.3f,
                         damageMult = input.damageMult * 0.9f,
                         knockUp = input.knockUp,
                         stagger = input.stagger,
@@ -98,13 +120,25 @@ public static class GenerateHit
         public float damageMult;
         public float stagger;
         public KnockBackType knockBackType;
+        public KnockBackDirection knockBackDirection;
         public float knockUp;
 
 
         public override EffectiveDistance GetEffectiveDistance()
         {
-            Vector2 max = new Vector2(length, width / 2);
-            return new EffectiveDistance(max.magnitude, max.y);
+
+            switch (type)
+            {
+                case HitType.Line:
+                    Vector2 max = new Vector2(length, width / 2);
+                    return new EffectiveDistance(max.magnitude, max.y);
+                case HitType.Projectile:
+                    return new EffectiveDistance(length, width / 2);
+                case HitType.Ground:
+                    return new EffectiveDistance(length + width / 2, width / 4);
+                default:
+                    return new EffectiveDistance(length, width / 2);
+            }
         }
     }
 
@@ -120,13 +154,40 @@ public static class GenerateHit
             augments.Add(HitAugment.Knockup);
         }
         HitType t;
-        if (Random.value < 0.4f)
+        float r = Random.value;
+        if (r < 0.5f)
+        {
+            t = HitType.Line;
+        }
+        else if (r < 1.1f)
         {
             t = HitType.Projectile;
         }
         else
         {
-            t = HitType.Line;
+            t = HitType.Ground;
+        }
+
+        KnockBackType kbType;
+        r = Random.value;
+        if (r < 0.5f)
+        {
+            kbType = KnockBackType.inDirection;
+        }
+        else
+        {
+            kbType = KnockBackType.fromCenter;
+        }
+
+        KnockBackDirection kbDir;
+        r = Random.value;
+        if (r < 0.8f)
+        {
+            kbDir = KnockBackDirection.Foward;
+        }
+        else
+        {
+            kbDir = KnockBackDirection.Backward;
         }
 
         HitGenerationData hit = new HitGenerationData
@@ -136,7 +197,8 @@ public static class GenerateHit
             knockback = typeValues[2].val,
             damageMult = typeValues[3].val,
             stagger = typeValues[4].val,
-            knockBackType = KnockBackType.inDirection,
+            knockBackType = kbType,
+            knockBackDirection = kbDir,
             type = t
         };
         //TODO knockback dir

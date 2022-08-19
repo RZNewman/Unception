@@ -11,6 +11,10 @@ public static class SystemClassWriters
     {
         writer.WriteByte((byte)key);
     }
+    public static void WriteKnockBackDirection(this NetworkWriter writer, GenerateHit.KnockBackDirection key)
+    {
+        writer.WriteByte((byte)key);
+    }
     public static void WriteHitType(this NetworkWriter writer, GenerateHit.HitType key)
     {
         writer.WriteByte((byte)key);
@@ -43,6 +47,7 @@ public static class SystemClassWriters
                 writer.WriteFloat(a.damageMult);
                 writer.WriteFloat(a.stagger);
                 writer.WriteKnockBackType(a.knockBackType);
+                writer.WriteKnockBackDirection(a.knockBackDirection);
                 writer.WriteFloat(a.knockUp);
                 break;
             case GenerateDash.DashGenerationData d:

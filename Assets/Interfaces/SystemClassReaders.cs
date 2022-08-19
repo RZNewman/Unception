@@ -11,6 +11,10 @@ public static class SystemClassReaders
     {
         return (GenerateHit.KnockBackType)reader.ReadByte();
     }
+    public static GenerateHit.KnockBackDirection ReadKnockBackDirection(this NetworkReader reader)
+    {
+        return (GenerateHit.KnockBackDirection)reader.ReadByte();
+    }
     public static GenerateHit.HitType ReadHitType(this NetworkReader reader)
     {
         return (GenerateHit.HitType)reader.ReadByte();
@@ -33,6 +37,7 @@ public static class SystemClassReaders
                     damageMult = reader.ReadFloat(),
                     stagger = reader.ReadFloat(),
                     knockBackType = reader.ReadKnockBackType(),
+                    knockBackDirection = reader.ReadKnockBackDirection(),
                     knockUp = reader.ReadFloat(),
                 };
             case GenerationDataClass.Wind:

@@ -19,6 +19,7 @@ public class AttackingState : PlayerMovementState
     public override void enter()
     {
         currentStates = castingAbility.cast(mover);
+        //TODO Build indicators only on wind enter
         mover.GetComponent<Cast>().buildIndicator(currentStates);
         attackMachine = new StateMachine<AttackStageState>(getNextState);
         init = true;

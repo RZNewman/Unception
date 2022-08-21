@@ -15,10 +15,6 @@ public static class GenerateAttack
     public abstract class GenerationData
     {
         public float strengthFactor = 1;
-        public virtual WindInstanceData getWindInstance()
-        {
-            return null;
-        }
         public abstract InstanceData populate(float power, float strength);
     }
     public abstract class InstanceData
@@ -37,9 +33,8 @@ public static class GenerateAttack
     //value added for 100% reduced effect (50% speed)
     static readonly float moveValue = 0.15f;
     static readonly float turnValue = 0.07f;
-    static public float getWindValue(params GenerationData[] stages)
+    static public float getWindValue(WindInstanceData[] winds)
     {
-        WindInstanceData[] winds = stages.Select(s => s.getWindInstance()).Where(i => i != null).ToArray();
         float totalTime = winds.Sum(x => x.duration);
         float avgMove = winds.Sum(x => x.moveMult * x.duration) / totalTime;
         float avgTurn = winds.Sum(x => x.turnMult * x.duration) / totalTime;
@@ -56,9 +51,23 @@ public static class GenerateAttack
         return totalTime * moveMult * turnMult;
     }
 
+    //not networked
+    public struct SegmentGenerationData
+    {
+        public WindGenerationData windup;
+        public WindGenerationData winddown;
+        public List<GenerationData> stages;
 
+    }
 
-    //TODO tree + network
+    public struct SegmentInstanceData
+    {
+        public WindInstanceData windup;
+        public WindInstanceData winddown;
+        public InstanceData[] stages;
+
+    }
+
     public struct AttackGenerationData
     {
         public GenerationData[] stages;
@@ -66,40 +75,106 @@ public static class GenerateAttack
     }
     public struct AttackInstanceData
     {
-        public InstanceData[] stages;
+        public SegmentInstanceData[] segments;
         public float cooldown;
     }
 
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
-        float strength = getWindValue(atk.stages);
-
         float cooldownTime = atk.cooldown.asRange(0, 30);
         float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 + 1) + 1;
 
-        strength *= cooldownStrength;
+        List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
+        SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
+
+        for (int i = 0; i < segmentsGen.Count; i++)
+        {
+            SegmentGenerationData segment = segmentsGen[i];
+            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
+            WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
+            float strength = getWindValue(new WindInstanceData[] { up, down });
+            strength *= cooldownStrength;
+
+
+            segmentsInst[i] = new SegmentInstanceData
+            {
+                windup = up,
+                winddown = down,
+                stages = segment.stages.Select(s => s.populate(power, strength * s.strengthFactor)).ToArray(),
+            };
+
+
+        }
 
         return new AttackInstanceData
         {
 
             cooldown = cooldownTime,
-            stages = atk.stages.Select(s => s.populate(power, strength * s.strengthFactor)).ToArray(),
+            segments = segmentsInst,
 
         };
 
+    }
+    public static List<SegmentGenerationData> splitSegments(GenerationData[] stages)
+    {
+        List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
+        SegmentGenerationData segment;
+        segment = new SegmentGenerationData();
+        segment.stages = new List<GenerationData>();
+        bool open = false;
+        foreach (GenerationData state in stages)
+        {
+            if (state is WindGenerationData)
+            {
+                if (!open)
+                {
+                    segment.windup = (WindGenerationData)state;
+                    open = true;
+                }
+                else
+                {
+                    segment.winddown = (WindGenerationData)state;
+                    segments.Add(segment);
+                    segment = new SegmentGenerationData();
+                    segment.stages = new List<GenerationData>();
+                    open = false;
+                }
+
+            }
+            else
+            {
+                segment.stages.Add(state);
+            }
+
+
+        }
+        //Debug.Log(System.String.Join("---", segments.Select(s => System.String.Join(" ", s.stages.Select(j => j.ToString()).ToArray())).ToArray()));
+        return segments;
     }
 
     public static AttackBlock generate(float power, bool noCooldown)
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
-
         List<GenerationData> stages = new List<GenerationData>();
 
-        stages.Add(createWind());
+        int segmentCount = 1;
+        float r = Random.value;
+        if (r < 0.5) //0.2f
+        {
+            segmentCount = 2;
+        }
 
-        stages.AddRange(getEffect());
+        for (int i = 0; i < segmentCount; i++)
+        {
 
-        stages.Add(createWind(0.5f));
+            stages.Add(createWind());
+            stages.AddRange(getEffect());
+            stages.Add(createWind(0.4f));
+
+        }
+
+
+
 
 
         AttackGenerationData atk = new AttackGenerationData

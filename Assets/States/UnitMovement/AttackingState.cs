@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static AttackUtils;
 
 public class AttackingState : PlayerMovementState
 {
@@ -7,7 +8,8 @@ public class AttackingState : PlayerMovementState
     StateMachine<AttackStageState> attackMachine;
     bool ended = false;
 
-    List<AttackStageState> currentStates;
+    List<AttackSegment> segments;
+    AttackSegment currentSegment;
 
 
     public AttackingState(UnitMovement m, Ability atk) : base(m)
@@ -18,9 +20,7 @@ public class AttackingState : PlayerMovementState
     bool init = false;
     public override void enter()
     {
-        currentStates = castingAbility.cast(mover);
-        //TODO Build indicators only on wind enter
-        mover.GetComponent<Cast>().buildIndicator(currentStates);
+        segments = castingAbility.cast(mover);
         attackMachine = new StateMachine<AttackStageState>(getNextState);
         init = true;
     }
@@ -56,21 +56,40 @@ public class AttackingState : PlayerMovementState
 
     AttackStageState getNextState()
     {
-        if (currentStates.Count > 0)
+        AttackStageState s;
+        bool enteredSegment = false;
+        if (!init)
         {
-            AttackStageState s = currentStates[0];
-            currentStates.RemoveAt(0);
-            if (init)
-            {
-                mover.GetComponent<Cast>().nextStage();
-            }
-
-            return s;
+            currentSegment = segments[0];
+            mover.GetComponent<Cast>().buildIndicator(currentSegment.states);
+            s = currentSegment.nextState();
+            enteredSegment = true;
         }
-        ended = true;
-        return new WindState(mover, 1f);
+        else
+        {
+            s = currentSegment.nextState();
+            if (s == null)
+            {
+                segments.RemoveAt(0);
+                if (segments.Count == 0)
+                {
+                    ended = true;
+                    return new WindState(mover, 1f);
+                }
+                currentSegment = segments[0];
+                mover.GetComponent<Cast>().buildIndicator(currentSegment.states);
+                s = currentSegment.nextState();
+                enteredSegment = true;
+            }
+        }
+        if (!enteredSegment)
+        {
+            mover.GetComponent<Cast>().nextStage();
+        }
+        return s;
     }
 
 
-
 }
+
+

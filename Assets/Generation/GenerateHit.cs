@@ -159,7 +159,7 @@ public static class GenerateHit
         {
             t = HitType.Line;
         }
-        else if (r < 1.1f)
+        else if (r < 1.1f) //TODO 0.8f
         {
             t = HitType.Projectile;
         }

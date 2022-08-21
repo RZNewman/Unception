@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
+using static AttackUtils;
 
 public class Ability : NetworkBehaviour
 {
@@ -52,7 +53,7 @@ public class Ability : NetworkBehaviour
             return attackFilled.getCooldown();
         }
     }
-    public List<AttackStageState> cast(UnitMovement mover)
+    public List<AttackSegment> cast(UnitMovement mover)
     {
         cooldownCurrent = cooldownMax;
         return attackFilled.buildStates(mover);

@@ -5,36 +5,43 @@ using static GenerateAttack;
 using static GenerateHit;
 using static GenerateWind;
 using static GenerateDash;
+using static AttackUtils;
 
 public class AttackBlockFilled : ScriptableObject
 {
     public AttackInstanceData instance;
-    public List<AttackStageState> buildStates(UnitMovement controller)
+    public List<AttackSegment> buildStates(UnitMovement controller)
     {
 
 
-        List<AttackStageState> states = new List<AttackStageState>();
-        for (int i = 0; i < instance.stages.Length; i++)
+        List<AttackSegment> segments = new List<AttackSegment>();
+        for (int i = 0; i < instance.segments.Length; i++)
         {
-            InstanceData data = instance.stages[i];
-            switch (data)
+            SegmentInstanceData seg = instance.segments[i];
+            List<AttackStageState> states = new List<AttackStageState>();
+
+            states.Add(new WindState(controller, seg.windup, false));
+            foreach (InstanceData data in seg.stages)
             {
-                case WindInstanceData w:
-                    bool last = i == instance.stages.Length - 1;
-                    states.Add(new WindState(controller, w, last));
-                    break;
-                case HitInstanceData hit:
-                    states.Add(new ActionState(controller, hit));
-                    break;
-                case DashInstanceData dash:
-                    states.Add(new DashState(controller, dash, true));
-                    break;
-
-
+                switch (data)
+                {
+                    case HitInstanceData hit:
+                        states.Add(new ActionState(controller, hit));
+                        break;
+                    case DashInstanceData dash:
+                        states.Add(new DashState(controller, dash, true));
+                        break;
+                }
             }
+
+            states.Add(new WindState(controller, seg.windup, true));
+            segments.Add(new AttackSegment
+            {
+                states = states,
+            });
         }
 
-        return states;
+        return segments;
     }
 
     public float getCooldown()
@@ -51,7 +58,9 @@ public class AttackBlockFilled : ScriptableObject
             type = AiHandler.EffectiveDistanceType.None
         };
 
-        foreach (InstanceData data in instance.stages)
+        //TODO take highest
+        SegmentInstanceData prime = instance.segments[0];
+        foreach (InstanceData data in prime.stages)
         {
             AiHandler.EffectiveDistance e;
 

@@ -16,10 +16,6 @@ public static class GenerateWind
 
         public override InstanceData populate(float power, float strength)
         {
-            return populateRaw();
-        }
-        public WindInstanceData populateRaw()
-        {
             float moveMag = this.moveMult.asRange(-3.0f, 1f);
             bool moveDir = moveMag >= 0;
             float moveMult = moveDir ? 1 + moveMag : 1 / (1 - moveMag);
@@ -33,10 +29,6 @@ public static class GenerateWind
                 moveMult = moveMult,
                 turnMult = turnMult,
             };
-        }
-        public override WindInstanceData getWindInstance()
-        {
-            return populateRaw();
         }
 
 

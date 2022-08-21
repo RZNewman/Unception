@@ -48,6 +48,24 @@ public static class AttackUtils
             other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockUp * Vector3.up);
         }
     }
+    public struct AttackSegment
+    {
+        public List<AttackStageState> states;
+        public GameObject groundTargetInstance;
+
+        public AttackStageState nextState()
+        {
+            if (states.Count == 0)
+            {
+                return null;
+            }
+            AttackStageState state = states[0];
+            states.RemoveAt(0);
+            return state;
+        }
+    }
+
+
 
 
 

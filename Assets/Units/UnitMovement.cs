@@ -93,6 +93,14 @@ public class UnitMovement : NetworkBehaviour
             return controller.GetUnitInput();
         }
     }
+
+    public Vector3 lookWorldPos
+    {
+        get
+        {
+            return transform.position + input.lookOffset;
+        }
+    }
     public Vector3 planarVelocity
     {
         get

@@ -65,13 +65,14 @@ public static class AttackUtils
             {
                 GameObject body = mover.getSpawnBody();
                 Size s = body.GetComponentInChildren<Size>();
-                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.transform.position + mover.input.lookOffset, source.length);
+                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.lookWorldPos, source.length);
                 groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                 windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                 {
                     radius = s.scaledRadius,
                     distance = s.scaledHalfHeight,
                 });
+                action.setGroundTarget(groundTargetInstance);
             }
         }
         public void exitSegment()
@@ -108,7 +109,7 @@ public static class AttackUtils
         Vector3 offset = body.forward * Mathf.Max(Mathf.Min(length, Vector3.Dot(planarDiff, body.forward)), 0);
 
 
-        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + offset, Quaternion.identity);
+        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + offset, body.rotation);
         NetworkServer.Spawn(instance);
         return instance;
     }
@@ -168,6 +169,24 @@ public static class AttackUtils
                 hits.Add(obj);
             }
         }
+
+        return hits;
+
+    }
+    public static List<GameObject> GroundAttack(Vector3 origin, float radius)
+    {
+        List<GameObject> hits = new List<GameObject>();
+
+        RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.forward, 0.0f, LayerMask.GetMask("Players"));
+
+
+
+        foreach (RaycastHit hit in sphereHits)
+        {
+            GameObject obj = hit.collider.gameObject;
+            hits.Add(obj);
+        }
+
 
         return hits;
 

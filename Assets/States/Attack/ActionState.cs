@@ -8,6 +8,8 @@ using static AttackUtils;
 public class ActionState : AttackStageState
 {
     HitInstanceData attackData;
+
+    GameObject groundTarget;
     public ActionState(UnitMovement m, HitInstanceData data) : base(m)
     {
         attackData = data;
@@ -16,10 +18,11 @@ public class ActionState : AttackStageState
     {
         GameObject body = mover.getSpawnBody();
         Size s = body.GetComponentInChildren<Size>();
+        List<GameObject> hits;
         switch (attackData.type)
         {
             case HitType.Line:
-                List<GameObject> hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,
@@ -36,6 +39,22 @@ public class ActionState : AttackStageState
             case HitType.Projectile:
                 SpawnProjectile(body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
                 break;
+            case HitType.Ground:
+                hits = GroundAttack(groundTarget.transform.position, attackData.width);
+                foreach (GameObject o in hits)
+                {
+                    hit(o, mover, attackData,
+                        mover.GetComponent<TeamOwnership>().getTeam(),
+                        mover.GetComponent<Power>().power,
+                        new KnockBackVectors
+                        {
+                            center = groundTarget.transform.position,
+                            direction = groundTarget.transform.forward
+                        });
+
+                }
+                break;
+
         }
 
     }
@@ -70,4 +89,9 @@ public class ActionState : AttackStageState
         return new StateTransition(null, true);
     }
 
+
+    public void setGroundTarget(GameObject t)
+    {
+        groundTarget = t;
+    }
 }

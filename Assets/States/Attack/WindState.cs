@@ -43,6 +43,7 @@ public class WindState : AttackStageState, BarValue
         if (groundTarget)
         {
             groundTarget.GetComponent<FloorNormal>().setGround(groundSearch);
+            groundTarget.GetComponent<GroundTarget>().setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scale() * lookMultiplier);
         }
         mover.rotate(inp, lookMultiplier);
         mover.move(inp, moveMultiplier, moveMultiplier);
@@ -53,8 +54,7 @@ public class WindState : AttackStageState, BarValue
 
     public override void exit(bool expired)
     {
-        GameObject target = mover.getSpawnBody();
-        target.GetComponentInParent<Cast>().removeTarget();
+        mover.GetComponent<Cast>().removeTarget();
     }
 
     public override Cast.IndicatorOffsets GetIndicatorOffsets()

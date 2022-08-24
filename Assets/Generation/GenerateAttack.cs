@@ -84,8 +84,12 @@ public static class GenerateAttack
         float cooldownTime = atk.cooldown.asRange(0, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f) + 1;
 
+
+
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
+
+        cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.9f;
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {

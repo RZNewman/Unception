@@ -40,7 +40,7 @@ public class ActionState : AttackStageState
                 SpawnProjectile(body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
                 break;
             case HitType.Ground:
-                hits = GroundAttack(groundTarget.transform.position, attackData.width);
+                hits = GroundAttack(groundTarget.transform.position, attackData.width / 2);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,

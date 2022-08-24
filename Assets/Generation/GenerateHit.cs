@@ -46,7 +46,7 @@ public static class GenerateHit
             float width = (0.5f + this.width.asRange(0.5f, 2) * strength) * scale;
             float knockback = this.knockback.asRange(0, 6) * scale * strength;
             float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
-            float stagger = this.stagger.asRange(0f, 70f) * scale * strength;
+            float stagger = this.stagger.asRange(0f, 40f) * scale * strength;
             float knockUp = this.knockUp.asRange(0, 20) * scale * strength;
 
             HitInstanceData baseData = new HitInstanceData
@@ -155,11 +155,11 @@ public static class GenerateHit
         }
         HitType t;
         float r = Random.value;
-        if (r < 0.1f)//0.5
+        if (r < 0.5f)
         {
             t = HitType.Line;
         }
-        else if (r < 0.2f) //TODO 0.8f
+        else if (r < 0.8f)
         {
             t = HitType.Projectile;
         }

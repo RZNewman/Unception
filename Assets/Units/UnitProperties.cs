@@ -21,7 +21,7 @@ public class UnitProperties : ScriptableObject
     public float maxPosture;
     public float passivePostureRecover;
     public float stunnedPostureRecover;
-    public float stunnedPostureRecoverAcceleration;
+    public float stunnedPostureCeilingAcceleration;
 
     public float maxStamina;
     public float staminaRecover;

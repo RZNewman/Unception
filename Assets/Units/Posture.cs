@@ -12,12 +12,12 @@ public class Posture : NetworkBehaviour, BarValue
 
     float passivePostureRecover;
     float stunnedPostureRecover;
-    float stunnedPostureRecoverAcceleration;
+
+    float stunnedPostureCeilingAcceleration;
+    float postureCeilingRecover;
 
 
-    float currentPostureRecover;
-    static float postureStunBufferPercent = 0.5f;
-    static float postureCeilingRecoverPercent = 0.025f;
+
     [SyncVar]
     bool stunned = false;
     [SyncVar]
@@ -29,13 +29,6 @@ public class Posture : NetworkBehaviour, BarValue
         get
         {
             return stunned;
-        }
-    }
-    float postureBuffer
-    {
-        get
-        {
-            return maxPostureBase * postureStunBufferPercent;
         }
     }
 
@@ -59,7 +52,8 @@ public class Posture : NetworkBehaviour, BarValue
         maxPostureBase = props.maxPosture * p.scale();
         passivePostureRecover = props.passivePostureRecover * p.scale();
         stunnedPostureRecover = props.stunnedPostureRecover * p.scale();
-        stunnedPostureRecoverAcceleration = props.stunnedPostureRecoverAcceleration * p.scale();
+        stunnedPostureCeilingAcceleration = props.stunnedPostureCeilingAcceleration * p.scale();
+        postureCeilingRecover = stunnedPostureCeilingAcceleration * 0.5f;
 
         float proportion = maxPostureBase / lastMax;
 
@@ -75,13 +69,10 @@ public class Posture : NetworkBehaviour, BarValue
         if (!stunned && currentPosture > currentPostureCeiling)
         {
             stunned = true;
-            currentPostureCeiling = currentPosture + postureBuffer;
-            currentPostureRecover = stunnedPostureRecover;
             currentStunHighestPosture = currentPosture;
         }
         if (stunned)
         {
-            currentPostureCeiling += damage;
             if (currentPosture > currentStunHighestPosture)
             {
                 currentStunHighestPosture = currentPosture;
@@ -93,23 +84,19 @@ public class Posture : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void ServerUpdate()
     {
-        //Recover ceiling limit based on max
-        if (currentPostureCeiling > maxPostureBase)
-        {
-            currentPostureCeiling -= maxPostureBase * postureCeilingRecoverPercent * Time.fixedDeltaTime;
-        }
-        if (currentPostureCeiling < maxPostureBase)
-        {
-            currentPostureCeiling = maxPostureBase;
-        }
-
-        //set current recover b.o. stun
+        float currentPostureRecover;
         if (stunned)
         {
-            currentPostureRecover += stunnedPostureRecoverAcceleration * Time.fixedDeltaTime;
+            currentPostureCeiling += stunnedPostureCeilingAcceleration * Time.fixedDeltaTime;
+            currentPostureRecover = stunnedPostureRecover + (currentPostureCeiling - maxPostureBase) * 1.0f;
         }
         else
         {
+            currentPostureCeiling -= postureCeilingRecover * Time.fixedDeltaTime;
+            if (currentPostureCeiling < maxPostureBase)
+            {
+                currentPostureCeiling = maxPostureBase;
+            }
             currentPostureRecover = passivePostureRecover;
         }
 

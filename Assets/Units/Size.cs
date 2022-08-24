@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Size : MonoBehaviour
+public class Size : MonoBehaviour, IndicatorHolder
 {
     CapsuleCollider col;
     Vector3 baseSize;
@@ -26,6 +26,16 @@ public class Size : MonoBehaviour
     public void setBaseSize(Vector3 size)
     {
         baseSize = size;
+    }
+
+    public Vector3 indicatorPosition(Vector3 forward)
+    {
+        return indicatorHeight * Vector3.down
+              + scaledRadius * forward;
+    }
+    public float offsetMultiplier()
+    {
+        return 1.0f;
     }
 
     public Collider coll

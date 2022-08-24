@@ -155,11 +155,11 @@ public static class GenerateHit
         }
         HitType t;
         float r = Random.value;
-        if (r < 0.5f)
+        if (r < 0.1f)//0.5
         {
             t = HitType.Line;
         }
-        else if (r < 1.1f) //TODO 0.8f
+        else if (r < 0.2f) //TODO 0.8f
         {
             t = HitType.Projectile;
         }

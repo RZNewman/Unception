@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static Utils;
 
 public interface UnitControl
 {
@@ -7,7 +8,7 @@ public interface UnitControl
     public struct UnitInput
     {
         public Vector2 move;
-        public Vector2 look;
+        public Vector3 lookOffset;
         public bool jump;
         public bool dash;
         public AttackKey[] attacks;
@@ -16,7 +17,7 @@ public interface UnitControl
         public void reset()
         {
             move = Vector2.zero;
-            look = Vector2.zero;
+            lookOffset = Vector3.zero;
             jump = false;
             dash = false;
             attacks = new AttackKey[0];
@@ -26,11 +27,21 @@ public interface UnitControl
             return new UnitInput
             {
                 move = Vector2.zero,
-                look = Vector2.zero,
+                lookOffset = Vector3.zero,
                 jump = false,
                 dash = false,
                 attacks = new AttackKey[0],
             };
+        }
+        public Vector2 look
+        {
+            get
+            {
+                Vector3 dir = this.lookOffset;
+                dir.y = 0;
+                dir.Normalize();
+                return vec2input(dir);
+            }
         }
     }
     [Serializable]

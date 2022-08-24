@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
+using static AttackUtils;
 using static GenerateAttack;
 using static GenerateDash;
 using static GenerateHit;
@@ -69,12 +70,12 @@ public class Cast : MonoBehaviour, BarValue
     }
 
     List<(AttackStageState, GameObject)> indicators = new List<(AttackStageState, GameObject)>();
-    public void buildIndicator(List<AttackStageState> stages)
+    public void buildIndicator(AttackSegment segment)
     {
-
+        List<AttackStageState> states = segment.states;
         GameObject indicatorBody = GetComponent<UnitMovement>().getSpawnBody();
         Power pow = GetComponent<Power>();
-        foreach (AttackStageState stage in stages)
+        foreach (AttackStageState stage in states)
         {
             IndicatorInstance i = null;
             GameObject indicator = null;
@@ -100,6 +101,15 @@ public class Cast : MonoBehaviour, BarValue
                             ProjectileIndicatorVisuals p = indicator.GetComponent<ProjectileIndicatorVisuals>();
                             p.setSource(attackData);
                             i = p;
+                            break;
+                        case HitType.Ground:
+                            indicator = Object.Instantiate(
+                    Resources.Load("Indicator/GroundIndicator") as GameObject,
+                        segment.groundTargetInstance.transform
+                    );
+                            GroundIndicatorVisuals g = indicator.GetComponent<GroundIndicatorVisuals>();
+                            g.setSource(attackData);
+                            i = g;
                             break;
 
                     }

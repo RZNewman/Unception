@@ -117,15 +117,17 @@ public class InputHandler : MonoBehaviour, UnitControl
             dir = info.point - transform.position;
 
         }
-        else
+        else if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("ClickPlane")))
         {
-            Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("ClickPlane"));
             dir = info.point - transform.position;
 
         }
-        dir.y = 0;
-        dir.Normalize();
-        currentInput.look = vec2input(dir);
+        else
+        {
+            //throw new System.Exception("no local click target");
+            return;
+        }
+        currentInput.lookOffset = dir;
 
     }
 

@@ -59,19 +59,18 @@ public abstract class IndicatorInstance : NetworkBehaviour
         if (transform.parent)
         {
             GameObject trackingBody = transform.parent.gameObject;
-            UnitMovement master = trackingBody.GetComponentInParent<UnitMovement>();
-            Size s = trackingBody.GetComponentInChildren<Size>();
-            Quaternion q = Quaternion.LookRotation(-master.floorNormal, trackingBody.transform.forward);
+            FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
+            IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
+            Quaternion q = Quaternion.LookRotation(-ground.normal, trackingBody.transform.forward);
             transform.rotation = q;
 
-            Vector3 projection = Vector3.ProjectOnPlane(trackingBody.transform.forward, master.floorNormal).normalized;
+            Vector3 projection = Vector3.ProjectOnPlane(trackingBody.transform.forward, ground.normal).normalized;
 
             Vector3 forward = Vector3.forward;
             forward.y = projection.y;
             forward.Normalize();
 
-            transform.localPosition = s.indicatorHeight * Vector3.down
-                + s.scaledRadius * forward + currentOffsets.distance;
+            transform.localPosition = ih.indicatorPosition(forward) + currentOffsets.distance * ih.offsetMultiplier();
 
             //TODO indcator width should change based on the slope
         }

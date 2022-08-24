@@ -29,6 +29,7 @@ public class AttackingState : PlayerMovementState
     {
         castingAbility.startCooldown();
         attackMachine.exit();
+        currentSegment.exitSegment();
         mover.GetComponent<Cast>().killIndicators();
     }
     public override void tick()
@@ -56,14 +57,20 @@ public class AttackingState : PlayerMovementState
 
     AttackStageState getNextState()
     {
-        AttackStageState s;
+        AttackStageState s = null;
         bool enteredSegment = false;
-        if (!init)
+        System.Action nextSegment = () =>
         {
             currentSegment = segments[0];
-            mover.GetComponent<Cast>().buildIndicator(currentSegment.states);
+            currentSegment.enterSegment(mover);
+            mover.GetComponent<Cast>().buildIndicator(currentSegment);
+
             s = currentSegment.nextState();
             enteredSegment = true;
+        };
+        if (!init)
+        {
+            nextSegment();
         }
         else
         {
@@ -74,12 +81,10 @@ public class AttackingState : PlayerMovementState
                 if (segments.Count == 0)
                 {
                     ended = true;
-                    return new WindState(mover, 1f);
+                    return new WindState(mover);
                 }
-                currentSegment = segments[0];
-                mover.GetComponent<Cast>().buildIndicator(currentSegment.states);
-                s = currentSegment.nextState();
-                enteredSegment = true;
+                currentSegment.exitSegment();
+                nextSegment();
             }
         }
         if (!enteredSegment)

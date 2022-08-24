@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GenerateHit;
+using static UnitControl;
 
 public static class AttackUtils
 {
@@ -51,8 +52,35 @@ public static class AttackUtils
     public struct AttackSegment
     {
         public List<AttackStageState> states;
+        public WindState windup;
+        public WindState winddown;
+        public ActionState action;
         public GameObject groundTargetInstance;
 
+
+        public void enterSegment(UnitMovement mover)
+        {
+            HitInstanceData source = action.getSource();
+            if (source.type == HitType.Ground)
+            {
+                GameObject body = mover.getSpawnBody();
+                Size s = body.GetComponentInChildren<Size>();
+                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.transform.position + mover.input.lookOffset, source.length);
+                groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
+                windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
+                {
+                    radius = s.scaledRadius,
+                    distance = s.scaledHalfHeight,
+                });
+            }
+        }
+        public void exitSegment()
+        {
+            if (groundTargetInstance)
+            {
+                GameObject.Destroy(groundTargetInstance);
+            }
+        }
         public AttackStageState nextState()
         {
             if (states.Count == 0)
@@ -66,7 +94,24 @@ public static class AttackUtils
     }
 
 
+    static GameObject SpawnGroundTarget(Transform body, float radius, Vector3 target, float length)
+    {
+        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
+        Vector3 bodyFocus = body.position + body.forward * radius;
+        Vector3 diff = target - bodyFocus;
+        Vector3 planarDiff = diff;
+        planarDiff.y = 0;
 
+        //float angleOff = Vector3.SignedAngle(body.forward, planarDiff, Vector3.up);
+        //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
+        //Vector3 offset = forwardLine.normalized * Mathf.Min(length, Vector3.Dot(diff, forwardLine));
+        Vector3 offset = body.forward * Mathf.Max(Mathf.Min(length, Vector3.Dot(planarDiff, body.forward)), 0);
+
+
+        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + offset, Quaternion.identity);
+        NetworkServer.Spawn(instance);
+        return instance;
+    }
 
 
 

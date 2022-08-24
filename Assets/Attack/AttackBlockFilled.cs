@@ -20,24 +20,31 @@ public class AttackBlockFilled : ScriptableObject
             SegmentInstanceData seg = instance.segments[i];
             List<AttackStageState> states = new List<AttackStageState>();
 
-            states.Add(new WindState(controller, seg.windup, false));
+            WindState windup = new WindState(controller, seg.windup, false);
+            WindState winddown = new WindState(controller, seg.winddown, true);
+            ActionState a = null;
+
+            states.Add(windup);
             foreach (InstanceData data in seg.stages)
             {
                 switch (data)
                 {
                     case HitInstanceData hit:
-                        states.Add(new ActionState(controller, hit));
+                        a = new ActionState(controller, hit);
+                        states.Add(a);
                         break;
                     case DashInstanceData dash:
                         states.Add(new DashState(controller, dash, true));
                         break;
                 }
             }
-
-            states.Add(new WindState(controller, seg.windup, true));
+            states.Add(winddown);
             segments.Add(new AttackSegment
             {
                 states = states,
+                winddown = winddown,
+                windup = windup,
+                action = a,
             });
         }
 

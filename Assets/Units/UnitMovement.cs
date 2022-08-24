@@ -14,6 +14,7 @@ public class UnitMovement : NetworkBehaviour
     StateMachine<PlayerMovementState> movement;
     ModelLoader model;
     Power power;
+    FloorNormal ground;
 
     [HideInInspector]
     public float currentLookAngle = 0;
@@ -27,6 +28,7 @@ public class UnitMovement : NetworkBehaviour
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
         propHolder = GetComponent<UnitPropsHolder>();
+        ground = GetComponent<FloorNormal>();
         lifeManager.suscribeDeath(cleanup);
     }
 
@@ -95,17 +97,17 @@ public class UnitMovement : NetworkBehaviour
     {
         get
         {
-            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
-            Quaternion rot = Quaternion.AngleAxis(-Vector3.Angle(groundNormal, Vector3.up), Vector3.Cross(Vector3.up, groundNormal));
+            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, ground.normal);
+            Quaternion rot = Quaternion.AngleAxis(-Vector3.Angle(ground.normal, Vector3.up), Vector3.Cross(Vector3.up, ground.normal));
             return rot * plane3;
         }
         set
         {
-            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, groundNormal);
+            Vector3 plane3 = Vector3.ProjectOnPlane(rb.velocity, ground.normal);
             Vector3 vertdiff = rb.velocity - plane3;
 
             Vector3 move3 = new Vector3(value.x, 0, value.z);
-            Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(groundNormal, Vector3.up), Vector3.Cross(Vector3.up, groundNormal));
+            Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(ground.normal, Vector3.up), Vector3.Cross(Vector3.up, ground.normal));
             Vector3 plane3New = rot * move3;
             rb.velocity = plane3New + vertdiff;
         }
@@ -266,50 +268,27 @@ public class UnitMovement : NetworkBehaviour
             currentLookAngle += frameMagnitude * Mathf.Sign(diff);
         }
     }
-
-    bool ground = false;
-    Vector3 groundNormal;
     void setGround()
     {
-
-        RaycastHit rout;
-
-        bool terrain = Physics.SphereCast(transform.position, model.size.scaledRadius, -transform.up, out rout, model.size.scaledHalfHeight * 1.01f, LayerMask.GetMask("Terrain"));
-        float angle = Vector3.Angle(Vector3.up, rout.normal);
-
-        ground = terrain && angle < 45;
-
-        if (ground)
+        ground.setGround(new FloorNormal.GroundSearchParams
         {
-            groundNormal = rout.normal;
-        }
-        else
-        {
-            groundNormal = Vector3.up;
-        }
-
-
+            radius = model.size.scaledRadius,
+            distance = model.size.scaledHalfHeight,
+        });
     }
+
     public bool grounded
     {
         get
         {
 
-            if (ground)
+            if (ground.hasGround)
             {
-                float mag = Vector3.Dot(rb.velocity, groundNormal);
+                float mag = Vector3.Dot(rb.velocity, ground.normal);
                 return mag <= 0.05f * power.scale();
             }
             return false;
 
-        }
-    }
-
-    public Vector3 floorNormal
-    {
-        get
-        {
-            return groundNormal;
         }
     }
 

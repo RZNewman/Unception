@@ -82,7 +82,7 @@ public static class GenerateAttack
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
         float cooldownTime = atk.cooldown.asRange(0, 30);
-        float cooldownStrength = Mathf.Log(cooldownTime + 1, 30 + 1) + 1;
+        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f) + 1;
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
@@ -159,7 +159,7 @@ public static class GenerateAttack
 
         int segmentCount = 1;
         float r = Random.value;
-        if (r < 0.5) //0.2f
+        if (r < 0.2)
         {
             segmentCount = 2;
         }

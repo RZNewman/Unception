@@ -68,7 +68,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                 inpDiff.Normalize();
                 Vector2 inpVec = vec2input(inpDiff);
                 currentInput.move = inpVec;
-                currentInput.look = inpVec;
+                currentInput.lookOffset = rawDiff;
 
                 float edgeDiffMag = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().scaledRadius - target.GetComponent<Size>().scaledRadius;
 

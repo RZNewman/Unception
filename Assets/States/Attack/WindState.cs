@@ -6,21 +6,24 @@ using static GenerateWind;
 using static GenerateDash;
 using System.Collections.Generic;
 using static UnitControl;
+using static AttackUtils;
+using static FloorNormal;
 
 public class WindState : AttackStageState, BarValue
 {
-    bool ending;
+    bool isWinddown;
+    GameObject groundTarget;
+    GroundSearchParams groundSearch;
 
-
-    public WindState(UnitMovement m, float d) : base(m, d)
+    public WindState(UnitMovement m) : base(m)
     {
         //Only for defaults
-        ending = false;
+        isWinddown = false;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d, bool end = false) : base(m, d.duration)
+    public WindState(UnitMovement m, WindInstanceData d, bool winddown = false) : base(m, d.duration)
     {
-        ending = end;
+        isWinddown = winddown;
         moveMultiplier = d.moveMult;
         lookMultiplier = d.turnMult;
     }
@@ -37,7 +40,10 @@ public class WindState : AttackStageState, BarValue
         base.tick();
         UnitInput inp = mover.input;
 
-
+        if (groundTarget)
+        {
+            groundTarget.GetComponent<FloorNormal>().setGround(groundSearch);
+        }
         mover.rotate(inp, lookMultiplier);
         mover.move(inp, moveMultiplier, moveMultiplier);
 
@@ -64,9 +70,14 @@ public class WindState : AttackStageState, BarValue
     {
         return new BarValue.BarData
         {
-            color = !ending ? Color.cyan : new Color(0, 0.6f, 1),
-            fillPercent = Mathf.Clamp01(!ending ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
+            color = !isWinddown ? Color.cyan : new Color(0, 0.6f, 1),
+            fillPercent = Mathf.Clamp01(!isWinddown ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
             active = true,
         };
+    }
+    public void setGroundTarget(GameObject t, GroundSearchParams s)
+    {
+        groundTarget = t;
+        groundSearch = s;
     }
 }

@@ -34,7 +34,7 @@ public static class GenerateUnit
         properties.maxPosture = posture;
         properties.passivePostureRecover = posture;
         properties.stunnedPostureRecover = posture * 4;
-        properties.stunnedPostureCeilingAcceleration = posture * 0.5f;
+        properties.stunnedPostureCeilingAcceleration = posture * 2f;
 
         properties.visualsId = mats.addVisuals();
 

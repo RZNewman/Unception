@@ -1,4 +1,6 @@
+
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class Utils
@@ -27,30 +29,39 @@ public static class Utils
         return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
     }
 
-    public static float GaussRandom(float balance = 2)
-    {
-        float total = 0;
-        int fullBalance = Mathf.FloorToInt(balance);
-        for (int i = 0; i < fullBalance; i++)
-        {
-            total += Random.value;
-        }
-        float value = total / balance;
-
-        float lastBalance = Random.value;
-        value += (lastBalance - value) * (balance - fullBalance) / balance;
-        return value;
-
-    }
     public static float GaussRandomDecline(float balance = 2)
     {
-        return Mathf.Abs(GaussRandom(balance) - 0.5f) * 2;
+        float value = Random.value;
+        return Mathf.Pow(value, balance);
     }
     public static float asRange(this float value, float min, float max)
     {
         value = Mathf.Clamp01(value);
         return min + (max - min) * value;
     }
+
+    public struct FloatComponents
+    {
+        public bool negative;
+        public int exponent;
+        public float digits;
+    }
+    public static FloatComponents asComponents(this float value)
+    {
+
+        byte[] valueBytes = System.BitConverter.GetBytes(value);
+        int bits = System.BitConverter.ToInt32(valueBytes, 0);
+        int mantissa = bits & (0x7fffff | 1 << 30);
+        float normalized = System.BitConverter.ToSingle(System.BitConverter.GetBytes(mantissa), 0) / 2;
+
+        return new FloatComponents
+        {
+            negative = (bits & (1 << 31)) == 1,
+            exponent = (bits >> 23) & 0xff - 128,
+            digits = normalized,
+        };
+    }
+
 
 
     private static System.Random rng = new System.Random();

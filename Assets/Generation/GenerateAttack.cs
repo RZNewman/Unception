@@ -82,7 +82,7 @@ public static class GenerateAttack
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
         float cooldownTime = atk.cooldown.asRange(0, 30);
-        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f) + 1;
+        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f);
 
 
 
@@ -97,7 +97,7 @@ public static class GenerateAttack
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
             float strength = getWindValue(new WindInstanceData[] { up, down });
-            strength *= cooldownStrength;
+            strength += cooldownStrength;
 
 
             segmentsInst[i] = new SegmentInstanceData

@@ -88,7 +88,7 @@ public class Posture : NetworkBehaviour, BarValue
         if (stunned)
         {
             currentPostureCeiling += stunnedPostureCeilingAcceleration * Time.fixedDeltaTime;
-            currentPostureRecover = stunnedPostureRecover + (currentPostureCeiling - maxPostureBase) * 1.0f;
+            currentPostureRecover = stunnedPostureRecover + (currentPostureCeiling - maxPostureBase) * 1.5f;
         }
         else
         {

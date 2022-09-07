@@ -49,10 +49,9 @@ public class Power : NetworkBehaviour, TextValue
     }
     void setMetricScale()
     {
-        while (currentPower > Mathf.Pow(10, currentDecimalPlaces + 1))
-        {
-            currentDecimalPlaces++;
-        }
+
+        currentDecimalPlaces = currentPower == 0 ? 0 : (int)Mathf.Floor(Mathf.Log10(Mathf.Abs(currentPower)));
+
     }
 
     public void setPower(float power)

@@ -441,8 +441,6 @@ MonoBehaviour:
   - {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
   - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
-  - {fileID: 8249178311684600747, guid: 05e06d80a90a323489ea3df1356e6821, type: 3}
-  - {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
   - {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
 --- !u!4 &449408942
 Transform:
@@ -1570,7 +1568,6 @@ MonoBehaviour:
   syncInterval: 0.1
   UnitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
   PackPre: {fileID: 3694861992469580249, guid: e356917f25b672a4bbea9b4dcadc3e56, type: 3}
-  PackTagPre: {fileID: 4500528443326720493, guid: afb0dc4502d4fc74ab2939a7b9a670f0, type: 3}
 --- !u!114 &2124122343
 MonoBehaviour:
   m_ObjectHideFlags: 0

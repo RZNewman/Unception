@@ -20,10 +20,6 @@ public class InputHandler : MonoBehaviour, UnitControl
     {
         currentInput.reset();
     }
-    public void reset()
-    {
-        currentInput.reset();
-    }
 
     private void Start()
     {
@@ -63,16 +59,10 @@ public class InputHandler : MonoBehaviour, UnitControl
         move.Normalize();
         currentInput.move = move;
 
-        currentInput.jump |= Input.GetKeyDown(KeyCode.Space);
-        currentInput.dash |= Input.GetKeyDown(KeyCode.LeftShift);
+        currentInput.jump = Input.GetKey(KeyCode.Space);
+        currentInput.dash = Input.GetKeyDown(KeyCode.LeftShift);
 
         HashSet<AttackKey> atks = new HashSet<AttackKey>();
-        foreach (AttackKey k in currentInput.attacks)
-        {
-
-            atks.Add(k);
-
-        }
         if (Input.GetMouseButton(0))
         {
             atks.Add(AttackKey.One);
@@ -99,7 +89,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     {
         get
         {
-            return 100f * power.scale();
+            return power ? 100f * power.scale() : 100f;
         }
     }
     void setLocalLook()

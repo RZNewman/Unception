@@ -49,10 +49,7 @@ public class AiHandler : MonoBehaviour, UnitControl
         mover = GetComponentInParent<UnitMovement>();
         rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
     }
-    public void reset()
-    {
-        currentInput.reset();
-    }
+
     public void refreshInput()
     {
         //Get current target and move to it

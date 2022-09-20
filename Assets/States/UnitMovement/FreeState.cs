@@ -1,3 +1,4 @@
+using UnityEngine;
 using static DashState;
 using static GenerateDash;
 using static UnitControl;
@@ -20,26 +21,31 @@ public class FreeState : PlayerMovementState
     }
     public override StateTransition transition()
     {
+        //Only hit on server, bc damage is dealt there
         if (mover.posture.isStunned)
         {
             return new StateTransition(new StunnedState(mover), true);
         }
         UnitInput inp = mover.input;
-        AttackKey[] atks = inp.attacks;
-        if (atks.Length > 0)
-        {
-            for (int i = 0; i < atks.Length; i++)
-            {
-                Ability a = mover.GetComponent<AbiltyList>().getAbility(inp.attacks[i]);
-                if (a.ready)
-                {
-                    return new StateTransition(new AttackingState(mover, a), true);
-                }
-            }
 
+        AttackKey key = inp.popKey();
+
+
+        while (key != AttackKey.None)
+        {
+            Ability a = mover.GetComponent<AbiltyList>().getAbility(key);
+            //Debug.Log(key);
+            //Debug.Log(a.ready);
+            if (a.ready)
+            {
+                return new StateTransition(new AttackingState(mover, a), true);
+            }
+            key = inp.popKey();
         }
+
+
         Stamina s = mover.GetComponent<Stamina>();
-        if (inp.dash && s.stamina > Stamina.dashCost)
+        if (inp.dash && inp.move.magnitude > 0 && s.stamina > Stamina.dashCost)
         {
             s.spendStamina(Stamina.dashCost);
             DashInstanceData o = mover.baseDash();

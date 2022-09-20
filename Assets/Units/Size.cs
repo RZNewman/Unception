@@ -38,7 +38,7 @@ public class Size : MonoBehaviour, IndicatorHolder
         return 1.0f;
     }
 
-    public Collider coll
+    public Collider colliderRef
     {
         get { return col; }
     }

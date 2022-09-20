@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Power : NetworkBehaviour, TextValue
 {
-    [SyncVar]
+    [SyncVar(hook = nameof(callbackPower))]
     float currentPower = 100;
 
     int currentDecimalPlaces = 0;
@@ -40,8 +40,17 @@ public class Power : NetworkBehaviour, TextValue
     void addPower(float power)
     {
         currentPower += power;
+        powerUpdates();
+
+    }
+    void callbackPower(float old, float newPower)
+    {
+        powerUpdates();
+    }
+
+    void powerUpdates()
+    {
         setMetricScale();
-        //TODO network updates for client on sync
         foreach (OnPowerUpdate callback in OnPowerUpdateCallbacks)
         {
             callback(this);

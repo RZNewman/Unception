@@ -433,14 +433,17 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
+  - {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
+  - {fileID: 6715917580406317018, guid: 2d03b46cabba84a4bafdbcfa721089ff, type: 3}
   - {fileID: 9188171244486232376, guid: 5b5ef168dddad9a40ae5dcda2d9b78e1, type: 3}
   - {fileID: 8362817911430590472, guid: e1e0b54e7d36aa445adf9b90fbc8ac71, type: 3}
+  - {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
+  - {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
   - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
+  - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
   - {fileID: 8249178311684600747, guid: 05e06d80a90a323489ea3df1356e6821, type: 3}
   - {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
   - {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
-  - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
 --- !u!4 &449408942
 Transform:
   m_ObjectHideFlags: 0
@@ -1043,7 +1046,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 1509557284
-  serverOnly: 1
+  serverOnly: 0
   visible: 0
   m_AssetId: 
   hasSpawned: 0
@@ -1545,7 +1548,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2124122339}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.1, y: -24.6, z: -5.6}
+  m_LocalPosition: {x: -15, y: -24.6, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

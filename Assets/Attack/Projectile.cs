@@ -17,15 +17,19 @@ public class Projectile : NetworkBehaviour
     float birth;
 
     UnitMovement mover;
-    uint team;
-    float powerSnapshot;
 
     [SyncVar]
-    HitInstanceData hitInstance;
+    ProjectileData data;
+
+
     List<Collider> collided = new List<Collider>();
     private void Start()
     {
         birth = Time.time;
+        if (isClientOnly)
+        {
+            setup(data);
+        }
     }
     private void FixedUpdate()
     {
@@ -34,24 +38,47 @@ public class Projectile : NetworkBehaviour
             Destroy(gameObject);
         }
     }
+    struct ProjectileData
+    {
+        public float terrainRadius;
+        public float playerRadius;
+        public float halfHeight;
+        public uint team;
+        public float power;
+        public HitInstanceData hitData;
 
+    }
+    [Server]
     public void init(float terrainRadius, float playerRadius, float halfHeight, UnitMovement m, HitInstanceData hitData)
     {
         mover = m;
-        team = mover.GetComponent<TeamOwnership>().getTeam();
-        powerSnapshot = mover.GetComponent<Power>().power;
-        terrainHit.transform.localScale = new Vector3(terrainRadius, terrainRadius, terrainRadius) * 2;
-        playerHit.transform.localScale = new Vector3(playerRadius, Mathf.Max(halfHeight / 2, playerRadius / 2), playerRadius) * 2;
-        float speed = hitData.length / ProjectileLifetime;
+        data = new ProjectileData
+        {
+            terrainRadius = terrainRadius,
+            playerRadius = playerRadius,
+            halfHeight = halfHeight,
+            team = mover.GetComponent<TeamOwnership>().getTeam(),
+            power = mover.GetComponent<Power>().power,
+            hitData = hitData,
+        };
+        setup(data);
+    }
+
+    void setup(ProjectileData data)
+    {
+        float terrainR = data.terrainRadius;
+        float playerR = data.playerRadius;
+        terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
+        playerHit.transform.localScale = new Vector3(playerR, Mathf.Max(data.halfHeight / 2, playerR / 2), playerR) * 2;
+        float speed = data.hitData.length / ProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
-        hitInstance = hitData;
         setThreatColor();
     }
     public void setThreatColor()
     {
-        float threat = hitInstance.powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
-        Color c = getIndicatorColor(mover.GetComponent<TeamOwnership>().getTeam(), threat);
+        float threat = data.hitData.powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
+        Color c = getIndicatorColor(data.team, threat);
         playerHit.GetComponent<ColorIndividual>().setColor(c);
         c.a = Mathf.Clamp01(c.a + 0.2f);
         terrainHit.GetComponent<ColorIndividual>().setColor(c);
@@ -60,9 +87,9 @@ public class Projectile : NetworkBehaviour
 
     public void onPlayerCollide(Collider other)
     {
-        if (!collided.Contains(other))
+        if (isServer && !collided.Contains(other))
         {
-            hit(other.gameObject, mover, hitInstance, team, powerSnapshot, new KnockBackVectors { center = transform.position, direction = transform.forward });
+            hit(other.gameObject, mover, data.hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward });
             collided.Add(other);
         }
 

@@ -10,15 +10,14 @@ public class UnitUpdateOrder : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (isServer)
-        {
-            FindObjectOfType<DeterministicUpdate>().register(this);
-            health = GetComponent<Health>();
-            posture = GetComponent<Posture>();
-            move = GetComponent<UnitMovement>();
-            stamina = GetComponent<Stamina>();
-            cast = GetComponent<Cast>();
-        }
+
+        FindObjectOfType<DeterministicUpdate>().register(this);
+        health = GetComponent<Health>();
+        posture = GetComponent<Posture>();
+        move = GetComponent<UnitMovement>();
+        stamina = GetComponent<Stamina>();
+        cast = GetComponent<Cast>();
+
 
     }
 
@@ -35,26 +34,26 @@ public class UnitUpdateOrder : NetworkBehaviour
 
     public void healthTick()
     {
-        health.ServerUpdate();
+        health.OrderedUpdate();
     }
     public void postureTick()
     {
-        posture.ServerUpdate();
+        posture.OrderedUpdate();
     }
     public void staminaTick()
     {
-        stamina.ServerUpdate();
+        stamina.OrderedUpdate();
     }
     public void moveTick()
     {
-        move.ServerUpdate();
+        move.OrderedUpdate();
     }
     public void moveTransition()
     {
-        move.ServerTransition();
+        move.OrderedTransition();
     }
     public void IndicatorTick()
     {
-        cast.ServerUpdate();
+        cast.OrderedUpdate();
     }
 }

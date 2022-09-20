@@ -1,7 +1,8 @@
+using Mirror;
 using System.Collections;
 using UnityEngine;
 
-public class NextLevel : MonoBehaviour
+public class NextLevel : NetworkBehaviour
 {
     MapGenerator gen;
 
@@ -12,6 +13,10 @@ public class NextLevel : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!isServer)
+        {
+            return;
+        }
         GameObject them = other.gameObject;
         uint theirTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
         if (theirTeam == 1u)

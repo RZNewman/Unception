@@ -16,6 +16,11 @@ public class ActionState : AttackStageState
     }
     public override void enter()
     {
+        //Hits only happen on the server
+        if (!mover.isServer)
+        {
+            return;
+        }
         GameObject body = mover.getSpawnBody();
         Size s = body.GetComponentInChildren<Size>();
         List<GameObject> hits;

@@ -22,7 +22,7 @@ public class Gravity : NetworkBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (isServer && !movement.grounded && !lifeManager.IsDead && model.modelLoaded)
+        if (!movement.grounded && !lifeManager.IsDead && model.modelLoaded)
         {
             rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scale();
         }

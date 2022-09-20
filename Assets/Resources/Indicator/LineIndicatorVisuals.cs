@@ -4,7 +4,6 @@ using static GenerateHit;
 
 public class LineIndicatorVisuals : IndicatorInstance
 {
-    //TODO RZN Client sync on state
     protected ActionState state;
 
 

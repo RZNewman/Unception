@@ -35,7 +35,7 @@ public class Stamina : NetworkBehaviour, BarValue
     }
 
     // Update is called once per frame
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
 
         //change posture

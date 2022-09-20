@@ -128,6 +128,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         GameObject o = Instantiate(UnitPre, spawnData.spawnPosition + positionOffset, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
+        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(unitData.power);
         o.GetComponent<UnitPropsHolder>().props = unitData.props;
         AbiltyList al = o.GetComponent<AbiltyList>();

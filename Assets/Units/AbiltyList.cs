@@ -8,14 +8,13 @@ public class AbiltyList : NetworkBehaviour
 
 
     List<AttackBlock> abilitiesToCreate = new List<AttackBlock>();
-    Dictionary<AttackKey, Ability> instancedAbilitites;
+    Dictionary<AttackKey, Ability> instancedAbilitites = new Dictionary<AttackKey, Ability>();
 
     bool started = false;
     private void Start()
     {
         if (isServer)
         {
-            instancedAbilitites = new Dictionary<AttackKey, Ability>();
             createAbilities();
             started = true;
         }
@@ -35,8 +34,14 @@ public class AbiltyList : NetworkBehaviour
         a.setFormat(block);
         AttackKey k = (AttackKey)instancedAbilitites.Count;
         instancedAbilitites.Add(k, a);
+        a.clientSyncKey = k;
         o.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(o);
+    }
+    [Client]
+    public void registerAbility(AttackKey k, Ability a)
+    {
+        instancedAbilitites.Add(k, a);
     }
     public void addAbility(AttackBlock block)
     {

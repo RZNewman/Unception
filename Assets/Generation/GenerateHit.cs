@@ -201,7 +201,6 @@ public static class GenerateHit
             knockBackDirection = kbDir,
             type = t
         };
-        //TODO knockback dir
         hit = augmentHit(hit, augments, typeValues);
 
         return hit;

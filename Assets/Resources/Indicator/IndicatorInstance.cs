@@ -4,14 +4,13 @@ using static Cast;
 using static GenerateAttack;
 using static GenerateHit;
 
-public abstract class IndicatorInstance : NetworkBehaviour
+public abstract class IndicatorInstance : MonoBehaviour
 {
-    [SyncVar]
     public float maxTime = 0;
-    [SyncVar]
+
     public IndicatorOffsets currentOffsets;
 
-    [SyncVar]
+
     uint teamOwner;
 
 
@@ -30,14 +29,9 @@ public abstract class IndicatorInstance : NetworkBehaviour
     }
     private void Start()
     {
-        if (isClientOnly)
-        {
-            reposition();
-            updateColor();
-        }
     }
 
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
         float progress;
         if (maxTime == 0)

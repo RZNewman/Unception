@@ -5,7 +5,6 @@ using static GenerateHit;
 
 public class GroundIndicatorVisuals : IndicatorInstance
 {
-    //TODO RZN Client sync on state
     protected ActionState state;
 
 

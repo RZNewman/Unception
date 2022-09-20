@@ -13,10 +13,15 @@ public class Health : NetworkBehaviour, BarValue
     // Start is called before the first frame update
     void Start()
     {
-        maxHealth = 1;
-        currentHealth = maxHealth;
+
         combat = GetComponent<Combat>();
-        GetComponent<Power>().subscribePower(updateMaxHealth);
+        if (isServer)
+        {
+            maxHealth = 1;
+            currentHealth = maxHealth;
+            GetComponent<Power>().subscribePower(updateMaxHealth);
+        }
+
     }
 
     void updateMaxHealth(Power p)
@@ -32,8 +37,12 @@ public class Health : NetworkBehaviour, BarValue
     }
 
     // Update is called once per frame
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (!GetComponent<LifeManager>().IsDead)
         {
             if (!combat.inCombat)
@@ -46,6 +55,8 @@ public class Health : NetworkBehaviour, BarValue
 
             }
         }
+
+
 
     }
 

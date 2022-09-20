@@ -20,7 +20,6 @@ public class Cast : MonoBehaviour, BarValue
                 active = false,
             };
         }
-        //TODO cast bar client
         return target.getBarFill();
     }
 
@@ -34,7 +33,7 @@ public class Cast : MonoBehaviour, BarValue
     }
 
 
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
         IndicatorOffsets offsets = new IndicatorOffsets
         {
@@ -48,7 +47,7 @@ public class Cast : MonoBehaviour, BarValue
             {
                 IndicatorInstance ind = indObj.GetComponent<IndicatorInstance>();
                 ind.setLocalOffsets(offsets);
-                ind.ServerUpdate();
+                ind.OrderedUpdate();
             }
             offsets = offsets.sum(stage.GetIndicatorOffsets());
         }
@@ -129,10 +128,10 @@ public class Cast : MonoBehaviour, BarValue
             if (indicator && i)
             {
                 i.setTeam(GetComponent<TeamOwnership>().getTeam());
-                ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
-                adoptee.parent = gameObject;
-                adoptee.useSubBody = true;
-                NetworkServer.Spawn(indicator);
+                //ClientAdoption adoptee = indicator.GetComponent<ClientAdoption>();
+                //adoptee.parent = gameObject;
+                //adoptee.useSubBody = true;
+                //NetworkServer.Spawn(indicator);
             }
 
             indicators.Add((stage, indicator));

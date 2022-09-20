@@ -7,11 +7,13 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     public GameObject playerControlPre;
     public GameObject aiControlPre;
 
+    public bool useLocalLook = true;
+
     UnitControl controller;
 
-
     UnitInput currentInput;
-    UnitInput lastInput;
+    UnitInput localInput;
+
 
     [SyncVar]
     bool isPlayer = true;
@@ -32,46 +34,75 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
         spawnControl();
         currentInput = new UnitInput();
         currentInput.reset();
+        localInput = new UnitInput();
+        localInput.reset();
     }
     public void spawnControl()
     {
 
-        if (isPlayer)
+        if (isLocalPlayer)
         {
             GameObject o = Instantiate(playerControlPre, transform);
             controller = o.GetComponent<UnitControl>();
         }
-        else
+        if (isServer && !isPlayer)
         {
             GameObject o = Instantiate(aiControlPre, transform);
             controller = o.GetComponent<UnitControl>();
         }
-        controller.init();
+        if (controller != null)
+        {
+            controller.init();
+        }
+
     }
 
     public UnitInput GetUnitInput()
     {
-        return currentInput;
+        UnitInput current = currentInput;
+        if (useLocalLook && isLocalPlayer)
+        {
+            //Local look for smoother client turning
+            current.lookOffset = localInput.lookOffset;
+        }
+        return current;
     }
 
     private void Update()
     {
-        if (isClient && isLocalPlayer)
+        if (isLocalPlayer && isServer)
         {
             controller.refreshInput();
             currentInput = controller.getUnitInuput();
-            checkServerSend();
+            localInput = localInput.merge(currentInput);
         }
-        if (isServer && !isPlayer)
+        else if (isLocalPlayer)
         {
             controller.refreshInput();
-            currentInput = controller.getUnitInuput();
+            localInput = localInput.merge(controller.getUnitInuput());
+            //Debug.Log(localInput.attacks.Length);
+
+        }
+        else if (isServer)
+        {
+            if (!isPlayer)
+            {
+                controller.refreshInput();
+                currentInput = controller.getUnitInuput();
+
+            }
+            localInput = localInput.merge(currentInput);
+        }
+
+        if (checkSendtime(localInput))
+        {
+            localInput.cleanButtons();
         }
     }
 
     static float serverTickRate = 1.0f / 30.0f;
     float currentSendTime = 0;
-    void checkServerSend()
+    bool checkSendtime(UnitInput local)
     {
         currentSendTime += Time.deltaTime;
         if (currentSendTime > serverTickRate)
@@ -80,16 +111,35 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             {
                 currentSendTime -= serverTickRate;
             }
-            CmdSendInput(currentInput);
-            controller.reset();
+            if (isLocalPlayer && isClientOnly)
+            {
+                CmdSendInput(local);
+            }
+            else if (isServer)
+            {
+                RpcSendInput(local);
+            }
+
+            return true;
         }
+        return false;
     }
 
     [Command]
     void CmdSendInput(UnitInput input)
     {
-        lastInput = currentInput;
+        //maybe merge?
         currentInput = input;
+    }
+
+    [ClientRpc]
+    void RpcSendInput(UnitInput input)
+    {
+        if (!isServer)
+        {
+            currentInput = input;
+        }
+
     }
 
     public uint getTeam()

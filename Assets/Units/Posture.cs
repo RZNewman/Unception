@@ -41,8 +41,11 @@ public class Posture : NetworkBehaviour, BarValue
         currentPosture = 0;
         maxPostureBase = props.maxPosture;
         currentPostureCeiling = props.maxPosture;
+        if (isServer)
+        {
+            GetComponent<Power>().subscribePower(updateMaxPosture);
+        }
 
-        GetComponent<Power>().subscribePower(updateMaxPosture);
     }
     void updateMaxPosture(Power p)
     {
@@ -82,7 +85,7 @@ public class Posture : NetworkBehaviour, BarValue
     }
 
     // Update is called once per frame
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
         float currentPostureRecover;
         if (stunned)

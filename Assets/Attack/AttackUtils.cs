@@ -65,7 +65,8 @@ public static class AttackUtils
             {
                 GameObject body = mover.getSpawnBody();
                 Size s = body.GetComponentInChildren<Size>();
-                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.lookWorldPos, source.length);
+                //TODO Two ground target options, how to sync up?
+                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.lookWorldPos, source.length, mover.isServer);
                 groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                 windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                 {
@@ -95,7 +96,7 @@ public static class AttackUtils
     }
 
 
-    static GameObject SpawnGroundTarget(Transform body, float radius, Vector3 target, float length)
+    static GameObject SpawnGroundTarget(Transform body, float radius, Vector3 target, float length, bool isServer)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
         Vector3 bodyFocus = body.position + body.forward * radius;
@@ -110,7 +111,11 @@ public static class AttackUtils
 
 
         GameObject instance = GameObject.Instantiate(prefab, bodyFocus + offset, body.rotation);
-        NetworkServer.Spawn(instance);
+        if (isServer)
+        {
+            NetworkServer.Spawn(instance);
+        }
+
         return instance;
     }
 

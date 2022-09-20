@@ -81,11 +81,14 @@ public class MapGenerator : NetworkBehaviour
         tiles = new List<tileIndex>();
 
         currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
+
         spawner.setFloor(currentFloor.transform);
         int rootX = Random.Range(0, gridSize);
         int rootY = Random.Range(0, gridSize);
         Vector3 diff = new Vector3(rootX * tileSize, 0, rootY * tileSize);
         currentFloor.transform.localPosition += -diff;
+        currentFloor.GetComponent<ClientAdoption>().parent = gameObject;
+        NetworkServer.Spawn(currentFloor);
         tileIndex root = new tileIndex
         {
             x = rootX,
@@ -119,7 +122,7 @@ public class MapGenerator : NetworkBehaviour
                     GameObject prefab = type == tileType.Hole ? holePre : tilePre;
                     GameObject t = Instantiate(prefab, floorPos + pos, Quaternion.identity, currentFloor.transform);
                     t.transform.localScale = Vector3.one * currentFloorScale;
-                    //t.GetComponent<ClientAdoption>().parent = gameObject;
+                    t.GetComponent<ClientAdoption>().parent = currentFloor;
                     NetworkServer.Spawn(t);
                     if (type == tileType.Full)
                     {
@@ -134,7 +137,7 @@ public class MapGenerator : NetworkBehaviour
                         t = Instantiate(endPre, floorPos + pos + Vector3.down * tileSize, Quaternion.identity, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
                         t.GetComponent<NextLevel>().setGen(this);
-                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        t.GetComponent<ClientAdoption>().parent = currentFloor;
                         NetworkServer.Spawn(t);
                     }
 
@@ -165,7 +168,7 @@ public class MapGenerator : NetworkBehaviour
                     {
                         GameObject t = Instantiate(doorPre, floorPos + pos, up, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
-                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        t.GetComponent<ClientAdoption>().parent = currentFloor;
                         NetworkServer.Spawn(t);
                     }
                     else if (tileLayout[x, y].V() || tileLayout[x, y + 1].V())
@@ -173,7 +176,7 @@ public class MapGenerator : NetworkBehaviour
 
                         GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
-                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        t.GetComponent<ClientAdoption>().parent = currentFloor;
                         NetworkServer.Spawn(t);
                     }
                 }
@@ -186,7 +189,7 @@ public class MapGenerator : NetworkBehaviour
 
                         GameObject t = Instantiate(doorPre, floorPos + pos, right, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
-                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        t.GetComponent<ClientAdoption>().parent = currentFloor;
                         NetworkServer.Spawn(t);
                     }
                     else if (tileLayout[x, y].V() || tileLayout[x + 1, y].V())
@@ -194,7 +197,7 @@ public class MapGenerator : NetworkBehaviour
 
                         GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
                         t.transform.localScale = Vector3.one * currentFloorScale;
-                        //t.GetComponent<ClientAdoption>().parent = gameObject;
+                        t.GetComponent<ClientAdoption>().parent = currentFloor;
                         NetworkServer.Spawn(t);
                     }
                 }
@@ -209,7 +212,7 @@ public class MapGenerator : NetworkBehaviour
             {
                 GameObject t = Instantiate(wallPre, floorPos + pos, down, currentFloor.transform);
                 t.transform.localScale = Vector3.one * currentFloorScale;
-                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                t.GetComponent<ClientAdoption>().parent = currentFloor;
                 NetworkServer.Spawn(t);
             }
             y = tileLayout.GetLength(1) - 1;
@@ -218,7 +221,7 @@ public class MapGenerator : NetworkBehaviour
             {
                 GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
                 t.transform.localScale = Vector3.one * currentFloorScale;
-                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                t.GetComponent<ClientAdoption>().parent = currentFloor;
                 NetworkServer.Spawn(t);
             }
         }
@@ -230,7 +233,7 @@ public class MapGenerator : NetworkBehaviour
             {
                 GameObject t = Instantiate(wallPre, floorPos + pos, left, currentFloor.transform);
                 t.transform.localScale = Vector3.one * currentFloorScale;
-                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                t.GetComponent<ClientAdoption>().parent = currentFloor;
                 NetworkServer.Spawn(t);
             }
             x = tileLayout.GetLength(0) - 1;
@@ -239,7 +242,7 @@ public class MapGenerator : NetworkBehaviour
             {
                 GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
                 t.transform.localScale = Vector3.one * currentFloorScale;
-                //t.GetComponent<ClientAdoption>().parent = gameObject;
+                t.GetComponent<ClientAdoption>().parent = currentFloor;
                 NetworkServer.Spawn(t);
             }
         }

@@ -16,7 +16,9 @@ public class UnitMovement : NetworkBehaviour
     Power power;
     FloorNormal ground;
 
+    public float syncAngleHard = 40;
     [HideInInspector]
+    [SyncVar(hook = nameof(syncLookAngle))]
     public float currentLookAngle = 0;
     // Start is called before the first frame update
     void Start()
@@ -32,6 +34,18 @@ public class UnitMovement : NetworkBehaviour
         lifeManager.suscribeDeath(cleanup);
     }
 
+    void syncLookAngle(float oldAngle, float newAngle)
+    {
+        if (Mathf.Abs(oldAngle = newAngle) % 180 > syncAngleHard)
+        {
+            currentLookAngle = newAngle;
+        }
+        else
+        {
+            currentLookAngle = oldAngle;
+        }
+    }
+
     public UnitProperties props
     {
         get
@@ -45,15 +59,7 @@ public class UnitMovement : NetworkBehaviour
         return GetComponentInChildren<UnitRotation>().gameObject;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (isClientOnly && model.modelLoaded)
-        {
-            setGround();
-        }
-    }
-    public void ServerUpdate()
+    public void OrderedUpdate()
     {
         if (!model.modelLoaded)
         {
@@ -68,7 +74,7 @@ public class UnitMovement : NetworkBehaviour
             planarVelocity = Vector3.zero;
         }
     }
-    public void ServerTransition()
+    public void OrderedTransition()
     {
         if (!lifeManager.IsDead && model.modelLoaded)
         {
@@ -278,11 +284,24 @@ public class UnitMovement : NetworkBehaviour
     }
     void setGround()
     {
-        ground.setGround(new FloorNormal.GroundSearchParams
+        FloorNormal.GroundSearchParams paras;
+        if (model.size.colliderRef)
         {
-            radius = model.size.scaledRadius,
-            distance = model.size.scaledHalfHeight,
-        });
+            paras = new FloorNormal.GroundSearchParams
+            {
+                radius = model.size.scaledRadius,
+                distance = model.size.scaledHalfHeight,
+            };
+        }
+        else
+        {
+            paras = new FloorNormal.GroundSearchParams
+            {
+                radius = 0,
+                distance = 0,
+            };
+        }
+        ground.setGround(paras);
     }
 
     public bool grounded
@@ -290,7 +309,7 @@ public class UnitMovement : NetworkBehaviour
         get
         {
 
-            if (ground.hasGround)
+            if (ground && ground.hasGround)
             {
                 float mag = Vector3.Dot(rb.velocity, ground.normal);
                 return mag <= 0.05f * power.scale();

@@ -19,7 +19,7 @@ public static class AttackUtils
             Health h = other.GetComponentInParent<Health>();
             if (mover)
             {
-                other.GetComponentInParent<Combat>().getHit(mover.gameObject);
+                other.GetComponentInParent<LifeManager>().getHit(mover.gameObject);
             }
             h.takeDamage(hitData.damageMult * power);
             other.GetComponentInParent<Posture>().takeStagger(hitData.stagger);

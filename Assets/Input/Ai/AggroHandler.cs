@@ -7,63 +7,73 @@ public class AggroHandler : MonoBehaviour
     SphereCollider col;
 
     [HideInInspector]
-    public List<GameObject> aggro;
+    public List<GameObject> aggroList;
 
     Pack pack;
 
     private void Start()
     {
-        aggro = new List<GameObject>();
+        aggroList = new List<GameObject>();
         col = GetComponent<SphereCollider>();
 
-        pack = transform.parent.GetComponentInChildren<PackTag>().owner;
+        pack = transform.parent.GetComponent<UnitPropsHolder>().pack;
         if (pack)
         {
             pack.addToPack(this);
         }
         GetComponentInParent<Power>().subscribePower(setRadius);
+        transform.parent.GetComponent<LifeManager>().suscribeHit(aggroUnitParent);
 
     }
     void setRadius(Power p)
     {
         col.radius = aggroRadius * p.scale();
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider otherCol)
     {
-        GameObject them = other.gameObject;
-        uint theirTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
+        GameObject other = otherCol.gameObject;
+        uint theirTeam = other.GetComponentInParent<TeamOwnership>().getTeam();
         uint myTeam = GetComponentInParent<TeamOwnership>().getTeam();
         if (myTeam != theirTeam)
         {
-            if (pack)
-            {
-                if (!aggro.Contains(them))
-                {
-                    pack.packAggro(them);
-                }
-            }
-            else
-            {
-                addAggro(them);
-            }
+            aggro(other);
 
 
         }
     }
+    void aggroUnitParent(GameObject parent)
+    {
+        GameObject other = parent.GetComponentInChildren<Size>().gameObject;
+        aggro(other);
+    }
+    public void aggro(GameObject other)
+    {
+        if (pack)
+        {
+            if (!aggroList.Contains(other))
+            {
+                pack.packAggro(other);
+            }
+        }
+        else
+        {
+            addAggro(other);
+        }
+    }
     public void addAggro(GameObject target)
     {
-        if (!aggro.Contains(target))
+        if (!aggroList.Contains(target))
         {
-            aggro.Add(target);
-            GetComponentInParent<Combat>().aggro(target.GetComponentInParent<Combat>().gameObject);
+            aggroList.Add(target);
+            GetComponentInParent<Combat>().setFighting(target.GetComponentInParent<Combat>().gameObject);
         }
     }
 
     public GameObject getTopTarget()
     {
-        if (aggro.Count > 0)
+        if (aggroList.Count > 0)
         {
-            return aggro[0];
+            return aggroList[0];
         }
         return null;
     }

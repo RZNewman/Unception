@@ -6,11 +6,20 @@ public class Combat : NetworkBehaviour
     public readonly SyncList<GameObject> active = new SyncList<GameObject>();
 
     GameObject lastUnitHitBy;
+
+
+
     private void Start()
     {
-        GetComponent<LifeManager>().suscribeDeath(onDeath);
+        if (isServer)
+        {
+            LifeManager life = GetComponent<LifeManager>();
+            life.suscribeDeath(onDeath);
+            life.suscribeHit(onHit);
+        }
+
     }
-    public void aggro(GameObject other)
+    public void setFighting(GameObject other)
     {
         if (!active.Contains(other))
         {
@@ -32,7 +41,7 @@ public class Combat : NetworkBehaviour
     void onDeath()
     {
         rewardKiller();
-        clearAggro();
+        clearFighting();
     }
     void rewardKiller()
     {
@@ -41,7 +50,7 @@ public class Combat : NetworkBehaviour
             lastUnitHitBy.GetComponent<Power>().absorb(GetComponent<Power>());
         }
     }
-    void clearAggro()
+    void clearFighting()
     {
         foreach (GameObject other in active)
         {
@@ -57,10 +66,10 @@ public class Combat : NetworkBehaviour
             lastUnitHitBy = null;
         }
     }
-    public void getHit(GameObject other)
+    void onHit(GameObject other)
     {
         lastUnitHitBy = other;
-        aggro(other);
+        setFighting(other);
     }
 
     public bool inCombat

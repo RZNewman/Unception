@@ -13,8 +13,10 @@ public class LifeManager : NetworkBehaviour
     }
 
     public delegate void OnDeath();
+    public delegate void OnHit(GameObject other);
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
+    List<OnHit> OnHitCallbacks = new List<OnHit>();
 
     private void Start()
     {
@@ -36,6 +38,19 @@ public class LifeManager : NetworkBehaviour
     public void suscribeDeath(OnDeath d)
     {
         OnDeathCallbacks.Add(d);
+    }
+
+    public void suscribeHit(OnHit h)
+    {
+        OnHitCallbacks.Add(h);
+    }
+
+    public void getHit(GameObject other)
+    {
+        foreach (OnHit c in OnHitCallbacks)
+        {
+            c(other);
+        }
     }
 
     public void die()

@@ -8,7 +8,6 @@ public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
     public GameObject PackPre;
-    public GameObject PackTagPre;
     List<UnitData> monsterProps = new List<UnitData>();
 
     List<SpawnData> buildRequests = new List<SpawnData>();
@@ -130,11 +129,12 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(unitData.power);
-        o.GetComponent<UnitPropsHolder>().props = unitData.props;
+        UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
+        holder.pack = p;
+        holder.props = unitData.props;
         AbiltyList al = o.GetComponent<AbiltyList>();
         //al.clear();
         al.addAbility(unitData.abilitites);
-        Instantiate(PackTagPre, o.transform).GetComponent<PackTag>().owner = p;
         NetworkServer.Spawn(o);
     }
 

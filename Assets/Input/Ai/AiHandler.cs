@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using static UnitControl;
 using static Utils;
 
@@ -8,6 +9,9 @@ public class AiHandler : MonoBehaviour, UnitControl
     AggroHandler aggro;
     UnitMovement mover;
     GameObject rotatingBody;
+    ModelLoader modelLoader;
+    NavMeshPath currentPath;
+    int pathingCorner = -1;
 
     public enum EffectiveDistanceType
     {
@@ -47,6 +51,8 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
         mover = GetComponentInParent<UnitMovement>();
+        modelLoader = GetComponentInParent<ModelLoader>();
+        currentPath = new NavMeshPath();
         rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
     }
 
@@ -58,7 +64,61 @@ public class AiHandler : MonoBehaviour, UnitControl
             GameObject target = aggro.getTopTarget();
             if (target)
             {
-                Vector3 rawDiff = target.transform.position - transform.position;
+                Vector3 moveTarget;
+                bool canSee = aggro.canSee(target);
+                if (canSee)
+                {
+                    moveTarget = target.transform.position;
+                    pathingCorner = -1;
+                }
+                else
+                {
+                    if (pathingCorner < 0)
+                    {
+                        NavMesh.CalculatePath(transform.position, target.transform.position, NavMesh.AllAreas, currentPath);
+                        pathingCorner = 0;
+                    }
+
+                    if (currentPath.status == NavMeshPathStatus.PathInvalid)
+                    {
+                        moveTarget = transform.position;
+                        pathingCorner = -1;
+                        Debug.Log("INVALID");
+                    }
+                    else
+                    {
+                        Vector3 current = currentPath.corners[pathingCorner];
+                        if (modelLoader.size)
+                        {
+                            Vector3 diff = current - (transform.position + Vector3.down * modelLoader.size.scaledHalfHeight);
+
+                            if (diff.magnitude <= modelLoader.size.scaledRadius)
+                            {
+                                pathingCorner++;
+
+                            }
+                        }
+
+                        if (pathingCorner >= currentPath.corners.Length)
+                        {
+                            pathingCorner = -1;
+                            moveTarget = transform.position;
+
+                        }
+                        else
+                        {
+                            current = currentPath.corners[pathingCorner];
+
+                            moveTarget = current;
+                        }
+
+
+                    }
+
+                }
+
+
+                Vector3 rawDiff = moveTarget - transform.position;
                 Vector3 planarDiff = rawDiff;
                 planarDiff.y = 0;
                 Vector3 inpDiff = planarDiff;
@@ -67,18 +127,22 @@ public class AiHandler : MonoBehaviour, UnitControl
                 currentInput.move = inpVec;
                 currentInput.lookOffset = rawDiff;
 
-                float edgeDiffMag = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().scaledRadius - target.GetComponent<Size>().scaledRadius;
+                if (canSee)
+                {
+                    float edgeDiffMag = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().scaledRadius - target.GetComponent<Size>().scaledRadius;
 
-                EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
-                Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;
-                if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width)
-                {
-                    currentInput.attacks = new AttackKey[] { AttackKey.One };
+                    EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
+                    Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;
+                    if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width)
+                    {
+                        currentInput.attacks = new AttackKey[] { AttackKey.One };
+                    }
+                    else
+                    {
+                        currentInput.attacks = new AttackKey[0];
+                    }
                 }
-                else
-                {
-                    currentInput.attacks = new AttackKey[0];
-                }
+
 
             }
             else

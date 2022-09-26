@@ -33,10 +33,10 @@ public class MonsterSpawn : NetworkBehaviour
     struct SpawnData
     {
         public Vector3 spawnPosition;
-        public float zoneSize;
+        public Vector3 zoneSize;
     }
 
-    public void spawnCreatures(Vector3 position, float zoneSize)
+    public void spawnCreatures(Vector3 position, Vector3 zoneSize)
     {
         SpawnData d = new SpawnData
         {
@@ -83,7 +83,7 @@ public class MonsterSpawn : NetworkBehaviour
 
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
-        float halfSize = spawnData.zoneSize / 2;
+        Vector3 halfSize = spawnData.zoneSize / 2;
         for (int i = packProps.Count - 1; i >= 0; i--)
         {
             UnitData data = packProps[i];
@@ -100,7 +100,7 @@ public class MonsterSpawn : NetworkBehaviour
             powerPoolWeighted -= weightedPower(data.power) * instance;
             for (int j = 0; j < instance; j++)
             {
-                Vector3 offset = new Vector3(Random.Range(-halfSize, halfSize), 0, Random.Range(-halfSize, halfSize));
+                Vector3 offset = new Vector3(Random.Range(-halfSize.x, halfSize.x), 0, Random.Range(-halfSize.z, halfSize.z));
                 offset *= 0.9f;
                 InstanceCreature(spawnData, data, offset, p);
             }

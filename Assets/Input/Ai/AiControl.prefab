@@ -71,4 +71,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aggroRadius: 10
-  aggro: []

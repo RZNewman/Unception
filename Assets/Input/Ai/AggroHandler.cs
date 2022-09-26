@@ -6,14 +6,16 @@ public class AggroHandler : MonoBehaviour
     public float aggroRadius = 15f;
     SphereCollider col;
 
-    [HideInInspector]
-    public List<GameObject> aggroList;
+
+    List<GameObject> aggroList;
+    List<GameObject> senseRadius;
 
     Pack pack;
 
     private void Start()
     {
         aggroList = new List<GameObject>();
+        senseRadius = new List<GameObject>();
         col = GetComponent<SphereCollider>();
 
         pack = transform.parent.GetComponent<UnitPropsHolder>().pack;
@@ -36,11 +38,29 @@ public class AggroHandler : MonoBehaviour
         uint myTeam = GetComponentInParent<TeamOwnership>().getTeam();
         if (myTeam != theirTeam)
         {
-            aggro(other);
-
+            senseRadius.Add(other);
 
         }
     }
+    private void OnTriggerExit(Collider other)
+    {
+        senseRadius.Remove(other.gameObject);
+    }
+    private void Update()
+    {
+        List<GameObject> sensed = new List<GameObject>(senseRadius);
+        foreach (GameObject o in sensed)
+        {
+
+            if (canSee(o))
+            {
+                aggro(o);
+                senseRadius.Remove(o);
+            }
+        }
+    }
+
+
     void aggroUnitParent(GameObject parent)
     {
         GameObject other = parent.GetComponentInChildren<Size>().gameObject;
@@ -76,5 +96,10 @@ public class AggroHandler : MonoBehaviour
             return aggroList[0];
         }
         return null;
+    }
+    public bool canSee(GameObject other)
+    {
+        Vector3 diff = other.transform.position - transform.position;
+        return !Physics.Raycast(transform.position, diff, diff.magnitude, LayerMask.GetMask("Terrain"));
     }
 }

@@ -199,8 +199,9 @@ public class MapGenerator : NetworkBehaviour
         {
             buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
-        //TODO ADD Monsters
-        //populateTiles();
+
+        populateTiles(tiles);
+        //Debug.log()
     }
 
     struct TilePlacement
@@ -316,7 +317,9 @@ public class MapGenerator : NetworkBehaviour
         {
             if (Random.value < 0.65f)
             {
-                //spawner.spawnCreatures(t.transform.position + Vector3.up * 3, tileSize);
+                GameObject zone = t.GetComponent<MapTile>().Zones().RandomItem();
+                spawner.spawnCreatures(zone.transform.position, zone.transform.lossyScale);
+                Debug.Break();
             }
         }
 

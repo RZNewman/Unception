@@ -6,6 +6,8 @@ TagManager:
   tags:
   - LocalCanvas
   - LocalAbilityBar
+  - DoorLocation
+  - MapTile
   layers:
   - Default
   - TransparentFX
@@ -19,8 +21,8 @@ TagManager:
   - Projectiles
   - Aggro
   - Stoppers
-  - 
-  - 
+  - Doors
+  - MapTile
   - 
   - 
   - 

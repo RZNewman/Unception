@@ -1,51 +1,40 @@
 using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
+using static Utils;
 
 public class MapGenerator : NetworkBehaviour
 {
-    public GameObject tilePre;
-    public GameObject wallPre;
+    public TileWeight[] tilesPre;
     public GameObject doorPre;
-    public GameObject holePre;
     public GameObject endPre;
+    public GameObject stitchPre;
     public GameObject floorRootPre;
 
-    static int gridSize = 10;
-    static int tilesPerFloor = 30;
-    static float baseTileSize = 20;
+
+    public int tilesPerFloor = 30;
     float currentFloorScale = 1;
     float currentFloorPower;
-    float tileSize
-    {
-        get
-        {
-            return baseTileSize * currentFloorScale;
-        }
-    }
+
 
     GameObject currentFloor;
     GameObject lastFloor;
 
     Vector3 floorOffset = Vector3.zero;
 
-    public enum tileType
+    [System.Serializable]
+    public struct TileWeight
     {
-        None,
-        Full,
-        Safe,
-        Hole
+        public GameObject prefab;
+        public float weight;
     }
 
 
-    tileType[,] tileLayout;
 
-    struct tileIndex
-    {
-        public int x;
-        public int y;
-    }
-    List<tileIndex> tiles;
+
+
 
     MonsterSpawn spawner;
     // Start is called before the first frame update
@@ -58,6 +47,22 @@ public class MapGenerator : NetworkBehaviour
         }
 
     }
+    static List<TileWeight> normalizeWeights(List<TileWeight> weights)
+    {
+        float total = 0;
+        for (int i = 0; i < weights.Count; i++)
+        {
+            total += weights[i].weight;
+        }
+        for (int i = 0; i < weights.Count; i++)
+        {
+            TileWeight w = weights[i];
+            w.weight = w.weight / total;
+            weights[i] = w;
+        }
+        return weights;
+    }
+
 
     public void buildNewLevel(Vector3 worldPos, float power)
     {
@@ -77,247 +82,247 @@ public class MapGenerator : NetworkBehaviour
 
     void buildGrid()
     {
-        tileLayout = new tileType[gridSize, gridSize];
-        tiles = new List<tileIndex>();
 
         currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
-
         spawner.setFloor(currentFloor.transform);
-        int rootX = Random.Range(0, gridSize);
-        int rootY = Random.Range(0, gridSize);
-        Vector3 diff = new Vector3(rootX * tileSize, 0, rootY * tileSize);
-        currentFloor.transform.localPosition += -diff;
         currentFloor.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(currentFloor);
-        tileIndex root = new tileIndex
+
+        List<GameObject> tiles = new List<GameObject>();
+        List<GameObject> doors = new List<GameObject>();
+        List<GameObject> badDoors = new List<GameObject>();
+        System.Action<TileDelta> processDelta = (TileDelta delta) =>
         {
-            x = rootX,
-            y = rootY,
+            tiles.Add(delta.tile);
+            foreach (GameObject d in delta.removed)
+            {
+                doors.Remove(d);
+                GameObject s = Instantiate(stitchPre, d.transform.position, d.transform.rotation, currentFloor.transform);
+                s.transform.localScale = Vector3.one * currentFloorScale;
+                s.GetComponent<ClientAdoption>().parent = currentFloor;
+                RaycastHit hit;
+                Physics.Raycast(
+                    s.transform.position + s.transform.forward * -2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
+                    Vector3.down,
+                    out hit,
+                    6f * currentFloorScale,
+                    LayerMask.GetMask("Terrain"));
+                float start = hit.point.y - s.transform.position.y;
+
+                Physics.Raycast(
+                    s.transform.position + s.transform.forward * 2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
+                    Vector3.down,
+                    out hit,
+                    6f * currentFloorScale,
+                    LayerMask.GetMask("Terrain"));
+                float end = hit.point.y - s.transform.position.y;
+                NavMeshLink link = s.GetComponent<NavMeshLink>();
+                link.startPoint = new Vector3(link.startPoint.x, start, link.startPoint.z);
+                link.endPoint = new Vector3(link.endPoint.x, end, link.endPoint.z);
+            }
+            foreach (GameObject d in delta.added)
+            {
+                doors.Add(d);
+            }
         };
-        buildTile(root, tileType.Safe);
-        tileIndex t;
-        for (int i = 0; i < tilesPerFloor; i++)
-        {
-            t = pickNextTile();
-            buildTile(t);
-        }
-        t = pickNextTile();
-        buildTile(t, tileType.Hole);
+
+        processDelta(buildTile(getTilePrefab(tilesPre.ToList()).prefab, new TilePlacement { position = currentFloor.transform.position, rotation = Quaternion.identity }));
+        int tileCount = tilesPerFloor - 1;
         //TODO Coroutine
-        instanceGrid();
-        instanceWalls();
-    }
-
-    void instanceGrid()
-    {
-        Vector3 floorPos = currentFloor.transform.position;
-        for (int x = 0; x < tileLayout.GetLength(0); x++)
+        for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
-            for (int y = 0; y < tileLayout.GetLength(1); y++)
+            //TODO select weighted door
+            GameObject door = doors.RandomItem();
+
+            //Removes the door without trying, if the space right in front isnt free
+            if (Physics.OverlapBox(
+                door.transform.position + door.transform.forward * 5f * currentFloorScale + Vector3.up * 4f * currentFloorScale,
+                new Vector3(5f, 4f, 5f) * 0.99f * currentFloorScale,
+                door.transform.rotation,
+                LayerMask.GetMask("MapTile")).Length > 0
+                )
             {
-                if (tileLayout[x, y].V())
-                {
-                    Vector3 pos = new Vector3(x * tileSize, 0, y * tileSize);
-                    tileType type = tileLayout[x, y];
-                    GameObject prefab = type == tileType.Hole ? holePre : tilePre;
-                    GameObject t = Instantiate(prefab, floorPos + pos, Quaternion.identity, currentFloor.transform);
-                    t.transform.localScale = Vector3.one * currentFloorScale;
-                    t.GetComponent<ClientAdoption>().parent = currentFloor;
-                    NetworkServer.Spawn(t);
-                    if (type == tileType.Full)
-                    {
-                        if (Random.value < 0.65f)
-                        {
-                            spawner.spawnCreatures(floorPos + pos + Vector3.up * 3, tileSize);
-                        }
-
-                    }
-                    if (type == tileType.Hole)
-                    {
-                        t = Instantiate(endPre, floorPos + pos + Vector3.down * tileSize, Quaternion.identity, currentFloor.transform);
-                        t.transform.localScale = Vector3.one * currentFloorScale;
-                        t.GetComponent<NextLevel>().setGen(this);
-                        t.GetComponent<ClientAdoption>().parent = currentFloor;
-                        NetworkServer.Spawn(t);
-                    }
-
-
-                }
+                doors.Remove(door);
+                badDoors.Add(door);
+                i--;
+                continue;
             }
-        }
-    }
-
-    void instanceWalls()
-    {
-        Quaternion up = Quaternion.identity;
-        Quaternion right = Quaternion.AngleAxis(90, Vector3.up);
-        Quaternion down = Quaternion.AngleAxis(180, Vector3.up);
-        Quaternion left = Quaternion.AngleAxis(270, Vector3.up);
-
-        Vector3 floorPos = currentFloor.transform.position;
-
-        for (int x = 0; x < tileLayout.GetLength(0); x++)
-        {
-            for (int y = 0; y < tileLayout.GetLength(1); y++)
+            List<TileWeight> weights;
+            if (i == tileCount - 1)
             {
-                Vector3 pos = new Vector3(x * tileSize, 0, y * tileSize);
+                weights = new List<TileWeight>();
+                weights.Add(new TileWeight { prefab = endPre, weight = 1 });
+            }
+            else
+            {
+                weights = tilesPre.ToList();
+            }
 
-                if (y < tileLayout.GetLength(1) - 1)
+            bool didCreate = false;
+            while (weights.Count > 0)
+            {
+                TileWeight weight = getTilePrefab(weights);
+                TilePlacement place = checkTile(door, weight.prefab);
+                if (place.success)
                 {
-                    if (tileLayout[x, y].V() && tileLayout[x, y + 1].V())
-                    {
-                        GameObject t = Instantiate(doorPre, floorPos + pos, up, currentFloor.transform);
-                        t.transform.localScale = Vector3.one * currentFloorScale;
-                        t.GetComponent<ClientAdoption>().parent = currentFloor;
-                        NetworkServer.Spawn(t);
-                    }
-                    else if (tileLayout[x, y].V() || tileLayout[x, y + 1].V())
-                    {
-
-                        GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
-                        t.transform.localScale = Vector3.one * currentFloorScale;
-                        t.GetComponent<ClientAdoption>().parent = currentFloor;
-                        NetworkServer.Spawn(t);
-                    }
+                    processDelta(buildTile(weight.prefab, place));
+                    didCreate = true;
+                    break;
                 }
-
-
-                if (x < tileLayout.GetLength(0) - 1)
+                else
                 {
-                    if (tileLayout[x, y].V() && tileLayout[x + 1, y].V())
-                    {
-
-                        GameObject t = Instantiate(doorPre, floorPos + pos, right, currentFloor.transform);
-                        t.transform.localScale = Vector3.one * currentFloorScale;
-                        t.GetComponent<ClientAdoption>().parent = currentFloor;
-                        NetworkServer.Spawn(t);
-                    }
-                    else if (tileLayout[x, y].V() || tileLayout[x + 1, y].V())
-                    {
-
-                        GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
-                        t.transform.localScale = Vector3.one * currentFloorScale;
-                        t.GetComponent<ClientAdoption>().parent = currentFloor;
-                        NetworkServer.Spawn(t);
-                    }
+                    weights.Remove(weight);
                 }
 
             }
+
+            if (didCreate)
+            {
+                continue;
+            }
+            else
+            {
+                doors.Remove(door);
+                badDoors.Add(door);
+                i--;
+            }
+
+
+
         }
-        for (int x = 0; x < tileLayout.GetLength(0); x++)
+
+        foreach (GameObject hole in doors)
         {
-            int y = 0;
-            Vector3 pos = new Vector3(x * tileSize, 0, y * tileSize);
-            if (tileLayout[x, y].V())
-            {
-                GameObject t = Instantiate(wallPre, floorPos + pos, down, currentFloor.transform);
-                t.transform.localScale = Vector3.one * currentFloorScale;
-                t.GetComponent<ClientAdoption>().parent = currentFloor;
-                NetworkServer.Spawn(t);
-            }
-            y = tileLayout.GetLength(1) - 1;
-            pos = new Vector3(x * tileSize, 0, y * tileSize);
-            if (tileLayout[x, y].V())
-            {
-                GameObject t = Instantiate(wallPre, floorPos + pos, up, currentFloor.transform);
-                t.transform.localScale = Vector3.one * currentFloorScale;
-                t.GetComponent<ClientAdoption>().parent = currentFloor;
-                NetworkServer.Spawn(t);
-            }
+            buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
-        for (int y = 0; y < tileLayout.GetLength(1); y++)
+        foreach (GameObject hole in badDoors)
         {
-            int x = 0;
-            Vector3 pos = new Vector3(x * tileSize, 0, y * tileSize);
-            if (tileLayout[x, y].V())
-            {
-                GameObject t = Instantiate(wallPre, floorPos + pos, left, currentFloor.transform);
-                t.transform.localScale = Vector3.one * currentFloorScale;
-                t.GetComponent<ClientAdoption>().parent = currentFloor;
-                NetworkServer.Spawn(t);
-            }
-            x = tileLayout.GetLength(0) - 1;
-            pos = new Vector3(x * tileSize, 0, y * tileSize);
-            if (tileLayout[x, y].V())
-            {
-                GameObject t = Instantiate(wallPre, floorPos + pos, right, currentFloor.transform);
-                t.transform.localScale = Vector3.one * currentFloorScale;
-                t.GetComponent<ClientAdoption>().parent = currentFloor;
-                NetworkServer.Spawn(t);
-            }
+            buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
+        //TODO ADD Monsters
+        //populateTiles();
     }
 
-
-    void buildTile(tileIndex i, tileType type = tileType.Full)
+    struct TilePlacement
     {
-        tileLayout[i.x, i.y] = type;
-        tiles.Add(i);
+        public bool success;
+        public Vector3 position;
+        public Quaternion rotation;
     }
-    tileIndex pickNextTile()
+    struct TileDelta
     {
-        int chosenIndex = tiles.Count - 1;
-        tileIndex t = tiles[chosenIndex];
-        tileIndex n = pickValidNeighbor(t);
-        if (t.x != n.x || t.y != n.y)
+        public GameObject tile;
+        public List<GameObject> added;
+        public List<GameObject> removed;
+    }
+    static TileWeight getTilePrefab(List<TileWeight> weights)
+    {
+        weights = normalizeWeights(weights);
+        float value = Random.value;
+        int index = 0;
+        while (index < weights.Count && weights[index].weight < value)
         {
-            return n;
+            value -= weights[index].weight;
+            index++;
         }
-        while (chosenIndex >= 0)
+        if (index == weights.Count)
         {
-            chosenIndex--;
-            t = tiles[Random.Range(0, chosenIndex)];
-            n = pickValidNeighbor(t);
-            if (t.x != n.x || t.y != n.y)
+            index--;
+        }
+        return weights[index];
+    }
+    TilePlacement checkTile(GameObject door, GameObject tilePrefab)
+    {
+        Vector3 position;
+        Quaternion rotation;
+
+        List<GameObject> doorsPre = tilePrefab.GetComponent<MapTile>().Doors();
+        while (doorsPre.Count > 0)
+        {
+            GameObject doorPre = doorsPre.RandomItem();
+            Vector3 localDiff = -doorPre.transform.position;
+            rotation = Quaternion.LookRotation(-Vector3.forward) * Quaternion.Inverse(Quaternion.LookRotation(doorPre.transform.forward)) * Quaternion.LookRotation(door.transform.forward);
+            Vector3 worldDiff = rotation * localDiff * currentFloorScale;
+            position = door.transform.position + worldDiff;
+
+            if (checkTileZones(tilePrefab, position, rotation))
             {
-                return n;
+                return new TilePlacement { success = true, position = position, rotation = rotation };
+            }
+
+            doorsPre.Remove(doorPre);
+        }
+
+
+
+        return new TilePlacement { success = false };
+    }
+    bool checkTileZones(GameObject tilePrefab, Vector3 position, Quaternion rotation)
+    {
+        List<GameObject> zonesPre = tilePrefab.GetComponent<MapTile>().Zones();
+        foreach (GameObject zone in zonesPre)
+        {
+            if (Physics.OverlapBox(position + rotation * zone.transform.position * currentFloorScale, zone.transform.lossyScale * 0.5f * 0.99f * currentFloorScale, rotation * zone.transform.rotation, LayerMask.GetMask("MapTile")).Length > 0)
+            {
+                return false;
             }
         }
-        throw new System.Exception("Cant generate");
+        return true;
+    }
+    TileDelta buildTile(GameObject tilePrefab, TilePlacement place)
+    {
+        GameObject t = Instantiate(tilePrefab, place.position, place.rotation, currentFloor.transform);
+        t.transform.localScale = Vector3.one * currentFloorScale;
 
+        t.GetComponent<ClientAdoption>().parent = currentFloor;
+        NextLevel lvl = t.GetComponentInChildren<NextLevel>();
+        if (lvl)
+        {
+            lvl.setGen(this);
+        }
+        NetworkServer.Spawn(t);
+
+        List<GameObject> doors = t.GetComponent<MapTile>().Doors();
+        List<GameObject> added = new List<GameObject>();
+        List<GameObject> removed = new List<GameObject>();
+        foreach (GameObject doorInst in doors)
+        {
+            Collider[] found = Physics.OverlapSphere(doorInst.transform.position, 1f, LayerMask.GetMask("Doors"));
+            if (found.Length > 1)
+            {
+                List<GameObject> foundDoors = found.Select(c => c.gameObject).ToList();
+                foundDoors.Remove(doorInst);
+                removed.Add(foundDoors[0]);
+            }
+            else
+            {
+                added.Add(doorInst);
+            }
+
+        }
+        return new TileDelta { tile = t, added = added, removed = removed };
+    }
+    void buildDoorBlocker(Vector3 position, Quaternion rotation)
+    {
+        GameObject t = Instantiate(doorPre, position, rotation, currentFloor.transform);
+        t.transform.localScale = Vector3.one * currentFloorScale;
+        t.GetComponent<ClientAdoption>().parent = currentFloor;
+        NetworkServer.Spawn(t);
     }
 
-    tileIndex pickValidNeighbor(tileIndex i)
+    void populateTiles(List<GameObject> tiles)
     {
-        List<tileIndex> tests = getNeighbors(i);
-        tests.Shuffle();
-        foreach (tileIndex t in tests)
+        foreach (GameObject t in tiles)
         {
-            if (isTileEmpty(t))
+            if (Random.value < 0.65f)
             {
-                return t;
+                //spawner.spawnCreatures(t.transform.position + Vector3.up * 3, tileSize);
             }
         }
-        return i;
+
     }
 
-    List<tileIndex> getNeighbors(tileIndex i)
-    {
-        List<tileIndex> neighbors = new List<tileIndex>();
-        List<tileIndex> tests = new List<tileIndex>();
-        tests.Add(new tileIndex { x = i.x - 1, y = i.y });
-        tests.Add(new tileIndex { x = i.x + 1, y = i.y });
-        tests.Add(new tileIndex { x = i.x, y = i.y - 1 });
-        tests.Add(new tileIndex { x = i.x, y = i.y + 1 });
-        foreach (tileIndex t in tests)
-        {
-            if (isTileValid(t))
-            {
-                neighbors.Add(t);
-            }
-        }
-        return neighbors;
-    }
-
-
-    bool isTileValid(tileIndex i)
-    {
-        return i.x >= 0 && i.x < gridSize && i.y >= 0 && i.y < gridSize;
-    }
-    bool isTileEmpty(tileIndex i)
-    {
-        return !tileLayout[i.x, i.y].V();
-    }
 
 
 }
+

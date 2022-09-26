@@ -2,10 +2,11 @@ using Mirror;
 using System.Collections;
 using UnityEngine;
 
-public class NextLevel : NetworkBehaviour
+public class NextLevel : MonoBehaviour
 {
     MapGenerator gen;
 
+    [Server]
     public void setGen(MapGenerator m)
     {
         gen = m;
@@ -13,7 +14,7 @@ public class NextLevel : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!isServer)
+        if (!gen)
         {
             return;
         }
@@ -28,7 +29,7 @@ public class NextLevel : NetworkBehaviour
 
     IEnumerator makeNextLevel(float power)
     {
-        gen.buildNewLevel(transform.position + Vector3.down * 20, power);
+        gen.buildNewLevel(transform.position + Vector3.down * 30, power);
         yield return new WaitForSecondsRealtime(2.5f);
         //TODO teleport non-local players
         gen.cleanupLevel();

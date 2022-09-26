@@ -110,7 +110,7 @@ NavMeshSettings:
     agentHeight: 2
     agentSlope: 45
     agentClimb: 0.4
-    ledgeDropHeight: 0
+    ledgeDropHeight: 20
     maxJumpAcrossDistance: 0
     minRegionArea: 2
     manualCellSize: 0
@@ -433,15 +433,17 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
-  - {fileID: 6715917580406317018, guid: 2d03b46cabba84a4bafdbcfa721089ff, type: 3}
-  - {fileID: 9188171244486232376, guid: 5b5ef168dddad9a40ae5dcda2d9b78e1, type: 3}
-  - {fileID: 8362817911430590472, guid: e1e0b54e7d36aa445adf9b90fbc8ac71, type: 3}
-  - {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
-  - {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
   - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
-  - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
   - {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
+  - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
+  - {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
+  - {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
+  - {fileID: 2287204686885174507, guid: 1ab4c5fdc8aacf840bfe788bd62476b6, type: 3}
+  - {fileID: 2287204686885174507, guid: f3c1c0c242645e0488c36c4eb6a0415f, type: 3}
+  - {fileID: 2287204686885174507, guid: 0b940ff0310aa774fa13aa9b7aa09106, type: 3}
+  - {fileID: 2287204686885174507, guid: 09ba0b9a40526ce4b833240dc600ccd4, type: 3}
+  - {fileID: 2287204686885174507, guid: c0faf81e833ef164894d641044e6a7f0, type: 3}
+  - {fileID: 2287204686885174507, guid: 42dda3974c871244b9f2eee4bfeb9b75, type: 3}
 --- !u!4 &449408942
 Transform:
   m_ObjectHideFlags: 0
@@ -1532,12 +1534,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  tilePre: {fileID: 6715917580406317018, guid: 2d03b46cabba84a4bafdbcfa721089ff, type: 3}
-  wallPre: {fileID: 8362817911430590472, guid: e1e0b54e7d36aa445adf9b90fbc8ac71, type: 3}
-  doorPre: {fileID: 9188171244486232376, guid: 5b5ef168dddad9a40ae5dcda2d9b78e1, type: 3}
-  holePre: {fileID: 6715917580406317018, guid: 68a148b826927034493af92972b2d5cd, type: 3}
+  tilesPre:
+  - prefab: {fileID: 2287204686885174507, guid: f3c1c0c242645e0488c36c4eb6a0415f, type: 3}
+    weight: 5
+  - prefab: {fileID: 2287204686885174507, guid: 0b940ff0310aa774fa13aa9b7aa09106, type: 3}
+    weight: 6
+  - prefab: {fileID: 2287204686885174507, guid: 09ba0b9a40526ce4b833240dc600ccd4, type: 3}
+    weight: 1
+  - prefab: {fileID: 2287204686885174507, guid: c0faf81e833ef164894d641044e6a7f0, type: 3}
+    weight: 2
+  - prefab: {fileID: 2287204686885174507, guid: 42dda3974c871244b9f2eee4bfeb9b75, type: 3}
+    weight: 0.2
+  doorPre: {fileID: 2287204686885174507, guid: 1ab4c5fdc8aacf840bfe788bd62476b6, type: 3}
   endPre: {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
+  stitchPre: {fileID: 2287204686885174507, guid: c6a5ef7790cb8424b91fc1ed1f990daf, type: 3}
   floorRootPre: {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
+  tilesPerFloor: 200
 --- !u!4 &2124122341
 Transform:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static MapGenerator;
 
 public static class Utils
 {
@@ -14,10 +15,6 @@ public static class Utils
         return new Vector2(world.x, world.z);
     }
 
-    public static bool V(this MapGenerator.tileType value)
-    {
-        return value != MapGenerator.tileType.None;
-    }
     public static float normalizeAngle(float angle)
     {
         if (angle > 180) angle -= 360;
@@ -39,6 +36,20 @@ public static class Utils
         value = Mathf.Clamp01(value);
         return min + (max - min) * value;
     }
+    public static List<GameObject> ChildrenWithTag(this GameObject o, string tag)
+    {
+        List<GameObject> targets = new List<GameObject>();
+        if (o.tag == tag)
+        {
+            targets.Add(o);
+        }
+        foreach (Transform t in o.transform)
+        {
+            targets.AddRange(t.gameObject.ChildrenWithTag(tag));
+        }
+        return targets;
+    }
+
 
     public struct FloatComponents
     {
@@ -77,6 +88,15 @@ public static class Utils
             list[k] = list[n];
             list[n] = value;
         }
+    }
+    public static T RandomItem<T>(this IList<T> list)
+    {
+        int index = Mathf.FloorToInt(Random.value * list.Count);
+        if (index == list.Count)
+        {
+            index--;
+        }
+        return list[index];
     }
     public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
     {

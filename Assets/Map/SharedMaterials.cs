@@ -5,6 +5,7 @@ using UnityEngine;
 public class SharedMaterials : NetworkBehaviour
 {
     public List<string> enemyModels;
+    public string playerModel;
     public struct visualsSource
     {
         public Color color;
@@ -38,7 +39,7 @@ public class SharedMaterials : NetworkBehaviour
             source = new visualsSource
             {
                 color = Color.white,
-                modelName = "Lizard",
+                modelName = playerModel,
                 lank = 1,
             };
         }

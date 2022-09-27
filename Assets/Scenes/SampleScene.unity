@@ -1657,7 +1657,5 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   enemyModels:
-  - Viper
-  - Undead
-  - Mummy
-  - Goblin
+  - Evil
+  playerModel: Robo

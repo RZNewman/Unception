@@ -1,5 +1,6 @@
 using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -8,6 +9,8 @@ public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
     public GameObject PackPre;
+
+    public int packsPerFloor = 30;
     List<UnitData> monsterProps = new List<UnitData>();
 
     List<SpawnData> buildRequests = new List<SpawnData>();
@@ -18,7 +21,7 @@ public class MonsterSpawn : NetworkBehaviour
     float lastPowerAdded = Power.basePower / 2;
     float spawnPower = 100;
 
-    static float Ai2PlayerPowerFactor = 2.0f;
+    static float Ai2PlayerPowerFactor = 1.0f;
     static float lowerUnitPowerFactor = 1.5f;
 
     static int maxPackSize = 8;
@@ -33,13 +36,42 @@ public class MonsterSpawn : NetworkBehaviour
     struct SpawnData
     {
         public Transform spawnTransform;
+        public float difficulty;
     }
 
-    public void spawnCreatures(Transform spawn)
+    public void spawnLevel(List<GameObject> tiles)
+    {
+        float difficultyRange = (difficultyMultiplier - 1) / 2;
+        List<float> packs = new List<float>();
+        for (int i = 0; i < packsPerFloor; i++)
+        {
+            packs.Add(Mathf.Lerp(difficultyMultiplier - difficultyRange, difficultyMultiplier + difficultyRange, i / (packsPerFloor - 1)));
+        }
+
+
+        List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Zones()).SelectMany(z => z).ToList();
+
+        for (int i = 0; i < packsPerFloor; i++)
+        {
+            int p = packs.RandomIndex();
+            float pack = packs[p];
+            packs.RemoveAt(p);
+
+            //TODO bigger rooms can have more packs?
+            int z = zones.RandomIndex();
+            GameObject zone = zones[z];
+            zones.RemoveAt(z);
+
+            spawnCreatures(zone.transform, pack);
+        }
+    }
+
+    public void spawnCreatures(Transform spawn, float difficulty)
     {
         SpawnData d = new SpawnData
         {
             spawnTransform = spawn,
+            difficulty = difficulty,
         };
         if (ready)
         {
@@ -57,8 +89,8 @@ public class MonsterSpawn : NetworkBehaviour
 
     void instancePack(SpawnData spawnData)
     {
-        float difficulty = (1f + Random.value * 0.6f) * difficultyMultiplier;
-        float powerPoolWeighted = weightedPool(difficulty);
+
+        float powerPoolWeighted = weightedPool(spawnData.difficulty);
         List<UnitData> packProps = new List<UnitData>();
         float propsSelect = Random.value;
         int startIndex = 0;
@@ -76,6 +108,10 @@ public class MonsterSpawn : NetworkBehaviour
                 {
                     packProps.Add(monsterProps[i]);
                 }
+            }
+            if (packProps.Count == 0)
+            {
+                packProps.Add(monsterProps.RandomItem());
             }
         }
 
@@ -153,9 +189,9 @@ public class MonsterSpawn : NetworkBehaviour
     public void setSpawnPower(float power)
     {
         spawnPower = power;
-        while (lastPowerAdded < power * 5)
+        while (lastPowerAdded < power * 1.2)
         {
-            lastPowerAdded *= 2;
+            lastPowerAdded *= 1.2f;
             monsterProps.Add(createType(lastPowerAdded));
         }
         float pool = weightedPool(1);

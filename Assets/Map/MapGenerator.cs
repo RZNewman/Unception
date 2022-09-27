@@ -200,8 +200,7 @@ public class MapGenerator : NetworkBehaviour
             buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
 
-        populateTiles(tiles);
-        //Debug.log()
+        spawner.spawnLevel(tiles);
     }
 
     struct TilePlacement
@@ -312,18 +311,7 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(t);
     }
 
-    void populateTiles(List<GameObject> tiles)
-    {
-        foreach (GameObject t in tiles)
-        {
-            if (Random.value < 0.65f)
-            {
-                GameObject zone = t.GetComponent<MapTile>().Zones().RandomItem();
-                spawner.spawnCreatures(zone.transform);
-            }
-        }
 
-    }
 
 
 

@@ -98,6 +98,15 @@ public static class Utils
         }
         return list[index];
     }
+    public static int RandomIndex<T>(this IList<T> list)
+    {
+        int index = Mathf.FloorToInt(Random.value * list.Count);
+        if (index == list.Count)
+        {
+            index--;
+        }
+        return index;
+    }
 
     public static T RandomItemWeighted<T>(this IList<T> list, float weight = 2f)
     {

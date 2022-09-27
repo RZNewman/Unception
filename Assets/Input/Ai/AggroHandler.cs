@@ -11,6 +11,7 @@ public class AggroHandler : MonoBehaviour
     List<GameObject> senseRadius;
 
     Pack pack;
+    bool started = false;
 
     private void Start()
     {
@@ -25,7 +26,7 @@ public class AggroHandler : MonoBehaviour
         }
         GetComponentInParent<Power>().subscribePower(setRadius);
         transform.parent.GetComponent<LifeManager>().suscribeHit(aggroUnitParent);
-
+        started = true;
     }
     void setRadius(Power p)
     {
@@ -91,7 +92,7 @@ public class AggroHandler : MonoBehaviour
 
     public GameObject getTopTarget()
     {
-        if (aggroList.Count > 0)
+        if (started && aggroList.Count > 0)
         {
             return aggroList[0];
         }

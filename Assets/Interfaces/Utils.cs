@@ -98,6 +98,16 @@ public static class Utils
         }
         return list[index];
     }
+
+    public static T RandomItemWeighted<T>(this IList<T> list, float weight = 2f)
+    {
+        int index = Mathf.FloorToInt(Mathf.Pow(Random.value, 1 / weight) * list.Count);
+        if (index == list.Count)
+        {
+            index--;
+        }
+        return list[index];
+    }
     public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
     {
         // create matrix

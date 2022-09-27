@@ -22,12 +22,13 @@ public class ActionState : AttackStageState
             return;
         }
         GameObject body = mover.getSpawnBody();
+        FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
         Size s = body.GetComponentInChildren<Size>();
         List<GameObject> hits;
         switch (attackData.type)
         {
             case HitType.Line:
-                hits = LineAttack(body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                hits = LineAttack(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,
@@ -42,7 +43,7 @@ public class ActionState : AttackStageState
                 }
                 break;
             case HitType.Projectile:
-                SpawnProjectile(body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
+                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
                 break;
             case HitType.Ground:
                 hits = GroundAttack(groundTarget.transform.position, attackData.width / 2);

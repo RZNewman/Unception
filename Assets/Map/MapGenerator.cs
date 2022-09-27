@@ -131,8 +131,8 @@ public class MapGenerator : NetworkBehaviour
         //TODO Coroutine
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
-            //TODO select weighted door
-            GameObject door = doors.RandomItem();
+            //TODO Make level more linear
+            GameObject door = doors.RandomItemWeighted();
 
             //Removes the door without trying, if the space right in front isnt free
             if (Physics.OverlapBox(

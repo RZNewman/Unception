@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GenerateHit;
 using static UnitControl;
+using static Utils;
 
 public static class AttackUtils
 {
@@ -121,41 +122,44 @@ public static class AttackUtils
 
 
 
-    public static void SpawnProjectile(Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData)
+    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
-        Vector3 bodyFocus = body.position + body.forward * radius;
-        GameObject instance = GameObject.Instantiate(prefab, bodyFocus, body.rotation);
+        Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
+        Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
+        Quaternion aim = floor.getAimRotation(body.forward);
+        GameObject instance = GameObject.Instantiate(prefab, bodyFocus, aim);
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
         float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
         p.init(terrainRadius, hitRadius, halfHeight, mover, hitData);
         NetworkServer.Spawn(instance);
     }
-    public static List<GameObject> LineAttack(Transform body, float radius, float halfHeight, float length, float width)
+    public static List<GameObject> LineAttack(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
     {
         float playerHeightOversize = halfHeight * 2 * 1.5f;
         List<GameObject> hits = new List<GameObject>();
         List<GameObject> tempHits = new List<GameObject>();
-        Vector3 bodyFocus = body.position + body.forward * radius;
+        Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
+        Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
-        Vector3 boxCenter = bodyFocus + maxDistance * 0.5f * body.forward;
+        Quaternion aim = floor.getAimRotation(body.forward);
+        Vector3 boxCenter = bodyFocus + maxDistance * 0.5f * (aim * Vector3.forward);
         float boxHeight = Mathf.Max(playerHeightOversize, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
-        Quaternion q = Quaternion.LookRotation(body.forward);
-        RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, q, 0.0f, LayerMask.GetMask("Players"));
+        RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, aim, 0.0f, LayerMask.GetMask("Players"));
         //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
-        Vector3 capsuleHeightDiff = body.up * capsuleHeightFactor;
+        Vector3 capsuleHeightDiff = floor.normal * capsuleHeightFactor;
         Vector3 capsuleStart = bodyFocus + capsuleHeightDiff;
         Vector3 capsuleEnd = bodyFocus - capsuleHeightDiff;
         RaycastHit[] capsuleHits = Physics.CapsuleCastAll(capsuleStart, capsuleEnd, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
 
         //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
         //Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
-        //DrawBox(boxCenter, q,boxHalfs*2, Color.blue);
+        //DrawBox(boxCenter, aim, boxHalfs * 2, Color.blue);
         //Debug.DrawLine(capsuleStart, capsuleEnd, Color.red);
         //Debug.DrawLine(capsuleStart, capsuleStart+ body.forward*maxDistance, Color.red);
         //Debug.DrawLine(capsuleEnd, capsuleEnd + body.forward * maxDistance, Color.red);

@@ -40,6 +40,19 @@ public class FloorNormal : MonoBehaviour
             return groundNormal;
         }
     }
+
+    public Quaternion getIndicatorRotation(Vector3 forward)
+    {
+        return Quaternion.LookRotation(groundNormal, forward);
+    }
+
+    public Quaternion getAimRotation(Vector3 forward)
+    {
+        Vector3 left = Vector3.Cross(forward, groundNormal);
+        Vector3 aim = Vector3.Cross(groundNormal, left);
+        return Quaternion.LookRotation(aim, groundNormal);
+    }
+
     public bool hasGround
     {
         get

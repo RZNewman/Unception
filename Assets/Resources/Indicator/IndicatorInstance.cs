@@ -55,8 +55,7 @@ public abstract class IndicatorInstance : MonoBehaviour
             GameObject trackingBody = transform.parent.gameObject;
             FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
             IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
-            Quaternion q = Quaternion.LookRotation(-ground.normal, trackingBody.transform.forward);
-            transform.rotation = q;
+            transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
 
             Vector3 projection = Vector3.ProjectOnPlane(trackingBody.transform.forward, ground.normal).normalized;
 

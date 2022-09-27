@@ -32,16 +32,14 @@ public class MonsterSpawn : NetworkBehaviour
     }
     struct SpawnData
     {
-        public Vector3 spawnPosition;
-        public Vector3 zoneSize;
+        public Transform spawnTransform;
     }
 
-    public void spawnCreatures(Vector3 position, Vector3 zoneSize)
+    public void spawnCreatures(Transform spawn)
     {
         SpawnData d = new SpawnData
         {
-            spawnPosition = position,
-            zoneSize = zoneSize,
+            spawnTransform = spawn,
         };
         if (ready)
         {
@@ -83,7 +81,7 @@ public class MonsterSpawn : NetworkBehaviour
 
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
-        Vector3 halfSize = spawnData.zoneSize / 2;
+        Vector3 halfSize = spawnData.spawnTransform.lossyScale / 2;
         for (int i = packProps.Count - 1; i >= 0; i--)
         {
             UnitData data = packProps[i];
@@ -102,6 +100,7 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 Vector3 offset = new Vector3(Random.Range(-halfSize.x, halfSize.x), 0, Random.Range(-halfSize.z, halfSize.z));
                 offset *= 0.9f;
+                offset = spawnData.spawnTransform.rotation * offset;
                 InstanceCreature(spawnData, data, offset, p);
             }
 
@@ -125,7 +124,7 @@ public class MonsterSpawn : NetworkBehaviour
     }
     void InstanceCreature(SpawnData spawnData, UnitData unitData, Vector3 positionOffset, Pack p)
     {
-        GameObject o = Instantiate(UnitPre, spawnData.spawnPosition + positionOffset, Quaternion.identity, floor);
+        GameObject o = Instantiate(UnitPre, spawnData.spawnTransform.position + positionOffset, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(unitData.power);

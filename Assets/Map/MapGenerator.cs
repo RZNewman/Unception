@@ -15,7 +15,7 @@ public class MapGenerator : NetworkBehaviour
 
 
     public int tilesPerFloor = 30;
-    float currentFloorScale = 1;
+    float currentFloorScale = 1f;
     float currentFloorPower;
 
 
@@ -282,6 +282,7 @@ public class MapGenerator : NetworkBehaviour
             lvl.setGen(this);
         }
         NetworkServer.Spawn(t);
+        Physics.SyncTransforms();
 
         List<GameObject> doors = t.GetComponent<MapTile>().Doors();
         List<GameObject> added = new List<GameObject>();
@@ -318,8 +319,7 @@ public class MapGenerator : NetworkBehaviour
             if (Random.value < 0.65f)
             {
                 GameObject zone = t.GetComponent<MapTile>().Zones().RandomItem();
-                spawner.spawnCreatures(zone.transform.position, zone.transform.lossyScale);
-                Debug.Break();
+                spawner.spawnCreatures(zone.transform);
             }
         }
 

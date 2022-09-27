@@ -3,6 +3,7 @@ using UnityEngine;
 public class LocalCamera : MonoBehaviour
 {
     Vector3 localPosition;
+    float localClip;
     Vector3 targetPosition;
     float lastMag = 0;
     readonly float transitionTime = 1f;
@@ -17,6 +18,7 @@ public class LocalCamera : MonoBehaviour
     void Start()
     {
         localPosition = transform.localPosition;
+        localClip = cam.nearClipPlane;
         lastMag = localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
 
@@ -25,6 +27,7 @@ public class LocalCamera : MonoBehaviour
     void scaleCameraSize(Power p)
     {
         targetPosition = localPosition * p.scale();
+        cam.nearClipPlane = localClip * p.scale();
         currentTransition = 0;
         lastMag = transform.localPosition.magnitude;
         //cam.nearClipPlane = 1.0f * p.scale();

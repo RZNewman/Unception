@@ -1594,7 +1594,7 @@ MonoBehaviour:
   endPre: {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
   stitchPre: {fileID: 2287204686885174507, guid: c6a5ef7790cb8424b91fc1ed1f990daf, type: 3}
   floorRootPre: {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
-  tilesPerFloor: 200
+  tilesPerFloor: 50
 --- !u!4 &2124122341
 Transform:
   m_ObjectHideFlags: 0

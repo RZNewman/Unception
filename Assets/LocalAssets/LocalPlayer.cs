@@ -28,11 +28,12 @@ public class LocalPlayer : NetworkBehaviour
     [Command]
     void CmdPlayerObject()
     {
-        float power = GetComponent<Power>().power;
+        Power p = GetComponent<Power>();
+        p.addPower(900);
         List<AttackBlock> attackBlocks = new List<AttackBlock>();
         for (int i = 0; i < attacksToGenerate; i++)
         {
-            AttackBlock b = GenerateAttack.generate(power, i == 0);
+            AttackBlock b = GenerateAttack.generate(p.power, i == 0);
             b.scales = true;
             attackBlocks.Add(b);
         }

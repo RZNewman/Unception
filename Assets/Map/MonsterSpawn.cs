@@ -18,7 +18,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     Transform floor;
 
-    float lastPowerAdded = Power.basePower / 2;
+    float lastPowerAdded = 200;
     float spawnPower = 100;
 
     static float Ai2PlayerPowerFactor = 1.0f;
@@ -178,7 +178,6 @@ public class MonsterSpawn : NetworkBehaviour
         ready = true;
         SharedMaterials mats = GetComponent<SharedMaterials>();
         mats.addVisuals(true);
-        setSpawnPower(100);
         foreach (SpawnData position in buildRequests)
         {
             instancePack(position);
@@ -189,7 +188,7 @@ public class MonsterSpawn : NetworkBehaviour
     public void setSpawnPower(float power)
     {
         spawnPower = power;
-        while (lastPowerAdded < power * 1.2)
+        while (lastPowerAdded < power * 0.8f)
         {
             lastPowerAdded *= 1.2f;
             monsterProps.Add(createType(lastPowerAdded));

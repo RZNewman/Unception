@@ -37,7 +37,7 @@ public class Power : NetworkBehaviour, TextValue
         }
     }
 
-    void addPower(float power)
+    public void addPower(float power)
     {
         currentPower += power;
         powerUpdates();

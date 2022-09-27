@@ -43,7 +43,7 @@ public class MapGenerator : NetworkBehaviour
         if (isServer)
         {
             spawner = GetComponent<MonsterSpawn>();
-            buildGrid();
+            buildNewLevel(transform.position, 1000);
         }
 
     }

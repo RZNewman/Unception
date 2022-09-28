@@ -16,7 +16,7 @@ public class Power : NetworkBehaviour, TextValue
         }
     }
 
-    static float factorDownscale = 1.3f;
+    static float factorDownscale = 1.5f;
     public readonly static float basePower = 100;
 
     public delegate void OnPowerUpdate(Power p);

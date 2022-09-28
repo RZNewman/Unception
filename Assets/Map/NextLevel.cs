@@ -29,7 +29,7 @@ public class NextLevel : MonoBehaviour
 
     IEnumerator makeNextLevel(float power)
     {
-        gen.buildNewLevel(transform.position + Vector3.down * 30, power);
+        gen.endOfLevel(transform.position + Vector3.down * 30, power);
         yield return new WaitForSecondsRealtime(2.5f);
         //TODO teleport non-local players
         gen.cleanupLevel();

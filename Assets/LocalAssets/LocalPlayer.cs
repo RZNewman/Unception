@@ -29,7 +29,7 @@ public class LocalPlayer : NetworkBehaviour
     void CmdPlayerObject()
     {
         Power p = GetComponent<Power>();
-        p.addPower(900);
+        p.setPower(1000);
         List<AttackBlock> attackBlocks = new List<AttackBlock>();
         for (int i = 0; i < attacksToGenerate; i++)
         {

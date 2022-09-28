@@ -63,13 +63,18 @@ public class MapGenerator : NetworkBehaviour
         return weights;
     }
 
+    public void endOfLevel(Vector3 worldPos, float power)
+    {
+        spawner.upDifficulty();
+        buildNewLevel(worldPos, power);
+    }
 
-    public void buildNewLevel(Vector3 worldPos, float power)
+    void buildNewLevel(Vector3 worldPos, float power)
     {
         currentFloorPower = power;
         currentFloorScale = Power.scale(power);
         spawner.setSpawnPower(power);
-        spawner.upDifficulty();
+
         lastFloor = currentFloor;
         floorOffset = worldPos - transform.position;
         buildGrid();

@@ -102,28 +102,7 @@ public class MapGenerator : NetworkBehaviour
             foreach (GameObject d in delta.removed)
             {
                 doors.Remove(d);
-                GameObject s = Instantiate(stitchPre, d.transform.position, d.transform.rotation, currentFloor.transform);
-                s.transform.localScale = Vector3.one * currentFloorScale;
-                s.GetComponent<ClientAdoption>().parent = currentFloor;
-                RaycastHit hit;
-                Physics.Raycast(
-                    s.transform.position + s.transform.forward * -2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
-                    Vector3.down,
-                    out hit,
-                    6f * currentFloorScale,
-                    LayerMask.GetMask("Terrain"));
-                float start = hit.point.y - s.transform.position.y;
-
-                Physics.Raycast(
-                    s.transform.position + s.transform.forward * 2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
-                    Vector3.down,
-                    out hit,
-                    6f * currentFloorScale,
-                    LayerMask.GetMask("Terrain"));
-                float end = hit.point.y - s.transform.position.y;
-                NavMeshLink link = s.GetComponent<NavMeshLink>();
-                link.startPoint = new Vector3(link.startPoint.x, start, link.startPoint.z);
-                link.endPoint = new Vector3(link.endPoint.x, end, link.endPoint.z);
+                buildPathStitch(d);
             }
             foreach (GameObject d in delta.added)
             {
@@ -205,7 +184,34 @@ public class MapGenerator : NetworkBehaviour
             buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
 
+        //remove the end tile from spawner
+        tiles.RemoveAt(tiles.Count - 1);
         spawner.spawnLevel(tiles);
+    }
+    void buildPathStitch(GameObject door)
+    {
+        GameObject s = Instantiate(stitchPre, door.transform.position, door.transform.rotation, currentFloor.transform);
+        s.transform.localScale = Vector3.one * currentFloorScale;
+        s.GetComponent<ClientAdoption>().parent = currentFloor;
+        RaycastHit hit;
+        Physics.Raycast(
+            s.transform.position + s.transform.forward * -2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
+            Vector3.down,
+            out hit,
+            6f * currentFloorScale,
+            LayerMask.GetMask("Terrain"));
+        float start = hit.point.y - s.transform.position.y;
+
+        Physics.Raycast(
+            s.transform.position + s.transform.forward * 2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
+            Vector3.down,
+            out hit,
+            6f * currentFloorScale,
+            LayerMask.GetMask("Terrain"));
+        float end = hit.point.y - s.transform.position.y;
+        NavMeshLink link = s.GetComponent<NavMeshLink>();
+        link.startPoint = new Vector3(link.startPoint.x, start, link.startPoint.z);
+        link.endPoint = new Vector3(link.endPoint.x, end, link.endPoint.z);
     }
 
     struct TilePlacement

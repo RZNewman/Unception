@@ -430,10 +430,11 @@ MonoBehaviour:
   networkAddress: localhost
   maxConnections: 100
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
+  playerPrefab: {fileID: 8767541107825051027, guid: e1fa44a4ba5328847bfa86ccf21d65be, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
+  - {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
   - {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   - {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
   - {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
@@ -1558,6 +1559,7 @@ GameObject:
   - component: {fileID: 2124122342}
   - component: {fileID: 2124122343}
   - component: {fileID: 2124122344}
+  - component: {fileID: 2124122345}
   m_Layer: 0
   m_Name: MapRoot
   m_TagString: Untagged
@@ -1625,7 +1627,6 @@ MonoBehaviour:
   syncInterval: 0.1
   UnitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
   PackPre: {fileID: 3694861992469580249, guid: e356917f25b672a4bbea9b4dcadc3e56, type: 3}
-  packsPerFloor: 30
 --- !u!114 &2124122343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1660,3 +1661,15 @@ MonoBehaviour:
   enemyModels:
   - Evil
   playerModel: Robo
+--- !u!114 &2124122345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2124122339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b20db8fe5b2fa44e86d19cb57f165b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

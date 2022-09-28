@@ -47,7 +47,7 @@ public class Combat : NetworkBehaviour
     {
         if (lastUnitHitBy)
         {
-            lastUnitHitBy.GetComponent<Power>().absorb(GetComponent<Power>());
+            lastUnitHitBy.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
         }
     }
     void clearFighting()

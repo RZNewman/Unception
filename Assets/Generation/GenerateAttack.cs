@@ -222,6 +222,7 @@ public static class GenerateAttack
         {
             power = block.powerAtGeneration;
         }
+        power = block.scales ? power : block.powerAtGeneration;
         AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;
         filled.instance = populateAttack(atk, power);

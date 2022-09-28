@@ -16,7 +16,7 @@ public class Power : NetworkBehaviour, TextValue
         }
     }
 
-    static float factorDownscale = 1.5f;
+    public readonly static float factorDownscale = 1.5f;
     public readonly static float basePower = 100;
 
     public delegate void OnPowerUpdate(Power p);
@@ -95,21 +95,13 @@ public class Power : NetworkBehaviour, TextValue
     {
         return power / Mathf.Pow(2 / factorDownscale, Mathf.Log(power / basePower, 2) + 1);
     }
-    public void absorb(Power other)
+
+    public static float inverseDownscalePower(float downscale)
     {
-        float gathered;
-        if (other.currentPower < currentPower)
-        {
-            //closes the gap for catchup exp
-            gathered = MonsterSpawn.scaledPowerReward(currentPower, other.currentPower);
-        }
-        else
-        {
-            gathered = other.currentPower;
-        }
-        gathered *= 0.2f;
-        addPower(gathered);
+        return 0.5f * basePower * Mathf.Exp(-(Mathf.Log(2) * Mathf.Log(2 * downscale / basePower)) / Mathf.Log(1 / factorDownscale));
     }
+
+
 
     public TextValue.TextData getText()
     {

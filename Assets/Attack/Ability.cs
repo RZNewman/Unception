@@ -29,7 +29,8 @@ public class Ability : NetworkBehaviour
     void Start()
     {
         GetComponent<ClientAdoption>().trySetAdopted();
-        if (GetComponentInParent<LocalPlayer>().isLocalPlayer)
+        LocalPlayer p = GetComponentInParent<LocalPlayer>();
+        if (p.isClient && p.hasAuthority)
         {
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
             GameObject icon = Instantiate(abilityIconPrefab, bar.transform);

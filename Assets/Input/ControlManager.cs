@@ -19,11 +19,12 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     bool isPlayer = true;
 
     UnitPropsHolder propHolder;
-    public bool IsPlayer
+
+    public bool isLocalAuthority
     {
         get
         {
-            return isPlayer;
+            return isClient && hasAuthority;
         }
     }
 
@@ -40,7 +41,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     public void spawnControl()
     {
 
-        if (isLocalPlayer)
+        if (isLocalAuthority)
         {
             GameObject o = Instantiate(playerControlPre, transform);
             controller = o.GetComponent<UnitControl>();
@@ -60,7 +61,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     public UnitInput GetUnitInput()
     {
         UnitInput current = currentInput;
-        if (useLocalLook && isLocalPlayer)
+        if (useLocalLook && isLocalAuthority)
         {
             //Local look for smoother client turning
             current.lookOffset = localInput.lookOffset;
@@ -70,13 +71,13 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 
     private void Update()
     {
-        if (isLocalPlayer && isServer)
+        if (isLocalAuthority && isServer)
         {
             controller.refreshInput();
             currentInput = controller.getUnitInuput();
             localInput = localInput.merge(currentInput);
         }
-        else if (isLocalPlayer)
+        else if (isLocalAuthority)
         {
             controller.refreshInput();
             localInput = localInput.merge(controller.getUnitInuput());
@@ -111,7 +112,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             {
                 currentSendTime -= serverTickRate;
             }
-            if (isLocalPlayer && isClientOnly)
+            if (isLocalAuthority && isClientOnly)
             {
                 CmdSendInput(local);
             }

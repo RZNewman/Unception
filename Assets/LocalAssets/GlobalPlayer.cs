@@ -4,23 +4,22 @@ using UnityEngine;
 
 public class GlobalPlayer : MonoBehaviour
 {
-    GameObject clientLocalPlayer;
-
-    float power;
-    public void setLocalPlayer(GameObject player)
+    PlayerGhost clientLocalPlayer;
+    public void setLocalPlayer(PlayerGhost player)
     {
         clientLocalPlayer = player;
-        clientLocalPlayer.GetComponent<Power>().subscribePower(setLocalPower);
+        clientLocalPlayer.GetComponent<Inventory>().forceFill();
     }
-
-
-
-    public void setLocalPower(Power p)
+    public bool isSet
     {
-        power = p.power;
+        get
+        {
+            return clientLocalPlayer;
+        }
     }
+
     public float localPower
     {
-        get { return power; }
+        get { return clientLocalPlayer.power; }
     }
 }

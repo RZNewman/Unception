@@ -21,13 +21,7 @@ public class LifeManager : NetworkBehaviour
     private void Start()
     {
     }
-    bool isPlayer
-    {
-        get
-        {
-            return GetComponent<ControlManager>().IsPlayer;
-        }
-    }
+
     bool isDead = false;
 
     public bool IsDead
@@ -60,15 +54,9 @@ public class LifeManager : NetworkBehaviour
         {
             c();
         }
-        if (!isPlayer)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Destroy(unitBody);
-            RpcBodyDestroy();
-        }
+
+        Destroy(gameObject);
+
 
     }
     private void OnDestroy()
@@ -82,13 +70,5 @@ public class LifeManager : NetworkBehaviour
         }
 
     }
-    [ClientRpc]
-    void RpcBodyDestroy()
-    {
-        if (isClientOnly)
-        {
-            Destroy(unitBody);
-        }
 
-    }
 }

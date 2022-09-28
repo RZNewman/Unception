@@ -10,7 +10,8 @@ public class MonsterSpawn : NetworkBehaviour
     public GameObject UnitPre;
     public GameObject PackPre;
 
-    public int packsPerFloor = 30;
+    public static readonly int packsPerFloor = 30;
+
     List<UnitData> monsterProps = new List<UnitData>();
 
     List<SpawnPack> buildRequests = new List<SpawnPack>();
@@ -21,7 +22,7 @@ public class MonsterSpawn : NetworkBehaviour
     float lastPowerAdded = 300;
     float spawnPower = 100;
 
-    static float Ai2PlayerPowerFactor = 0.8f;
+    public static float Ai2PlayerPowerFactor = 0.8f;
     static float lowerUnitPowerFactor = 1.5f;
 
     static int maxPackSize = 8;
@@ -55,6 +56,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public UnitData data;
         public float power;
+        public float poolCost;
     }
 
     public void spawnLevel(List<GameObject> tiles)
@@ -158,11 +160,12 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 instance = Random.Range(0, maxInstance + 1);
             }
-            powerPoolTotal -= weightedPower(data.power) * instance;
+            float poolCost = weightedPower(data.power);
+            powerPoolTotal -= poolCost * instance;
 
             for (int j = 0; j < instance; j++)
             {
-                unitsToSpawn.Add(new SpawnUnit { data = data, power = data.power });
+                unitsToSpawn.Add(new SpawnUnit { data = data, power = data.power, poolCost = poolCost });
             }
 
         }
@@ -181,14 +184,15 @@ public class MonsterSpawn : NetworkBehaviour
             veteranMajorIndex = unitsToSpawn.RandomIndex();
             splitCount--;
             SpawnUnit u = unitsToSpawn[veteranMajorIndex];
-            float oldPoolCost = weightedPower(u.power);
             float potentialPower = getVeteranPower(u.power, powerPoolVeteran);
             float powerCap = u.power * (1f + 1.5f * spawnData.difficulty.veteran);
             //Debug.Log(u.power + " " + potentialPower + " " + powerCap + " " + powerPoolVeteran);
             potentialPower = Mathf.Min(potentialPower, powerCap);
             u.power = potentialPower;
+            float newPoolCost = weightedPower(potentialPower);
+            powerPoolVeteran -= newPoolCost - u.poolCost;
+            u.poolCost = newPoolCost;
             unitsToSpawn[veteranMajorIndex] = u;
-            powerPoolVeteran -= weightedPower(potentialPower) - oldPoolCost;
         }
 
 
@@ -201,6 +205,7 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 SpawnUnit u = unitsToSpawn[j];
                 u.power = getVeteranPower(u.power, splitPool);
+                u.poolCost += splitPool;
                 //Debug.Log(unitsToSpawn[j].power + " " + u.power);
                 unitsToSpawn[j] = u;
             }
@@ -236,10 +241,10 @@ public class MonsterSpawn : NetworkBehaviour
     }
 
 
-    public static float scaledPowerReward(float mypower, float otherPower)
-    {
-        return mypower / (weightedPower(mypower) / weightedPower(otherPower));
-    }
+    //public static float scaledPowerReward(float mypower, float otherPower)
+    //{
+    //    return mypower / (weightedPower(mypower) / weightedPower(otherPower));
+    //}
     int maxInstances(float power, float poolWeighted)
     {
         return Mathf.FloorToInt(poolWeighted / weightedPower(power));
@@ -250,6 +255,11 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);
+
+        float reward = spawnUnit.poolCost / weightedPool() * spawnPower;
+        o.GetComponent<Reward>().setReward(spawnPower, spawnData.difficulty.total, reward);
+
+        //Debug.Log(spawnUnit.power + " - " + spawnUnit.poolCost + " - " + weightedPool() + " - " + spawnPower + " - " + reward);
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
         holder.pack = p;
         holder.props = spawnUnit.data.props;
@@ -275,7 +285,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         spawnPower = power;
         float powerMultDiff = 1.2f;
-        while (lastPowerAdded * powerMultDiff < power * Ai2PlayerPowerFactor)
+        while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool())
         {
             lastPowerAdded *= powerMultDiff;
             monsterProps.Add(createType(lastPowerAdded));

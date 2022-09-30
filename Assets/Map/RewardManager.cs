@@ -7,6 +7,8 @@ public class RewardManager : MonoBehaviour
     public readonly static float itemQualityPercent = 1.3f;
     public readonly static float rewardPerDifficulty = 1.3f;
 
+    public readonly static float itemsPerPack = 2f;
+
     readonly static int mapsPerFalloff = 16;
     readonly static float floorsPerMap = 2.5f;
 

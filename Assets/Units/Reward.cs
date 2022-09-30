@@ -6,25 +6,34 @@ public class Reward : MonoBehaviour
 {
     Power p;
     Inventory inventory;
-    float rewardPower = 0;
+    float rewardPackPercent = 0;
     float rewardMultiplier = 1f;
     float rewardBasePower = 0;
     private void Start()
     {
         p = GetComponent<Power>();
     }
-    public void setReward(float basePower, float multiplier, float rewardPow)
+    public void setReward(float basePower, float multiplier, float packPercent)
     {
-        rewardBasePower = basePower; rewardPower = rewardPow; rewardMultiplier = multiplier;
+        rewardBasePower = basePower; rewardPackPercent = packPercent; rewardMultiplier = multiplier;
     }
     public void setInventory(Inventory i)
     {
         inventory = i;
     }
-    public float power
+    float power
     {
-        get { return rewardPower; }
+        get { return rewardTotalPercent * rewardBasePower; }
     }
+
+    float rewardTotalPercent
+    {
+        get
+        {
+            return ((rewardMultiplier * RewardManager.rewardPerDifficulty) - rewardMultiplier + 1) * rewardPackPercent;
+        }
+    }
+
     public float basePower
     {
         get { return rewardBasePower; }
@@ -48,9 +57,11 @@ public class Reward : MonoBehaviour
         if (inventory)
         {
             gatheredPower += other.power;
-            while (gatheredPower > other.rewardBasePower)
+            float packPerItem = 1 / RewardManager.itemsPerPack;
+            float powerPerItem = other.rewardBasePower * packPerItem;
+            while (gatheredPower > powerPerItem)
             {
-                gatheredPower -= other.power;
+                gatheredPower -= powerPerItem;
                 inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, false));
             }
         }

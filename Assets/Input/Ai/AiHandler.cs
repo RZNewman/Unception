@@ -133,7 +133,8 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                     EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
                     Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;
-                    if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width)
+                    float dot = Vector3.Dot(planarDiff, rotatingBody.transform.forward);
+                    if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
                     {
                         currentInput.attacks = new AttackKey[] { AttackKey.One };
                     }

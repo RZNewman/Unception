@@ -23,7 +23,7 @@ public class ItemDrop : MonoBehaviour
         grav.gravity *= scale;
         accel *= scale;
         catchDistance *= scale;
-        Vector2 dir = Random.insideUnitCircle.normalized;
+        Vector2 dir = Random.insideUnitCircle;
         GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scale;
         Color qual = GameColors.colorQuality(q);
         qual.a = 0.05f;

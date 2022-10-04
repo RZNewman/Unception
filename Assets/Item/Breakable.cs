@@ -5,8 +5,38 @@ using Mirror;
 
 public class Breakable : NetworkBehaviour, TeamOwnership
 {
+    public GameObject UrnPre;
+    public GameObject ChestPre;
     Reward r;
     LifeManager life;
+
+
+    public enum BreakableType
+    {
+        Urn,
+        Chest
+    }
+    [SyncVar]
+    public BreakableType type;
+
+
+    void instanceBody()
+    {
+        GameObject pre;
+        switch (type)
+        {
+            case BreakableType.Urn:
+                pre = UrnPre;
+                break;
+            case BreakableType.Chest:
+                pre = ChestPre;
+                break;
+            default:
+                pre = UrnPre;
+                break;
+        }
+        Instantiate(pre, transform);
+    }
     public uint getTeam()
     {
         return 0;//default enemy team
@@ -17,6 +47,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
     {
         r = GetComponent<Reward>();
         life = GetComponent<LifeManager>();
+        instanceBody();
         if (isServer)
         {
 

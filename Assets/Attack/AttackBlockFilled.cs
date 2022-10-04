@@ -10,6 +10,7 @@ using static AttackUtils;
 public class AttackBlockFilled : ScriptableObject
 {
     public AttackInstanceData instance;
+    public AttackFlair flair;
     public List<AttackSegment> buildStates(UnitMovement controller)
     {
 

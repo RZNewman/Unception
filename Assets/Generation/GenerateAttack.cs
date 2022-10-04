@@ -68,6 +68,12 @@ public static class GenerateAttack
         public InstanceData[] stages;
 
     }
+    public struct AttackFlair
+    {
+        public string name;
+        public Color color;
+        public int symbol;
+    }
 
     public struct AttackGenerationData
     {
@@ -183,16 +189,23 @@ public static class GenerateAttack
 
 
 
-
+        Color color = Color.HSVToRGB(Random.value, 1, 1);
 
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages.ToArray(),
             cooldown = noCooldown ? 0 : GaussRandomDecline(4),
             quality = quality,
+
         };
         block.source = atk;
         block.powerAtGeneration = power;
+        block.flair = new AttackFlair
+        {
+            name = Naming.name(),
+            color = color,
+            symbol = Random.Range(1, 117),
+        };
         return block;
 
     }
@@ -231,6 +244,7 @@ public static class GenerateAttack
         AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;
         filled.instance = populateAttack(atk, power);
+        filled.flair = block.flair;
         //Debug.Log(atk);
         //Debug.Log(block.instance);
         return filled;

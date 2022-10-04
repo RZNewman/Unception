@@ -14,17 +14,11 @@ public class Reward : MonoBehaviour
     public bool givesPower = true;
     public bool givesItems = true;
 
-    PityTimer<Quality> pityQuality;
+
     private void Start()
     {
         p = GetComponent<Power>();
-        pityQuality = new PityTimer<Quality>(Quality.Common, 0.25f);
-        //float uncChance = RewardManager.uncommonChance; TODO
-        float uncChance = 0.25f;
-        pityQuality.addCategory(Quality.Uncommon, uncChance);
-        pityQuality.addCategory(Quality.Rare, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 1));
-        pityQuality.addCategory(Quality.Epic, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 2));
-        pityQuality.addCategory(Quality.Legendary, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 3));
+
     }
     public void setReward(float basePower, float multiplier, float packPercent)
     {
@@ -83,7 +77,7 @@ public class Reward : MonoBehaviour
             while (gatheredPower > powerPerItem)
             {
                 gatheredPower -= powerPerItem;
-                Quality q = pityQuality.roll();
+                Quality q = inventory.rollQuality();
                 inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, false, q), other.transform.position);
             }
         }

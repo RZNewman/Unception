@@ -16,6 +16,8 @@ public class ItemDrop : MonoBehaviour
 
     Gravity grav;
     Rigidbody rb;
+
+    float targetSpeed = 0;
     public void init(float scale, GameObject t, Quality q)
     {
         transform.localScale = Vector3.one * scale;
@@ -47,7 +49,8 @@ public class ItemDrop : MonoBehaviour
             grav.gravity = 0;
             Vector3 dir = target.transform.position - transform.position;
 
-            rb.velocity = (rb.velocity.magnitude + accel * Time.fixedDeltaTime) * dir.normalized;
+            targetSpeed += accel * Time.fixedDeltaTime;
+            rb.velocity = targetSpeed * dir.normalized;
             if (dir.magnitude < catchDistance)
             {
                 Destroy(gameObject);

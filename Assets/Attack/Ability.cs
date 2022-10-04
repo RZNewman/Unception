@@ -126,4 +126,9 @@ public class Ability : NetworkBehaviour
         return attackFilled.GetEffectiveDistance();
     }
 
+    public AttackBlockFilled source()
+    {
+        return attackFilled;
+    }
+
 }

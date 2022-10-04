@@ -7,6 +7,7 @@ public class AttackBlock : ScriptableObject
     public AttackGenerationData source;
     public float powerAtGeneration;
     public bool scales;
+    public AttackFlair flair;
 
 
 }

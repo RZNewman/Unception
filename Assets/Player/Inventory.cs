@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using static RewardManager;
 
 public class Inventory : NetworkBehaviour
 {
@@ -13,10 +14,21 @@ public class Inventory : NetworkBehaviour
     PlayerGhost player;
 
     GameObject itemPre;
+    PityTimer<Quality> pityQuality;
     private void Start()
     {
         player = GetComponent<PlayerGhost>();
         itemPre = GameObject.FindObjectOfType<GlobalPrefab>().ItemDropPre;
+
+        if (isServer)
+        {
+            pityQuality = new PityTimer<Quality>(Quality.Common, 0.25f);
+            float uncChance = RewardManager.uncommonChance;
+            pityQuality.addCategory(Quality.Uncommon, uncChance);
+            pityQuality.addCategory(Quality.Rare, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 1));
+            pityQuality.addCategory(Quality.Epic, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 2));
+            pityQuality.addCategory(Quality.Legendary, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 3));
+        }
     }
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)
@@ -25,6 +37,11 @@ public class Inventory : NetworkBehaviour
         TargetDropItem(connectionToClient, item, otherPosition);
     }
 
+    [Server]
+    public Quality rollQuality()
+    {
+        return pityQuality.roll();
+    }
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {

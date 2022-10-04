@@ -20,6 +20,11 @@ public static class SystemClassReaders
         return (GenerateHit.HitType)reader.ReadByte();
     }
 
+    public static RewardManager.Quality ReadQuality(this NetworkReader reader)
+    {
+        return (RewardManager.Quality)reader.ReadByte();
+    }
+
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
         float strengthFactor = reader.ReadFloat();

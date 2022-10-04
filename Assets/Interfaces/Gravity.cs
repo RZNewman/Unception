@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-public class Gravity : NetworkBehaviour
+public class Gravity : MonoBehaviour
 {
     // Start is called before the first frame
     public float gravity = -9.81f;
@@ -22,9 +22,18 @@ public class Gravity : NetworkBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!movement.grounded && !lifeManager.IsDead && model.modelLoaded)
+        if (movement)
         {
-            rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scale();
+            //is unit
+            if (!movement.grounded && !lifeManager.IsDead && model.modelLoaded)
+            {
+                rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scale();
+            }
         }
+        else
+        {
+            rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime;
+        }
+
     }
 }

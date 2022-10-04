@@ -8,7 +8,6 @@ public class GlobalPlayer : MonoBehaviour
     public void setLocalPlayer(PlayerGhost player)
     {
         clientLocalPlayer = player;
-        clientLocalPlayer.GetComponent<Inventory>().forceFill();
     }
     public bool isSet
     {
@@ -21,5 +20,10 @@ public class GlobalPlayer : MonoBehaviour
     public float localPower
     {
         get { return clientLocalPlayer.power; }
+    }
+
+    public void setLocalUnit(GameObject u)
+    {
+        clientLocalPlayer.unit = u;
     }
 }

@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static RewardManager;
+
+public class ItemDrop : MonoBehaviour
+{
+    public ColorIndividual itemAura;
+    GameObject target;
+
+    public float waitTime = 3f;
+
+    public float accel = 1f;
+    float catchDistance = 1f;
+
+    Gravity grav;
+    Rigidbody rb;
+    public void init(float scale, GameObject t, Quality q)
+    {
+        transform.localScale = Vector3.one * scale;
+        grav = GetComponent<Gravity>();
+        grav.gravity *= scale;
+        accel *= scale;
+        catchDistance *= scale;
+        Vector2 dir = Random.insideUnitCircle.normalized;
+        GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scale;
+        Color qual = GameColors.colorQuality(q);
+        qual.a = 0.05f;
+        itemAura.setColor(qual);
+        target = t;
+    }
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    private void FixedUpdate()
+    {
+        if (waitTime > 0)
+        {
+            waitTime -= Time.deltaTime;
+        }
+        else
+        {
+            grav.gravity = 0;
+            Vector3 dir = target.transform.position - transform.position;
+
+            rb.velocity = (rb.velocity.magnitude + accel * Time.fixedDeltaTime) * dir.normalized;
+            if (dir.magnitude < catchDistance)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+    }
+}

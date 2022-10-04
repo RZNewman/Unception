@@ -9,6 +9,7 @@ using static GenerateHit;
 using static GenerateDash;
 using static WindState;
 using static Cast;
+using static RewardManager;
 
 public static class GenerateAttack
 {
@@ -72,11 +73,13 @@ public static class GenerateAttack
     {
         public GenerationData[] stages;
         public float cooldown;
+        public Quality quality;
     }
     public struct AttackInstanceData
     {
         public SegmentInstanceData[] segments;
         public float cooldown;
+        public Quality quality;
     }
 
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
@@ -98,7 +101,7 @@ public static class GenerateAttack
             WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
             float strength = getWindValue(new WindInstanceData[] { up, down });
             strength += cooldownStrength;
-
+            strength *= qualityPercent(atk.quality);
 
             segmentsInst[i] = new SegmentInstanceData
             {
@@ -115,6 +118,7 @@ public static class GenerateAttack
 
             cooldown = cooldownTime,
             segments = segmentsInst,
+            quality = atk.quality,
 
         };
 
@@ -156,7 +160,7 @@ public static class GenerateAttack
         return segments;
     }
 
-    public static AttackBlock generate(float power, bool noCooldown)
+    public static AttackBlock generate(float power, bool noCooldown, Quality quality = Quality.Common)
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
@@ -185,6 +189,7 @@ public static class GenerateAttack
         {
             stages = stages.ToArray(),
             cooldown = noCooldown ? 0 : GaussRandomDecline(4),
+            quality = quality,
         };
         block.source = atk;
         block.powerAtGeneration = power;

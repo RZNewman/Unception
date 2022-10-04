@@ -9,6 +9,8 @@ public class PlayerGhost : NetworkBehaviour
 
     public int attacksToGenerate = 4;
 
+    GameObject currentSelf;
+
     [SyncVar]
     float playerPower = 1000;
     void Start()
@@ -51,6 +53,12 @@ public class PlayerGhost : NetworkBehaviour
         }
         u.GetComponent<AbiltyList>().addAbility(attackBlocks);
         NetworkServer.Spawn(u, connectionToClient);
+    }
+
+    public GameObject unit
+    {
+        get { return currentSelf; }
+        set { currentSelf = value; }
     }
 
     [Server]

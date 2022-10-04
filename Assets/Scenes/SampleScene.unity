@@ -1042,6 +1042,7 @@ MonoBehaviour:
   AbilityRootPre: {fileID: 2310417036322928248, guid: 98dd5d7b8f8218b438aa0253262a98fd, type: 3}
   ProjectilePre: {fileID: 1093185378213857955, guid: 969f95f34892d78409337153a9de47c7, type: 3}
   GroundTargetPre: {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
+  ItemDropPre: {fileID: 3656744891628785326, guid: e6c13ce112411a449af8f76fe059ff63, type: 3}
 --- !u!1001 &1291812986
 PrefabInstance:
   m_ObjectHideFlags: 0

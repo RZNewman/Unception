@@ -16,7 +16,7 @@ public class Power : NetworkBehaviour, TextValue
         }
     }
 
-    public readonly static float factorDownscale = 1.5f;
+    public readonly static float exponentDownscale = 1.5f;
     public readonly static float basePower = 100;
 
     public delegate void OnPowerUpdate(Power p);
@@ -58,8 +58,22 @@ public class Power : NetworkBehaviour, TextValue
     }
     void setMetricScale()
     {
+        float displayPower = Mathf.Pow(currentPower / 100, 2f);
 
-        currentDecimalPlaces = currentPower == 0 ? 0 : (int)Mathf.Floor(Mathf.Log10(Mathf.Abs(currentPower)));
+        currentDecimalPlaces = displayPower == 0 ? 0 : (int)Mathf.Floor(Mathf.Log10(Mathf.Abs(displayPower)));
+
+        int decimalRounding = Mathf.Max(0, currentDecimalPlaces - 3);
+        int decimalMetric = (int)currentMetricScale * 3;
+        int decimalDiff = decimalMetric - decimalRounding;
+        float roundedPower = Mathf.Round(displayPower / Mathf.Pow(10, decimalRounding));
+        float truncatedPower = roundedPower / Mathf.Pow(10, decimalDiff);
+        string symbol = metricSymbol();
+        displayText = new TextValue.TextData
+        {
+            color = Color.white,
+            text = truncatedPower + " " + symbol,
+
+        };
 
     }
 
@@ -93,31 +107,21 @@ public class Power : NetworkBehaviour, TextValue
 
     public static float downscalePower(float power)
     {
-        return power / Mathf.Pow(2 / factorDownscale, Mathf.Log(power / basePower, 2) + 1);
+        return power / Mathf.Pow(2 / exponentDownscale, Mathf.Log(power / basePower, 2) + 1);
     }
 
     public static float inverseDownscalePower(float downscale)
     {
-        return 0.5f * basePower * Mathf.Exp(-(Mathf.Log(2) * Mathf.Log(2 * downscale / basePower)) / Mathf.Log(1 / factorDownscale));
+        return 0.5f * basePower * Mathf.Exp(-(Mathf.Log(2) * Mathf.Log(2 * downscale / basePower)) / Mathf.Log(1 / exponentDownscale));
     }
 
 
-
+    TextValue.TextData displayText;
     public TextValue.TextData getText()
     {
-        int decimalRounding = Mathf.Max(0, currentDecimalPlaces - 3);
-        int decimalMetric = (int)currentMetricScale * 3;
-        int decimalDiff = decimalMetric - decimalRounding;
-        float roundedPower = Mathf.Round(currentPower / Mathf.Pow(10, decimalRounding));
-        float displayPower = roundedPower / Mathf.Pow(10, decimalDiff);
-        string symbol = metricSymbol();
-        return new TextValue.TextData
-        {
-            color = Color.white,
-            text = displayPower + " " + symbol,
-
-        };
+        return displayText;
     }
+
 
     public enum MetricName
     {

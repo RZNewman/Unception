@@ -41,6 +41,7 @@ public class PityTimer<T>
         {
             PityWeight w = weightList[i];
             w.chance += w.baseChance * rarityFactor;
+            //Debug.Log(w.chance + " - " + w.category);
             if (v <= w.chance * chanceMulitplier)
             {
                 w.chance -= 1;

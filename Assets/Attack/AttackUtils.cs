@@ -17,37 +17,51 @@ public static class AttackUtils
     {
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team)
         {
-            Health h = other.GetComponentInParent<Health>();
+
             if (mover)
             {
                 other.GetComponentInParent<LifeManager>().getHit(mover.gameObject);
             }
-            h.takeDamage(hitData.damageMult * power);
-            other.GetComponentInParent<Posture>().takeStagger(hitData.stagger);
-            Vector3 knockBackVec;
-            switch (hitData.knockBackType)
+            Health h = other.GetComponentInParent<Health>();
+            if (h)
             {
-                case KnockBackType.inDirection:
-                    knockBackVec = hitData.knockback * knockbackData.direction;
+                h.takeDamage(hitData.damageMult * power);
+            }
+            Posture p = other.GetComponentInParent<Posture>();
+            if (p)
+            {
+                p.takeStagger(hitData.stagger);
+            }
+            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
+            if (otherMover)
+            {
+                Vector3 knockBackVec;
+                switch (hitData.knockBackType)
+                {
+                    case KnockBackType.inDirection:
+                        knockBackVec = hitData.knockback * knockbackData.direction;
 
-                    break;
-                case KnockBackType.fromCenter:
-                    Vector3 dir = other.transform.position - knockbackData.center;
-                    dir.y = 0;
-                    dir.Normalize();
-                    knockBackVec = hitData.knockback * dir;
-                    break;
-                default:
-                    throw new System.Exception("No kb type");
+                        break;
+                    case KnockBackType.fromCenter:
+                        Vector3 dir = other.transform.position - knockbackData.center;
+                        dir.y = 0;
+                        dir.Normalize();
+                        knockBackVec = hitData.knockback * dir;
+                        break;
+                    default:
+                        throw new System.Exception("No kb type");
+                }
+                switch (hitData.knockBackDirection)
+                {
+                    case KnockBackDirection.Backward:
+                        knockBackVec *= -1;
+                        break;
+                }
+                otherMover.applyForce(knockBackVec);
+                otherMover.applyForce(hitData.knockUp * Vector3.up);
             }
-            switch (hitData.knockBackDirection)
-            {
-                case KnockBackDirection.Backward:
-                    knockBackVec *= -1;
-                    break;
-            }
-            other.GetComponentInParent<UnitMovement>().applyForce(knockBackVec);
-            other.GetComponentInParent<UnitMovement>().applyForce(hitData.knockUp * Vector3.up);
+
+
         }
     }
     public struct AttackSegment
@@ -149,13 +163,13 @@ public static class AttackUtils
         float boxHeight = Mathf.Max(playerHeightOversize, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
-        RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, aim, 0.0f, LayerMask.GetMask("Players"));
+        RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, aim, 0.0f, LayerMask.GetMask("Players", "Breakables"));
         //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
         Vector3 capsuleHeightDiff = floor.normal * capsuleHeightFactor;
         Vector3 capsuleStart = bodyFocus + capsuleHeightDiff;
         Vector3 capsuleEnd = bodyFocus - capsuleHeightDiff;
-        RaycastHit[] capsuleHits = Physics.CapsuleCastAll(capsuleStart, capsuleEnd, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
+        RaycastHit[] capsuleHits = Physics.CapsuleCastAll(capsuleStart, capsuleEnd, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
 
         //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
         //Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
@@ -186,7 +200,7 @@ public static class AttackUtils
     {
         List<GameObject> hits = new List<GameObject>();
 
-        RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.forward, 0.0f, LayerMask.GetMask("Players"));
+        RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.forward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
 
 
 

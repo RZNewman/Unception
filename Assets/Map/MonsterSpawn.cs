@@ -9,6 +9,7 @@ public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
     public GameObject PackPre;
+    public GameObject UrnPre;
 
     public static readonly int packsPerFloor = 30;
 
@@ -89,6 +90,36 @@ public class MonsterSpawn : NetworkBehaviour
                 veteran = diffi - 1,
             });
         }
+
+        for (int i = 0; i < zones.Count && i < 5; i++)
+        {
+            int z = zones.RandomIndex();
+            GameObject zone = zones[z];
+            zones.RemoveAt(z);
+            spawnBreakables(zones[i].transform, 3);
+        }
+    }
+
+    void spawnBreakables(Transform spawn, float packPercent)
+    {
+        int numberBreakables = Random.Range(2, 6);
+        Vector3 halfSize = spawn.lossyScale / 2;
+        for (int j = 0; j < numberBreakables; j++)
+        {
+            //Debug.Log(data.power + " " + spawnData.difficulty.pack + " " + spawnData.difficulty.veteran + " " + veteranMajorIndex);
+            Vector3 offset = new Vector3(Random.Range(-halfSize.x, halfSize.x), 0, Random.Range(-halfSize.z, halfSize.z));
+            offset *= 0.9f;
+            offset = spawn.rotation * offset;
+            InstanceBreakable(spawn, packPercent / numberBreakables, offset);
+        }
+    }
+    void InstanceBreakable(Transform spawn, float packPercent, Vector3 positionOffset)
+    {
+        GameObject o = Instantiate(UrnPre, spawn.position + positionOffset, Quaternion.identity, floor);
+        o.transform.localScale = Vector3.one * Power.scale(spawnPower);
+        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
+        o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent);
+        NetworkServer.Spawn(o);
     }
 
     void spawnCreatures(Transform spawn, Difficulty difficulty)

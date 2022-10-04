@@ -9,10 +9,10 @@ public static class GameColors
 
 
     public readonly static Color QualityCommon = new Color(0.8f, 0.8f, 0.8f);
-    public readonly static Color QualityUncommon = new Color(0, 0f, 1, 0.35f);
-    public readonly static Color QualityRare = new Color(0, 0f, 1, 0.35f);
-    public readonly static Color QualityEpic = new Color(0, 0f, 1, 0.35f);
-    public readonly static Color QualityLegendary = new Color(0, 0f, 1, 0.35f);
+    public readonly static Color QualityUncommon = new Color(0, 1f, 0);
+    public readonly static Color QualityRare = new Color(0, 0f, 1);
+    public readonly static Color QualityEpic = new Color(1, 0f, 1);
+    public readonly static Color QualityLegendary = new Color(1, 0.5f, 0);
     public static Color colorQuality(Quality q)
     {
         switch (q)

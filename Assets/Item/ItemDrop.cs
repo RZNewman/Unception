@@ -6,6 +6,7 @@ using static RewardManager;
 public class ItemDrop : MonoBehaviour
 {
     public ColorIndividual itemAura;
+    public ColorIndividual itemBase;
     GameObject target;
 
     public float waitTime = 3f;
@@ -27,6 +28,7 @@ public class ItemDrop : MonoBehaviour
         Color qual = GameColors.colorQuality(q);
         qual.a = 0.05f;
         itemAura.setColor(qual);
+        itemBase.setColor(qual);
         target = t;
     }
     private void Start()

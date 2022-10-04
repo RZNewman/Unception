@@ -11,6 +11,9 @@ public class Reward : MonoBehaviour
     float rewardMultiplier = 1f;
     float rewardBasePower = 0;
 
+    public bool givesPower = true;
+    public bool givesItems = true;
+
     PityTimer<Quality> pityQuality;
     private void Start()
     {
@@ -50,8 +53,16 @@ public class Reward : MonoBehaviour
     }
     public void recieveReward(Reward other)
     {
-        recievePower(other);
-        recieveItems(other);
+        if (other.givesPower)
+        {
+            recievePower(other);
+        }
+        if (other.givesItems)
+        {
+            recieveItems(other);
+        }
+
+
     }
     void recievePower(Reward other)
     {
@@ -73,7 +84,6 @@ public class Reward : MonoBehaviour
             {
                 gatheredPower -= powerPerItem;
                 Quality q = pityQuality.roll();
-                Debug.Log(q);
                 inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, false, q), other.transform.position);
             }
         }

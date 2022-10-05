@@ -16,6 +16,10 @@ public class GlobalPlayer : MonoBehaviour
             return clientLocalPlayer;
         }
     }
+    public PlayerGhost player
+    {
+        get { return clientLocalPlayer; }
+    }
 
     public float localPower
     {

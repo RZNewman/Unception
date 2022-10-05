@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -61,7 +62,7 @@ public class MonsterSpawn : NetworkBehaviour
         public float poolCost;
     }
 
-    public void spawnLevel(List<GameObject> tiles)
+    public IEnumerator spawnLevel(List<GameObject> tiles)
     {
         float difficultyRange = (difficultyMultiplier - 1) / 2;
         List<float> packs = new List<float>();
@@ -89,6 +90,7 @@ public class MonsterSpawn : NetworkBehaviour
                 pack = diffi - 1,
                 veteran = diffi - 1,
             });
+            yield return null;
         }
 
         for (int i = 0; i < zones.Count && i < 5; i++)
@@ -99,6 +101,7 @@ public class MonsterSpawn : NetworkBehaviour
             zones.RemoveAt(z);
             bool isChest = i == 0;
             spawnBreakables(zones[i].transform, isChest ? 10 : 3, isChest);
+            yield return null;
         }
     }
 

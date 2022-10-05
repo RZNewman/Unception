@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -84,8 +85,13 @@ public class MapGenerator : NetworkBehaviour
         Destroy(lastFloor);
     }
 
-
     void buildGrid()
+    {
+        StartCoroutine(buildGridRoutine());
+    }
+
+
+    IEnumerator buildGridRoutine()
     {
 
         currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
@@ -112,7 +118,6 @@ public class MapGenerator : NetworkBehaviour
 
         processDelta(buildTile(getTilePrefab(tilesPre.ToList()).prefab, new TilePlacement { position = currentFloor.transform.position, rotation = Quaternion.identity }));
         int tileCount = tilesPerFloor - 1;
-        //TODO Coroutine
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
             //TODO Make level more linear
@@ -171,7 +176,7 @@ public class MapGenerator : NetworkBehaviour
                 i--;
             }
 
-
+            yield return null;
 
         }
 
@@ -186,7 +191,8 @@ public class MapGenerator : NetworkBehaviour
 
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);
-        spawner.spawnLevel(tiles);
+        tiles.RemoveAt(0);
+        yield return spawner.spawnLevel(tiles);
     }
     void buildPathStitch(GameObject door)
     {

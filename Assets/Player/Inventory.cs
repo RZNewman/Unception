@@ -28,6 +28,11 @@ public class Inventory : NetworkBehaviour
             pityQuality.addCategory(Quality.Rare, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 1));
             pityQuality.addCategory(Quality.Epic, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 2));
             pityQuality.addCategory(Quality.Legendary, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 3));
+
+            for (int i = 0; i < 4; i++)
+            {
+                abilitiesSync.Add(GenerateAttack.generate(player.power, false, Quality.Common));
+            }
         }
     }
     [Server]
@@ -42,6 +47,16 @@ public class Inventory : NetworkBehaviour
     {
         return pityQuality.roll();
     }
+
+    //Server
+    public List<AttackBlock> equipped
+    {
+        get
+        {
+            return abilitiesSync.Take(4).ToList();
+        }
+    }
+
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {

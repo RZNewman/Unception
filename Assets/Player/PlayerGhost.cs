@@ -18,7 +18,7 @@ public class PlayerGhost : NetworkBehaviour
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
-            CmdAddPlayer();
+
             if (isClientOnly)
             {
                 CmdAddClient();
@@ -35,23 +35,22 @@ public class PlayerGhost : NetworkBehaviour
         }
     }
 
+    public void spawnPlayer()
+    {
+        CmdAddPlayer();
+    }
+
     [Command]
     void CmdAddPlayer()
     {
+        Inventory inv = GetComponent<Inventory>();
 
         GameObject u = Instantiate(unitPre);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower);
         p.subscribePower(syncPower);
-        u.GetComponent<Reward>().setInventory(GetComponent<Inventory>());
-        List<AttackBlock> attackBlocks = new List<AttackBlock>();
-        for (int i = 0; i < attacksToGenerate; i++)
-        {
-            AttackBlock b = GenerateAttack.generate(p.power, i == 0);
-            b.scales = true;
-            attackBlocks.Add(b);
-        }
-        u.GetComponent<AbiltyList>().addAbility(attackBlocks);
+        u.GetComponent<Reward>().setInventory(inv);
+        u.GetComponent<AbiltyList>().addAbility(inv.equipped);
         NetworkServer.Spawn(u, connectionToClient);
     }
 

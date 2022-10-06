@@ -29,10 +29,11 @@ public class Inventory : NetworkBehaviour
             pityQuality.addCategory(Quality.Epic, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 2));
             pityQuality.addCategory(Quality.Legendary, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 3));
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 40; i++)
             {
-                abilitiesSync.Add(GenerateAttack.generate(player.power, false, Quality.Common));
+                abilitiesSync.Add(GenerateAttack.generate(player.power, i == 0, Quality.Common));
             }
+            TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
         }
     }
     [Server]
@@ -60,7 +61,7 @@ public class Inventory : NetworkBehaviour
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {
-        AttackBlockFilled filled = tryFillBlock(item);
+        AttackBlockFilled filled = fillBlock(item);
         float scale = Power.scale(player.power);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
         i.GetComponent<ItemDrop>().init(scale, player.unit, filled.instance.quality);
@@ -92,13 +93,10 @@ public class Inventory : NetworkBehaviour
     //            break;
     //    }
     //}
-    AttackBlockFilled tryFillBlock(AttackBlock block)
+    AttackBlockFilled fillBlock(AttackBlock block)
     {
-        if (player.unit)
-        {
-            return GenerateAttack.fillBlock(block, player.power);
-        }
-        return null;
+
+        return GenerateAttack.fillBlock(block, player.power);
     }
     [Client]
     public void syncInventory()
@@ -118,7 +116,8 @@ public class Inventory : NetworkBehaviour
         abilities.Clear();
         for (int i = 0; i < abilitiesSync.Count; i++)
         {
-            abilities[i] = tryFillBlock(abilitiesSync[i]);
+            abilities.Add(fillBlock(abilitiesSync[i]));
         }
+        FindObjectOfType<ItemList>(true).fillAbilities(abilities);
     }
 }

@@ -65,7 +65,6 @@ public abstract class IndicatorInstance : MonoBehaviour
 
             transform.localPosition = ih.indicatorPosition(forward) + currentOffsets.distance * ih.offsetMultiplier();
 
-            //TODO indcator width should change based on the slope
         }
     }
 

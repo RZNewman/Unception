@@ -14,7 +14,9 @@ public class UiAbility : MonoBehaviour
     public Sprite Rare;
     public Sprite Epic;
     public Sprite Legendary;
+
     Ability target;
+    AttackBlockFilled filled;
 
     private void Update()
     {
@@ -29,11 +31,17 @@ public class UiAbility : MonoBehaviour
     public void setTarget(Ability ability)
     {
         target = ability;
-        AttackFlair flair = ability.source().flair;
+        setFill(ability.source());
+    }
+
+    public void setFill(AttackBlockFilled a)
+    {
+        filled = a;
+        AttackFlair flair = filled.flair;
         Texture2D texture = FindObjectOfType<Symbol>().symbols[flair.symbol];
         symbol.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         symbol.color = flair.color;
-        background.sprite = bgFromQuality(ability.source().instance.quality);
+        background.sprite = bgFromQuality(filled.instance.quality);
     }
 
     Sprite bgFromQuality(Quality q)

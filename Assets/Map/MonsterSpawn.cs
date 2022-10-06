@@ -93,21 +93,23 @@ public class MonsterSpawn : NetworkBehaviour
             yield return null;
         }
 
-        for (int i = 0; i < zones.Count && i < 5; i++)
+        int zoneCount = zones.Count;
+        for (int i = 0; i < zoneCount && i < 5; i++)
         {
             //TODO pity chests
             int z = zones.RandomIndex();
             GameObject zone = zones[z];
             zones.RemoveAt(z);
             bool isChest = i == 0;
-            spawnBreakables(zones[i].transform, isChest ? 10 : 3, isChest);
+            spawnBreakables(zone.transform, isChest);
             yield return null;
         }
     }
 
-    void spawnBreakables(Transform spawn, float packPercent, bool isChest)
+    void spawnBreakables(Transform spawn, bool isChest)
     {
         int numberBreakables = isChest ? 1 : Random.Range(2, 6);
+        float packPercent = isChest ? 10 : 0.8f;
         Vector3 halfSize = spawn.lossyScale / 2;
         for (int j = 0; j < numberBreakables; j++)
         {

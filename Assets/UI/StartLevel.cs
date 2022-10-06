@@ -13,5 +13,6 @@ public class StartLevel : MonoBehaviour
     public void startLevel()
     {
         FindObjectOfType<GlobalPlayer>().player.spawnPlayer();
+        FindObjectOfType<MenuHandler>().spawn();
     }
 }

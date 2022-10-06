@@ -25,7 +25,6 @@ public class Combat : NetworkBehaviour
         {
             active.Add(other);
             other.GetComponent<Combat>().addTarget(gameObject);
-            //TODO Aggro handler adds a callback here, to aggro the pack when hit
         }
     }
 

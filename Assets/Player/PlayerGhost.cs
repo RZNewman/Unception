@@ -18,7 +18,7 @@ public class PlayerGhost : NetworkBehaviour
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
-
+            FindObjectOfType<MenuHandler>().clientMenu();
             if (isClientOnly)
             {
                 CmdAddClient();

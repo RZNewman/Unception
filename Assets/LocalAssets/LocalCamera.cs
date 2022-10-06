@@ -23,13 +23,20 @@ public class LocalCamera : MonoBehaviour
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
 
     }
-
+    bool initial = true;
     void scaleCameraSize(Power p)
     {
         targetPosition = localPosition * p.scale();
         cam.nearClipPlane = localClip * p.scale();
         currentTransition = 0;
         lastMag = transform.localPosition.magnitude;
+        if (initial)
+        {
+            initial = false;
+            currentTransition = transitionTime;
+            transform.localPosition = targetPosition;
+        }
+
         //cam.nearClipPlane = 1.0f * p.scale();
 
     }

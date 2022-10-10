@@ -10,6 +10,7 @@ using static GenerateDash;
 using static WindState;
 using static Cast;
 using static RewardManager;
+using UnityEditor.PackageManager.UI;
 
 public static class GenerateAttack
 {
@@ -57,7 +58,9 @@ public static class GenerateAttack
     {
         public WindGenerationData windup;
         public WindGenerationData winddown;
-        public List<GenerationData> stages;
+        public HitGenerationData hit;
+        public DashGenerationData dash;
+        public bool dashAfter;
 
     }
 
@@ -65,7 +68,17 @@ public static class GenerateAttack
     {
         public WindInstanceData windup;
         public WindInstanceData winddown;
-        public InstanceData[] stages;
+        public HitInstanceData hit;
+        public DashInstanceData dash;
+        public bool dashAfter;
+
+        public float castTime
+        {
+            get
+            {
+                return windup.duration + winddown.duration;
+            }
+        }
 
     }
     public struct AttackFlair
@@ -86,6 +99,15 @@ public static class GenerateAttack
         public SegmentInstanceData[] segments;
         public float cooldown;
         public Quality quality;
+        public float power;
+
+        public float castTime
+        {
+            get
+            {
+                return segments.Sum(s => s.castTime);
+            }
+        }
     }
 
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
@@ -113,7 +135,9 @@ public static class GenerateAttack
             {
                 windup = up,
                 winddown = down,
-                stages = segment.stages.Select(s => s.populate(power, strength * s.strengthFactor)).ToArray(),
+                hit = (HitInstanceData)segment.hit.populate(power, strength),
+                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, strength),
+                dashAfter = segment.dashAfter,
             };
 
 
@@ -125,6 +149,7 @@ public static class GenerateAttack
             cooldown = cooldownTime,
             segments = segmentsInst,
             quality = atk.quality,
+            power = power,
 
         };
 
@@ -134,8 +159,8 @@ public static class GenerateAttack
         List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
         SegmentGenerationData segment;
         segment = new SegmentGenerationData();
-        segment.stages = new List<GenerationData>();
         bool open = false;
+        bool dashAfter = false;
         foreach (GenerationData state in stages)
         {
             if (state is WindGenerationData)
@@ -150,14 +175,23 @@ public static class GenerateAttack
                     segment.winddown = (WindGenerationData)state;
                     segments.Add(segment);
                     segment = new SegmentGenerationData();
-                    segment.stages = new List<GenerationData>();
                     open = false;
                 }
 
             }
             else
             {
-                segment.stages.Add(state);
+                switch (state)
+                {
+                    case HitGenerationData hit:
+                        segment.hit = hit;
+                        dashAfter = true;
+                        break;
+                    case DashGenerationData dash:
+                        segment.dash = dash;
+                        segment.dashAfter = dashAfter;
+                        break;
+                }
             }
 
 

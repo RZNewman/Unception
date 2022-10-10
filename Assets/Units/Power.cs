@@ -7,14 +7,7 @@ public class Power : NetworkBehaviour, TextValue
     [SyncVar(hook = nameof(callbackPower))]
     float currentPower = 100;
 
-    int currentDecimalPlaces = 0;
-    public MetricName currentMetricScale
-    {
-        get
-        {
-            return (MetricName)(currentDecimalPlaces / 3);
-        }
-    }
+
 
     public readonly static float exponentDownscale = 1.5f;
     public readonly static float basePower = 100;
@@ -58,23 +51,31 @@ public class Power : NetworkBehaviour, TextValue
     }
     void setMetricScale()
     {
-        float displayPower = Mathf.Pow(currentPower / 100, 2f);
+        float exaggeratedPower = Mathf.Pow(currentPower / 100, 2f);
 
-        currentDecimalPlaces = displayPower == 0 ? 0 : (int)Mathf.Floor(Mathf.Log10(Mathf.Abs(displayPower)));
 
-        int decimalRounding = Mathf.Max(0, currentDecimalPlaces - 3);
-        int decimalMetric = (int)currentMetricScale * 3;
-        int decimalDiff = decimalMetric - decimalRounding;
-        float roundedPower = Mathf.Round(displayPower / Mathf.Pow(10, decimalRounding));
-        float truncatedPower = roundedPower / Mathf.Pow(10, decimalDiff);
-        string symbol = metricSymbol();
         displayText = new TextValue.TextData
         {
             color = Color.white,
-            text = truncatedPower + " " + symbol,
+            text = displayPower(exaggeratedPower),
 
         };
 
+    }
+
+    public static string displayPower(float power)
+    {
+        int currentDecimalPlaces = power == 0 ? 0 : (int)Mathf.Floor(Mathf.Log10(Mathf.Abs(power)));
+
+        MetricName currentMetricScale = (MetricName)(currentDecimalPlaces / 3);
+
+        int decimalRounding = currentDecimalPlaces - 3;
+        int decimalMetric = (int)currentMetricScale * 3;
+        int decimalDiff = decimalMetric - decimalRounding;
+        float roundedPower = Mathf.Round(power / Mathf.Pow(10, decimalRounding));
+        float truncatedPower = roundedPower / Mathf.Pow(10, decimalDiff);
+        string symbol = metricSymbol(currentMetricScale);
+        return truncatedPower + " " + symbol;
     }
 
     public void setPower(float power)
@@ -138,9 +139,9 @@ public class Power : NetworkBehaviour, TextValue
         nintillion,
         dectillion,
     }
-    string metricSymbol()
+    static string metricSymbol(MetricName m)
     {
-        switch (currentMetricScale)
+        switch (m)
         {
             case MetricName.zero: return "";
             case MetricName.thousand: return "k";

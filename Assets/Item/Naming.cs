@@ -26,6 +26,21 @@ public static class Naming
 "Dread",
 "Alpha",
 "Energy",
+"Final",
+"Deadly",
+"Quick",
+"Haunted",
+"Sun",
+"Moon",
+"Star",
+"Plasma",
+"Infernal",
+"Hellish",
+"Perfect",
+"Heroic",
+"Cursed",
+"Flash",
+"Power",
     };
     static string[] suffixes = new string[] {
 "Slash",
@@ -48,5 +63,11 @@ public static class Naming
 "Blast",
 "Boom",
 "Mangle",
+"Joust",
+"Slice",
+"Rush",
+"Swing",
+"Shot",
+"Punch",
     };
 }

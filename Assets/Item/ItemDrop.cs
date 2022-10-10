@@ -27,7 +27,7 @@ public class ItemDrop : MonoBehaviour
         catchDistance *= scale;
         Vector2 dir = Random.insideUnitCircle;
         GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scale;
-        Color qual = GameColors.colorQuality(q);
+        Color qual = RewardManager.colorQuality(q);
         qual.a = 0.05f;
         itemAura.setColor(qual);
         itemBase.setColor(qual);

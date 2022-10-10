@@ -9,10 +9,13 @@ public class ItemList : MonoBehaviour
 
     public void fillAbilities(List<AttackBlockFilled> abils)
     {
+        UiAbilityDetails deets = FindObjectOfType<UiAbilityDetails>(true);
         foreach (AttackBlockFilled abil in abils)
         {
             GameObject i = Instantiate(abilityIconPre, transform);
-            i.GetComponent<UiAbility>().setFill(abil);
+            UiAbility uia = i.GetComponent<UiAbility>();
+            uia.setFill(abil);
+            uia.setDetails(deets);
         }
     }
 }

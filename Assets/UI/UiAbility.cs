@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GenerateAttack;
 using static RewardManager;
 
-public class UiAbility : MonoBehaviour
+public class UiAbility : MonoBehaviour, IPointerEnterHandler
 {
     public Image background;
     public Image symbol;
@@ -17,6 +18,7 @@ public class UiAbility : MonoBehaviour
 
     Ability target;
     AttackBlockFilled filled;
+    UiAbilityDetails deets;
 
     private void Update()
     {
@@ -42,6 +44,20 @@ public class UiAbility : MonoBehaviour
         symbol.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         symbol.color = flair.color;
         background.sprite = bgFromQuality(filled.instance.quality);
+    }
+
+    public void setDetails(UiAbilityDetails details)
+    {
+        deets = details;
+
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (deets)
+        {
+            deets.setDetails(filled);
+        }
     }
 
     Sprite bgFromQuality(Quality q)

@@ -23,22 +23,23 @@ public class AttackBlockFilled : ScriptableObject
 
             WindState windup = new WindState(controller, seg.windup, false);
             WindState winddown = new WindState(controller, seg.winddown, true);
-            ActionState a = null;
 
             states.Add(windup);
-            foreach (InstanceData data in seg.stages)
+            List<AttackStageState> effectStates = new List<AttackStageState>();
+            ActionState a = new ActionState(controller, seg.hit);
+            effectStates.Add(a);
+            if (seg.dash != null)
             {
-                switch (data)
+                if (seg.dashAfter)
                 {
-                    case HitInstanceData hit:
-                        a = new ActionState(controller, hit);
-                        states.Add(a);
-                        break;
-                    case DashInstanceData dash:
-                        states.Add(new DashState(controller, dash, true));
-                        break;
+                    effectStates.Add(new DashState(controller, seg.dash, true));
+                }
+                else
+                {
+                    effectStates.Insert(0, new DashState(controller, seg.dash, true));
                 }
             }
+            states.AddRange(effectStates);
             states.Add(winddown);
             segments.Add(new AttackSegment
             {
@@ -68,36 +69,25 @@ public class AttackBlockFilled : ScriptableObject
 
         //TODO take highest
         SegmentInstanceData prime = instance.segments[0];
-        foreach (InstanceData data in prime.stages)
+        if (prime.dash != null && !prime.dashAfter)
         {
-            AiHandler.EffectiveDistance e;
-
-            e = data.GetEffectiveDistance();
-            if (e.type == AiHandler.EffectiveDistanceType.Hit)
-            {
-                if (saved.type != AiHandler.EffectiveDistanceType.None)
-                {
-                    return new AiHandler.EffectiveDistance
-                    {
-                        width = e.width + saved.width,
-                        distance = e.distance + saved.distance,
-                        type = AiHandler.EffectiveDistanceType.Hit,
-                    };
-                }
-                else
-                {
-                    return e;
-                }
-
-            }
-            else
-            {
-                saved = saved.sum(e);
-            };
-
+            saved = saved.sum(prime.dash.GetEffectiveDistance());
         }
+        AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance();
 
-        return saved;
+        if (saved.type != AiHandler.EffectiveDistanceType.None)
+        {
+            return new AiHandler.EffectiveDistance
+            {
+                width = e.width + saved.width,
+                distance = e.distance + saved.distance,
+                type = AiHandler.EffectiveDistanceType.Hit,
+            };
+        }
+        else
+        {
+            return e;
+        }
     }
 }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 using static RewardManager;
+using Castle.Core.Internal;
 
 public class Inventory : NetworkBehaviour
 {
@@ -12,6 +13,8 @@ public class Inventory : NetworkBehaviour
     List<AttackBlockFilled> abilities = new List<AttackBlockFilled>();
 
     PlayerGhost player;
+
+    int[] equippedIndices = new int[] { 0, 1, 2, 3 };
 
     GameObject itemPre;
     PityTimer<Quality> pityQuality;
@@ -54,7 +57,12 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return abilitiesSync.Take(4).ToList();
+            List<AttackBlock> e = new List<AttackBlock>();
+            foreach (int i in equippedIndices)
+            {
+                e.Add(abilitiesSync[i]);
+            }
+            return e;
         }
     }
 
@@ -118,6 +126,16 @@ public class Inventory : NetworkBehaviour
         {
             abilities.Add(fillBlock(abilitiesSync[i]));
         }
-        FindObjectOfType<ItemList>(true).fillAbilities(abilities);
+        FindObjectOfType<ItemList>(true).fillAbilities(abilities, equippedIndices);
+    }
+
+    [Command]
+    public void CmdEquipAbility(int oldInd, int newInd)
+    {
+        int i = System.Array.IndexOf(equippedIndices, oldInd);
+        if (i >= 0 && newInd < abilitiesSync.Count)
+        {
+            equippedIndices[i] = newInd;
+        }
     }
 }

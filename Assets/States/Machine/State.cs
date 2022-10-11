@@ -20,7 +20,7 @@ public abstract class State
         Timed
     }
     DurrationType durationType;
-    float duration;
+    float duration = 0;
     float startingDuration;
 
     protected float currentDurration

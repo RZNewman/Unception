@@ -83,7 +83,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     {
                         moveTarget = transform.position;
                         pathingCorner = -1;
-                        Debug.Log("INVALID");
+                        //Debug.Log("INVALID");
                     }
                     else
                     {

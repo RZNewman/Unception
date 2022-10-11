@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using static GenerateAttack;
 using static RewardManager;
 
-public class UiAbility : MonoBehaviour, IPointerEnterHandler
+public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
     public Image symbol;
@@ -18,7 +18,11 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler
 
     Ability target;
     AttackBlockFilled filled;
+
+    //menu only
     UiAbilityDetails deets;
+    UiEquipmentDragger dragger;
+    public int inventoryIndex;
 
     private void Update()
     {
@@ -46,9 +50,10 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler
         background.sprite = bgFromQuality(filled.instance.quality);
     }
 
-    public void setDetails(UiAbilityDetails details)
+    public void setDetails(UiAbilityDetails details, UiEquipmentDragger drag)
     {
         deets = details;
+        dragger = drag;
 
     }
 
@@ -57,6 +62,17 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler
         if (deets)
         {
             deets.setDetails(filled);
+        }
+        if (dragger)
+        {
+            dragger.setHover(this);
+        }
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (dragger)
+        {
+            dragger.unsetHover(this);
         }
     }
 
@@ -87,4 +103,6 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler
         }
         return bg;
     }
+
+
 }

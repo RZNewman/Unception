@@ -16,7 +16,6 @@ public class StunnedState : PlayerMovementState, BarValue
     public override void tick()
     {
         base.tick();
-        UnitInput inp = mover.input;
 
         //no look change
         //defaultLook(inp);
@@ -30,7 +29,12 @@ public class StunnedState : PlayerMovementState, BarValue
         {
             return new StateTransition(new FreeState(mover), true);
         }
-        return base.transition();
+        return new StateTransition(null, false);
+    }
+
+    public override void exit(bool expired)
+    {
+        mover.GetComponent<Cast>().removeTarget(this);
     }
 
     public BarValue.BarData getBarFill()
@@ -38,7 +42,7 @@ public class StunnedState : PlayerMovementState, BarValue
         return new BarValue.BarData
         {
             color = GameColors.Stunned,
-            fillPercent = Mathf.Clamp01(1 - (currentDurration / maxDuration)),
+            fillPercent = Mathf.Clamp01(currentDurration / maxDuration),
             active = true,
         };
     }

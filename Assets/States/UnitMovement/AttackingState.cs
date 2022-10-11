@@ -46,7 +46,20 @@ public class AttackingState : PlayerMovementState
     {
         if (mover.posture.isStunned)
         {
-            return new StateTransition(new StunnedState(mover), true);
+            float remaining = currentSegment.remainingWindDown();
+            Debug.Log(remaining);
+            if (remaining > 0)
+            {
+                StunnedState stun = new StunnedState(mover, remaining);
+                mover.GetComponent<Cast>().setTarget(stun);
+
+                return new StateTransition(stun, true);
+            }
+            else
+            {
+                return new StateTransition(new StunnedState(mover), true);
+            }
+
         }
         attackMachine.transition();
         if (ended)

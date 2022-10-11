@@ -72,9 +72,12 @@ public static class AttackUtils
         public ActionState action;
         public GameObject groundTargetInstance;
 
+        bool pastWindup;
+        AttackStageState currentState;
 
         public void enterSegment(UnitMovement mover)
         {
+            pastWindup = false;
             HitInstanceData source = action.getSource();
             if (source.type == HitType.Ground)
             {
@@ -104,9 +107,25 @@ public static class AttackUtils
             {
                 return null;
             }
-            AttackStageState state = states[0];
+            if (currentState == windup)
+            {
+                pastWindup = true;
+            }
+            currentState = states[0];
             states.RemoveAt(0);
-            return state;
+            return currentState;
+        }
+
+        public float remainingWindDown()
+        {
+            if (pastWindup)
+            {
+                return winddown.remainingDuration;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 

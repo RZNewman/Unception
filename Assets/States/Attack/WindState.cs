@@ -30,8 +30,7 @@ public class WindState : AttackStageState, BarValue
 
     public override void enter()
     {
-        GameObject target = mover.getSpawnBody();
-        target.GetComponentInParent<Cast>().setTarget(this);
+        mover.GetComponent<Cast>().setTarget(this);
 
 
     }
@@ -54,7 +53,7 @@ public class WindState : AttackStageState, BarValue
 
     public override void exit(bool expired)
     {
-        mover.GetComponent<Cast>().removeTarget();
+        mover.GetComponent<Cast>().removeTarget(this);
     }
 
     public override Cast.IndicatorOffsets GetIndicatorOffsets()
@@ -64,6 +63,13 @@ public class WindState : AttackStageState, BarValue
             distance = Vector3.zero,
             time = currentDurration,
         };
+    }
+    public float remainingDuration
+    {
+        get
+        {
+            return currentDurration;
+        }
     }
 
     public BarValue.BarData getBarFill()

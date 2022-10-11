@@ -57,10 +57,16 @@ public abstract class State
             duration -= Time.fixedDeltaTime;
         }
     }
-
+    protected bool expired
+    {
+        get
+        {
+            return durationType == DurrationType.Timed && duration <= 0;
+        }
+    }
     public virtual StateTransition transition()
     {
-        if (durationType == DurrationType.Timed && duration <= 0)
+        if (expired)
         {
             return new StateTransition(null, true, true);
         }

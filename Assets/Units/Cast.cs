@@ -23,13 +23,17 @@ public class Cast : MonoBehaviour, BarValue
         return target.getBarFill();
     }
 
-    public void setTarget(WindState s)
+    public void setTarget(BarValue s)
     {
         target = s;
     }
-    public void removeTarget()
+    public void removeTarget(BarValue s)
     {
-        target = null;
+        if (target == s)
+        {
+            target = null;
+        }
+
     }
 
 

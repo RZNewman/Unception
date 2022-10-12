@@ -3,6 +3,7 @@ using UnityEngine;
 using static Cast;
 using static GenerateAttack;
 using static GenerateHit;
+using static IndicatorHolder;
 
 public abstract class IndicatorInstance : MonoBehaviour
 {
@@ -55,7 +56,16 @@ public abstract class IndicatorInstance : MonoBehaviour
             GameObject trackingBody = transform.parent.gameObject;
             FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
             IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
+            //IndicatorLocalPoint point = ih.pointOverride(ground.forwardPlanar(trackingBody.transform.forward), ground.normal);
+            //if (point.shouldOverride)
+            //{
+            //    transform.rotation = ground.getIndicatorOverride(point.localPoint);
+            //}
+            //else
+            //{
             transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
+            //}
+
 
             Vector3 projection = Vector3.ProjectOnPlane(trackingBody.transform.forward, ground.normal).normalized;
 

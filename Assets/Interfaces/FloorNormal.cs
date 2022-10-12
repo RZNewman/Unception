@@ -41,16 +41,27 @@ public class FloorNormal : MonoBehaviour
         }
     }
 
+    public Vector3 forwardPlanar(Vector3 forward)
+    {
+        Vector3 left = Vector3.Cross(forward, groundNormal);
+        Vector3 aim = Vector3.Cross(groundNormal, left);
+        return aim;
+    }
+
     public Quaternion getIndicatorRotation(Vector3 forward)
     {
         return Quaternion.LookRotation(groundNormal, forward);
     }
+    public Quaternion getIndicatorOverride(Vector3 forward)
+    {
+        Vector3 left = Vector3.Cross(forward, groundNormal);
+        Vector3 newNormal = Vector3.Cross(forward, left);
+        return Quaternion.LookRotation(newNormal, forward);
+    }
 
     public Quaternion getAimRotation(Vector3 forward)
     {
-        Vector3 left = Vector3.Cross(forward, groundNormal);
-        Vector3 aim = Vector3.Cross(groundNormal, left);
-        return Quaternion.LookRotation(aim, groundNormal);
+        return Quaternion.LookRotation(forwardPlanar(forward), groundNormal);
     }
 
     public bool hasGround

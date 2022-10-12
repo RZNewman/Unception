@@ -66,8 +66,7 @@ public class UiEquipmentDragger : MonoBehaviour
                 }
                 else
                 {
-                    drag.transform.SetParent(itemTray.transform);
-                    drag.GetComponent<Image>().raycastTarget = true;
+                    itemTray.grabAbility(drag);
                 }
                 drag = null;
             }

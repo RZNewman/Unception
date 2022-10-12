@@ -1,4 +1,5 @@
 using UnityEngine;
+using static IndicatorHolder;
 
 public class Size : MonoBehaviour, IndicatorHolder
 {
@@ -36,6 +37,43 @@ public class Size : MonoBehaviour, IndicatorHolder
     public float offsetMultiplier()
     {
         return 1.0f;
+    }
+    public IndicatorLocalPoint pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
+    {
+        Vector3 bodyFocus = transform.position + scaledRadius * transform.forward;
+        Vector3 farPoint = bodyFocus + scaledRadius * 5f * fowardPlanar;
+        //should be ground normal instaed of up
+        Vector3 halfHeight = groundNormal * scaledHalfHeight * 1.01f;
+
+        Vector3 lookDiff = (farPoint - indicatorHeight * groundNormal) - bodyFocus;
+        if (Physics.Raycast(bodyFocus, lookDiff, lookDiff.magnitude, LayerMask.GetMask("Terrain")))
+        {
+            RaycastHit info;
+            if (Physics.Raycast(farPoint + halfHeight, -groundNormal, out info, scaledHalfHeight * 2, LayerMask.GetMask("Terrain")))
+            {
+                return new IndicatorLocalPoint
+                {
+                    shouldOverride = true,
+                    localPoint = info.point - transform.position,
+                };
+            }
+            else
+            {
+                return new IndicatorLocalPoint
+                {
+                    shouldOverride = true,
+                    localPoint = (farPoint + halfHeight) - transform.position,
+                };
+            }
+        }
+        else
+        {
+            return new IndicatorLocalPoint
+            {
+                shouldOverride = false,
+            };
+        }
+
     }
 
     public Collider colliderRef

@@ -30,8 +30,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (runEquip)
         {
-            uiAbility.transform.SetParent(itemTray.transform);
-            uiAbility.GetComponent<Image>().raycastTarget = true;
+            itemTray.grabAbility(uiAbility);
             int oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
             int newIndex = uiAbil.GetComponent<UiAbility>().inventoryIndex;
             FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
@@ -39,6 +38,6 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         uiAbility = uiAbil;
         uiAbility.transform.SetParent(transform);
         uiAbility.transform.localPosition = Vector3.zero;
-        uiAbility.GetComponent<Image>().raycastTarget = false;
+        uiAbility.GetComponent<Image>().raycastTarget = true;
     }
 }

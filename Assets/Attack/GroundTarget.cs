@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static IndicatorHolder;
 
 public class GroundTarget : NetworkBehaviour, IndicatorHolder
 {
@@ -26,6 +27,13 @@ public class GroundTarget : NetworkBehaviour, IndicatorHolder
     public float offsetMultiplier()
     {
         return 0.0f;
+    }
+    public IndicatorLocalPoint pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
+    {
+        return new IndicatorLocalPoint
+        {
+            shouldOverride = false,
+        };
     }
 
     public void setTarget(Vector3 t, float s)
@@ -53,8 +61,6 @@ public class GroundTarget : NetworkBehaviour, IndicatorHolder
 
 
     }
-
-
 
 
 }

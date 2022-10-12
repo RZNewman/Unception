@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemList : MonoBehaviour
 {
@@ -18,17 +19,11 @@ public class ItemList : MonoBehaviour
         for (int i = 0; i < abils.Count; i++)
         {
             AttackBlockFilled abil = abils[i];
-            Transform parent = transform;
-            UiEquipSlot slot = null;
+            GameObject icon = Instantiate(abilityIconPre, transform);
             if (equipped.Contains(i))
             {
-                slot = slots[currentSlot];
-                parent = slots[currentSlot].transform;
+                UiEquipSlot slot = slots[currentSlot];
                 currentSlot++;
-            }
-            GameObject icon = Instantiate(abilityIconPre, parent);
-            if (slot)
-            {
                 slot.setEquiped(icon, false);
             }
             UiAbility uia = icon.GetComponent<UiAbility>();
@@ -37,5 +32,10 @@ public class ItemList : MonoBehaviour
             uia.inventoryIndex = i;
 
         }
+    }
+    public void grabAbility(GameObject icon)
+    {
+        icon.transform.SetParent(transform);
+        icon.GetComponent<Image>().raycastTarget = true;
     }
 }

@@ -9,6 +9,13 @@ using static GenerateHit;
 public class Cast : MonoBehaviour, BarValue
 {
     BarValue target;
+
+    GlobalPrefab global;
+
+    private void Start()
+    {
+        global = FindObjectOfType<GlobalPrefab>();
+    }
     public BarValue.BarData getBarFill()
     {
         if (target == null)
@@ -89,7 +96,7 @@ public class Cast : MonoBehaviour, BarValue
                     {
                         case HitType.Line:
                             indicator = Object.Instantiate(
-                    Resources.Load("Indicator/LineIndicator") as GameObject,
+                   global.LineIndPre,
                         indicatorBody.transform
                     );
                             LineIndicatorVisuals l = indicator.GetComponent<LineIndicatorVisuals>();
@@ -98,7 +105,7 @@ public class Cast : MonoBehaviour, BarValue
                             break;
                         case HitType.Projectile:
                             indicator = Object.Instantiate(
-                    Resources.Load("Indicator/ProjectileIndicator") as GameObject,
+                   global.ProjIndPre,
                         indicatorBody.transform
                     );
                             ProjectileIndicatorVisuals p = indicator.GetComponent<ProjectileIndicatorVisuals>();
@@ -107,7 +114,7 @@ public class Cast : MonoBehaviour, BarValue
                             break;
                         case HitType.Ground:
                             indicator = Object.Instantiate(
-                    Resources.Load("Indicator/GroundIndicator") as GameObject,
+                   global.GroundIndPre,
                         segment.groundTargetInstance.transform
                     );
                             GroundIndicatorVisuals g = indicator.GetComponent<GroundIndicatorVisuals>();
@@ -120,7 +127,7 @@ public class Cast : MonoBehaviour, BarValue
                     break;
                 case DashState dashData:
                     indicator = Object.Instantiate(
-                    Resources.Load("Indicator/DashIndicator") as GameObject,
+                    global.DashIndPre,
                         indicatorBody.transform
                     );
                     DashIndicatorVisuals d = indicator.GetComponent<DashIndicatorVisuals>();

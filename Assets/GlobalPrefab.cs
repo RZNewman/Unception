@@ -8,4 +8,9 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject ProjectilePre;
     public GameObject GroundTargetPre;
     public GameObject ItemDropPre;
+
+    public GameObject LineIndPre;
+    public GameObject GroundIndPre;
+    public GameObject ProjIndPre;
+    public GameObject DashIndPre;
 }

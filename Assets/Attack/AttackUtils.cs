@@ -84,7 +84,7 @@ public static class AttackUtils
                 GameObject body = mover.getSpawnBody();
                 Size s = body.GetComponentInChildren<Size>();
                 //TODO Two ground target options, how to sync up?
-                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, mover.lookWorldPos, source.length, mover.isServer);
+                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.length, mover.isServer);
                 groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                 windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                 {
@@ -130,21 +130,23 @@ public static class AttackUtils
     }
 
 
-    static GameObject SpawnGroundTarget(Transform body, float radius, Vector3 target, float length, bool isServer)
+    static GameObject SpawnGroundTarget(Transform body, float radius, float height, Vector3 target, float length, bool isServer)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
         Vector3 bodyFocus = body.position + body.forward * radius;
         Vector3 diff = target - bodyFocus;
-        Vector3 planarDiff = diff;
-        planarDiff.y = 0;
+
+
+        Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
+        forwardDiff.y = diff.y;
+        Vector3 limitedDiff = forwardDiff.normalized * Mathf.Min(length, forwardDiff.magnitude);
 
         //float angleOff = Vector3.SignedAngle(body.forward, planarDiff, Vector3.up);
         //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
         //Vector3 offset = forwardLine.normalized * Mathf.Min(length, Vector3.Dot(diff, forwardLine));
-        Vector3 offset = body.forward * Mathf.Max(Mathf.Min(length, Vector3.Dot(planarDiff, body.forward)), 0);
 
 
-        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + offset, body.rotation);
+        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, body.rotation);
         if (isServer)
         {
             NetworkServer.Spawn(instance);

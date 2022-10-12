@@ -17,7 +17,7 @@ public class FloorNormal : MonoBehaviour
 
         RaycastHit rout;
 
-        bool terrain = Physics.SphereCast(transform.position, paras.radius, -transform.up, out rout, paras.distance * 1.01f, LayerMask.GetMask("Terrain"));
+        bool terrain = Physics.SphereCast(transform.position + transform.up * paras.distance, paras.radius, -transform.up, out rout, paras.distance * 2.01f, LayerMask.GetMask("Terrain"));
         float angle = Vector3.Angle(Vector3.up, rout.normal);
 
         ground = terrain && angle < 45;

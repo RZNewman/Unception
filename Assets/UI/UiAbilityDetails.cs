@@ -15,8 +15,14 @@ public class UiAbilityDetails : MonoBehaviour
     public Text cooldown;
     public UiSegmentPanel segmentPanel;
 
+    PlayerGhost player;
+
     public void setDetails(AttackBlockFilled filled)
     {
+        if (!player)
+        {
+            player = FindObjectOfType<PlayerGhost>();
+        }
         title.text = filled.flair.name;
         power.text = Power.displayPower(filled.instance.power);
         quality.text = qualitySymbol(filled.instance.quality);
@@ -29,8 +35,7 @@ public class UiAbilityDetails : MonoBehaviour
         segmentPanel.clearLabels();
         SegmentInstanceData prime = filled.instance.segments[0];
         segmentPanel.hitType.text = prime.hit.type.ToString();
-        //TODO scale damage
-        float damage = prime.hit.damageMult * filled.instance.power;
+        float damage = prime.hit.damageMult * Power.damageFalloff(filled.instance.power, player.power);
         segmentPanel.addLabel("Damage", damage);
         segmentPanel.addLabel("DPS", damage / prime.castTime);
         segmentPanel.addLabel("Windup", prime.windup.duration);

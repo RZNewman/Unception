@@ -60,13 +60,16 @@ public class RewardManager : MonoBehaviour
 
     readonly static int mapsPerFalloff = 16;
     readonly static float floorsPerMap = 2f;
+    readonly static float clearPercent = 0.65f;
 
-
-
+    //the percent increase in power to create a scale change equal to the % increase of the highest quality
+    //this controls the falloff speed of items during leveling
+    //~1.56
     readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
-    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / floorsPerMap / MonsterSpawn.packsPerFloor;
+    //the XP rate is directly calulated from the desired falloff speed
+    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / floorsPerMap / (MonsterSpawn.packsPerFloor * clearPercent);
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * floorsPerMap * MonsterSpawn.packsPerFloor);
+    public static readonly float uncommonChance = 4f / (itemsPerPack * floorsPerMap * MonsterSpawn.packsPerFloor * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
 
 }

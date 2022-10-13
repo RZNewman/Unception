@@ -52,6 +52,7 @@ public static class GenerateHit
             HitInstanceData baseData = new HitInstanceData
             {
                 powerByStrength = power * strength,
+                powerAtGen = power,
 
                 length = length,
                 width = width,
@@ -112,6 +113,7 @@ public static class GenerateHit
     public class HitInstanceData : InstanceData
     {
         public float powerByStrength;
+        public float powerAtGen;
 
         public HitType type;
         public float length;

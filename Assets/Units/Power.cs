@@ -82,6 +82,22 @@ public class Power : NetworkBehaviour, TextValue
     {
         currentPower = power;
     }
+
+    public static float damageFalloff(float powerOfAbility, float powerOfUnit)
+    {
+        if (powerOfUnit <= powerOfAbility)
+        {
+            return powerOfUnit;
+        }
+        float ratio = relativeScale(powerOfUnit, powerOfAbility);
+        return ratio * powerOfAbility;
+    }
+    public static float relativeScale(float powerA, float powerB)
+    {
+        return scale(powerA) / scale(powerB);
+    }
+
+
     public static float baseDownscale
     {
         get

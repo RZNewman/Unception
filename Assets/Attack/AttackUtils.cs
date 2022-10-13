@@ -25,7 +25,7 @@ public static class AttackUtils
             Health h = other.GetComponentInParent<Health>();
             if (h)
             {
-                h.takeDamage(hitData.damageMult * power);
+                h.takeDamage(hitData.damageMult * Power.damageFalloff(hitData.powerAtGen, power));
             }
             Posture p = other.GetComponentInParent<Posture>();
             if (p)

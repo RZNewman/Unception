@@ -15,7 +15,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     uint teamOwner;
 
 
-    protected abstract void reposition();
+    protected abstract void setSize();
     protected abstract void setCurrentProgress(float percent);
 
     public abstract void setColor(Color color);
@@ -56,24 +56,19 @@ public abstract class IndicatorInstance : MonoBehaviour
             GameObject trackingBody = transform.parent.gameObject;
             FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
             IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
-            //IndicatorLocalPoint point = ih.pointOverride(ground.forwardPlanar(trackingBody.transform.forward), ground.normal);
-            //if (point.shouldOverride)
-            //{
-            //    transform.rotation = ground.getIndicatorOverride(point.localPoint);
-            //}
-            //else
-            //{
-            transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
-            //}
+            Vector3 worldFoward = ground.forwardPlanarWorld(trackingBody.transform.forward);
 
+            IndicatorLocalLook point = ih.pointOverride(worldFoward, ground.normal);
+            if (point.shouldOverride)
+            {
+                transform.rotation = ground.getIndicatorOverride(point.newForward);
+            }
+            else
+            {
+                transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
+            }
 
-            Vector3 projection = Vector3.ProjectOnPlane(trackingBody.transform.forward, ground.normal).normalized;
-
-            Vector3 forward = Vector3.forward;
-            forward.y = projection.y;
-            forward.Normalize();
-
-            transform.localPosition = ih.indicatorPosition(forward) + currentOffsets.distance * ih.offsetMultiplier();
+            transform.localPosition = ih.indicatorPosition(worldFoward) + currentOffsets.distance * ih.offsetMultiplier();
 
         }
     }

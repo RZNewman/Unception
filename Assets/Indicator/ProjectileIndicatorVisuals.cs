@@ -18,9 +18,9 @@ public class ProjectileIndicatorVisuals : IndicatorInstance
     public void setSource(ActionState s)
     {
         state = s;
-        reposition();
+        setSize();
     }
-    protected override void reposition()
+    protected override void setSize()
     {
         HitInstanceData hit = state.getSource();
 

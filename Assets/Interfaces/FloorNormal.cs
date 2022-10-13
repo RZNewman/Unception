@@ -41,11 +41,12 @@ public class FloorNormal : MonoBehaviour
         }
     }
 
-    public Vector3 forwardPlanar(Vector3 forward)
+    public Vector3 forwardPlanarWorld(Vector3 forward)
     {
-        Vector3 left = Vector3.Cross(forward, groundNormal);
-        Vector3 aim = Vector3.Cross(groundNormal, left);
-        return aim;
+        //Vector3 left = Vector3.Cross(forward, groundNormal);
+        //Vector3 aim = Vector3.Cross(groundNormal, left);
+        //return aim;
+        return Vector3.ProjectOnPlane(forward, groundNormal).normalized;
     }
 
     public Quaternion getIndicatorRotation(Vector3 forward)
@@ -61,7 +62,7 @@ public class FloorNormal : MonoBehaviour
 
     public Quaternion getAimRotation(Vector3 forward)
     {
-        return Quaternion.LookRotation(forwardPlanar(forward), groundNormal);
+        return Quaternion.LookRotation(forwardPlanarWorld(forward), groundNormal);
     }
 
     public bool hasGround

@@ -28,9 +28,9 @@ public class GroundTarget : NetworkBehaviour, IndicatorHolder
     {
         return 0.0f;
     }
-    public IndicatorLocalPoint pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
+    public IndicatorLocalLook pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
     {
-        return new IndicatorLocalPoint
+        return new IndicatorLocalLook
         {
             shouldOverride = false,
         };

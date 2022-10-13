@@ -25,10 +25,10 @@ public class DashIndicatorVisuals : IndicatorInstance
     {
         state = dash;
         scale = p.scale();
-        reposition();
+        setSize();
     }
 
-    protected override void reposition()
+    protected override void setSize()
     {
         DashInstanceData dash = state.getSource();
 

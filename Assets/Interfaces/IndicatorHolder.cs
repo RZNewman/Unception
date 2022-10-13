@@ -4,13 +4,13 @@ using UnityEngine;
 
 public interface IndicatorHolder
 {
-    public struct IndicatorLocalPoint
+    public struct IndicatorLocalLook
     {
         public bool shouldOverride;
-        public Vector3 localPoint;
+        public Vector3 newForward;
     }
 
-    public abstract IndicatorLocalPoint pointOverride(Vector3 fowardPlanar, Vector3 groundNormal);
+    public abstract IndicatorLocalLook pointOverride(Vector3 fowardPlanar, Vector3 groundNormal);
 
     public abstract Vector3 indicatorPosition(Vector3 forward);
 

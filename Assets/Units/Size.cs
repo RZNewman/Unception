@@ -29,46 +29,53 @@ public class Size : MonoBehaviour, IndicatorHolder
         baseSize = size;
     }
 
-    public Vector3 indicatorPosition(Vector3 forward)
+    public Vector3 indicatorPosition(Vector3 worldForward)
     {
+        float worldAngle = Vector2.SignedAngle(Vector2.up, new Vector2(worldForward.x, worldForward.z));
+        Quaternion worldToLocal = Quaternion.AngleAxis(worldAngle, Vector3.up);
         return indicatorHeight * Vector3.down
-              + scaledRadius * forward;
+              + scaledRadius * (worldToLocal * worldForward);
     }
     public float offsetMultiplier()
     {
         return 1.0f;
     }
-    public IndicatorLocalPoint pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
+    public IndicatorLocalLook pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
     {
         Vector3 bodyFocus = transform.position + scaledRadius * transform.forward;
-        Vector3 farPoint = bodyFocus + scaledRadius * 5f * fowardPlanar;
-        //should be ground normal instaed of up
-        Vector3 halfHeight = groundNormal * scaledHalfHeight * 1.01f;
+        Vector3 farDiff = scaledRadius * 5f * fowardPlanar;
+        Vector3 heightDiff = groundNormal * indicatorHeight * 2;
 
-        Vector3 lookDiff = (farPoint - indicatorHeight * groundNormal) - bodyFocus;
-        if (Physics.Raycast(bodyFocus, lookDiff, lookDiff.magnitude, LayerMask.GetMask("Terrain")))
+        Vector3 indicatorLocalPos = indicatorPosition(fowardPlanar);
+        Vector3 indicatorWorldPos = transform.position + indicatorLocalPos;
+
+        Vector3 indicatorPoint = indicatorWorldPos + farDiff;
+        Vector3 castPoint = indicatorPoint + heightDiff;
+
+        Debug.DrawLine(bodyFocus, indicatorPoint, Color.red);
+        Debug.DrawLine(castPoint, indicatorPoint, Color.blue);
+        Vector3 lookDiff = indicatorPoint - bodyFocus;
+        if (Physics.Raycast(bodyFocus, lookDiff, (lookDiff).magnitude, LayerMask.GetMask("Terrain")))
         {
             RaycastHit info;
-            if (Physics.Raycast(farPoint + halfHeight, -groundNormal, out info, scaledHalfHeight * 2, LayerMask.GetMask("Terrain")))
+            Vector3 localPoint;
+            if (Physics.Raycast(castPoint, -groundNormal, out info, heightDiff.magnitude, LayerMask.GetMask("Terrain")))
             {
-                return new IndicatorLocalPoint
-                {
-                    shouldOverride = true,
-                    localPoint = info.point - transform.position,
-                };
+                localPoint = info.point;
             }
             else
             {
-                return new IndicatorLocalPoint
-                {
-                    shouldOverride = true,
-                    localPoint = (farPoint + halfHeight) - transform.position,
-                };
+                localPoint = castPoint;
             }
+            return new IndicatorLocalLook
+            {
+                shouldOverride = true,
+                newForward = localPoint - transform.position - indicatorLocalPos,
+            };
         }
         else
         {
-            return new IndicatorLocalPoint
+            return new IndicatorLocalLook
             {
                 shouldOverride = false,
             };

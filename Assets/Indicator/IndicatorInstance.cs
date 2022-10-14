@@ -19,7 +19,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     protected abstract void setSize();
     protected abstract void setCurrentProgress(float percent);
 
-    public abstract void setColor(Color color);
+    public abstract void setColor(Color color, Color stunning);
 
     public void setLocalOffsets(IndicatorOffsets offsets)
     {
@@ -77,7 +77,6 @@ public abstract class IndicatorInstance : MonoBehaviour
 
     void setLocalRotation()
     {
-        Debug.Log(transform.parent);
         if (transform.parent)
         {
             GameObject trackingBody = transform.parent.gameObject;
@@ -106,21 +105,35 @@ public abstract class IndicatorInstance : MonoBehaviour
     void updateColor()
     {
         float threat = getThreat();
-        setColor(getIndicatorColor(teamOwner, threat));
+        bool stun = willStagger();
+        IndicatorColors cols = getIndicatorColor(teamOwner, threat, stun);
+        setColor(cols.color, cols.stunning);
     }
 
-    public static Color getIndicatorColor(uint team, float threat)
+    public struct IndicatorColors
+    {
+        public Color color;
+        public Color stunning;
+    }
+    public static IndicatorColors getIndicatorColor(uint team, float threat, bool stunning)
     {
         if (team == 1u)
         {
-            return GameColors.FriendIndicator;
+            return new IndicatorColors
+            {
+                color = GameColors.FriendIndicator,
+                stunning = GameColors.FriendIndicator,
+            };
+             
         }
         else
         {
-
-
-
-            return getEnemyThreatColor(threat);
+            Color threatColor = getEnemyThreatColor(threat);
+            return new IndicatorColors
+            {
+                color = threatColor,
+                stunning = stunning ? GameColors.EnemyIndicatorStun: threatColor,
+            };
         }
     }
 
@@ -147,5 +160,10 @@ public abstract class IndicatorInstance : MonoBehaviour
     protected virtual float getThreat()
     {
         return 1.0f;
+    }
+
+    protected virtual bool willStagger()
+    {
+        return false;
     }
 }

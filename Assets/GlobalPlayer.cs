@@ -21,7 +21,7 @@ public class GlobalPlayer : MonoBehaviour
         get { return clientLocalPlayer; }
     }
 
-    public float localPower
+    public float localPowerThreat
     {
         get { return clientLocalPlayer.power; }
     }
@@ -29,5 +29,12 @@ public class GlobalPlayer : MonoBehaviour
     public void setLocalUnit(GameObject u)
     {
         clientLocalPlayer.unit = u;
+    }
+    public float localStunThreat
+    {
+        get
+        {
+            return clientLocalPlayer.unit.GetComponent<Posture>().remainingToStun;
+        }
     }
 }

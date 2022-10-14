@@ -45,10 +45,12 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     }
 
-    public override void setColor(Color color)
+    public override void setColor(Color color, Color stunning)
     {
-        square.GetComponent<SpriteRenderer>().color = color;
-        circle.GetComponent<SpriteRenderer>().color = color;
+
+        square.GetComponent<SpriteRenderer>().color = stunning;
+        circle.GetComponent<SpriteRenderer>().color = stunning;
+
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
@@ -61,6 +63,11 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
+        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+    }
+
+    protected override bool willStagger()
+    {
+        return state.getSource().stagger>=  FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

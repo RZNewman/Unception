@@ -86,9 +86,9 @@ public static class GenerateValues
 
         return values;
     }
-    static Value[] transfer(Value[] values, int drain, int boost)
+    static Value[] transfer(Value[] values, int drain, int boost, float minTranserFactor = 0.0f)
     {
-        float transferFactor = GaussRandomDecline();
+        float transferFactor = GaussRandomDecline().asRange(minTranserFactor,1.0f);
         float ratio = values[drain].equivalence / values[boost].equivalence;
         float maxTransfer = Mathf.Min(
             worth(values[drain]),
@@ -122,7 +122,7 @@ public static class GenerateValues
         for (int i = oldCount; i < newValues.Length; i++)
         {
             int oldDrain = Random.Range(0, oldCount - 1);
-            newValues = transfer(newValues, oldDrain, i);
+            newValues = transfer(newValues, oldDrain, i, 0.25f);
         }
 
 

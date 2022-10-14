@@ -14,7 +14,7 @@ public class DashIndicatorVisuals : IndicatorInstance
 
     float length;
     float scale;
-    public override void setColor(Color color)
+    public override void setColor(Color color, Color stunning)
     {
         line.GetComponent<SpriteRenderer>().color = color;
         tip.GetComponent<SpriteRenderer>().color = color;

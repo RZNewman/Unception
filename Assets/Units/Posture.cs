@@ -32,6 +32,14 @@ public class Posture : NetworkBehaviour, BarValue
         }
     }
 
+    public float remainingToStun
+    {
+        get
+        {
+            return isStunned ? currentPostureCeiling : currentPostureCeiling - currentPosture;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

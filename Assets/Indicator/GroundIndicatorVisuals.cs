@@ -31,9 +31,10 @@ public class GroundIndicatorVisuals : IndicatorInstance
 
     }
 
-    public override void setColor(Color color)
+    public override void setColor(Color color, Color stunning)
     {
-        edge.GetComponent<SpriteRenderer>().color = color;
+
+        edge.GetComponent<SpriteRenderer>().color = stunning;
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
@@ -45,6 +46,11 @@ public class GroundIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
+        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+    }
+
+    protected override bool willStagger()
+    {
+        return state.getSource().stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

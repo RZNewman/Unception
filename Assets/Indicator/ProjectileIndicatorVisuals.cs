@@ -34,9 +34,10 @@ public class ProjectileIndicatorVisuals : IndicatorInstance
 
     }
 
-    public override void setColor(Color color)
+    public override void setColor(Color color, Color stunning)
     {
-        shot.GetComponent<SpriteRenderer>().color = color;
+
+        shot.GetComponent<SpriteRenderer>().color = stunning;
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
@@ -49,6 +50,11 @@ public class ProjectileIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPower;
+        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+    }
+
+    protected override bool willStagger()
+    {
+        return state.getSource().stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

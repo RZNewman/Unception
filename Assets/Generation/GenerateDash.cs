@@ -25,6 +25,7 @@ public static class GenerateDash
     {
         public float speed;
         public float distance;
+        public DashControl control;
 
         public override InstanceData populate(float power, float strength)
         {
@@ -37,7 +38,7 @@ public static class GenerateDash
             {
                 speed = speed,
                 distance = distance,
-                control = DashControl.Forward,
+                control = control,
                 endMomentum = DashEndMomentum.Walk,
 
             };
@@ -62,10 +63,17 @@ public static class GenerateDash
     {
         Value[] typeValues = generateRandomValues(new float[] { 1f, 1f });
 
+        DashControl control = DashControl.Forward;
+        if (Random.value < 0.3f)
+        {
+            control = DashControl.Backward;
+        }
+
         return new DashGenerationData
         {
             distance = typeValues[0].val,
             speed = typeValues[1].val,
+            control = control,
         };
     }
 }

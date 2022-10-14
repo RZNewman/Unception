@@ -33,7 +33,7 @@ GameObject:
   - component: {fileID: -3801388523889064537}
   - component: {fileID: 2732588645681290907}
   m_Layer: 7
-  m_Name: PlayerObject
+  m_Name: UnitRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,6 @@ MonoBehaviour:
   syncInterval: 0.1
   localCameraPre: {fileID: 1085608404565328798, guid: 0e0a730e57a36a34f89848cef4d625b2, type: 3}
   localClickPre: {fileID: 8304061917398259379, guid: cefc5261b3bef1e489be677fc6b39c15, type: 3}
-  attacksToGenerate: 4
 --- !u!114 &5813699330095849159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,8 +188,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c52ae49ccfe564eb25dd410b85124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
   gravity: -40
 --- !u!114 &2082401580106628794
 MonoBehaviour:
@@ -414,6 +411,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a165c106d5b2bdc4da637bb43f04bddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  givesPower: 1
+  givesItems: 1
 --- !u!1 &5094729095307488736
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,7 +424,7 @@ GameObject:
   - component: {fileID: 9217333137697618203}
   - component: {fileID: 8034370768093829155}
   m_Layer: 7
-  m_Name: PlayerUnit
+  m_Name: UnitRotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

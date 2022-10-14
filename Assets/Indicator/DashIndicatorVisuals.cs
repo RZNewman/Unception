@@ -32,17 +32,28 @@ public class DashIndicatorVisuals : IndicatorInstance
     {
         DashInstanceData dash = state.getSource();
 
+        
+
         length = dash.distance;
         float width = 0.1f * scale;
+        Quaternion rotation = Quaternion.identity;
+        if (dash.control == DashControl.Backward)
+        {
+            rotation = Quaternion.AngleAxis(180, Vector3.forward);
+            length *= -1;
+        }
 
-        line.transform.localScale = new Vector3(width, length);
+        line.transform.localScale = new Vector3(width, Mathf.Abs(length));
         line.transform.localPosition = new Vector3(0, length / 2);
+        line.transform.localRotation = rotation;
 
         Vector3 arrowScale = new Vector3(0.5f, 0.2f) * scale;
         tip.transform.localScale = arrowScale;
         tip.transform.localPosition = new Vector3(0, length);
+        tip.transform.localRotation = rotation;
 
         progress.transform.localScale = arrowScale * 2;
+        progress.transform.localRotation = rotation;
 
     }
 

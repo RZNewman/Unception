@@ -70,7 +70,7 @@ public class DashState : AttackStageState
     {
         return new Cast.IndicatorOffsets
         {
-            distance = Vector3.forward * opts.distance * currentDurration / (opts.distance / opts.speed),
+            distance = Vector3.forward * opts.distance * (opts.control==DashControl.Backward? -1:1) * currentDurration / (opts.distance / opts.speed),
             time = currentDurration,
         };
     }

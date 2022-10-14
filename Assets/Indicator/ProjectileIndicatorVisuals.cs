@@ -24,7 +24,7 @@ public class ProjectileIndicatorVisuals : IndicatorInstance
     {
         HitInstanceData hit = state.getSource();
 
-        length = hit.length * 0.5f;
+        length = hit.length * 0.3f;
         width = hit.width;
 
         shot.transform.localScale = new Vector3(width, length);

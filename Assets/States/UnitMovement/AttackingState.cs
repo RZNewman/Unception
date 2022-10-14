@@ -47,7 +47,6 @@ public class AttackingState : PlayerMovementState
         if (mover.posture.isStunned)
         {
             float remaining = currentSegment.remainingWindDown();
-            Debug.Log(remaining);
             if (remaining > 0)
             {
                 StunnedState stun = new StunnedState(mover, remaining);

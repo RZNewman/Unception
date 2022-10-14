@@ -20,6 +20,11 @@ public static class SystemClassWriters
         writer.WriteByte((byte)key);
     }
 
+    public static void WriteDashControl(this NetworkWriter writer, GenerateDash.DashControl key)
+    {
+        writer.WriteByte((byte)key);
+    }
+
     public static void WriteQuality(this NetworkWriter writer, RewardManager.Quality key)
     {
         writer.WriteByte((byte)key);
@@ -59,6 +64,7 @@ public static class SystemClassWriters
                 writer.WriteByte((byte)GenerationDataClass.Dash);
                 writer.WriteFloat(d.speed);
                 writer.WriteFloat(d.distance);
+                writer.WriteDashControl(d.control);
                 break;
 
         }

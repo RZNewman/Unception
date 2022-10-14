@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using UnityEngine;
 using static Cast;
 using static GenerateAttack;
@@ -30,6 +31,8 @@ public abstract class IndicatorInstance : MonoBehaviour
     }
     private void Start()
     {
+        updateColor();
+        StartCoroutine(fixRotation());
     }
 
     public void OrderedUpdate()
@@ -44,13 +47,37 @@ public abstract class IndicatorInstance : MonoBehaviour
             progress = Mathf.Max(maxTime - currentOffsets.time, 0) / maxTime;
         }
 
-        updateColor();
         setCurrentProgress(progress);
         setLocalPosition();
     }
 
     void setLocalPosition()
     {
+        if (transform.parent)
+        {
+            GameObject trackingBody = transform.parent.gameObject;
+            FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
+            IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
+            Vector3 worldFoward = ground.forwardPlanarWorld(trackingBody.transform.forward);
+
+            transform.localPosition = ih.indicatorPosition(worldFoward) + currentOffsets.distance * ih.offsetMultiplier();
+
+        }
+    }
+
+    IEnumerator fixRotation()
+    {
+        while (true)
+        {
+            setLocalRotation();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+    }
+
+    void setLocalRotation()
+    {
+        Debug.Log(transform.parent);
         if (transform.parent)
         {
             GameObject trackingBody = transform.parent.gameObject;
@@ -67,9 +94,6 @@ public abstract class IndicatorInstance : MonoBehaviour
             {
                 transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
             }
-
-            transform.localPosition = ih.indicatorPosition(worldFoward) + currentOffsets.distance * ih.offsetMultiplier();
-
         }
     }
 

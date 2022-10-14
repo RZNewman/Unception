@@ -258,8 +258,18 @@ public static class GenerateAttack
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
 
-            effects.Add(d);
-            effects.Add(h);
+            if (d.control == DashControl.Backward)
+            {
+                effects.Add(h);
+                effects.Add(d);
+            }
+            else
+            {
+                effects.Add(d);
+                effects.Add(h);
+            }
+
+
         }
         else
         {

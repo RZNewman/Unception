@@ -137,6 +137,10 @@ public class AiHandler : MonoBehaviour, UnitControl
                     if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
                     {
                         currentInput.attacks = new AttackKey[] { AttackKey.One };
+                        if(edgeDiffMag <= eff.distance * 0.8f)
+                        {
+                            currentInput.move = Vector2.zero;
+                        }
                     }
                     else
                     {

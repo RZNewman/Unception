@@ -15,6 +15,11 @@ public static class SystemClassReaders
     {
         return (GenerateHit.KnockBackDirection)reader.ReadByte();
     }
+
+    public static GenerateDash.DashControl ReadDashControl(this NetworkReader reader)
+    {
+        return (GenerateDash.DashControl)reader.ReadByte();
+    }
     public static GenerateHit.HitType ReadHitType(this NetworkReader reader)
     {
         return (GenerateHit.HitType)reader.ReadByte();
@@ -59,6 +64,7 @@ public static class SystemClassReaders
                     strengthFactor = strengthFactor,
                     speed = reader.ReadFloat(),
                     distance = reader.ReadFloat(),
+                    control = reader.ReadDashControl(),
                 };
             default:
                 return null;

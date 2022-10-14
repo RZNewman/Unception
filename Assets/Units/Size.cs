@@ -52,8 +52,6 @@ public class Size : MonoBehaviour, IndicatorHolder
         Vector3 indicatorPoint = indicatorWorldPos + farDiff;
         Vector3 castPoint = indicatorPoint + heightDiff;
 
-        Debug.DrawLine(bodyFocus, indicatorPoint, Color.red);
-        Debug.DrawLine(castPoint, indicatorPoint, Color.blue);
         Vector3 lookDiff = indicatorPoint - bodyFocus;
         if (Physics.Raycast(bodyFocus, lookDiff, (lookDiff).magnitude, LayerMask.GetMask("Terrain")))
         {

@@ -16,11 +16,10 @@ public class MapGenerator : NetworkBehaviour
     public GameObject floorRootPre;
 
 
-    public int tilesPerFloor = 30;
     float currentFloorScale = 1f;
-
-
     GameObject currentFloor;
+    Map currentMap;
+    int currentFloorIndex;
 
     Vector3 floorOffset = Vector3.zero;
 
@@ -66,31 +65,58 @@ public class MapGenerator : NetworkBehaviour
     {
         StartCoroutine(endFloorRoutine());
     }
+    public void destroyFloor()
+    {
+        Destroy(currentFloor);
+    }
 
     IEnumerator endFloorRoutine()
     {
         yield return new WaitForSecondsRealtime(1f);
-        spawner.upDifficulty();
         Destroy(currentFloor);
-        //floorOffset += Vector3.down * 100f;
-        foreach(GameObject playerUnit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit)){
-            playerUnit.transform.position = transform.position + Vector3.up *5 + floorOffset;
+        yield return null;
+        currentFloorIndex++;
+        GameObject[] units = FindObjectsOfType<PlayerGhost>().Select(g => g.unit).ToArray();
+        if (currentFloorIndex >= currentMap.floors.Length)
+        {
+            foreach (GameObject playerUnit in units)
+            {
+                Destroy(playerUnit);
+                FindObjectOfType<Atlas>().disembark();
+            }
         }
-        yield return buildGridRoutine();
+        else
+        {
+            foreach (GameObject playerUnit in units)
+            {
+                playerUnit.transform.position = transform.position + Vector3.up * 5 + floorOffset;
+                playerUnit.SetActive(false);
+            }
+
+            yield return buildGridRoutine();
+            foreach (GameObject playerUnit in units)
+            {
+
+                playerUnit.SetActive(true);
+            }
+        }
         
+
     }
 
     public IEnumerator buildMap(Map m)
     {
         currentFloorScale = Power.scale(m.power);
-        spawner.setSpawnPower(m.power);     
+        currentMap = m;
+        currentFloorIndex = 0;
+        spawner.setSpawnPower(m.power);
         yield return buildGridRoutine();
     }
 
 
     IEnumerator buildGridRoutine()
     {
-        
+
         currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
         spawner.setFloor(currentFloor.transform);
         currentFloor.GetComponent<ClientAdoption>().parent = gameObject;
@@ -114,7 +140,7 @@ public class MapGenerator : NetworkBehaviour
         };
 
         processDelta(buildTile(getTilePrefab(tilesPre.ToList()).prefab, new TilePlacement { position = currentFloor.transform.position, rotation = Quaternion.identity }));
-        int tileCount = tilesPerFloor - 1;
+        int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
             //TODO Make level more linear
@@ -189,7 +215,7 @@ public class MapGenerator : NetworkBehaviour
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);
         tiles.RemoveAt(0);
-        yield return spawner.spawnLevel(tiles);
+        yield return spawner.spawnLevel(tiles, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
     }
     void buildPathStitch(GameObject door)
     {

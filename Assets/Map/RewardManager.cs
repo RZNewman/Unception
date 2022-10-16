@@ -59,7 +59,7 @@ public class RewardManager : MonoBehaviour
     public readonly static float itemsPerPack = 2f;
 
     readonly static int mapsPerFalloff = 16;
-    readonly static float floorsPerMap = 2f;
+    
     readonly static float clearPercent = 0.65f;
 
     //the percent increase in power to create a scale change equal to the % increase of the highest quality
@@ -67,9 +67,9 @@ public class RewardManager : MonoBehaviour
     //~1.56
     readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
     //the XP rate is directly calulated from the desired falloff speed
-    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / floorsPerMap / (Atlas.avgPacksPerFloor * clearPercent);
+    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / Atlas.avgFloorsPerMap / (Atlas.avgPacksPerFloor * clearPercent);
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * floorsPerMap * Atlas.avgPacksPerFloor * clearPercent);
+    public static readonly float uncommonChance = 4f / (itemsPerPack * Atlas.avgFloorsPerMap * Atlas.avgPacksPerFloor * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
 
 }

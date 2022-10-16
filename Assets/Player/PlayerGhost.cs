@@ -54,9 +54,9 @@ public class PlayerGhost : NetworkBehaviour
     [Server]
     IEnumerator embarkRoutine(int mapIndex)
     {
-        MapGenerator gen = FindObjectOfType<MapGenerator>();
+        
         Atlas atlas = FindObjectOfType<Atlas>();
-        yield return gen.buildMap(atlas.getMap(mapIndex));
+        yield return atlas.embarkServer(mapIndex);
 
         Inventory inv = GetComponent<Inventory>();
         GameObject u = Instantiate(unitPre);
@@ -65,6 +65,7 @@ public class PlayerGhost : NetworkBehaviour
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
         u.GetComponent<AbiltyList>().addAbility(inv.equipped);
+        u.GetComponent<LifeManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
         currentSelf = u;
 
@@ -75,6 +76,22 @@ public class PlayerGhost : NetworkBehaviour
     void TargetGameplayMenu(NetworkConnection conn)
     {
         FindObjectOfType<MenuHandler>().spawn();
+    }
+    [TargetRpc]
+    public void TargetMainMenu(NetworkConnection conn)
+    {
+        FindObjectOfType<MenuHandler>().mainMenu();
+    }
+
+    [Server]
+    void onUnitDeath()
+    {
+        //TODO coroutine
+        Atlas atlas = FindObjectOfType<Atlas>();
+        if (atlas.embarked)
+        {
+            atlas.disembark(true);
+        }
     }
 
     public GameObject unit

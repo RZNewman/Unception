@@ -11,7 +11,7 @@ public class MonsterSpawn : NetworkBehaviour
     public GameObject PackPre;
     public GameObject UrnPre;
 
-    
+
 
     List<UnitData> monsterProps = new List<UnitData>();
 
@@ -29,7 +29,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     static int maxPackSize = 8;
 
-    float difficultyMultiplier = 1f;
+    //float difficultyMultiplier = 1f;
     struct UnitData
     {
         public float power;
@@ -49,7 +49,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
         public static Difficulty fromTotal(float difficulty)
         {
-            float[] split = generateRandomValues(2,1).Select(v =>v.val).ToArray();
+            float[] split = generateRandomValues(2, 1).Select(v => v.val).ToArray();
             float sum = split.Sum();
             return new Difficulty
             {
@@ -71,23 +71,29 @@ public class MonsterSpawn : NetworkBehaviour
         public float poolCost;
     }
 
-    public IEnumerator spawnLevel(List<GameObject> tiles)
+    public IEnumerator spawnLevel(List<GameObject> tiles, int packCount, Difficulty baseDiff)
     {
-        int packNumber = Atlas.avgPacksPerFloor;
-        float difficultyRange = (difficultyMultiplier - 1) / 2;
-        List<float> packs = new List<float>();
-        for (int i = 0; i < packNumber; i++)
+        
+        List<Difficulty> packs = new List<Difficulty>();
+        for (int i = 0; i < packCount; i++)
         {
-            packs.Add(Mathf.Lerp(difficultyMultiplier - difficultyRange, difficultyMultiplier + difficultyRange, i / (packNumber - 1)));
+            float packRange = baseDiff.pack / 2;
+            float veteranRange = baseDiff.veteran / 2;
+            packs.Add(new Difficulty
+            {
+                pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, i / (packCount - 1)),
+                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, i / (packCount - 1))
+            });
+            
         }
 
 
         List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Zones()).SelectMany(z => z).ToList();
 
-        for (int i = 0; i < packNumber; i++)
+        for (int i = 0; i < packCount; i++)
         {
             int p = packs.RandomIndex();
-            float diffi = packs[p];
+            Difficulty packDifficulty = packs[p];
             packs.RemoveAt(p);
 
             //TODO bigger rooms can have more packs?
@@ -95,11 +101,7 @@ public class MonsterSpawn : NetworkBehaviour
             GameObject zone = zones[z];
             zones.RemoveAt(z);
 
-            spawnCreatures(zone.transform, new Difficulty
-            {
-                pack = diffi - 1,
-                veteran = diffi - 1,
-            });
+            spawnCreatures(zone.transform, packDifficulty);
             yield return null;
         }
 
@@ -446,10 +448,7 @@ public class MonsterSpawn : NetworkBehaviour
             }
         }
     }
-    public void upDifficulty()
-    {
-        difficultyMultiplier *= 1.2f;
-    }
+
 
     UnitData createType(float power)
     {

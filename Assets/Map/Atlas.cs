@@ -8,6 +8,7 @@ using static MonsterSpawn;
 public class Atlas : NetworkBehaviour
 {
     public static readonly int avgPacksPerFloor = 30;
+    public readonly static float avgFloorsPerMap = 2f;
     public static readonly float difficultyRange = 1;
 
     public RectTransform mapImage;
@@ -39,10 +40,6 @@ public class Atlas : NetworkBehaviour
         public int tiles;
     }
 
-    public Map getMap(int index)
-    {
-        return list.maps[index];
-    }
 
     public void makeMaps()
     {
@@ -70,6 +67,15 @@ public class Atlas : NetworkBehaviour
             marker.GetComponent<UiMapMarker>().init(this, m);
         }
     }
+    void clearMapMarkers()
+    {
+        selectedMap = null;
+        displayMap = null;
+        foreach (Transform child in mapImage.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
 
     void hookMaps(MapListing old, MapListing neww){
         createMapMarkers();
@@ -83,12 +89,22 @@ public class Atlas : NetworkBehaviour
         for (int i = 0; i < mapsToGen; i++)
         {
             float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, (float)i / (mapsToGen - 1));
+            int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
+            Floor[] floors = new Floor[floorCount];
+            for(int j =0; j< floorCount; j++)
+            {
+                floors[j] = new Floor { 
+                    packs = avgPacksPerFloor, 
+                    tiles = avgPacksPerFloor + 10 
+                };    
+            }
+
             mapsGen[i] = new Map
             {
                 index = i,
                 power = power,
                 difficulty = Difficulty.fromTotal(currentDifficulty),
-                floors = new Floor[] { new Floor { packs = avgPacksPerFloor, tiles = avgPacksPerFloor + 10 } },
+                floors = floors,
                 visualLocation = new Vector2(Random.value, Random.value),
             };
         }
@@ -135,6 +151,40 @@ public class Atlas : NetworkBehaviour
     {
         embarkButton.interactable = false;
         gp.player.embark(selectedMap.getMap().index);
+    }
+    //Server
+    bool onMission = false;
+    public bool embarked
+    {
+        get
+        {
+            return onMission;
+        }
+    }
+    [Server]
+    public IEnumerator embarkServer(int index)
+    {
+        onMission = true;
+        MapGenerator gen = FindObjectOfType<MapGenerator>();
+        yield return gen.buildMap(list.maps[index]);
+    }
+
+    [Server]
+    public void disembark(bool needsMapDestroyed =false)
+    {
+        onMission = false;
+        if (needsMapDestroyed)
+        {
+            FindObjectOfType<MapGenerator>().destroyFloor();
+        }
+        clearMapMarkers();
+        makeMaps();
+        foreach(Inventory inv in FindObjectsOfType<Inventory>())
+        {
+            inv.syncInventoryUpwards();
+        }
+        //TODO all
+        gp.player.TargetMainMenu(gp.player.connectionToClient);
     }
 
 

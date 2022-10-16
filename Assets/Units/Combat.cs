@@ -54,7 +54,11 @@ public class Combat : NetworkBehaviour
         foreach (GameObject other in active)
         {
             active.Remove(other);
-            other.GetComponent<Combat>().removeTarget(gameObject);
+            if (other)
+            {
+                other.GetComponent<Combat>().removeTarget(gameObject);
+            }
+            
         }
     }
     void removeTarget(GameObject other)

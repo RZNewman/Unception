@@ -115,8 +115,14 @@ public class Inventory : NetworkBehaviour
     [Command]
     void CmdSyncInventory()
     {
+        syncInventoryUpwards();
+    }
+    [Server]
+    public void syncInventoryUpwards()
+    {
         TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
     }
+
     [TargetRpc]
     void TargetSyncInventory(NetworkConnection conn, AttackBlock[] blocks)
     {

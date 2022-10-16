@@ -6,10 +6,12 @@
 [Bb]uilds/
 [Bb]uilds.app/
 Assets/AssetStoreTools*
-Assets/ExternalPackage/HEROIC FANTASY CREATURES FULL PACK VOL 1/**
 Assets/ExternalPackage/PolygonDungeon/**
 [Bb]uild*.zip
 [Uu]ser[Ss]ettings/
+
+#Firebase
+google-services.json*
 
 # Visual Studio cache directory
 .vs/

@@ -7,12 +7,15 @@
 [Bb]uilds.app/
 Assets/AssetStoreTools*
 Assets/ExternalPackage/PolygonDungeon/**
-Assets/ExternalPackage/Firebase Packs/**
 [Bb]uild*.zip
 [Uu]ser[Ss]ettings/
 
 #Firebase
 google-services.json*
+Assets/ExternalPackage/Firebase Packs/**
+Assets/ExternalDependencyManager/**
+Assets/Firebase/**
+Assets/Parse/**
 
 # Visual Studio cache directory
 .vs/

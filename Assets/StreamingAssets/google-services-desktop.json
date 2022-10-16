@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "606748410495",
+    "project_id": "ascensiontogodhood",
+    "storage_bucket": "ascensiontogodhood.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606748410495:android:b2a026f2ef02f29b8a754a",
+        "android_client_info": {
+          "package_name": "com.log.ascension"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606748410495-ruouuvu9if342djdc3pr3fbahqnpba5p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA18HJOeK0qozm-wPoc3q0EzM0CihlIblM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606748410495-ruouuvu9if342djdc3pr3fbahqnpba5p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

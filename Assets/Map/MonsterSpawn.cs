@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-
+using static GenerateValues;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -12,7 +11,7 @@ public class MonsterSpawn : NetworkBehaviour
     public GameObject PackPre;
     public GameObject UrnPre;
 
-    public static readonly int packsPerFloor = 30;
+    
 
     List<UnitData> monsterProps = new List<UnitData>();
 
@@ -37,7 +36,7 @@ public class MonsterSpawn : NetworkBehaviour
         public UnitProperties props;
         public List<AttackBlock> abilitites;
     }
-    struct Difficulty
+    public struct Difficulty
     {
         public float pack;
         public float veteran;
@@ -47,6 +46,16 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 return veteran + pack;
             }
+        }
+        public static Difficulty fromTotal(float difficulty)
+        {
+            float[] split = generateRandomValues(2,1).Select(v =>v.val).ToArray();
+            float sum = split.Sum();
+            return new Difficulty
+            {
+                pack = split[0] * difficulty / sum,
+                veteran = split[1] * difficulty / sum,
+            };
         }
     }
     struct SpawnPack
@@ -64,17 +73,18 @@ public class MonsterSpawn : NetworkBehaviour
 
     public IEnumerator spawnLevel(List<GameObject> tiles)
     {
+        int packNumber = Atlas.avgPacksPerFloor;
         float difficultyRange = (difficultyMultiplier - 1) / 2;
         List<float> packs = new List<float>();
-        for (int i = 0; i < packsPerFloor; i++)
+        for (int i = 0; i < packNumber; i++)
         {
-            packs.Add(Mathf.Lerp(difficultyMultiplier - difficultyRange, difficultyMultiplier + difficultyRange, i / (packsPerFloor - 1)));
+            packs.Add(Mathf.Lerp(difficultyMultiplier - difficultyRange, difficultyMultiplier + difficultyRange, i / (packNumber - 1)));
         }
 
 
         List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Zones()).SelectMany(z => z).ToList();
 
-        for (int i = 0; i < packsPerFloor; i++)
+        for (int i = 0; i < packNumber; i++)
         {
             int p = packs.RandomIndex();
             float diffi = packs[p];

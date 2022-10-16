@@ -9,6 +9,7 @@ public class PlayerGhost : NetworkBehaviour
 
     public int attacksToGenerate = 4;
 
+    [SyncVar]
     GameObject currentSelf;
 
     [SyncVar]
@@ -26,6 +27,10 @@ public class PlayerGhost : NetworkBehaviour
 
 
         }
+        if (isServer)
+        {
+            FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
+        }
     }
     public float power
     {
@@ -35,16 +40,25 @@ public class PlayerGhost : NetworkBehaviour
         }
     }
 
-    public void spawnPlayer()
+    public void embark(int mapIndex)
     {
-        CmdAddPlayer();
+        CmdEmbark(mapIndex);
     }
 
     [Command]
-    void CmdAddPlayer()
+    void CmdEmbark(int mapIndex)
     {
-        Inventory inv = GetComponent<Inventory>();
+        StartCoroutine(embarkRoutine(mapIndex));
+    }
 
+    [Server]
+    IEnumerator embarkRoutine(int mapIndex)
+    {
+        MapGenerator gen = FindObjectOfType<MapGenerator>();
+        Atlas atlas = FindObjectOfType<Atlas>();
+        yield return gen.buildMap(atlas.getMap(mapIndex));
+
+        Inventory inv = GetComponent<Inventory>();
         GameObject u = Instantiate(unitPre);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower);
@@ -52,12 +66,20 @@ public class PlayerGhost : NetworkBehaviour
         u.GetComponent<Reward>().setInventory(inv);
         u.GetComponent<AbiltyList>().addAbility(inv.equipped);
         NetworkServer.Spawn(u, connectionToClient);
+        currentSelf = u;
+
+        TargetGameplayMenu(connectionToClient);
+    }
+
+    [TargetRpc]
+    void TargetGameplayMenu(NetworkConnection conn)
+    {
+        FindObjectOfType<MenuHandler>().spawn();
     }
 
     public GameObject unit
     {
         get { return currentSelf; }
-        set { currentSelf = value; }
     }
 
     [Server]

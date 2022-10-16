@@ -78,6 +78,7 @@ public static class GenerateHit
                     {
                         type = HitType.Projectile,
                         powerByStrength = input.powerByStrength,
+                        powerAtGen = input.powerAtGen,
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,
@@ -93,6 +94,7 @@ public static class GenerateHit
                     {
                         type = HitType.Ground,
                         powerByStrength = input.powerByStrength,
+                        powerAtGen = input.powerAtGen,  
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,

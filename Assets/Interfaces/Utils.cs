@@ -36,6 +36,10 @@ public static class Utils
         value = Mathf.Clamp01(value);
         return min + (max - min) * value;
     }
+    public static string asPercent(this float value)
+    {
+        return Mathf.Round( value*1000) /10 + "%";
+    }
     public static List<GameObject> ChildrenWithTag(this GameObject o, string tag)
     {
         List<GameObject> targets = new List<GameObject>();

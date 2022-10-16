@@ -67,9 +67,9 @@ public class RewardManager : MonoBehaviour
     //~1.56
     readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
     //the XP rate is directly calulated from the desired falloff speed
-    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / floorsPerMap / (MonsterSpawn.packsPerFloor * clearPercent);
+    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / floorsPerMap / (Atlas.avgPacksPerFloor * clearPercent);
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * floorsPerMap * MonsterSpawn.packsPerFloor * clearPercent);
+    public static readonly float uncommonChance = 4f / (itemsPerPack * floorsPerMap * Atlas.avgPacksPerFloor * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
 
 }

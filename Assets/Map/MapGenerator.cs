@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using static Atlas;
 using static Utils;
 
 public class MapGenerator : NetworkBehaviour
@@ -17,11 +18,9 @@ public class MapGenerator : NetworkBehaviour
 
     public int tilesPerFloor = 30;
     float currentFloorScale = 1f;
-    float currentFloorPower;
 
 
     GameObject currentFloor;
-    GameObject lastFloor;
 
     Vector3 floorOffset = Vector3.zero;
 
@@ -44,7 +43,6 @@ public class MapGenerator : NetworkBehaviour
         if (isServer)
         {
             spawner = GetComponent<MonsterSpawn>();
-            buildNewLevel(transform.position, 1000);
         }
 
     }
@@ -64,36 +62,35 @@ public class MapGenerator : NetworkBehaviour
         return weights;
     }
 
-    public void endOfLevel(Vector3 worldPos, float power)
+    public void endFloor()
     {
+        StartCoroutine(endFloorRoutine());
+    }
+
+    IEnumerator endFloorRoutine()
+    {
+        yield return new WaitForSecondsRealtime(1f);
         spawner.upDifficulty();
-        buildNewLevel(worldPos, power);
+        Destroy(currentFloor);
+        //floorOffset += Vector3.down * 100f;
+        foreach(GameObject playerUnit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit)){
+            playerUnit.transform.position = transform.position + Vector3.up *5 + floorOffset;
+        }
+        yield return buildGridRoutine();
+        
     }
 
-    void buildNewLevel(Vector3 worldPos, float power)
+    public IEnumerator buildMap(Map m)
     {
-        currentFloorPower = power;
-        currentFloorScale = Power.scale(power);
-        spawner.setSpawnPower(power);
-
-        lastFloor = currentFloor;
-        floorOffset = worldPos - transform.position;
-        buildGrid();
-    }
-    public void cleanupLevel()
-    {
-        Destroy(lastFloor);
-    }
-
-    void buildGrid()
-    {
-        StartCoroutine(buildGridRoutine());
+        currentFloorScale = Power.scale(m.power);
+        spawner.setSpawnPower(m.power);     
+        yield return buildGridRoutine();
     }
 
 
     IEnumerator buildGridRoutine()
     {
-
+        
         currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
         spawner.setFloor(currentFloor.transform);
         currentFloor.GetComponent<ClientAdoption>().parent = gameObject;

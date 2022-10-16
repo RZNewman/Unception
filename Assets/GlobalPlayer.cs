@@ -4,7 +4,27 @@ using UnityEngine;
 
 public class GlobalPlayer : MonoBehaviour
 {
+    PlayerGhost serverOwnerPlayer;
+
+    public void setServerPlayer(PlayerGhost player)
+    {
+        if(serverOwnerPlayer == null)
+        {
+            serverOwnerPlayer = player;
+            FindObjectOfType<Atlas>(true).makeMaps();
+        }
+        
+    }
+    public PlayerGhost serverPlayer
+    {
+        get { return serverOwnerPlayer; }
+    }
+
+
+
     PlayerGhost clientLocalPlayer;
+
+    
     public void setLocalPlayer(PlayerGhost player)
     {
         clientLocalPlayer = player;
@@ -26,10 +46,6 @@ public class GlobalPlayer : MonoBehaviour
         get { return clientLocalPlayer.power; }
     }
 
-    public void setLocalUnit(GameObject u)
-    {
-        clientLocalPlayer.unit = u;
-    }
     public float localStunThreat
     {
         get

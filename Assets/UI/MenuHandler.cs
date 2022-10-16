@@ -7,12 +7,14 @@ public class MenuHandler : MonoBehaviour
     public GameObject main;
     public GameObject gameplay;
     public GameObject loadout;
+    public GameObject stageSelect;
     // Start is called before the first frame update
     void Start()
     {
         gameplay.SetActive(false);
         main.SetActive(false);
         loadout.SetActive(false);
+        stageSelect.SetActive(false);
     }
 
     public void clientMenu()
@@ -24,6 +26,11 @@ public class MenuHandler : MonoBehaviour
     public void spawn()
     {
         switchMenu(gameplay);
+    }
+
+    public void stageMenu()
+    {
+        switchMenu(stageSelect);
     }
 
     public void loadoutMenu()

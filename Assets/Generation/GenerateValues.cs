@@ -12,13 +12,13 @@ public static class GenerateValues
         public float equivalence;
     }
 
-    public static Value[] generateRandomValues(int valueCount)
+    public static Value[] generateRandomValues(int valueCount, float balance = 2)
     {
-        return generateRandomValues(Enumerable.Repeat(1f, valueCount).ToArray());
+        return generateRandomValues(Enumerable.Repeat(1f, valueCount).ToArray(), balance);
     }
 
 
-    public static Value[] generateRandomValues(float[] worths)
+    public static Value[] generateRandomValues(float[] worths, float balance = 2)
     {
         int valueCount = worths.Length;
         Value[] values = new Value[valueCount];
@@ -80,15 +80,16 @@ public static class GenerateValues
                 drain = element;
             }
 
-            values = transfer(values, boost, drain);
+            values = transfer(values, boost, drain, 0, balance);
         }
 
 
         return values;
     }
-    static Value[] transfer(Value[] values, int drain, int boost, float minTranserFactor = 0.0f)
+
+    static Value[] transfer(Value[] values, int drain, int boost, float minTranserFactor = 0.0f, float balance =2)
     {
-        float transferFactor = GaussRandomDecline().asRange(minTranserFactor,1.0f);
+        float transferFactor = GaussRandomDecline(balance).asRange(minTranserFactor,1.0f);
         float ratio = values[drain].equivalence / values[boost].equivalence;
         float maxTransfer = Mathf.Min(
             worth(values[drain]),

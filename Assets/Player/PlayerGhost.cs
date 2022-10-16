@@ -83,12 +83,12 @@ public class PlayerGhost : NetworkBehaviour
         FindObjectOfType<MenuHandler>().mainMenu();
     }
 
-    [Server]
+    //server
     void onUnitDeath()
     {
         //TODO coroutine
         Atlas atlas = FindObjectOfType<Atlas>();
-        if (atlas.embarked)
+        if (atlas && atlas.embarked)
         {
             atlas.disembark(true);
         }

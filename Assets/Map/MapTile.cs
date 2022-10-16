@@ -16,4 +16,9 @@ public class MapTile : MonoBehaviour
     {
         return gameObject.ChildrenWithTag("MapTile");
     }
+
+    public List<GameObject> Spawns()
+    {
+        return gameObject.ChildrenWithTag("Spawn");
+    }
 }

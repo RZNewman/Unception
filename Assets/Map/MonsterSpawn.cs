@@ -88,7 +88,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
 
 
-        List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Zones()).SelectMany(z => z).ToList();
+        List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Spawns()).SelectMany(z => z).ToList();
 
         for (int i = 0; i < packCount; i++)
         {
@@ -113,15 +113,16 @@ public class MonsterSpawn : NetworkBehaviour
             GameObject zone = zones[z];
             zones.RemoveAt(z);
             bool isChest = i == 0;
-            spawnBreakables(zone.transform, isChest);
+            spawnBreakables(zone.transform, isChest, baseDiff.total);
             yield return null;
         }
     }
 
-    void spawnBreakables(Transform spawn, bool isChest)
+    void spawnBreakables(Transform spawn, bool isChest ,float totalDifficulty)
     {
-        int numberBreakables = isChest ? 1 : Random.Range(2, 6);
-        float packPercent = isChest ? 10 : 0.8f;
+        float diffMult = totalDifficulty + 1;
+        int numberBreakables = isChest ? 1 : Random.Range(3, 6);
+        float packPercent = (isChest ? 5 : 0.5f) *diffMult;
         Vector3 halfSize = spawn.lossyScale / 2;
         for (int j = 0; j < numberBreakables; j++)
         {

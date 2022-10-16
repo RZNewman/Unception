@@ -8,6 +8,7 @@ TagManager:
   - LocalAbilityBar
   - DoorLocation
   - MapTile
+  - Spawn
   layers:
   - Default
   - TransparentFX
@@ -25,7 +26,7 @@ TagManager:
   - MapTile
   - Items
   - Breakables
-  - 
+  - Spawn
   - 
   - 
   - 

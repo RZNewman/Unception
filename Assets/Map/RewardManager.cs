@@ -53,7 +53,7 @@ public class RewardManager : MonoBehaviour
 
     public static float qualityPercent(Quality q)
     {
-        return Mathf.Lerp(1, itemQualityPercent, ((int)q) / ((int)Quality.Legendary));
+        return Mathf.Lerp(1, itemQualityPercent, ((float)q) / ((float)Quality.Legendary));
     }
 
     public readonly static float itemsPerPack = 2f;

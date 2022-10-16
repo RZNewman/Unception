@@ -302,7 +302,7 @@ public class MapGenerator : NetworkBehaviour
         List<GameObject> zonesPre = tilePrefab.GetComponent<MapTile>().Zones();
         foreach (GameObject zone in zonesPre)
         {
-            if (Physics.OverlapBox(position + rotation * zone.transform.position * currentFloorScale, zone.transform.lossyScale * 0.5f * 0.99f * currentFloorScale, rotation * zone.transform.rotation, LayerMask.GetMask("MapTile")).Length > 0)
+            if (Physics.OverlapBox(position + rotation * zone.transform.position * currentFloorScale, (zone.transform.lossyScale * 0.5f * 0.99f + new Vector3(0,2,0)) * currentFloorScale, rotation * zone.transform.rotation, LayerMask.GetMask("MapTile")).Length > 0)
             {
                 return false;
             }

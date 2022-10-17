@@ -105,6 +105,13 @@ public class PlayerGhost : NetworkBehaviour
         playerPower = p.power;
     }
 
+    [Server]
+    public void setPower(float p)
+    {
+        Debug.Log(p);
+        playerPower = p;
+    }
+
     [Command]
     void CmdAddClient()
     {

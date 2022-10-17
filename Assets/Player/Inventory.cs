@@ -5,6 +5,7 @@ using Mirror;
 using System.Linq;
 using static RewardManager;
 using Castle.Core.Internal;
+using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {
@@ -34,13 +35,28 @@ public class Inventory : NetworkBehaviour
             pityQuality.addCategory(Quality.Epic, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 2));
             pityQuality.addCategory(Quality.Legendary, uncChance * Mathf.Pow(RewardManager.qualityRarityFactor, 3));
 
-            for (int i = 0; i < 40; i++)
-            {
-                abilitiesSync.Add(GenerateAttack.generate(player.power, i == 0, Quality.Common));
-            }
-            TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
+            
+            
         }
     }
+    [Server]
+    public void reloadItems(AttackBlock[] items)
+    {
+        abilitiesSync = items.ToList();
+        genMinItems();
+        TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
+    }
+    [Server]
+    public void genMinItems()
+    {
+        for (int i = abilitiesSync.Count; i < 4; i++)
+        {
+            AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
+            abilitiesSync.Add(item);
+            save.saveItem(item);
+        }
+    }
+
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)
     {

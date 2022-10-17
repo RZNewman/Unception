@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4895931606778664107}
   - component: {fileID: 7000768081665988950}
   - component: {fileID: -2798358723677041292}
+  - component: {fileID: 2971244993083978270}
   m_Layer: 0
   m_Name: Player Ghost
   m_TagString: Untagged
@@ -137,3 +138,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96a0cbdc89ad41b489bc976135980b2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2971244993083978270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8767541107825051027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77088b2772ead14ca45311a42b4f9df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1

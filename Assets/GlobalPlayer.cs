@@ -11,7 +11,7 @@ public class GlobalPlayer : MonoBehaviour
         if(serverOwnerPlayer == null)
         {
             serverOwnerPlayer = player;
-            FindObjectOfType<Atlas>(true).makeMaps();
+            
         }
         
     }

@@ -1,5 +1,9 @@
 using Mirror;
+using static GenerateHit;
+using UnityEngine;
 using static SystemClassWriters;
+using static GenerateWind;
+using static GenerateDash;
 
 public static class SystemClassReaders
 {
@@ -37,35 +41,32 @@ public static class SystemClassReaders
         switch (c)
         {
             case GenerationDataClass.Hit:
-                return new GenerateHit.HitGenerationData
-                {
-                    strengthFactor = strengthFactor,
-                    type = reader.ReadHitType(),
-                    length = reader.ReadFloat(),
-                    width = reader.ReadFloat(),
-                    knockback = reader.ReadFloat(),
-                    damageMult = reader.ReadFloat(),
-                    stagger = reader.ReadFloat(),
-                    knockBackType = reader.ReadKnockBackType(),
-                    knockBackDirection = reader.ReadKnockBackDirection(),
-                    knockUp = reader.ReadFloat(),
-                };
+                HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
+                hit.strengthFactor = strengthFactor;
+                hit.type = reader.ReadHitType();
+                hit.length = reader.ReadFloat();
+                hit.width = reader.ReadFloat();
+                hit.knockback = reader.ReadFloat();
+                hit.damageMult = reader.ReadFloat();
+                hit.stagger = reader.ReadFloat();
+                hit.knockBackType = reader.ReadKnockBackType();
+                hit.knockBackDirection = reader.ReadKnockBackDirection();
+                hit.knockUp = reader.ReadFloat();
+                return hit;
             case GenerationDataClass.Wind:
-                return new GenerateWind.WindGenerationData
-                {
-                    strengthFactor = strengthFactor,
-                    duration = reader.ReadFloat(),
-                    moveMult = reader.ReadFloat(),
-                    turnMult = reader.ReadFloat(),
-                };
+                WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
+                wind.strengthFactor = strengthFactor;
+                wind.duration = reader.ReadFloat();
+                wind.moveMult = reader.ReadFloat();
+                wind.turnMult = reader.ReadFloat();
+                return wind;
             case GenerationDataClass.Dash:
-                return new GenerateDash.DashGenerationData
-                {
-                    strengthFactor = strengthFactor,
-                    speed = reader.ReadFloat(),
-                    distance = reader.ReadFloat(),
-                    control = reader.ReadDashControl(),
-                };
+                DashGenerationData dash = ScriptableObject.CreateInstance<DashGenerationData>();
+                dash.strengthFactor = strengthFactor;
+                dash.speed = reader.ReadFloat();
+                dash.distance = reader.ReadFloat();
+                dash.control = reader.ReadDashControl();
+                return dash;
             default:
                 return null;
         }

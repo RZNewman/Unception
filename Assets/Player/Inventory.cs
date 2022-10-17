@@ -13,6 +13,7 @@ public class Inventory : NetworkBehaviour
     List<AttackBlockFilled> abilities = new List<AttackBlockFilled>();
 
     PlayerGhost player;
+    SaveData save;
 
     int[] equippedIndices = new int[] { 0, 1, 2, 3 };
 
@@ -22,6 +23,7 @@ public class Inventory : NetworkBehaviour
     {
         player = GetComponent<PlayerGhost>();
         itemPre = GameObject.FindObjectOfType<GlobalPrefab>().ItemDropPre;
+        save = GetComponent<SaveData>();
 
         if (isServer)
         {
@@ -43,6 +45,7 @@ public class Inventory : NetworkBehaviour
     public void AddItem(AttackBlock item, Vector3 otherPosition)
     {
         abilitiesSync.Add(item);
+        save.saveItem(item);
         TargetDropItem(connectionToClient, item, otherPosition);
     }
 

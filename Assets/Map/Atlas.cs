@@ -182,9 +182,9 @@ public class Atlas : NetworkBehaviour
         foreach(Inventory inv in FindObjectsOfType<Inventory>())
         {
             inv.syncInventoryUpwards();
+            inv.GetComponent<PlayerGhost>().TargetMainMenu(inv.connectionToClient);
         }
-        //TODO all
-        gp.player.TargetMainMenu(gp.player.connectionToClient);
+
     }
 
 

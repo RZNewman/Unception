@@ -12,9 +12,10 @@ using static Cast;
 using static RewardManager;
 using UnityEditor.PackageManager.UI;
 
+
 public static class GenerateAttack
 {
-    public abstract class GenerationData
+    public abstract class GenerationData :ScriptableObject
     {
         public float strengthFactor = 1;
         public abstract InstanceData populate(float power, float strength);
@@ -81,13 +82,14 @@ public static class GenerateAttack
         }
 
     }
+    [System.Serializable]
     public struct AttackFlair
     {
         public string name;
         public Color color;
         public int symbol;
     }
-
+    [System.Serializable]
     public struct AttackGenerationData
     {
         public GenerationData[] stages;
@@ -199,6 +201,8 @@ public static class GenerateAttack
         //Debug.Log(System.String.Join("---", segments.Select(s => System.String.Join(" ", s.stages.Select(j => j.ToString()).ToArray())).ToArray()));
         return segments;
     }
+
+
 
     public static AttackBlock generate(float power, bool noCooldown, Quality quality = Quality.Common)
     {

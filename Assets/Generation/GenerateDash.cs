@@ -5,6 +5,7 @@ using static AiHandler;
 using static Cast;
 using static GenerateAttack;
 using static GenerateValues;
+using static GenerateWind;
 using static WindState;
 
 public static class GenerateDash
@@ -69,11 +70,11 @@ public static class GenerateDash
             control = DashControl.Backward;
         }
 
-        return new DashGenerationData
-        {
-            distance = typeValues[0].val,
-            speed = typeValues[1].val,
-            control = control,
-        };
+        DashGenerationData dash = ScriptableObject.CreateInstance<DashGenerationData>();
+        dash.distance = typeValues[0].val;
+        dash.speed = typeValues[1].val;
+        dash.control = control;
+
+        return dash;
     }
 }

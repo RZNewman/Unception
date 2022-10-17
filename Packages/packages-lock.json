@@ -87,6 +87,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "jillejr.newtonsoft.json-for-unity.converters": {
+      "version": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.Converters.git#1.5.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3bb295d659b067aecbf099ac793fc95218c17a21"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

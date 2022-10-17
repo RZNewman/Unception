@@ -16,6 +16,7 @@ Assets/ExternalPackage/Firebase Packs/**
 Assets/ExternalDependencyManager/**
 Assets/Firebase/**
 Assets/Parse/**
+Assets/StreamingAssets/**
 
 # Visual Studio cache directory
 .vs/
@@ -48,3 +49,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+

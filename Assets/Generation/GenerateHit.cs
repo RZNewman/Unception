@@ -194,17 +194,16 @@ public static class GenerateHit
             kbDir = KnockBackDirection.Backward;
         }
 
-        HitGenerationData hit = new HitGenerationData
-        {
-            length = typeValues[0].val,
-            width = typeValues[1].val,
-            knockback = typeValues[2].val,
-            damageMult = typeValues[3].val,
-            stagger = typeValues[4].val,
-            knockBackType = kbType,
-            knockBackDirection = kbDir,
-            type = t
-        };
+        HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
+        hit.length = typeValues[0].val;
+        hit.width = typeValues[1].val;
+        hit.knockback = typeValues[2].val;
+        hit.damageMult = typeValues[3].val;
+        hit.stagger = typeValues[4].val;
+        hit.knockBackType = kbType;
+        hit.knockBackDirection = kbDir;
+        hit.type = t;
+        
         hit = augmentHit(hit, augments, typeValues);
 
         return hit;

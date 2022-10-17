@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Cast;
 using static GenerateAttack;
+using static GenerateHit;
 using static Utils;
 using static WindState;
 
@@ -41,11 +42,10 @@ public static class GenerateWind
     }
     public static WindGenerationData createWind(float durrationLimit = 1.0f)
     {
-        return new WindGenerationData
-        {
-            duration = GaussRandomDecline(6) * durrationLimit,
-            moveMult = GaussRandomDecline(3),
-            turnMult = GaussRandomDecline(3),
-        };
+        WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
+        wind.duration = GaussRandomDecline(6) * durrationLimit;
+        wind.moveMult = GaussRandomDecline(3);
+        wind.turnMult = GaussRandomDecline(3);
+        return wind;
     }
 }

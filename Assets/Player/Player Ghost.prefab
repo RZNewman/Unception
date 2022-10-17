@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5828234847383484892}
   - component: {fileID: 4895931606778664107}
   - component: {fileID: 7000768081665988950}
+  - component: {fileID: -2798358723677041292}
   m_Layer: 0
   m_Name: Player Ghost
   m_TagString: Untagged
@@ -124,3 +125,15 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &-2798358723677041292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8767541107825051027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96a0cbdc89ad41b489bc976135980b2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

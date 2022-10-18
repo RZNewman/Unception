@@ -61,8 +61,58 @@ public class SaveData : NetworkBehaviour
     {
         Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
         Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
+        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();
 
-        while(!items.IsFaulted && !items.IsCompleted && !items.IsCanceled)
+        while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
+        {
+            yield return null;
+        }
+
+
+        if (power.IsFaulted)
+        {
+            Debug.LogError("Error loading power");
+        }
+        else if (power.IsCompleted)
+        {
+            DataSnapshot snapshot = power.Result;
+            if (snapshot.Exists)
+            {
+                player.setPower(Convert.ToSingle(snapshot.Value));
+            }
+
+            if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
+            {
+                FindObjectOfType<Atlas>(true).makeMaps();
+            }
+
+        }
+
+        while (!pity.IsFaulted && !pity.IsCompleted && !pity.IsCanceled)
+        {
+            yield return null;
+        }
+
+
+        if (pity.IsFaulted)
+        {
+            Debug.LogError("Error loading pity");
+        }
+        else if (pity.IsCompleted)
+        {
+            DataSnapshot snapshot = pity.Result;
+            if (snapshot.Exists)
+            {
+                inv.loadPity(JsonConvert.DeserializeObject<Dictionary<string,float>>( snapshot.GetRawJsonValue()));
+            }
+            else
+            {
+                inv.createBasePity();
+            }
+
+        }
+
+        while (!items.IsFaulted && !items.IsCompleted && !items.IsCanceled)
         {
             yield return null;
         }
@@ -86,30 +136,7 @@ public class SaveData : NetworkBehaviour
             }
         }
 
-        while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
-        {
-            yield return null;
-        }
- 
-
-        if (power.IsFaulted)
-        {
-            Debug.LogError("Error loading power");
-        }
-        else if (power.IsCompleted)
-        {
-            DataSnapshot snapshot = power.Result;
-            if (snapshot.Exists)
-            {
-                player.setPower(Convert.ToSingle( snapshot.Value));
-            }
-
-            if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
-            {
-                FindObjectOfType<Atlas>(true).makeMaps();
-            }
-
-        }
+        
 
         
     }
@@ -119,6 +146,7 @@ public class SaveData : NetworkBehaviour
         if (isServer)
         {
             db.Child("Characters").Child(auth.user).Child("power").SetValueAsync(player.power);
+            db.Child("Characters").Child(auth.user).Child("pityQuality").SetRawJsonValueAsync(JsonConvert.SerializeObject(inv.savePity()));
         }
 
     }

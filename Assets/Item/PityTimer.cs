@@ -57,4 +57,14 @@ public class PityTimer<T>
         return chosen;
     }
 
+    public Dictionary<string, float> export()
+    {
+        Dictionary<string, float> dict = new Dictionary<string, float>();
+        foreach(PityWeight p in weightList)
+        {
+            dict.Add(p.category.ToString(), p.chance);
+        }
+        return dict;
+    }
+
 }

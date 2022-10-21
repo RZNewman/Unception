@@ -14,6 +14,9 @@ public class PlayerGhost : NetworkBehaviour
 
     [SyncVar]
     float playerPower = 1000;
+
+    [SyncVar]
+    int extraLives = 1;
     void Start()
     {
         if (isLocalPlayer)
@@ -40,6 +43,12 @@ public class PlayerGhost : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void refreshLives()
+    {
+        extraLives = 1;
+    }
+
     public void embark(int mapIndex)
     {
         CmdEmbark(mapIndex);
@@ -48,6 +57,7 @@ public class PlayerGhost : NetworkBehaviour
     [Command]
     void CmdEmbark(int mapIndex)
     {
+        refreshLives();
         StartCoroutine(embarkRoutine(mapIndex));
     }
 
@@ -58,6 +68,14 @@ public class PlayerGhost : NetworkBehaviour
         Atlas atlas = FindObjectOfType<Atlas>();
         yield return atlas.embarkServer(mapIndex);
 
+        buildUint();
+
+        TargetGameplayMenu(connectionToClient);
+    }
+
+    [Server]
+    void buildUint()
+    {
         Inventory inv = GetComponent<Inventory>();
         GameObject u = Instantiate(unitPre);
         Power p = u.GetComponent<Power>();
@@ -68,8 +86,6 @@ public class PlayerGhost : NetworkBehaviour
         u.GetComponent<LifeManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
         currentSelf = u;
-
-        TargetGameplayMenu(connectionToClient);
     }
 
     [TargetRpc]
@@ -86,12 +102,27 @@ public class PlayerGhost : NetworkBehaviour
     //server
     void onUnitDeath()
     {
-        //TODO coroutine
         Atlas atlas = FindObjectOfType<Atlas>();
         if (atlas && atlas.embarked)
         {
+            StartCoroutine(onDeathRoutine(atlas));
+            
+        }
+    }
+
+    IEnumerator onDeathRoutine(Atlas atlas)
+    {
+        yield return new WaitForSecondsRealtime(1.5f);
+        if (extraLives > 0)
+        {
+            extraLives--;
+            buildUint();
+        }
+        else
+        {
             atlas.disembark(true);
         }
+        
     }
 
     public GameObject unit

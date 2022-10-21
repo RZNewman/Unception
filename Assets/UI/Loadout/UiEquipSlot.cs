@@ -40,4 +40,13 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         uiAbility.transform.localPosition = Vector3.zero;
         uiAbility.GetComponent<Image>().raycastTarget = true;
     }
+
+    public void clear()
+    {
+        if (uiAbility)
+        {
+            Destroy(uiAbility);
+        }
+        
+    }
 }

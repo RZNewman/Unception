@@ -21,7 +21,6 @@ public class MapGenerator : NetworkBehaviour
     Map currentMap;
     int currentFloorIndex;
 
-    Vector3 floorOffset = Vector3.zero;
 
     [System.Serializable]
     public struct TileWeight
@@ -89,14 +88,14 @@ public class MapGenerator : NetworkBehaviour
         {
             foreach (GameObject playerUnit in units)
             {
-                playerUnit.transform.position = transform.position + Vector3.up * 5 + floorOffset;
+                playerUnit.transform.position = transform.position + Vector3.up * 5;
                 playerUnit.SetActive(false);
             }
 
             yield return buildGridRoutine();
             foreach (GameObject playerUnit in units)
             {
-
+                playerUnit.GetComponent<PlayerGhost>().refreshLives();
                 playerUnit.SetActive(true);
             }
         }
@@ -117,7 +116,7 @@ public class MapGenerator : NetworkBehaviour
     IEnumerator buildGridRoutine()
     {
 
-        currentFloor = Instantiate(floorRootPre, transform.position + floorOffset, Quaternion.identity, transform);
+        currentFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, transform);
         spawner.setFloor(currentFloor.transform);
         currentFloor.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(currentFloor);

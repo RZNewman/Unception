@@ -16,6 +16,15 @@ public class ItemList : MonoBehaviour
         UiEquipSlot[] slots = FindObjectsOfType<UiEquipSlot>(true).OrderBy(s => s.slotRank).ToArray();
         int currentSlot = 0;
 
+        foreach(Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach(UiEquipSlot slot in slots)
+        {
+            slot.clear();
+        }
+
         for (int i = 0; i < abils.Count; i++)
         {
             AttackBlockFilled abil = abils[i];

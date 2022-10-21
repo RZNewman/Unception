@@ -211,6 +211,13 @@ public class MapGenerator : NetworkBehaviour
             buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
 
+        foreach(GameObject tile in tiles)
+        {
+            NavMeshSurface sur = tile.GetComponent<NavMeshSurface>();
+            sur.BuildNavMesh();
+            yield return null;
+        }
+
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);
         tiles.RemoveAt(0);

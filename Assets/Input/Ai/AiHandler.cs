@@ -13,6 +13,7 @@ public class AiHandler : MonoBehaviour, UnitControl
     NavMeshPath currentPath;
     int pathingCorner = -1;
 
+
     public enum EffectiveDistanceType
     {
         None,
@@ -64,6 +65,9 @@ public class AiHandler : MonoBehaviour, UnitControl
             GameObject target = aggro.getTopTarget();
             if (target)
             {
+                Size mySize = rotatingBody.GetComponentInChildren<Size>();
+                Size thierSize = target.GetComponent<Size>();
+
                 Vector3 moveTarget;
                 bool canSee = aggro.canSee(target);
                 if (canSee)
@@ -75,15 +79,30 @@ public class AiHandler : MonoBehaviour, UnitControl
                 {
                     if (pathingCorner < 0)
                     {
-                        NavMesh.CalculatePath(transform.position, target.transform.position, NavMesh.AllAreas, currentPath);
+                        NavMeshHit hit;
+                        if(!NavMesh.SamplePosition(transform.position, out hit, mySize.scaledHalfHeight * 10, NavMesh.AllAreas))
+                        {
+                            Debug.Log("NoSource");
+                            return;
+                        }
+                        Vector3 myNavPos = hit.position;
+                        NavMesh.SamplePosition(target.transform.position, out hit, thierSize.scaledHalfHeight * 10, NavMesh.AllAreas);
+                        Vector3 theirNavPos = hit.position;
+                        NavMesh.CalculatePath(myNavPos, theirNavPos, NavMesh.AllAreas, currentPath);
                         pathingCorner = 0;
+                    }
+
+                    if (currentPath.status == NavMeshPathStatus.PathPartial)
+                    {
+
+                        //Debug.Log("Partial");
                     }
 
                     if (currentPath.status == NavMeshPathStatus.PathInvalid)
                     {
                         moveTarget = transform.position;
                         pathingCorner = -1;
-                        //Debug.Log("INVALID");
+                        Debug.Log("INVALID");
                     }
                     else
                     {
@@ -91,7 +110,8 @@ public class AiHandler : MonoBehaviour, UnitControl
                         if (modelLoader.size)
                         {
                             Vector3 diff = current - (transform.position + Vector3.down * modelLoader.size.scaledHalfHeight);
-
+                            //Debug.Log(modelLoader.size.scaledRadius - diff.magnitude);
+                            Debug.DrawLine(transform.position, current, Color.red);
                             if (diff.magnitude <= modelLoader.size.scaledRadius)
                             {
                                 pathingCorner++;
@@ -129,7 +149,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                 if (canSee)
                 {
-                    float edgeDiffMag = planarDiff.magnitude - rotatingBody.GetComponentInChildren<Size>().scaledRadius - target.GetComponent<Size>().scaledRadius;
+                    float edgeDiffMag = planarDiff.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
 
                     EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
                     Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using static Atlas;
 using static Utils;
 
@@ -130,7 +131,7 @@ public class MapGenerator : NetworkBehaviour
             foreach (GameObject d in delta.removed)
             {
                 doors.Remove(d);
-                buildPathStitch(d);
+                //buildPathStitch(d);
             }
             foreach (GameObject d in delta.added)
             {
@@ -211,43 +212,19 @@ public class MapGenerator : NetworkBehaviour
             buildDoorBlocker(hole.transform.position, hole.transform.rotation);
         }
 
-        foreach(GameObject tile in tiles)
-        {
-            NavMeshSurface sur = tile.GetComponent<NavMeshSurface>();
-            sur.BuildNavMesh();
-            yield return null;
-        }
+        NavMeshBuildSettings agent = NavMesh.GetSettingsByID(0);
+        agent.agentRadius = 0.5f * currentFloorScale;
+        agent.agentClimb = 0.3f * currentFloorScale;
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
+        NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
+        NavMesh.AddNavMeshData( NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one*4000), Vector3.zero, Quaternion.identity));
 
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);
         tiles.RemoveAt(0);
         yield return spawner.spawnLevel(tiles, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
     }
-    void buildPathStitch(GameObject door)
-    {
-        GameObject s = Instantiate(stitchPre, door.transform.position, door.transform.rotation, currentFloor.transform);
-        s.transform.localScale = Vector3.one * currentFloorScale;
-        s.GetComponent<ClientAdoption>().parent = currentFloor;
-        RaycastHit hit;
-        Physics.Raycast(
-            s.transform.position + s.transform.forward * -2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
-            Vector3.down,
-            out hit,
-            6f * currentFloorScale,
-            LayerMask.GetMask("Terrain"));
-        float start = hit.point.y - s.transform.position.y;
 
-        Physics.Raycast(
-            s.transform.position + s.transform.forward * 2f * currentFloorScale + Vector3.up * 2f * currentFloorScale,
-            Vector3.down,
-            out hit,
-            6f * currentFloorScale,
-            LayerMask.GetMask("Terrain"));
-        float end = hit.point.y - s.transform.position.y;
-        NavMeshLink link = s.GetComponent<NavMeshLink>();
-        link.startPoint = new Vector3(link.startPoint.x, start, link.startPoint.z);
-        link.endPoint = new Vector3(link.endPoint.x, end, link.endPoint.z);
-    }
 
     struct TilePlacement
     {

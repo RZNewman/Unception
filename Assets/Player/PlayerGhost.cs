@@ -23,6 +23,7 @@ public class PlayerGhost : NetworkBehaviour
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
             FindObjectOfType<MenuHandler>().clientMenu();
+            FindObjectOfType<PlayerUiReference>(true).setTarget(this);
             if (isClientOnly)
             {
                 CmdAddClient();
@@ -107,6 +108,13 @@ public class PlayerGhost : NetworkBehaviour
         {
             StartCoroutine(onDeathRoutine(atlas));
             
+        }
+    }
+    public bool extraLife
+    {
+        get
+        {
+            return extraLives > 0;
         }
     }
 

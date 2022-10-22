@@ -17,6 +17,7 @@ public class Ability : NetworkBehaviour
     AttackBlockFilled attackFilled;
 
     public GameObject abilityIconPrefab;
+    GameObject icon;
 
     [SyncVar(hook = nameof(bufferClientCast))]
     public float cooldownCurrent = 0;
@@ -33,7 +34,7 @@ public class Ability : NetworkBehaviour
         if (p.isClient && p.hasAuthority)
         {
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
-            GameObject icon = Instantiate(abilityIconPrefab, bar.transform);
+            icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
         }
         if (isClientOnly)
@@ -42,6 +43,13 @@ public class Ability : NetworkBehaviour
             GetComponentInParent<AbiltyList>().registerAbility(clientSyncKey, this);
         }
 
+    }
+    private void OnDestroy()
+    {
+        if (icon)
+        {
+            Destroy(icon);
+        }
     }
 
     void bufferClientCast(float old, float newCD)

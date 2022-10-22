@@ -7,7 +7,7 @@ public class Combat : NetworkBehaviour
 
     GameObject lastUnitHitBy;
 
-
+    AggroHandler aggro;
 
     private void Start()
     {
@@ -18,6 +18,11 @@ public class Combat : NetworkBehaviour
             life.suscribeHit(onHit);
         }
 
+    }
+
+    public void setAggroHandler(AggroHandler a)
+    {
+        aggro = a;
     }
     public void setFighting(GameObject other)
     {
@@ -53,13 +58,14 @@ public class Combat : NetworkBehaviour
     {
         foreach (GameObject other in active)
         {
-            active.Remove(other);
+            
             if (other)
             {
                 other.GetComponent<Combat>().removeTarget(gameObject);
             }
             
         }
+        active.Clear();
     }
     void removeTarget(GameObject other)
     {
@@ -67,6 +73,10 @@ public class Combat : NetworkBehaviour
         if (lastUnitHitBy && lastUnitHitBy == other)
         {
             lastUnitHitBy = null;
+        }
+        if (aggro)
+        {
+            aggro.removeTarget(other.GetComponentInChildren<Size>().gameObject);
         }
     }
     void onHit(GameObject other)

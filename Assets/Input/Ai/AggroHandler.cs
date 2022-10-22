@@ -10,6 +10,7 @@ public class AggroHandler : MonoBehaviour
     List<GameObject> aggroList;
     List<GameObject> senseRadius;
 
+    Combat combat;
     Pack pack;
     bool started = false;
 
@@ -18,7 +19,8 @@ public class AggroHandler : MonoBehaviour
         aggroList = new List<GameObject>();
         senseRadius = new List<GameObject>();
         col = GetComponent<SphereCollider>();
-
+        combat = GetComponentInParent<Combat>();
+        combat.setAggroHandler(this);
         pack = transform.parent.GetComponent<UnitPropsHolder>().pack;
         if (pack)
         {
@@ -86,8 +88,12 @@ public class AggroHandler : MonoBehaviour
         if (!aggroList.Contains(target))
         {
             aggroList.Add(target);
-            GetComponentInParent<Combat>().setFighting(target.GetComponentInParent<Combat>().gameObject);
+            combat.setFighting(target.GetComponentInParent<Combat>().gameObject);
         }
+    }
+    public void removeTarget(GameObject target)
+    {
+        aggroList.Remove(target);
     }
 
     public GameObject getTopTarget()

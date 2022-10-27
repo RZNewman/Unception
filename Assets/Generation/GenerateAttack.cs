@@ -11,7 +11,7 @@ using static WindState;
 using static Cast;
 using static RewardManager;
 using UnityEditor.PackageManager.UI;
-
+using static GenerateRepeating;
 
 public static class GenerateAttack
 {
@@ -61,7 +61,10 @@ public static class GenerateAttack
         public WindGenerationData winddown;
         public HitGenerationData hit;
         public DashGenerationData dash;
+        public RepeatingGenerationData repeat;
+        public WindGenerationData windRepeat;
         public bool dashAfter;
+        public bool dashInside;
 
     }
 
@@ -71,13 +74,16 @@ public static class GenerateAttack
         public WindInstanceData winddown;
         public HitInstanceData hit;
         public DashInstanceData dash;
+        public RepeatingInstanceData repeat;
+        public WindInstanceData windRepeat;
         public bool dashAfter;
+        public bool dashInside;
 
         public float castTime
         {
             get
             {
-                return windup.duration + winddown.duration;
+                return windup.duration + winddown.duration + (repeat != null ? windRepeat.duration *repeat.repeatCount : 0);
             }
         }
 
@@ -129,17 +135,36 @@ public static class GenerateAttack
             SegmentGenerationData segment = segmentsGen[i];
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
-            float strength = getWindValue(new WindInstanceData[] { up, down });
-            strength += cooldownStrength;
+            List<WindInstanceData> windList = new List<WindInstanceData> { up, down };
+            WindInstanceData windRepeat = null;
+            RepeatingInstanceData repeat = null;
+            int repeatCount = 1;
+            if (segment.repeat != null)
+            {
+                repeat = (RepeatingInstanceData)segment.repeat.populate(power, 1.0f);
+                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, 1.0f);
+                repeatCount = repeat.repeatCount;
+                for(int j = 0; j < segment.repeat.repeatCount; j++)
+                {
+                    windList.Add(windRepeat);
+                }
+            }
+
+            float strength = getWindValue(windList.ToArray());
+            strength += cooldownStrength * ( 1 - 0.03f*(repeatCount-1));
             strength *= qualityPercent(atk.quality);
+            float repeatStrength = strength / repeatCount;
 
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
                 winddown = down,
-                hit = (HitInstanceData)segment.hit.populate(power, strength),
-                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, strength),
+                hit = (HitInstanceData)segment.hit.populate(power, repeatStrength),
+                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside? repeatStrength: strength),
+                repeat = repeat,
+                windRepeat = windRepeat,
                 dashAfter = segment.dashAfter,
+                dashInside = segment.dashInside,
             };
 
 
@@ -163,6 +188,7 @@ public static class GenerateAttack
         segment = new SegmentGenerationData();
         bool open = false;
         bool dashAfter = false;
+        bool repeatOpen = false;
         foreach (GenerationData state in stages)
         {
             if (state is WindGenerationData)
@@ -174,10 +200,20 @@ public static class GenerateAttack
                 }
                 else
                 {
-                    segment.winddown = (WindGenerationData)state;
-                    segments.Add(segment);
-                    segment = new SegmentGenerationData();
-                    open = false;
+                    if (repeatOpen)
+                    {
+                        segment.windRepeat = (WindGenerationData)state;
+                        repeatOpen = false;
+                    }
+                    else
+                    {
+                        segment.winddown = (WindGenerationData)state;
+                        segments.Add(segment);
+                        segment = new SegmentGenerationData();
+                        open = false;
+                    }
+
+                    
                 }
 
             }
@@ -192,6 +228,11 @@ public static class GenerateAttack
                     case DashGenerationData dash:
                         segment.dash = dash;
                         segment.dashAfter = dashAfter;
+                        segment.dashInside = repeatOpen;
+                        break;
+                    case RepeatingGenerationData repeat:
+                        segment.repeat = repeat;
+                        repeatOpen = true;
                         break;
                 }
             }
@@ -253,15 +294,78 @@ public static class GenerateAttack
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
 
+        DashGenerationData d =null;
+        RepeatingGenerationData r = null;
+        WindGenerationData rWind = null;
+        HitGenerationData h = createHit();
+
+        if (gen < 0.9f)
+        {
+            //repeat effect
+            r = createRepeating();
+            rWind = createWind(0.4f);
+        }
+
+        gen = Random.value;
         if (gen < 0.2f)
         {
-            DashGenerationData d = createDash();
-            HitGenerationData h = createHit();
-
+            //dash effect
+            d = createDash();
+           
             float hitValue = Random.value.asRange(0.2f, 0.8f);
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
+        }
 
+        if(r != null && d != null)
+        {
+            gen = Random.value;
+
+            if(gen < 0.1f)
+            {
+                //dash in the repeat
+                if (d.control == DashControl.Backward)
+                {
+                    effects.Add(r);
+                    effects.Add(h);
+                    effects.Add(d);
+                    effects.Add(rWind);
+                    
+                }
+                else
+                {
+                    effects.Add(r);
+                    effects.Add(d);
+                    effects.Add(h);
+                    effects.Add(rWind);
+                }
+            }
+            else
+            {
+                if (d.control == DashControl.Backward)
+                {
+                    effects.Add(r);
+                    effects.Add(h);
+                    effects.Add(rWind);
+                    effects.Add(d);
+                }
+                else
+                {
+                    effects.Add(d);
+                    effects.Add(r);
+                    effects.Add(h);
+                    effects.Add(rWind);
+                }
+            }
+        }
+        else if (r != null)
+        {
+            effects.Add(r);
+            effects.Add(h);
+            effects.Add(rWind);
+        }
+        else if (d != null)
+        {
             if (d.control == DashControl.Backward)
             {
                 effects.Add(h);
@@ -272,13 +376,13 @@ public static class GenerateAttack
                 effects.Add(d);
                 effects.Add(h);
             }
-
-
         }
         else
         {
-            effects.Add(createHit());
+            effects.Add(h);
         }
+
+
         return effects;
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using static SystemClassWriters;
 using static GenerateWind;
 using static GenerateDash;
+using static GenerateRepeating;
 
 public static class SystemClassReaders
 {
@@ -67,6 +68,10 @@ public static class SystemClassReaders
                 dash.distance = reader.ReadFloat();
                 dash.control = reader.ReadDashControl();
                 return dash;
+            case GenerationDataClass.Repeat:
+                RepeatingGenerationData repeat = ScriptableObject.CreateInstance<RepeatingGenerationData>();
+                repeat.repeatCount = reader.ReadInt();
+                return repeat;
             default:
                 return null;
         }

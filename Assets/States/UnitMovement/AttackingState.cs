@@ -70,16 +70,12 @@ public class AttackingState : PlayerMovementState
 
     AttackStageState getNextState()
     {
+        Cast c = mover.GetComponent<Cast>();
         AttackStageState s = null;
-        bool enteredSegment = false;
         System.Action nextSegment = () =>
         {
             currentSegment = segments[0];
-            currentSegment.enterSegment(mover);
-            mover.GetComponent<Cast>().buildIndicator(currentSegment);
-
-            s = currentSegment.nextState();
-            enteredSegment = true;
+            s = currentSegment.enterSegment(mover, c);
         };
         if (!init)
         {
@@ -87,7 +83,7 @@ public class AttackingState : PlayerMovementState
         }
         else
         {
-            s = currentSegment.nextState();
+            s = currentSegment.getNextState(mover, c);
             if (s == null)
             {
                 segments.RemoveAt(0);
@@ -100,10 +96,7 @@ public class AttackingState : PlayerMovementState
                 nextSegment();
             }
         }
-        if (!enteredSegment)
-        {
-            mover.GetComponent<Cast>().nextStage();
-        }
+
         return s;
     }
 

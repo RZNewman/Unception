@@ -36,6 +36,7 @@ public static class SystemClassWriters
         Wind = 0,
         Hit,
         Dash,
+        Repeat,
     }
     public static void WriteAttackKey(this NetworkWriter writer, GenerateAttack.GenerationData data)
     {
@@ -65,6 +66,10 @@ public static class SystemClassWriters
                 writer.WriteFloat(d.speed);
                 writer.WriteFloat(d.distance);
                 writer.WriteDashControl(d.control);
+                break;
+            case GenerateRepeating.RepeatingGenerationData r:
+                writer.WriteByte((byte)GenerationDataClass.Repeat);
+                writer.WriteInt(r.repeatCount);
                 break;
 
         }

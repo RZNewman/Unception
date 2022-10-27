@@ -80,9 +80,8 @@ public class Cast : MonoBehaviour, BarValue
     }
 
     List<(AttackStageState, GameObject)> indicators = new List<(AttackStageState, GameObject)>();
-    public void buildIndicator(AttackSegment segment)
+    public void buildIndicator(List<AttackStageState> states, AttackSegment segment)
     {
-        List<AttackStageState> states = segment.states;
         GameObject indicatorBody = GetComponent<UnitMovement>().getSpawnBody();
         Power pow = GetComponent<Power>();
         foreach (AttackStageState stage in states)

@@ -26,9 +26,37 @@ public class AttackBlockFilled : ScriptableObject
 
             states.Add(windup);
             List<AttackStageState> effectStates = new List<AttackStageState>();
-            ActionState a = new ActionState(controller, seg.hit);
-            effectStates.Add(a);
-            if (seg.dash != null)
+            if (seg.repeat != null)
+            {
+                List<AttackStageState> repeatStates = new List<AttackStageState>();
+                for (int j =0;j < seg.repeat.repeatCount; j++)
+                {
+                    repeatStates.Add(new ActionState(controller, seg.hit));
+                    if (seg.dash != null && seg.dashInside)
+                    {
+                        if (seg.dashAfter)
+                        {
+                            repeatStates.Add(new DashState(controller, seg.dash, true));
+                        }
+                        else
+                        {
+                            repeatStates.Insert(0, new DashState(controller, seg.dash, true));
+                        }
+                    }
+                    if (j < seg.repeat.repeatCount - 1)
+                    {
+                        repeatStates.Add(new WindState(controller, seg.windRepeat, false));
+                    }
+                    effectStates.AddRange(repeatStates);
+                    repeatStates.Clear();
+                }
+            }
+            else
+            {
+                effectStates.Add(new ActionState(controller, seg.hit));
+            }
+
+            if (seg.dash != null && !seg.dashInside)
             {
                 if (seg.dashAfter)
                 {
@@ -46,7 +74,6 @@ public class AttackBlockFilled : ScriptableObject
                 states = states,
                 winddown = winddown,
                 windup = windup,
-                action = a,
             });
         }
 

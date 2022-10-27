@@ -5,7 +5,7 @@ using UnityEngine;
 public class FloorNormal : MonoBehaviour
 {
     bool ground = false;
-    Vector3 groundNormal;
+    Vector3 groundNormal = Vector3.up;
 
     public struct GroundSearchParams
     {

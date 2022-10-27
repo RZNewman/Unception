@@ -69,39 +69,35 @@ public static class AttackUtils
         public List<AttackStageState> states;
         public WindState windup;
         public WindState winddown;
-        public ActionState action;
         public GameObject groundTargetInstance;
 
         bool pastWindup;
         AttackStageState currentState;
 
-        public void enterSegment(UnitMovement mover)
+        public AttackStageState enterSegment(UnitMovement mover, Cast cast)
         {
             pastWindup = false;
-            HitInstanceData source = action.getSource();
-            if (source.type == HitType.Ground)
-            {
-                GameObject body = mover.getSpawnBody();
-                Size s = body.GetComponentInChildren<Size>();
-                //TODO Two ground target options, how to sync up?
-                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.length, mover.isServer);
-                groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
-                windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
-                {
-                    radius = s.scaledRadius,
-                    distance = s.scaledHalfHeight,
-                });
-                action.setGroundTarget(groundTargetInstance);
-            }
+            return nextState(mover, cast);
         }
         public void exitSegment()
+        {
+            cleanInstances();
+        }
+
+        void cleanInstances()
         {
             if (groundTargetInstance)
             {
                 GameObject.Destroy(groundTargetInstance);
             }
         }
-        public AttackStageState nextState()
+        public AttackStageState getNextState(UnitMovement mover, Cast cast)
+        {
+            cast.nextStage();
+            return nextState(mover, cast);
+        }
+
+        AttackStageState nextState(UnitMovement mover, Cast cast)
         {
             if (states.Count == 0)
             {
@@ -112,6 +108,48 @@ public static class AttackUtils
                 pastWindup = true;
             }
             currentState = states[0];
+
+            if (currentState is WindState && states.Count >1)
+            {
+                cleanInstances();
+
+                List<AttackStageState> indicatorBuild = new List<AttackStageState>();
+                indicatorBuild.Add(states[0]);
+                int i = 1;
+                while (i<states.Count && !(states[i] is WindState))
+                {
+                    AttackStageState state = states[i];
+                    indicatorBuild.Add(state);
+                    if(state is ActionState)
+                    {
+                        ActionState action = (ActionState)state;
+                        HitInstanceData source = action.getSource();
+                        if (source.type == HitType.Ground)
+                        {
+                            GameObject body = mover.getSpawnBody();
+                            Size s = body.GetComponentInChildren<Size>();
+                            //TODO Two ground target options, how to sync up?
+                            groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.length, mover.isServer);
+                            groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
+                            windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
+                            {
+                                radius = s.scaledRadius,
+                                distance = s.scaledHalfHeight,
+                            });
+                            action.setGroundTarget(groundTargetInstance);
+                        }
+                    }
+
+                    i++;
+                }
+                cast.buildIndicator(indicatorBuild, this);
+            }
+            
+
+
+
+
+            
             states.RemoveAt(0);
             return currentState;
         }

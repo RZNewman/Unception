@@ -40,6 +40,7 @@ public static class GenerateHit
 
         public override InstanceData populate(float power, float strength)
         {
+            strength *= this.strengthFactor;
             float scale = Power.scale(power);
 
             float length = this.length.asRange(0.8f, 5f) * strength * scale;

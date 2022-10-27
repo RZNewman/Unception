@@ -299,7 +299,7 @@ public static class GenerateAttack
         WindGenerationData rWind = null;
         HitGenerationData h = createHit();
 
-        if (gen < 0.9f)
+        if (gen < 0.3f)
         {
             //repeat effect
             r = createRepeating();

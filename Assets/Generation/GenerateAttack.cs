@@ -92,6 +92,7 @@ public static class GenerateAttack
     public struct AttackFlair
     {
         public string name;
+        public string identifier;
         public Color color;
         public int symbol;
     }
@@ -282,6 +283,7 @@ public static class GenerateAttack
         block.flair = new AttackFlair
         {
             name = Naming.name(),
+            identifier = Naming.identifier(),
             color = color,
             symbol = Random.Range(1, 117),
         };

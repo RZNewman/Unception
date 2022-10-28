@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +8,63 @@ public static class Naming
     {
         return prefixes.RandomItem() + " " + suffixes.RandomItem();
     }
+    public static string identifier()
+    {
+        return greekUpper.RandomItem() + greekLower.RandomItem();
+    }
 
+    static string[] greekLower = new string[] {
+        "α",
+        "β",
+        "γ",
+        "δ",
+        "ε",
+        "ζ",
+        "η",
+        "θ",
+        "ι",
+        "κ",
+        "λ",
+        "μ",
+        "ν",
+        "ξ",
+        "ο",
+        "π",
+        "ρ",
+        "σ",
+        "τ",
+        "υ",
+        "φ",
+        "χ",
+        "ψ",
+        "ω",
+    };
+    static string[] greekUpper = new string[] {
+        "Α",
+        "Β",
+        "Γ",
+        "Δ",
+        "Ε",
+        "Ζ",
+        "Η",
+        "Θ",
+        "Ι",
+        "Κ",
+        "Λ",
+        "Μ",
+        "Ν",
+        "Ξ",
+        "Ο",
+        "Π",
+        "Ρ",
+        "Σ",
+        "Τ",
+        "Υ",
+        "Φ",
+        "Χ",
+        "Ψ",
+        "Ω",
+    };
 
     static string[] prefixes = new string[] {
 "Apex",

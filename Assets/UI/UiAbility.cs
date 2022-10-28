@@ -7,6 +7,7 @@ using static RewardManager;
 public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
+    public Text identifier;
     public Image symbol;
     public Image foreground;
 
@@ -47,6 +48,8 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Texture2D texture = FindObjectOfType<Symbol>().symbols[flair.symbol];
         symbol.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         symbol.color = flair.color;
+        identifier.color = flair.color;
+        identifier.text = flair.identifier;
         background.sprite = bgFromQuality(filled.instance.quality);
     }
 

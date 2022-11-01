@@ -84,6 +84,10 @@ public class AttackBlockFilled : ScriptableObject
     {
         return instance.cooldown;
     }
+    public float getCharges()
+    {
+        return instance.charges;
+    }
 
     public AiHandler.EffectiveDistance GetEffectiveDistance()
     {

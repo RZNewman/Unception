@@ -13,6 +13,7 @@ public class UiAbilityDetails : MonoBehaviour
     public Text quality;
     public Text castTime;
     public Text cooldown;
+    public Text charges;
     public UiSegmentPanel segmentPanel;
 
     PlayerGhost player;
@@ -30,6 +31,7 @@ public class UiAbilityDetails : MonoBehaviour
         powerTotal.text = Power.displayPower(filled.instance.power * qualityPercent(filled.instance.quality));
         castTime.text = filled.instance.castTime.ToString();
         cooldown.text = filled.instance.cooldown.ToString();
+        charges.text = filled.instance.charges.ToString();
 
 
         segmentPanel.clearLabels();

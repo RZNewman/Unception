@@ -10,6 +10,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Text identifier;
     public Image symbol;
     public Image foreground;
+    public Text chargeCount;
 
     public Sprite Common;
     public Sprite Uncommon;
@@ -29,9 +30,11 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (target)
         {
-            bool fresh = target.cooldownMax == 0 || target.cooldownCurrent == 0;
-            background.color = fresh ? Color.white : new Color(0.7f, 0.7f, 0.7f);
-            foreground.fillAmount = fresh ? 0 : target.cooldownCurrent / target.cooldownMax;
+            bool fresh =  target.charges >= 1;
+            float charges = target.charges;
+            background.color = fresh ? Color.white : new Color(0.5f, 0.5f, 0.5f);
+            foreground.fillAmount = charges == 1 ? 0 : 1 - (charges % 1);
+            chargeCount.text = charges > 1 ? Mathf.Floor(charges).ToString() : "";
         }
 
     }

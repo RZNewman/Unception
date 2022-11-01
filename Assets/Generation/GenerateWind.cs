@@ -26,7 +26,7 @@ public static class GenerateWind
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
             return new WindInstanceData
             {
-                duration = this.duration.asRange(0.2f, 4f),
+                duration = this.duration.asRange(0.15f, 3f),
                 moveMult = moveMult,
                 turnMult = turnMult,
             };
@@ -43,7 +43,7 @@ public static class GenerateWind
     public static WindGenerationData createWind(float durrationLimit = 1.0f)
     {
         WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
-        wind.duration = GaussRandomDecline(6) * durrationLimit;
+        wind.duration = GaussRandomDecline(5) * durrationLimit;
         wind.moveMult = GaussRandomDecline(3);
         wind.turnMult = GaussRandomDecline(3);
         return wind;

@@ -20,7 +20,7 @@ public class Ability : NetworkBehaviour
     GameObject icon;
 
     [SyncVar(hook = nameof(bufferClientCast))]
-    public float cooldownCurrent = 0;
+    public float charges = 1;
 
     uint clientCastBuffer = 0;
 
@@ -52,10 +52,10 @@ public class Ability : NetworkBehaviour
         }
     }
 
-    void bufferClientCast(float old, float newCD)
+    void bufferClientCast(float old, float newcharge)
     {
         //Debug.Log(newCD + " - " + old + ",   " + cooldownMax);
-        if (newCD - old > cooldownMax * 0.8f)
+        if (old - newcharge  >  0.8f)
         {
             clientCastBuffer++;
         }
@@ -64,31 +64,48 @@ public class Ability : NetworkBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (cooldownCurrent > 0 && cooldownTicking)
+        if (charges < chargeMax && cooldownTicking)
         {
-            cooldownCurrent -= Time.fixedDeltaTime;
+            charges += Time.fixedDeltaTime/cooldownPerCharge;
         }
-        if (cooldownCurrent <= 0)
+        if (charges >= chargeMax)
         {
             cooldownTicking = false;
-            cooldownCurrent = 0;
+            charges = chargeMax;
         }
     }
-    public float cooldownMax
+
+    public float cooldownPerCharge
     {
         get
         {
             return attackFilled.getCooldown();
         }
     }
+
+    float chargeMax
+    {
+        get
+        {
+            return attackFilled.getCharges();
+        }
+    }
     public List<AttackSegment> cast(UnitMovement mover)
     {
-        cooldownCurrent = cooldownMax;
+        if (cooldownPerCharge > 0)
+        {
+            charges -= 1;
+            cooldownTicking = false;
+        }
         return attackFilled.buildStates(mover);
     }
     public void startCooldown()
     {
-        cooldownTicking = true;
+        if(cooldownPerCharge > 0)
+        {
+            cooldownTicking = true;
+        }
+        
     }
     //static float clientCooldownThreshold = 0.001f;
     public bool ready
@@ -97,7 +114,7 @@ public class Ability : NetworkBehaviour
         {
             //Debug.Log(cooldownCurrent + " ##" + isClientOnly + " " + clientCastBuffer);
             //return isServer ? cooldownCurrent <= 0 : cooldownCurrent <= clientCooldownThreshold;
-            bool offCD = cooldownCurrent <= 0;
+            bool offCD = charges >= 1;
             if (!offCD)
             {
                 if (isClientOnly && clientCastBuffer > 0)
@@ -114,6 +131,7 @@ public class Ability : NetworkBehaviour
     {
         attackFormat = b;
         fillFormat();
+        charges = chargeMax;
         if (attackFormat.scales)
         {
             GetComponentInParent<Power>().subscribePower(scaleAbility);
@@ -122,6 +140,7 @@ public class Ability : NetworkBehaviour
     void fillFormat()
     {
         attackFilled = GenerateAttack.fillBlock(attackFormat);
+        
     }
     void scaleAbility(Power p)
     {

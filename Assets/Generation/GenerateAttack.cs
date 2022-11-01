@@ -101,12 +101,14 @@ public static class GenerateAttack
     {
         public GenerationData[] stages;
         public float cooldown;
+        public float charges;
         public Quality quality;
     }
     public struct AttackInstanceData
     {
         public SegmentInstanceData[] segments;
         public float cooldown;
+        public float charges;
         public Quality quality;
         public float power;
 
@@ -121,8 +123,10 @@ public static class GenerateAttack
 
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
-        float cooldownTime = atk.cooldown.asRange(0, 30);
+        float cooldownValue = atk.cooldown;
+        float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f);
+        float charges = atk.charges.asRange(1, 4);
 
 
 
@@ -130,6 +134,7 @@ public static class GenerateAttack
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
 
         cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.9f;
+        cooldownStrength *= (1 - 0.05f * (charges - 1));
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {
@@ -175,6 +180,7 @@ public static class GenerateAttack
         {
 
             cooldown = cooldownTime,
+            charges = charges,
             segments = segmentsInst,
             quality = atk.quality,
             power = power,
@@ -263,7 +269,7 @@ public static class GenerateAttack
 
             stages.Add(createWind());
             stages.AddRange(getEffect());
-            stages.Add(createWind(0.4f));
+            stages.Add(createWind(0.65f));
 
         }
 
@@ -274,7 +280,8 @@ public static class GenerateAttack
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages.ToArray(),
-            cooldown = noCooldown ? 0 : GaussRandomDecline(4),
+            cooldown = noCooldown ? -1 : GaussRandomDecline(4),
+            charges = noCooldown ? 0 : GaussRandomDecline(4),
             quality = quality,
 
         };
@@ -314,7 +321,7 @@ public static class GenerateAttack
             //dash effect
             d = createDash();
            
-            float hitValue = Random.value.asRange(0.2f, 0.8f);
+            float hitValue = Random.value.asRange(0.3f, 0.8f);
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
         }

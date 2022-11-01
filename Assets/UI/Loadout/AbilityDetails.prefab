@@ -819,12 +819,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 5255438577655764520}
-  type: {fileID: 6956059330004032081}
   powerTotal: {fileID: 7518577831530495586}
   power: {fileID: 8068896712467048883}
   quality: {fileID: 8806944830568367828}
   castTime: {fileID: 423730326892673512}
   cooldown: {fileID: 2265591836579876681}
+  charges: {fileID: 6545557808235404919}
   segmentPanel: {fileID: 6649729514343363003}
 --- !u!1 &4853313926539663107
 GameObject:

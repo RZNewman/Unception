@@ -1,4 +1,5 @@
 
+using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -112,14 +113,14 @@ public static class Utils
         return index;
     }
 
-    public static T RandomItemWeighted<T>(this IList<T> list, float weight = 2f)
+    public static T RandomItemWeighted<T>(this SimplePriorityQueue<T> list, float weight = 2f)
     {
         int index = Mathf.FloorToInt(Mathf.Pow(Random.value, 1 / weight) * list.Count);
         if (index == list.Count)
         {
             index--;
         }
-        return list[index];
+        return list.Skip(index).First();
     }
     public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
     {

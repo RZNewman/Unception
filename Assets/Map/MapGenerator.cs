@@ -1,4 +1,5 @@
 using Mirror;
+using Priority_Queue;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,19 +124,33 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(currentFloor);
 
         List<GameObject> tiles = new List<GameObject>();
-        List<GameObject> doors = new List<GameObject>();
+        SimplePriorityQueue<GameObject> doors = new SimplePriorityQueue<GameObject>();
+        Dictionary<GameObject, int> doorDists = new Dictionary<GameObject, int>();
         List<GameObject> badDoors = new List<GameObject>();
         System.Action<TileDelta> processDelta = (TileDelta delta) =>
         {
             tiles.Add(delta.tile);
+            int dist = 0;
+            bool distSet = false;
+
             foreach (GameObject d in delta.removed)
             {
+                if (distSet)
+                {
+                    dist = Mathf.Min(dist, doorDists[d]);
+                }
+                else
+                {
+                    dist = doorDists[d];
+                }
                 doors.Remove(d);
                 //buildPathStitch(d);
             }
             foreach (GameObject d in delta.added)
             {
-                doors.Add(d);
+                doors.Enqueue(d,dist+1);
+                doorDists[d] = dist + 1;
+                //TODO recalc other tile dists
             }
         };
 
@@ -144,7 +159,7 @@ public class MapGenerator : NetworkBehaviour
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
             //TODO Make level more linear
-            GameObject door = doors.RandomItemWeighted();
+            GameObject door = doors.RandomItemWeighted(10);
 
             //Removes the door without trying, if the space right in front isnt free
             if (Physics.OverlapBox(
@@ -238,6 +253,7 @@ public class MapGenerator : NetworkBehaviour
         public List<GameObject> added;
         public List<GameObject> removed;
     }
+
     static TileWeight getTilePrefab(List<TileWeight> weights)
     {
         weights = normalizeWeights(weights);

@@ -124,32 +124,31 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(currentFloor);
 
         List<GameObject> tiles = new List<GameObject>();
-        SimplePriorityQueue<GameObject> doors = new SimplePriorityQueue<GameObject>();
-        Dictionary<GameObject, int> doorDists = new Dictionary<GameObject, int>();
-        List<GameObject> badDoors = new List<GameObject>();
+        SimplePriorityQueue<Door> doors = new SimplePriorityQueue<Door>();
+        List<Door> badDoors = new List<Door>();
         System.Action<TileDelta> processDelta = (TileDelta delta) =>
         {
             tiles.Add(delta.tile);
             int dist = 0;
             bool distSet = false;
 
-            foreach (GameObject d in delta.removed)
+            foreach (Door d in delta.removed)
             {
                 if (distSet)
                 {
-                    dist = Mathf.Min(dist, doorDists[d]);
+                    dist = Mathf.Min(dist, d.floorDist);
                 }
                 else
                 {
-                    dist = doorDists[d];
+                    dist = d.floorDist;
                 }
                 doors.Remove(d);
                 //buildPathStitch(d);
             }
-            foreach (GameObject d in delta.added)
+            foreach (Door d in delta.added)
             {
                 doors.Enqueue(d,dist+1);
-                doorDists[d] = dist + 1;
+                d.floorDist = dist + 1;
                 //TODO recalc other tile dists
             }
         };
@@ -158,8 +157,7 @@ public class MapGenerator : NetworkBehaviour
         int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
-            //TODO Make level more linear
-            GameObject door = doors.RandomItemWeighted(10);
+            Door door = doors.RandomItemWeighted(7);
 
             //Removes the door without trying, if the space right in front isnt free
             if (Physics.OverlapBox(
@@ -218,13 +216,20 @@ public class MapGenerator : NetworkBehaviour
 
         }
 
-        foreach (GameObject hole in doors)
+        foreach (Door hole in doors)
         {
-            buildDoorBlocker(hole.transform.position, hole.transform.rotation);
+            if (hole.needsDoor)
+            {
+                buildDoorBlocker(hole.transform.position, hole.transform.rotation);
+            }
+            
         }
-        foreach (GameObject hole in badDoors)
+        foreach (Door hole in badDoors)
         {
-            buildDoorBlocker(hole.transform.position, hole.transform.rotation);
+            if (hole.needsDoor)
+            {
+                buildDoorBlocker(hole.transform.position, hole.transform.rotation);
+            }
         }
 
         NavMeshBuildSettings agent = NavMesh.GetSettingsByID(0);
@@ -250,8 +255,8 @@ public class MapGenerator : NetworkBehaviour
     struct TileDelta
     {
         public GameObject tile;
-        public List<GameObject> added;
-        public List<GameObject> removed;
+        public List<Door> added;
+        public List<Door> removed;
     }
 
     static TileWeight getTilePrefab(List<TileWeight> weights)
@@ -270,15 +275,15 @@ public class MapGenerator : NetworkBehaviour
         }
         return weights[index];
     }
-    TilePlacement checkTile(GameObject door, GameObject tilePrefab)
+    TilePlacement checkTile(Door door, GameObject tilePrefab)
     {
         Vector3 position;
         Quaternion rotation;
 
-        List<GameObject> doorsPre = tilePrefab.GetComponent<MapTile>().Doors();
+        List<Door> doorsPre = tilePrefab.GetComponent<MapTile>().Doors();
         while (doorsPre.Count > 0)
         {
-            GameObject doorPre = doorsPre.RandomItem();
+            Door doorPre = doorsPre.RandomItem();
             Vector3 localDiff = -doorPre.transform.position;
             rotation = Quaternion.LookRotation(-Vector3.forward) * Quaternion.Inverse(Quaternion.LookRotation(doorPre.transform.forward)) * Quaternion.LookRotation(door.transform.forward);
             Vector3 worldDiff = rotation * localDiff * currentFloorScale;
@@ -322,15 +327,15 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(t);
         Physics.SyncTransforms();
 
-        List<GameObject> doors = t.GetComponent<MapTile>().Doors();
-        List<GameObject> added = new List<GameObject>();
-        List<GameObject> removed = new List<GameObject>();
-        foreach (GameObject doorInst in doors)
+        List<Door> doors = t.GetComponent<MapTile>().Doors();
+        List<Door> added = new List<Door>();
+        List<Door> removed = new List<Door>();
+        foreach (Door doorInst in doors)
         {
             Collider[] found = Physics.OverlapSphere(doorInst.transform.position, 1f, LayerMask.GetMask("Doors"));
             if (found.Length > 1)
             {
-                List<GameObject> foundDoors = found.Select(c => c.gameObject).ToList();
+                List<Door> foundDoors = found.Select(c => c.GetComponent<Door>()).ToList();
                 foundDoors.Remove(doorInst);
                 removed.Add(foundDoors[0]);
             }

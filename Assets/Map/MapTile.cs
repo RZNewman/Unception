@@ -7,9 +7,9 @@ public class MapTile : MonoBehaviour
 {
 
 
-    public List<GameObject> Doors()
+    public List<Door> Doors()
     {
-        return gameObject.ChildrenWithTag("DoorLocation");
+        return gameObject.GetComponentsInChildren<Door>().ToList();
     }
 
     public List<GameObject> Zones()

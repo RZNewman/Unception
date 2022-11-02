@@ -106,9 +106,9 @@ public class MonsterSpawn : NetworkBehaviour
         }
 
         int zoneCount = zones.Count;
-        for (int i = 0; i < zoneCount && i < 5; i++)
+        for (int i = 0; i < zoneCount && i < 4; i++)
         {
-            //TODO pity chests
+            //TODO pity chests + normalize Pot spawn
             int z = zones.RandomIndex();
             GameObject zone = zones[z];
             zones.RemoveAt(z);

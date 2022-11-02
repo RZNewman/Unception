@@ -138,9 +138,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6056083725324071519}
   - component: {fileID: 6860621841036319816}
+  - component: {fileID: 2233796575977482016}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -172,6 +173,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2233796575977482016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2233832214418205689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &2287204686885174507
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,7 +367,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -397,9 +412,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6478003371764811172}
   - component: {fileID: 8278293816520665430}
+  - component: {fileID: 534956670190273532}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -431,6 +447,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &534956670190273532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2657689345892117674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &2774077562219439482
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,9 +504,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3160886205613327882}
   - component: {fileID: 5410101914395578742}
+  - component: {fileID: 4401492707607787222}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -508,6 +539,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4401492707607787222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3365564606316053552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &3386315330209056135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,9 +1254,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1272730704640544584}
   - component: {fileID: 7142416695043087419}
+  - component: {fileID: 4206492703849575755}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1243,6 +1289,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4206492703849575755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7199793679636438054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &7730591299331916485
 GameObject:
   m_ObjectHideFlags: 0

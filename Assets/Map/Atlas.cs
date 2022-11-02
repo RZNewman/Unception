@@ -7,7 +7,7 @@ using static MonsterSpawn;
 
 public class Atlas : NetworkBehaviour
 {
-    public static readonly int avgPacksPerFloor = 30;
+    public static readonly int avgPacksPerFloor = 20;
     public readonly static float avgFloorsPerMap = 2f;
     public static readonly float difficultyRange = 1;
 

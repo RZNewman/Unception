@@ -652,7 +652,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -842,7 +842,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1361,7 +1361,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1501,9 +1501,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5128008791311994443}
   - component: {fileID: 1158224725855863378}
+  - component: {fileID: 1749421247303164401}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1535,6 +1536,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1749421247303164401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4279557461370097929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &4481799415436934095
 GameObject:
   m_ObjectHideFlags: 0
@@ -1690,7 +1705,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1779,9 +1794,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5262526054524294096}
   - component: {fileID: 610471939722502200}
+  - component: {fileID: 8458955461109404400}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1813,6 +1829,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8458955461109404400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4992524417846304052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &5097558110547031618
 GameObject:
   m_ObjectHideFlags: 0
@@ -2364,9 +2394,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6378341698853181483}
   - component: {fileID: 14286611082550554}
+  - component: {fileID: 2287904113210358441}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2398,6 +2429,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2287904113210358441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5835549509528537662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &5956180141873810890
 GameObject:
   m_ObjectHideFlags: 0
@@ -2547,9 +2592,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1272730704640544584}
   - component: {fileID: 7142416695043087419}
+  - component: {fileID: 3157671699200073802}
   m_Layer: 12
   m_Name: DoorLocation
-  m_TagString: DoorLocation
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2581,6 +2627,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3157671699200073802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7199793679636438054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03049baf98b655469b63d4490514120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needsDoor: 1
+  floorDist: 0
 --- !u!1 &8045181978480542485
 GameObject:
   m_ObjectHideFlags: 0
@@ -3142,7 +3202,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9c3435b7cf3210044b3a24266d8aebf1, type: 2}
+  - {fileID: 2100000, guid: d7345edb353d0794296950a9adb3ad4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

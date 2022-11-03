@@ -71,10 +71,11 @@ public class AiHandler : MonoBehaviour, UnitControl
                 FloorNormal thierGround = target.GetComponentInParent<FloorNormal>();
 
                 Vector3 moveTarget;
+                Vector3 attackTarget = target.transform.position;
                 bool canSee = aggro.canSee(target);
                 if (canSee)
                 {
-                    moveTarget = target.transform.position;
+                    moveTarget = thierGround.nav;
                     pathingCorner = -1;
                 }
                 else
@@ -143,11 +144,15 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                 if (canSee)
                 {
-                    float edgeDiffMag = planarDiff.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
+                    //TODO check height
+                    Vector3 rawDiffAttack = attackTarget - transform.position;
+                    Vector3 planarDiffAttack = rawDiffAttack;
+                    planarDiffAttack.y = 0;
+                    float edgeDiffMag = planarDiffAttack.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
 
                     EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
-                    Vector3 perpendicularWidth = planarDiff - Vector3.Dot(planarDiff, rotatingBody.transform.forward) * rotatingBody.transform.forward;
-                    float dot = Vector3.Dot(planarDiff, rotatingBody.transform.forward);
+                    Vector3 perpendicularWidth = planarDiffAttack - Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward) * rotatingBody.transform.forward;
+                    float dot = Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward);
                     if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
                     {
                         currentInput.attacks = new AttackKey[] { AttackKey.One };

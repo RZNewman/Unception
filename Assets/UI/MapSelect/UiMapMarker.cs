@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using static Atlas;
 
 public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
@@ -19,6 +20,7 @@ public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         atlas = a;
         map = m;
+        GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, m.difficultyRangePercent);
     }
     public Map getMap()
     {

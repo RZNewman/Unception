@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FloorNormal : MonoBehaviour
 {
     bool ground = false;
     Vector3 groundNormal = Vector3.up;
+    Vector3 navPosition = Vector3.zero;
 
     public struct GroundSearchParams
     {
@@ -31,6 +34,12 @@ public class FloorNormal : MonoBehaviour
             groundNormal = Vector3.up;
         }
 
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(transform.position, out hit, paras.distance * 10, NavMesh.AllAreas))
+        {
+            navPosition = hit.position;
+        }
+        
 
     }
     public Vector3 normal
@@ -38,6 +47,14 @@ public class FloorNormal : MonoBehaviour
         get
         {
             return groundNormal;
+        }
+    }
+
+    public Vector3 nav
+    {
+        get
+        {
+            return navPosition;
         }
     }
 

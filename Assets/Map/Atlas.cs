@@ -33,6 +33,7 @@ public class Atlas : NetworkBehaviour
         public Difficulty difficulty;
         public Floor[] floors;
         public Vector2 visualLocation;
+        public float difficultyRangePercent;
     }
     public struct Floor
     {
@@ -88,7 +89,8 @@ public class Atlas : NetworkBehaviour
 
         for (int i = 0; i < mapsToGen; i++)
         {
-            float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, (float)i / (mapsToGen - 1));
+            float difficultyRangePercent = (float)i / (mapsToGen - 1);
+            float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
             int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
             Floor[] floors = new Floor[floorCount];
             for(int j =0; j< floorCount; j++)
@@ -106,6 +108,7 @@ public class Atlas : NetworkBehaviour
                 difficulty = Difficulty.fromTotal(currentDifficulty),
                 floors = floors,
                 visualLocation = new Vector2(Random.value, Random.value),
+                difficultyRangePercent = difficultyRangePercent,
             };
         }
 

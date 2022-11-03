@@ -32,10 +32,10 @@ public class DashState : AttackStageState
                     mover.setToWalkSpeed();
                     break;
                 case DashEndMomentum.Stop:
-                    mover.planarVelocity = Vector3.zero;
+                    mover.planarVelocityCalculated = Vector3.zero;
                     break;
                 default:
-                    mover.planarVelocity = Vector3.zero;
+                    mover.planarVelocityCalculated = Vector3.zero;
                     break;
             }
         }

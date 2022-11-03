@@ -71,7 +71,7 @@ public class UnitMovement : NetworkBehaviour
         }
         else
         {
-            planarVelocity = Vector3.zero;
+            planarVelocityCalculated = Vector3.zero;
         }
     }
     public void OrderedTransition()
@@ -107,7 +107,7 @@ public class UnitMovement : NetworkBehaviour
             return transform.position + input.lookOffset;
         }
     }
-    public Vector3 planarVelocity
+    public Vector3 planarVelocityCalculated
     {
         get
         {
@@ -152,6 +152,7 @@ public class UnitMovement : NetworkBehaviour
         speedMultiplier *= lookMultiplier * airMultiplier;
 
 
+        Vector3 planarVelocity = planarVelocityCalculated;
         float potentialSpeed = props.maxSpeed * speedMultiplier * power.scale();
         float desiredSpeed;
         if (grounded)
@@ -189,12 +190,12 @@ public class UnitMovement : NetworkBehaviour
 
         if (diff.magnitude <= addingFrameMag)
         {
-            planarVelocity = desiredVeloicity;
+            planarVelocityCalculated = desiredVeloicity;
 
         }
         else
         {
-            planarVelocity += diff.normalized * addingFrameMag;
+            planarVelocityCalculated = planarVelocity + diff.normalized * addingFrameMag;
         }
 
     }
@@ -227,11 +228,12 @@ public class UnitMovement : NetworkBehaviour
                 desiredDirection = Vector3.zero;
                 break;
         }
-        planarVelocity = desiredDirection * dashSpeed;
+        planarVelocityCalculated = desiredDirection * dashSpeed;
 
     }
     public void setToWalkSpeed()
     {
+        Vector3 planarVelocity = planarVelocityCalculated;
         float lookMultiplier = toMoveMultiplier(vec2input(planarVelocity));
         float airMultiplier = 1.0f;
         if (!grounded)
@@ -241,7 +243,7 @@ public class UnitMovement : NetworkBehaviour
 
         float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * power.scale();
 
-        planarVelocity = planarVelocity.normalized * potentialSpeed;
+        planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }
 
     float toMoveMultiplier(Vector2 inputMove)

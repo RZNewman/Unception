@@ -50,7 +50,7 @@ public class GlobalPlayer : MonoBehaviour
     {
         get
         {
-            return clientLocalPlayer ? clientLocalPlayer.unit.GetComponent<Posture>().remainingToStun : int.MaxValue;
+            return clientLocalPlayer && clientLocalPlayer.unit ? clientLocalPlayer.unit.GetComponent<Posture>().remainingToStun : int.MaxValue;
         }
     }
 }

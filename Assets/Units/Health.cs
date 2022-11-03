@@ -35,6 +35,10 @@ public class Health : NetworkBehaviour, BarValue
     {
         currentHealth -= damage;
     }
+    public void takePercentDamage(float percent)
+    {
+        currentHealth -= maxHealth * percent;
+    }
 
     // Update is called once per frame
     public void OrderedUpdate()

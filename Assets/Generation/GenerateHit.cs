@@ -46,7 +46,7 @@ public static class GenerateHit
             float length = this.length.asRange(0.8f, 5f) * strength * scale;
             float width = this.width.asRange(0.5f, 3.5f) * strength * scale;
             float knockback = this.knockback.asRange(0, 6) * scale * strength;
-            float damage = 0.3f + this.damageMult.asRange(0f, 0.7f) * strength;
+            float damage = this.damageMult.asRange(0.5f, 0.7f) * strength;
             float stagger = this.stagger.asRange(0f, 80f) * scale * strength;
             float knockUp = this.knockUp.asRange(0, 20) * scale * strength;
 

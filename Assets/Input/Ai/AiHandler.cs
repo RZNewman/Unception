@@ -67,6 +67,8 @@ public class AiHandler : MonoBehaviour, UnitControl
             {
                 Size mySize = rotatingBody.GetComponentInChildren<Size>();
                 Size thierSize = target.GetComponent<Size>();
+                FloorNormal myGround = rotatingBody.GetComponentInParent<FloorNormal>();
+                FloorNormal thierGround = target.GetComponentInParent<FloorNormal>();
 
                 Vector3 moveTarget;
                 bool canSee = aggro.canSee(target);
@@ -79,16 +81,8 @@ public class AiHandler : MonoBehaviour, UnitControl
                 {
                     if (pathingCorner < 0)
                     {
-                        NavMeshHit hit;
-                        if(!NavMesh.SamplePosition(transform.position, out hit, mySize.scaledHalfHeight * 10, NavMesh.AllAreas))
-                        {
-                            Debug.Log("NoSource");
-                            return;
-                        }
-                        Vector3 myNavPos = hit.position;
-                        NavMesh.SamplePosition(target.transform.position, out hit, thierSize.scaledHalfHeight * 10, NavMesh.AllAreas);
-                        Vector3 theirNavPos = hit.position;
-                        NavMesh.CalculatePath(myNavPos, theirNavPos, NavMesh.AllAreas, currentPath);
+                        
+                        NavMesh.CalculatePath(myGround.nav, thierGround.nav, NavMesh.AllAreas, currentPath);
                         pathingCorner = 0;
                     }
 

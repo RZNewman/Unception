@@ -3,7 +3,7 @@ using static GenerateValues;
 
 public static class GenerateUnit
 {
-    public static UnitProperties generate(SharedMaterials mats, float power)
+    public static UnitProperties generate(float power, UnitVisuals vis)
     {
         UnitProperties properties = ScriptableObject.CreateInstance<UnitProperties>();
         properties.isPlayer = false;
@@ -36,8 +36,9 @@ public static class GenerateUnit
         properties.stunnedPostureRecover = posture * 4;
         properties.stunnedPostureCeilingAcceleration = posture * 2f;
 
-        properties.visualsId = mats.addVisuals();
+        properties.visuals = vis;
 
         return properties;
     }
+
 }

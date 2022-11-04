@@ -9,7 +9,6 @@ public class AiHandler : MonoBehaviour, UnitControl
     AggroHandler aggro;
     UnitMovement mover;
     GameObject rotatingBody;
-    ModelLoader modelLoader;
     NavMeshPath currentPath;
     int pathingCorner = -1;
 
@@ -52,7 +51,6 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
         mover = GetComponentInParent<UnitMovement>();
-        modelLoader = GetComponentInParent<ModelLoader>();
         currentPath = new NavMeshPath();
         rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
     }
@@ -102,17 +100,16 @@ public class AiHandler : MonoBehaviour, UnitControl
                     else
                     {
                         Vector3 current = currentPath.corners[pathingCorner];
-                        if (modelLoader.size)
-                        {
-                            Vector3 diff = current - (transform.position + Vector3.down * modelLoader.size.scaledHalfHeight);
-                            //Debug.Log(modelLoader.size.scaledRadius - diff.magnitude);
-                            Debug.DrawLine(transform.position, current, Color.red);
-                            if (diff.magnitude <= modelLoader.size.scaledRadius)
-                            {
-                                pathingCorner++;
 
-                            }
+                        Vector3 diff = current - (transform.position + Vector3.down * mySize.scaledHalfHeight);
+                        //Debug.Log(modelLoader.size.scaledRadius - diff.magnitude);
+                        Debug.DrawLine(transform.position, current, Color.red);
+                        if (diff.magnitude <= mySize.scaledRadius)
+                        {
+                            pathingCorner++;
+
                         }
+                        
 
                         if (pathingCorner >= currentPath.corners.Length)
                         {

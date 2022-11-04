@@ -24,10 +24,6 @@ public class PlayerGhost : NetworkBehaviour
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
             FindObjectOfType<MenuHandler>().clientMenu();
             FindObjectOfType<PlayerUiReference>(true).setTarget(this);
-            if (isClientOnly)
-            {
-                CmdAddClient();
-            }
 
 
         }
@@ -150,10 +146,4 @@ public class PlayerGhost : NetworkBehaviour
         playerPower = p;
     }
 
-    [Command]
-    void CmdAddClient()
-    {
-        FindObjectOfType<SharedMaterials>().SyncVisuals(connectionToClient);
-
-    }
 }

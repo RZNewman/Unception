@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class UnitProperties : ScriptableObject
@@ -26,5 +27,12 @@ public class UnitProperties : ScriptableObject
     public float maxStamina;
     public float staminaRecover;
 
-    public int visualsId;
+    public UnitVisuals visuals;
+}
+
+[Serializable]
+public struct UnitVisuals
+{
+    public Color[] colors;
+    public int[] parts; 
 }

@@ -12,7 +12,7 @@ public class UnitMovement : NetworkBehaviour
     ControlManager controller;
     LifeManager lifeManager;
     StateMachine<PlayerMovementState> movement;
-    ModelLoader model;
+    Size size;
     Power power;
     FloorNormal ground;
 
@@ -26,11 +26,11 @@ public class UnitMovement : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         power = GetComponent<Power>();
         controller = GetComponent<ControlManager>();
-        model = GetComponent<ModelLoader>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
         propHolder = GetComponent<UnitPropsHolder>();
         ground = GetComponent<FloorNormal>();
+        size = GetComponentInChildren<Size>();
         lifeManager.suscribeDeath(cleanup);
     }
 
@@ -61,11 +61,7 @@ public class UnitMovement : NetworkBehaviour
 
     public void OrderedUpdate()
     {
-        if (!model.modelLoaded)
-        {
-            return;
-        }
-        else if (!lifeManager.IsDead)
+        if (!lifeManager.IsDead)
         {
             movement.tick();
         }
@@ -76,7 +72,7 @@ public class UnitMovement : NetworkBehaviour
     }
     public void OrderedTransition()
     {
-        if (!lifeManager.IsDead && model.modelLoaded)
+        if (!lifeManager.IsDead)
         {
             setGround();
             movement.transition();
@@ -287,12 +283,12 @@ public class UnitMovement : NetworkBehaviour
     void setGround()
     {
         FloorNormal.GroundSearchParams paras;
-        if (model.size.colliderRef)
+        if (size.colliderRef)
         {
             paras = new FloorNormal.GroundSearchParams
             {
-                radius = model.size.scaledRadius,
-                distance = model.size.scaledHalfHeight,
+                radius = size.scaledRadius,
+                distance = size.scaledHalfHeight,
             };
         }
         else

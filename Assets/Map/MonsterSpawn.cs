@@ -420,8 +420,6 @@ public class MonsterSpawn : NetworkBehaviour
     public override void OnStartServer()
     {
         ready = true;
-        SharedMaterials mats = GetComponent<SharedMaterials>();
-        mats.addVisuals(true);
         foreach (SpawnPack position in buildRequests)
         {
             instancePack(position);
@@ -432,7 +430,7 @@ public class MonsterSpawn : NetworkBehaviour
     public void setSpawnPower(float power)
     {
         spawnPower = power;
-        float powerMultDiff = 1.2f;
+        float powerMultDiff = 1.3f;
         while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
         {
             lastPowerAdded *= powerMultDiff;
@@ -448,15 +446,15 @@ public class MonsterSpawn : NetworkBehaviour
                 //Debug.Log("Remove" + data.power);
             }
         }
+        Debug.Log(monsterProps.Count);
     }
 
 
     UnitData createType(float power)
     {
-        SharedMaterials mats = GetComponent<SharedMaterials>();
         UnitData u = new UnitData();
         u.power = power;
-        u.props = GenerateUnit.generate(mats, power);
+        u.props = GenerateUnit.generate(power, UnitPre.GetComponentInChildren<PartAssignment>().getVisuals());
         u.abilitites = new List<AttackBlock>();
         AttackBlock a = GenerateAttack.generate(power, true);
         a.scales = true;

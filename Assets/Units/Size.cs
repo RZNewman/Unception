@@ -4,7 +4,7 @@ using static IndicatorHolder;
 public class Size : MonoBehaviour, IndicatorHolder
 {
     CapsuleCollider col;
-    Vector3 baseSize;
+    Vector3 baseSize = Vector3.one;
     CapsuleCollider stopper;
     // Start is called before the first frame update
     void Start()

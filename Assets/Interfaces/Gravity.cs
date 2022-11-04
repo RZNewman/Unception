@@ -8,14 +8,12 @@ public class Gravity : MonoBehaviour
     UnitMovement movement;
     Rigidbody rb;
     LifeManager lifeManager;
-    ModelLoader model;
     Power power;
     void Start()
     {
         movement = GetComponent<UnitMovement>();
         rb = GetComponent<Rigidbody>();
         lifeManager = GetComponent<LifeManager>();
-        model = GetComponent<ModelLoader>();
         power = GetComponent<Power>();
     }
 
@@ -25,7 +23,7 @@ public class Gravity : MonoBehaviour
         if (movement)
         {
             //is unit
-            if (!movement.grounded && !lifeManager.IsDead && model.modelLoaded)
+            if (!movement.grounded && !lifeManager.IsDead)
             {
                 rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scale();
             }

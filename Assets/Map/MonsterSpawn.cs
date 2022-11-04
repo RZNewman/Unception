@@ -430,7 +430,7 @@ public class MonsterSpawn : NetworkBehaviour
     public void setSpawnPower(float power)
     {
         spawnPower = power;
-        float powerMultDiff = 1.3f;
+        float powerMultDiff = 1.2f;
         while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
         {
             lastPowerAdded *= powerMultDiff;
@@ -446,7 +446,7 @@ public class MonsterSpawn : NetworkBehaviour
                 //Debug.Log("Remove" + data.power);
             }
         }
-        Debug.Log(monsterProps.Count);
+        //Debug.Log(monsterProps.Count);
     }
 
 

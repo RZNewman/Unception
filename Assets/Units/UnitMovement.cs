@@ -15,6 +15,7 @@ public class UnitMovement : NetworkBehaviour
     Size size;
     Power power;
     FloorNormal ground;
+    Combat combat;
 
     public float syncAngleHard = 40;
     [HideInInspector]
@@ -31,6 +32,7 @@ public class UnitMovement : NetworkBehaviour
         propHolder = GetComponent<UnitPropsHolder>();
         ground = GetComponent<FloorNormal>();
         size = GetComponentInChildren<Size>();
+        combat = GetComponent<Combat>();
         lifeManager.suscribeDeath(cleanup);
     }
 
@@ -136,16 +138,21 @@ public class UnitMovement : NetworkBehaviour
     {
         float lookMultiplier = toMoveMultiplier(inp.move);
         float airMultiplier = 1.0f;
-
-
-
+        float combatMultiplier = 1.0f;
         if (!grounded)
         {
             airMultiplier = 0.6f;
         }
+        if (!combat.inCombat)
+        {
+            combatMultiplier = 1.5f;
+        }
+
+
+
         Vector3 desiredDirection = input2vec(inp.move);
 
-        speedMultiplier *= lookMultiplier * airMultiplier;
+        speedMultiplier *= lookMultiplier * airMultiplier * combatMultiplier;
 
 
         Vector3 planarVelocity = planarVelocityCalculated;
@@ -166,7 +173,7 @@ public class UnitMovement : NetworkBehaviour
         float stoppingMagnitude = Vector3.Dot(diff, -planarVelocity);
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
-        float stoppingMult = accMultiplier * airMultiplier;
+        float stoppingMult = accMultiplier * airMultiplier * combatMultiplier;
         float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * power.scale();
 
         if (stoppingDir.magnitude <= stoppingFrameMag)
@@ -181,7 +188,7 @@ public class UnitMovement : NetworkBehaviour
 
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = accMultiplier * airMultiplier * lookMultiplierDiff;
+        float addingMult = accMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff ;
         float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * power.scale();
 
         if (diff.magnitude <= addingFrameMag)

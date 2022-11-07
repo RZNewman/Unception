@@ -7,5 +7,5 @@ public class Door : MonoBehaviour
     public bool needsDoor = true;
 
     [HideInInspector]
-    public int floorDist;
+    public float floorDist;
 }

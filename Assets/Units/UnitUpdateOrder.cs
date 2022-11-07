@@ -7,6 +7,7 @@ public class UnitUpdateOrder : NetworkBehaviour
     Posture posture;
     Stamina stamina;
     Cast cast;
+    AnimationController anim;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +18,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         move = GetComponent<UnitMovement>();
         stamina = GetComponent<Stamina>();
         cast = GetComponent<Cast>();
+        anim = GetComponent<AnimationController>();
 
 
     }
@@ -55,5 +57,9 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void IndicatorTick()
     {
         cast.OrderedUpdate();
+    }
+    public void AnimationTick()
+    {
+        anim.OrderedUpdate();
     }
 }

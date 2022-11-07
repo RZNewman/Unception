@@ -1,6 +1,7 @@
 using Mirror;
 using System;
 using UnityEngine;
+using static AnimationController;
 using static DashState;
 using static GenerateDash;
 using static UnitControl;
@@ -21,6 +22,8 @@ public class UnitMovement : NetworkBehaviour
     [HideInInspector]
     [SyncVar(hook = nameof(syncLookAngle))]
     public float currentLookAngle = 0;
+
+    Vector3 planarVelocityCache;
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +88,11 @@ public class UnitMovement : NetworkBehaviour
     {
         movement.exit();
     }
+    public PlayerMovementState currentState()
+    {
+        return movement.state();
+    }
+
     public Posture posture
     {
         get { return GetComponent<Posture>(); }
@@ -105,7 +113,45 @@ public class UnitMovement : NetworkBehaviour
             return transform.position + input.lookOffset;
         }
     }
-    public Vector3 planarVelocityCalculated
+    public Vector3 planarVelocity
+    {
+        get
+        {
+            return planarVelocityCache;
+        }
+    }
+
+    public MoveDirection moveDirection
+    {
+        get
+        {
+            if(planarVelocityCache.magnitude < 0.05f)
+            {
+                return MoveDirection.None;
+            }
+            float angle = Vector3.SignedAngle(Vector3.forward, planarVelocityCache, Vector3.up);
+            float diff = angle - currentLookAngle;
+            diff = normalizeAngle(diff);
+            if(Mathf.Abs(diff) < 45)
+            {
+                return MoveDirection.Forward;
+            }
+            if (Mathf.Abs(diff) > 135)
+            {
+                return MoveDirection.Backward;
+            }
+            if (diff > 0)
+            {
+                return MoveDirection.Right;
+            }
+            else
+            {
+                return MoveDirection.Left;
+            }
+
+        }
+    }
+    Vector3 planarVelocityCalculated
     {
         get
         {
@@ -193,13 +239,14 @@ public class UnitMovement : NetworkBehaviour
 
         if (diff.magnitude <= addingFrameMag)
         {
-            planarVelocityCalculated = desiredVeloicity;
+            planarVelocityCache = desiredVeloicity;
 
         }
         else
         {
-            planarVelocityCalculated = planarVelocity + diff.normalized * addingFrameMag;
+            planarVelocityCache = planarVelocity + diff.normalized * addingFrameMag;
         }
+        planarVelocityCalculated = planarVelocityCache;
 
     }
 
@@ -247,6 +294,10 @@ public class UnitMovement : NetworkBehaviour
         float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * power.scale();
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
+    }
+    public void stop()
+    {
+        planarVelocityCalculated = Vector3.zero;
     }
 
     float toMoveMultiplier(Vector2 inputMove)

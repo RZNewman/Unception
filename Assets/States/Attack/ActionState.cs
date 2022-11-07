@@ -16,6 +16,7 @@ public class ActionState : AttackStageState
     }
     public override void enter()
     {
+        mover.GetComponent<AnimationController>().setAttack();
         //Hits only happen on the server
         if (!mover.isServer)
         {

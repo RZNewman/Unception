@@ -679,6 +679,7 @@ GameObject:
   - component: {fileID: 692628121752326469}
   - component: {fileID: -3801388523889064537}
   - component: {fileID: 2732588645681290907}
+  - component: {fileID: 7523574754519777489}
   m_Layer: 7
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -1048,6 +1049,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   givesPower: 1
   givesItems: 1
+--- !u!114 &7523574754519777489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563495925269500109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32d110c3e8dc054488820b5528f2ada0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 5155918846453075516}
 --- !u!1 &566532740388109760
 GameObject:
   m_ObjectHideFlags: 0
@@ -3299,7 +3313,7 @@ GameObject:
   - component: {fileID: 1255849034903327814}
   - component: {fileID: 5155918846453075516}
   m_Layer: 0
-  m_Name: C11
+  m_Name: Animation Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3337,7 +3351,7 @@ Animator:
   m_GameObject: {fileID: 1884330553929256700}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2b7c51804aef3f445999af66e5132162, type: 3}
-  m_Controller: {fileID: 9100000, guid: f5e71d2eda3d6cc40857811c187df502, type: 2}
+  m_Controller: {fileID: 9100000, guid: a2f0e211e95e2ba4dafa081fee1e46f6, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -4202,7 +4216,7 @@ GameObject:
   - component: {fileID: 7711109524519204785}
   - component: {fileID: 9156694583212182433}
   m_Layer: 7
-  m_Name: Robo
+  m_Name: Unit Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -113,7 +113,11 @@ public class MapGenerator : NetworkBehaviour
         spawner.setSpawnPower(m.power);
         yield return buildGridRoutine();
     }
-
+    enum TileDistanceMode
+    {
+        tiles,
+        direction
+    }
 
     IEnumerator buildGridRoutine()
     {
@@ -126,30 +130,47 @@ public class MapGenerator : NetworkBehaviour
         List<GameObject> tiles = new List<GameObject>();
         SimplePriorityQueue<Door> doors = new SimplePriorityQueue<Door>();
         List<Door> badDoors = new List<Door>();
+
+        TileDistanceMode mode = TileDistanceMode.direction;
+        Vector3 tileDirection = new Vector3(Random.value, 0, Random.value).normalized;
+
         System.Action<TileDelta> processDelta = (TileDelta delta) =>
         {
             tiles.Add(delta.tile);
-            int dist = 0;
+            float dist = 0;
             bool distSet = false;
 
             foreach (Door d in delta.removed)
             {
-                if (distSet)
+                if(mode == TileDistanceMode.tiles)
                 {
-                    dist = Mathf.Min(dist, d.floorDist);
-                }
-                else
-                {
-                    dist = d.floorDist;
+                    if (distSet)
+                    {
+                        dist = Mathf.Min(dist, d.floorDist);
+                    }
+                    else
+                    {
+                        dist = d.floorDist;
+                        distSet = true;
+                    }
                 }
                 doors.Remove(d);
                 //buildPathStitch(d);
             }
             foreach (Door d in delta.added)
             {
-                doors.Enqueue(d,dist+1);
-                d.floorDist = dist + 1;
-                //TODO recalc other tile dists
+                if (mode == TileDistanceMode.tiles)
+                {
+                    dist += 1;
+                    d.floorDist = dist;
+                    //TODO recalc other tile dists
+                }
+                else
+                {
+                    dist = Vector3.Dot(delta.tile.transform.localPosition, tileDirection);
+                }
+                doors.Enqueue(d,dist);   
+                
             }
         };
 
@@ -157,7 +178,28 @@ public class MapGenerator : NetworkBehaviour
         int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
         for (int i = 0; i < tileCount && doors.Count > 0; i++)
         {
-            Door door = doors.RandomItemWeighted(7);
+            bool ending = i == tileCount - 1;
+
+            Door door;
+            if (ending)
+            {
+                door = doors.Last();
+            }
+            else
+            {
+                float weight = 2;
+                switch (mode)
+                {
+                    case TileDistanceMode.tiles:
+                        weight = 7;
+                        break;
+                    case TileDistanceMode.direction:
+                        weight = 5f;
+                        break;
+
+                }
+                door = doors.RandomItemWeighted(weight);
+            }
 
             //Removes the door without trying, if the space right in front isnt free
             if (Physics.OverlapBox(
@@ -173,7 +215,7 @@ public class MapGenerator : NetworkBehaviour
                 continue;
             }
             List<TileWeight> weights;
-            if (i == tileCount - 1)
+            if (ending)
             {
                 weights = new List<TileWeight>();
                 weights.Add(new TileWeight { prefab = endPre, weight = 1 });

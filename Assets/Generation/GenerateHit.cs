@@ -24,6 +24,14 @@ public static class GenerateHit
         Foward,
         Backward
     }
+
+    [System.Serializable]
+    public struct HitFlair
+    {
+        public int visualIndex;
+        public int soundIndex;
+    }
+    
     public class HitGenerationData : GenerationData
     {
         public HitType type;
@@ -35,7 +43,7 @@ public static class GenerateHit
         public float knockUp;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
-
+        public HitFlair flair;
 
 
         public override InstanceData populate(float power, float strength)
@@ -54,6 +62,8 @@ public static class GenerateHit
             {
                 powerByStrength = power * strength,
                 powerAtGen = power,
+
+                flair = flair,
 
                 length = length,
                 width = width,
@@ -80,6 +90,7 @@ public static class GenerateHit
                         type = HitType.Projectile,
                         powerByStrength = input.powerByStrength,
                         powerAtGen = input.powerAtGen,
+                        flair = input.flair,
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,
@@ -95,7 +106,8 @@ public static class GenerateHit
                     {
                         type = HitType.Ground,
                         powerByStrength = input.powerByStrength,
-                        powerAtGen = input.powerAtGen,  
+                        powerAtGen = input.powerAtGen,
+                        flair = input.flair,
 
                         knockBackType = input.knockBackType,
                         knockback = input.knockback,
@@ -127,6 +139,7 @@ public static class GenerateHit
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public float knockUp;
+        public HitFlair flair;
 
 
         public override EffectiveDistance GetEffectiveDistance()
@@ -195,6 +208,13 @@ public static class GenerateHit
             kbDir = KnockBackDirection.Backward;
         }
 
+
+        HitFlair flair = new HitFlair
+        {
+            visualIndex = Random.Range(0, 9),
+            soundIndex = Random.Range(0, 9),
+        };
+
         HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
         hit.length = typeValues[0].val;
         hit.width = typeValues[1].val;
@@ -204,6 +224,7 @@ public static class GenerateHit
         hit.knockBackType = kbType;
         hit.knockBackDirection = kbDir;
         hit.type = t;
+        hit.flair = flair;
         
         hit = augmentHit(hit, augments, typeValues);
 

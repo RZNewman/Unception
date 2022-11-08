@@ -295,9 +295,17 @@ public class UnitMovement : NetworkBehaviour
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }
-    public void stop()
+    public void stop(bool alsoGravity = false)
     {
-        planarVelocityCalculated = Vector3.zero;
+        if (alsoGravity)
+        {
+            rb.velocity = Vector3.zero;
+        }
+        else
+        {
+            planarVelocityCalculated = Vector3.zero;
+        }
+        
     }
 
     float toMoveMultiplier(Vector2 inputMove)

@@ -5,6 +5,7 @@ using static AttackUtils;
 using static GenerateHit;
 using Mirror;
 using static IndicatorInstance;
+using UnityEngine.VFX;
 
 public class Projectile : NetworkBehaviour
 {
@@ -73,6 +74,7 @@ public class Projectile : NetworkBehaviour
         float speed = data.hitData.length / ProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
+        playerHit.GetComponentInChildren<VisualEffect>().visualEffectAsset = FindObjectOfType<GlobalPrefab>().projectileAssets[data.hitData.flair.visualIndex];
         setThreatColor();
     }
     public void setThreatColor()
@@ -80,8 +82,6 @@ public class Projectile : NetworkBehaviour
         float threat = data.hitData.powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
         Color c = getIndicatorColor(data.team, threat, false).color;
         playerHit.GetComponent<ColorIndividual>().setColor(c);
-        c.a = Mathf.Clamp01(c.a + 0.2f);
-        terrainHit.GetComponent<ColorIndividual>().setColor(c);
 
     }
 

@@ -60,6 +60,8 @@ public static class SystemClassWriters
                 writer.WriteKnockBackType(a.knockBackType);
                 writer.WriteKnockBackDirection(a.knockBackDirection);
                 writer.WriteFloat(a.knockUp);
+                writer.WriteInt(a.flair.visualIndex);
+                writer.WriteInt(a.flair.soundIndex);
                 break;
             case GenerateDash.DashGenerationData d:
                 writer.WriteByte((byte)GenerationDataClass.Dash);

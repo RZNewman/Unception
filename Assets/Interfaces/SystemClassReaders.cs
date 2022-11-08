@@ -53,6 +53,11 @@ public static class SystemClassReaders
                 hit.knockBackType = reader.ReadKnockBackType();
                 hit.knockBackDirection = reader.ReadKnockBackDirection();
                 hit.knockUp = reader.ReadFloat();
+                hit.flair = new HitFlair
+                {
+                    visualIndex = reader.ReadInt(),
+                    soundIndex = reader.ReadInt(),
+                };
                 return hit;
             case GenerationDataClass.Wind:
                 WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();

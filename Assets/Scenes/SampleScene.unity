@@ -1905,6 +1905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
+  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -1989,6 +1990,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &705507996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &716139564
 GameObject:
   m_ObjectHideFlags: 0
@@ -3029,6 +3050,36 @@ MonoBehaviour:
   GroundIndPre: {fileID: 8249178311684600747, guid: 759948cdacef6af4c871955bad7c495f, type: 3}
   ProjIndPre: {fileID: 8249178311684600747, guid: b6ca85c5a6d7a6f4695dbc5cb233d419, type: 3}
   DashIndPre: {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
+  projectileAssets:
+  - {fileID: 8926484042661614526, guid: 0e5c40d0ec09fe5459e8d4e63c398227, type: 3}
+  - {fileID: 8926484042661614526, guid: 384807e6e72ae5148868436a6375a012, type: 3}
+  - {fileID: 8926484042661614526, guid: 43ebf571415750648b7cc6c80540f053, type: 3}
+  - {fileID: 8926484042661614526, guid: 96016bf8ec8f8e545b8d560292d629d7, type: 3}
+  - {fileID: 8926484042661614526, guid: 01027c9308e862645a21dad3a7191b2f, type: 3}
+  - {fileID: 8926484042661614526, guid: e1859fbdfaadd74429107ddaa51866f4, type: 3}
+  - {fileID: 8926484042661614526, guid: cc6ca77fcff60cf4883402baba937b21, type: 3}
+  - {fileID: 8926484042661614526, guid: 54ea844fafe0a55448e0d5f9742f038a, type: 3}
+  - {fileID: 8926484042661614526, guid: 7e362f34d7c7f4745818c233a8adcecd, type: 3}
+  lineAssets:
+  - {fileID: 8926484042661614526, guid: e84bc47eed29183449ef6f15bb68b7aa, type: 3}
+  - {fileID: 8926484042661614526, guid: 3e625151121238b4eafa00ac85bce154, type: 3}
+  - {fileID: 8926484042661614526, guid: 57ca26ffdebc500459368e3773c9b636, type: 3}
+  - {fileID: 8926484042661614526, guid: 19da5cb0b3406e6499002d6b10a4b173, type: 3}
+  - {fileID: 8926484042661614526, guid: c40a54cde427c2b4383ba068d56dd64a, type: 3}
+  - {fileID: 8926484042661614526, guid: 9bb5e6b1dc1c5ae43a64f86a0f7ebb87, type: 3}
+  - {fileID: 8926484042661614526, guid: a7aba1d0a1ad6c949a2127d7aae7ab22, type: 3}
+  - {fileID: 8926484042661614526, guid: ed42c3dd42cd1744d9231f722fa986a4, type: 3}
+  - {fileID: 8926484042661614526, guid: 7ebcf019b7701e3469bce6f5c1cf27a0, type: 3}
+  groundAssets:
+  - {fileID: 8926484042661614526, guid: 8c143c50347503849ad538e73e5e0c76, type: 3}
+  - {fileID: 8926484042661614526, guid: 8b7936261f1578847bd2854358b842b0, type: 3}
+  - {fileID: 8926484042661614526, guid: 30af91066acbfb84d87c197a33d87a27, type: 3}
+  - {fileID: 8926484042661614526, guid: b29c47a8ffba8564e922022d1f844a3a, type: 3}
+  - {fileID: 8926484042661614526, guid: 17e7b7992fce494498a662f926379b6f, type: 3}
+  - {fileID: 8926484042661614526, guid: 1ebda7eefa7a2ad4390c08610db82efc, type: 3}
+  - {fileID: 8926484042661614526, guid: b9a33dcfeb06b964691f39305adbcabe, type: 3}
+  - {fileID: 8926484042661614526, guid: 241c6eba0178410409cfc0e62efd1ec6, type: 3}
+  - {fileID: 8926484042661614526, guid: 00f1a81db0cc66b46a0ac8ec05ad06fd, type: 3}
 --- !u!114 &1202127501
 MonoBehaviour:
   m_ObjectHideFlags: 0

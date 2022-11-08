@@ -11,6 +11,7 @@ public class Projectile : NetworkBehaviour
 {
     public GameObject playerHit;
     public GameObject terrainHit;
+    public GameObject visualScale;
 
     public float speed;
 
@@ -74,7 +75,7 @@ public class Projectile : NetworkBehaviour
         float speed = data.hitData.length / ProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
-        playerHit.GetComponentInChildren<VisualEffect>().visualEffectAsset = FindObjectOfType<GlobalPrefab>().projectileAssets[data.hitData.flair.visualIndex];
+        Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform);
         setThreatColor();
     }
     public void setThreatColor()

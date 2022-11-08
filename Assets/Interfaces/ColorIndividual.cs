@@ -18,7 +18,7 @@ public class ColorIndividual : MonoBehaviour
         // Get the current value of the material properties in the renderer.
         _renderer.GetPropertyBlock(_propBlock);
         // Assign our new value.
-        _propBlock.SetColor("_Color", c);
+        _propBlock.SetColor("_BaseMap", c);
         // Apply the edited values to the renderer.
         _renderer.SetPropertyBlock(_propBlock);
     }

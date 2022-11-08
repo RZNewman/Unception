@@ -306,7 +306,7 @@ MonoBehaviour:
   m_UIInfos: {fileID: 114340500867371532}
   m_ParameterInfo: []
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -20026,15 +20026,15 @@ MonoBehaviour:
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
+  - {fileID: 8926484042661616355}
   - {fileID: 8926484042661616401}
   - {fileID: 8926484042661616354}
-  - {fileID: 8926484042661616355}
   - {fileID: 8926484042661616361}
-  - {fileID: 8926484042661616367}
-  - {fileID: 8926484042661616370}
+  - {fileID: 8926484042661616393}
   - {fileID: 8926484042661616373}
   - {fileID: 8926484042661616362}
-  - {fileID: 8926484042661616393}
+  - {fileID: 8926484042661616367}
+  - {fileID: 8926484042661616370}
   m_OutputSlots: []
   m_Label: Smokes
   m_Data: {fileID: 8926484042661616247}
@@ -20064,8 +20064,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: 4be676118a9fc264582d0108920cc5d3,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: 4be676118a9fc264582d0108920cc5d3, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []

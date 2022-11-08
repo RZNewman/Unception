@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using static GenerateHit;
 using static UnitControl;
@@ -208,11 +209,20 @@ public static class AttackUtils
         p.init(terrainRadius, hitRadius, halfHeight, mover, hitData);
         NetworkServer.Spawn(instance);
     }
-    public static List<GameObject> LineAttack(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
+    public struct LineInfo
+    {
+        public Vector3 boxCenter;
+        public Vector3 boxHalfs;
+        public Vector3 capsuleStart;
+        public Vector3 capsuleEnd;
+        public Quaternion aim;
+        public float maxDistance;
+        public Vector3 bodyForward;
+    }
+    public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
     {
         float playerHeightOversize = halfHeight * 2 * 1.5f;
-        List<GameObject> hits = new List<GameObject>();
-        List<GameObject> tempHits = new List<GameObject>();
+        
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
         Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
         Vector2 attackVec = new Vector2(length, width / 2);
@@ -222,13 +232,31 @@ public static class AttackUtils
         float boxHeight = Mathf.Max(playerHeightOversize, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
-        RaycastHit[] boxHits = Physics.BoxCastAll(boxCenter, boxHalfs, body.forward, aim, 0.0f, LayerMask.GetMask("Players", "Breakables"));
-        //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
         Vector3 capsuleHeightDiff = floor.normal * capsuleHeightFactor;
         Vector3 capsuleStart = bodyFocus + capsuleHeightDiff;
         Vector3 capsuleEnd = bodyFocus - capsuleHeightDiff;
-        RaycastHit[] capsuleHits = Physics.CapsuleCastAll(capsuleStart, capsuleEnd, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
+        return new LineInfo
+        {
+            boxCenter = boxCenter,
+            boxHalfs = boxHalfs,
+            capsuleEnd = capsuleEnd,
+            capsuleStart = capsuleStart,
+            aim = aim,
+            maxDistance = maxDistance,
+            bodyForward = body.forward,
+        };
+    }
+
+    public static List<GameObject> LineAttack(LineInfo info)
+    {
+        List<GameObject> hits = new List<GameObject>();
+        List<GameObject> tempHits = new List<GameObject>();
+
+        RaycastHit[] boxHits = Physics.BoxCastAll(info.boxCenter, info.boxHalfs, info.bodyForward, info.aim, 0.0f, LayerMask.GetMask("Players", "Breakables"));
+        //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
+        
+        RaycastHit[] capsuleHits = Physics.CapsuleCastAll(info.capsuleStart, info.capsuleEnd, info.maxDistance, info.bodyForward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
 
         //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
         //Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
@@ -254,6 +282,16 @@ public static class AttackUtils
 
         return hits;
 
+    }
+
+    public static void LineParticle(LineInfo info, HitFlair flair)
+    {
+        GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
+        GameObject prefab = gp.ParticlePre;
+        GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
+        i.transform.localScale = info.boxHalfs * 2;
+        i.GetComponent<Particle>().setVisuals(gp.lineAssetsPre[flair.visualIndex]);
+        
     }
     public static List<GameObject> GroundAttack(Vector3 origin, float radius)
     {

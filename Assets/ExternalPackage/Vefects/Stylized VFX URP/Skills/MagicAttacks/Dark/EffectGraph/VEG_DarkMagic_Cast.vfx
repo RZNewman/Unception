@@ -90,43 +90,13 @@ MonoBehaviour:
     - model: {fileID: 8926484042661616831}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661616846}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616849}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616852}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616870}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661616886}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616888}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616899}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661616919}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661616923}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661616925}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616928}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616929}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616933}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661616935}
@@ -136,18 +106,6 @@ MonoBehaviour:
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661616941}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661614589}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661614660}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661614593}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617150}
       id: 0
       isStickyNote: 0
   - title: FLARES
@@ -259,40 +217,13 @@ MonoBehaviour:
     - model: {fileID: 8926484042661617070}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617074}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617075}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617079}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617081}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617083}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661617085}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617100}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617103}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617106}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617117}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617135}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617137}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661617142}
@@ -312,40 +243,13 @@ MonoBehaviour:
     - model: {fileID: 8926484042661616677}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661616679}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661616684}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616699}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616776}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616702}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616720}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616730}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661616733}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661616735}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661616737}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616754}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661616755}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661616757}
@@ -462,7 +366,7 @@ MonoBehaviour:
   m_UIInfos: {fileID: 114340500867371532}
   m_ParameterInfo: []
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -17483,12 +17387,12 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots:
   - {fileID: 8926484042661616738}
-  - {fileID: 8926484042661616739}
-  - {fileID: 8926484042661616742}
-  - {fileID: 8926484042661616743}
-  - {fileID: 8926484042661616744}
-  - {fileID: 8926484042661616747}
   - {fileID: 8926484042661616752}
+  - {fileID: 8926484042661616743}
+  - {fileID: 8926484042661616739}
+  - {fileID: 8926484042661616744}
+  - {fileID: 8926484042661616742}
+  - {fileID: 8926484042661616747}
   m_OutputSlots: []
   m_Label: Smokes
   m_Data: {fileID: 8926484042661616787}
@@ -17518,8 +17422,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: 033a8f2524960ff45975aa02a858c2c1,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: 033a8f2524960ff45975aa02a858c2c1, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []

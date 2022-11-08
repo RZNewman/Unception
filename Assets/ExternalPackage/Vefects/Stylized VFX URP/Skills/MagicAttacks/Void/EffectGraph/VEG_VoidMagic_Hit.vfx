@@ -354,7 +354,7 @@ MonoBehaviour:
   m_UIInfos: {fileID: 114340500867371532}
   m_ParameterInfo: []
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -10077,12 +10077,12 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots:
   - {fileID: 8926484042661616038}
-  - {fileID: 8926484042661616039}
-  - {fileID: 8926484042661616079}
-  - {fileID: 8926484042661616046}
-  - {fileID: 8926484042661616047}
-  - {fileID: 8926484042661616052}
   - {fileID: 8926484042661616969}
+  - {fileID: 8926484042661616046}
+  - {fileID: 8926484042661616039}
+  - {fileID: 8926484042661616047}
+  - {fileID: 8926484042661616079}
+  - {fileID: 8926484042661616052}
   m_OutputSlots: []
   m_Label: Rings
   m_Data: {fileID: 8926484042661616019}
@@ -10112,8 +10112,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: c69b996859231a8499d3ac2a482fb8a2,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: c69b996859231a8499d3ac2a482fb8a2, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []
@@ -14825,8 +14824,8 @@ MonoBehaviour:
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
-  - {fileID: 8926484042661616915}
   - {fileID: 8926484042661616317}
+  - {fileID: 8926484042661616915}
   - {fileID: 8926484042661616324}
   - {fileID: 8926484042661616329}
   m_OutputSlots: []
@@ -14858,8 +14857,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: f3702fc859df5b14bbe26c57e884581f,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: f3702fc859df5b14bbe26c57e884581f, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []

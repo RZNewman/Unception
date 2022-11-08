@@ -17,11 +17,7 @@ public class ActionState : AttackStageState
     public override void enter()
     {
         mover.GetComponent<AnimationController>().setAttack();
-        //Hits only happen on the server
-        if (!mover.isServer)
-        {
-            return;
-        }
+       
         GameObject body = mover.getSpawnBody();
         FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
         Size s = body.GetComponentInChildren<Size>();
@@ -29,7 +25,13 @@ public class ActionState : AttackStageState
         switch (attackData.type)
         {
             case HitType.Line:
-                hits = LineAttack(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                LineInfo info = LineCalculations(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                LineParticle(info, attackData.flair);
+                if (!mover.isServer)
+                {
+                    return;
+                }
+                hits = LineAttack(info);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,
@@ -44,9 +46,17 @@ public class ActionState : AttackStageState
                 }
                 break;
             case HitType.Projectile:
+                if (!mover.isServer)
+                {
+                    return;
+                }
                 SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
                 break;
             case HitType.Ground:
+                if (!mover.isServer)
+                {
+                    return;
+                }
                 hits = GroundAttack(groundTarget.transform.position, attackData.width / 2);
                 foreach (GameObject o in hits)
                 {

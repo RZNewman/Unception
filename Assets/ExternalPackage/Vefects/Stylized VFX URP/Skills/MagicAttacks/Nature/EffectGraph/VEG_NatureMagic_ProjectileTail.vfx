@@ -80,7 +80,7 @@ MonoBehaviour:
     enumValues: []
     descendantCount: 0
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -877,12 +877,12 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots:
   - {fileID: 8926484042661617409}
-  - {fileID: 8926484042661617414}
-  - {fileID: 8926484042661617419}
   - {fileID: 8926484042661617420}
-  - {fileID: 8926484042661617421}
   - {fileID: 8926484042661617430}
+  - {fileID: 8926484042661617414}
+  - {fileID: 8926484042661617421}
   - {fileID: 8926484042661617388}
+  - {fileID: 8926484042661617419}
   - {fileID: 8926484042661617143}
   m_OutputSlots: []
   m_Label: Trail
@@ -913,8 +913,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: 36dcc26c5aceab642b2cc69160bbb3ea,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: 36dcc26c5aceab642b2cc69160bbb3ea, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []

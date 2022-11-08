@@ -10,12 +10,14 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject GroundTargetPre;
     public GameObject ItemDropPre;
 
+    public GameObject ParticlePre;
+
     public GameObject LineIndPre;
     public GameObject GroundIndPre;
     public GameObject ProjIndPre;
     public GameObject DashIndPre;
 
-    public VisualEffectAsset[] projectileAssets;
-    public VisualEffectAsset[] lineAssets;
-    public VisualEffectAsset[] groundAssets;
+    public GameObject[] projectileAssetsPre;
+    public GameObject[] lineAssetsPre;
+    public GameObject[] groundAssetsPre;
 }

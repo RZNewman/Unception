@@ -148,22 +148,7 @@ MonoBehaviour:
     - model: {fileID: 8926484042661617479}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617494}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617497}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617511}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617569}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617529}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617531}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661617536}
@@ -172,52 +157,16 @@ MonoBehaviour:
     - model: {fileID: 8926484042661617560}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617564}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617565}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617577}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617799}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617801}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661617806}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617832}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617885}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617835}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617903}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617838}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617841}
       id: 0
       isStickyNote: 0
-    - model: {fileID: 8926484042661617843}
-      id: 0
-      isStickyNote: 0
     - model: {fileID: 8926484042661617845}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617862}
-      id: 0
-      isStickyNote: 0
-    - model: {fileID: 8926484042661617863}
       id: 0
       isStickyNote: 0
     - model: {fileID: 8926484042661617865}
@@ -309,7 +258,7 @@ MonoBehaviour:
   m_UIInfos: {fileID: 114340500867371532}
   m_ParameterInfo: []
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -17876,12 +17825,12 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots:
   - {fileID: 8926484042661617846}
-  - {fileID: 8926484042661617847}
-  - {fileID: 8926484042661617850}
-  - {fileID: 8926484042661617851}
-  - {fileID: 8926484042661617852}
-  - {fileID: 8926484042661617855}
   - {fileID: 8926484042661617860}
+  - {fileID: 8926484042661617851}
+  - {fileID: 8926484042661617847}
+  - {fileID: 8926484042661617852}
+  - {fileID: 8926484042661617850}
+  - {fileID: 8926484042661617855}
   m_OutputSlots: []
   m_Label: Smokes
   m_Data: {fileID: 8926484042661617884}
@@ -17911,8 +17860,7 @@ MonoBehaviour:
   castShadows: 0
   useExposureWeight: 0
   flipbookLayout: 0
-  shaderGraph: {fileID: -5475051401550479605, guid: 54fa5c361594f424baa321baa7f22bde,
-    type: 3}
+  shaderGraph: {fileID: -5475051401550479605, guid: 54fa5c361594f424baa321baa7f22bde, type: 3}
   materialSettings:
     m_PropertyNames: []
     m_PropertyValues: []

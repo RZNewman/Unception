@@ -134,8 +134,8 @@ public static class AttackUtils
                             groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                             windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {
-                                radius = s.scaledRadius,
-                                distance = s.scaledHalfHeight,
+                                radius = 0.2f,
+                                distance = s.scaledHalfHeight* 1.1f,
                             });
                             action.setGroundTarget(groundTargetInstance);
                         }
@@ -290,7 +290,7 @@ public static class AttackUtils
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
         i.transform.localScale = info.boxHalfs * 2;
-        i.GetComponent<Particle>().setVisuals(gp.lineAssetsPre[flair.visualIndex]);
+        i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex]);
         
     }
     public static List<GameObject> GroundAttack(Vector3 origin, float radius)
@@ -309,6 +309,16 @@ public static class AttackUtils
 
 
         return hits;
+
+    }
+
+    public static void GroundParticle(Vector3 origin, float radius, Quaternion aim, HitFlair flair)
+    {
+        GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
+        GameObject prefab = gp.ParticlePre;
+        GameObject i = GameObject.Instantiate(prefab, origin, aim);
+        i.transform.localScale = Vector3.one * radius *2;
+        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex]);
 
     }
 }

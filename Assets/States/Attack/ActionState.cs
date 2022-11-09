@@ -53,11 +53,14 @@ public class ActionState : AttackStageState
                 SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
                 break;
             case HitType.Ground:
+                float radius = attackData.width / 2;
+                Quaternion aim = Quaternion.LookRotation(groundTarget.transform.forward,groundTarget.GetComponent<FloorNormal>().normal);
+                GroundParticle(groundTarget.transform.position, radius, aim, attackData.flair);
                 if (!mover.isServer)
                 {
                     return;
                 }
-                hits = GroundAttack(groundTarget.transform.position, attackData.width / 2);
+                hits = GroundAttack(groundTarget.transform.position, radius);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,

@@ -5,16 +5,21 @@ using UnityEngine.VFX;
 
 public class Particle : MonoBehaviour
 {
-    public GameObject visualScale;
+    public GameObject visualScaleLine;
+    public GameObject visualScaleCircle;
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(cleanup());
     }
 
-    public void setVisuals(GameObject prefab)
+    public void setVisualsLine(GameObject prefab)
     {
-        Instantiate(prefab, visualScale.transform);
+        Instantiate(prefab, visualScaleLine.transform);
+    }
+    public void setVisualsCircle(GameObject prefab)
+    {
+        Instantiate(prefab, visualScaleCircle.transform);
     }
 
     IEnumerator cleanup()

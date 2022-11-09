@@ -3071,7 +3071,16 @@ MonoBehaviour:
   - {fileID: 1782617449829913515, guid: 4dbfb7d94e152c64592b76f4a6c903a8, type: 3}
   - {fileID: 8091226752102074797, guid: ca61a6cc2cc10524888335cdd32c1654, type: 3}
   - {fileID: 4996195572340486911, guid: 7bf0ab0e89a37374bba54df955fe39c4, type: 3}
-  groundAssetsPre: []
+  groundAssetsPre:
+  - {fileID: 3783408846306853737, guid: 737d141771501744cb9541e5427a1771, type: 3}
+  - {fileID: 6129960309764306233, guid: f47998f60282b0b4db2a92a492ffd034, type: 3}
+  - {fileID: 5044695078221510895, guid: d6fb4d8f2b3b1e5468f45c3e6e4613c4, type: 3}
+  - {fileID: 4285852119456347419, guid: 12254198226e3d14c97922b1bdaca20e, type: 3}
+  - {fileID: 5452526114117090722, guid: 5dc65f50f2b35ea42888796ad5e9973b, type: 3}
+  - {fileID: 5679538601049473635, guid: d4970f4a52b937a47af47e084d460652, type: 3}
+  - {fileID: 2851665187827940005, guid: 1afe0b556b375744d9cc62747416fa2e, type: 3}
+  - {fileID: 6459011712722676481, guid: 65ebe73f006f8144c8e0f8eb3c6cac8e, type: 3}
+  - {fileID: 7424528344480197514, guid: eda04699cb7e8e54a9d09e1ceceb8bb6, type: 3}
 --- !u!114 &1202127501
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RewardManager : MonoBehaviour
+public static class RewardManager
 {
     public readonly static float itemQualityPercent = 1.3f;
     public readonly static float rewardPerDifficulty = 1.3f;

@@ -1,14 +1,15 @@
 fileFormatVersion: 2
-guid: c4b6457a27d63834ab88a388b7cc88f5
+guid: 705e7b12d111d354c9f8b55fac28c921
 labels:
 - usfx
 - imphenzia
-- user interface
-- ui
-- gui
+- magic
+- spell
 - stereo
-- switch
-- toggle
+- wizard
+- sourcer
+- cast
+- enchant
 AudioImporter:
   serializedVersion: 6
   defaultSettings:

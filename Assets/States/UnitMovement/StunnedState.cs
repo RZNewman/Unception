@@ -31,6 +31,10 @@ public class StunnedState : PlayerMovementState, BarValue
         }
         return new StateTransition(null, false);
     }
+    public override void enter()
+    {
+        mover.sound.playSound(mover.local.isLocalUnit ? UnitSound.SoundClip.LocalStun : UnitSound.SoundClip.Stun);
+    }
 
     public override void exit(bool expired)
     {

@@ -9,7 +9,7 @@ public class PlayerGhost : NetworkBehaviour
 
     public int attacksToGenerate = 4;
 
-    [SyncVar]
+    [SyncVar(hook =nameof(hookSetUnit))]
     GameObject currentSelf;
 
     [SyncVar]
@@ -17,8 +17,11 @@ public class PlayerGhost : NetworkBehaviour
 
     [SyncVar]
     int extraLives = 1;
+
+    AudioListener listener;
     void Start()
     {
+        listener = GetComponent<AudioListener>();
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
@@ -26,6 +29,10 @@ public class PlayerGhost : NetworkBehaviour
             FindObjectOfType<PlayerUiReference>(true).setTarget(this);
 
 
+        }
+        else
+        {
+            listener.enabled = false;
         }
         if (isServer)
         {
@@ -61,17 +68,17 @@ public class PlayerGhost : NetworkBehaviour
     [Server]
     IEnumerator embarkRoutine(int mapIndex)
     {
-        
+
         Atlas atlas = FindObjectOfType<Atlas>();
         yield return atlas.embarkServer(mapIndex);
 
-        buildUint();
+        buildUnit();
 
         TargetGameplayMenu(connectionToClient);
     }
 
     [Server]
-    void buildUint()
+    void buildUnit()
     {
         Inventory inv = GetComponent<Inventory>();
         GameObject u = Instantiate(unitPre);
@@ -83,11 +90,13 @@ public class PlayerGhost : NetworkBehaviour
         u.GetComponent<LifeManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
         currentSelf = u;
+        setAudio(false);
     }
 
     [TargetRpc]
     void TargetGameplayMenu(NetworkConnection conn)
     {
+
         FindObjectOfType<MenuHandler>().spawn();
     }
     [TargetRpc]
@@ -96,14 +105,36 @@ public class PlayerGhost : NetworkBehaviour
         FindObjectOfType<MenuHandler>().mainMenu();
     }
 
+    void hookSetUnit(GameObject old, GameObject current)
+    {
+        if (current)
+        {
+            setAudio(false);
+        }
+        else
+        {
+            setAudio(true);
+        }
+    }
+    void setAudio(bool audio)
+    {
+        if (isLocalPlayer)
+        {
+            listener.enabled = audio;
+        }
+    }
+
+
     //server
     void onUnitDeath()
     {
+        setAudio(false);
+        currentSelf = null;
         Atlas atlas = FindObjectOfType<Atlas>();
         if (atlas && atlas.embarked)
         {
             StartCoroutine(onDeathRoutine(atlas));
-            
+
         }
     }
     public bool extraLife
@@ -120,13 +151,13 @@ public class PlayerGhost : NetworkBehaviour
         if (extraLives > 0)
         {
             extraLives--;
-            buildUint();
+            buildUnit();
         }
         else
         {
             atlas.disembark(true);
         }
-        
+
     }
 
     public GameObject unit

@@ -26,7 +26,7 @@ public class ActionState : AttackStageState
         {
             case HitType.Line:
                 LineInfo info = LineCalculations(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
-                LineParticle(info, attackData.flair);
+                LineParticle(info, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
                     return;
@@ -50,12 +50,12 @@ public class ActionState : AttackStageState
                 {
                     return;
                 }
-                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData);
+                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData, mover.sound.dists);
                 break;
             case HitType.Ground:
                 float radius = attackData.width / 2;
                 Quaternion aim = Quaternion.LookRotation(groundTarget.transform.forward,groundTarget.GetComponent<FloorNormal>().normal);
-                GroundParticle(groundTarget.transform.position, radius, aim, attackData.flair);
+                GroundParticle(groundTarget.transform.position, radius, aim, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
                     return;

@@ -6,6 +6,7 @@ using static GenerateHit;
 using Mirror;
 using static IndicatorInstance;
 using UnityEngine.VFX;
+using static UnitSound;
 
 public class Projectile : NetworkBehaviour
 {
@@ -48,10 +49,11 @@ public class Projectile : NetworkBehaviour
         public uint team;
         public float power;
         public HitInstanceData hitData;
+        public AudioDistances dists;
 
     }
     [Server]
-    public void init(float terrainRadius, float playerRadius, float halfHeight, UnitMovement m, HitInstanceData hitData)
+    public void init(float terrainRadius, float playerRadius, float halfHeight, UnitMovement m, HitInstanceData hitData, AudioDistances dists)
     {
         mover = m;
         data = new ProjectileData
@@ -62,6 +64,7 @@ public class Projectile : NetworkBehaviour
             team = mover.GetComponent<TeamOwnership>().getTeam(),
             power = mover.GetComponent<Power>().power,
             hitData = hitData,
+            dists = dists,
         };
         setup(data);
     }
@@ -75,7 +78,7 @@ public class Projectile : NetworkBehaviour
         float speed = data.hitData.length / ProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
-        Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform);
+        setAudioDistances( Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform),data.dists);
         setThreatColor();
     }
     public void setThreatColor()

@@ -19,6 +19,7 @@ public class DashState : AttackStageState
     public override void enter()
     {
         inpSnapshot = mover.input;
+        mover.sound.playSound(UnitSound.SoundClip.Dash);
     }
     public override void exit(bool expired)
     {

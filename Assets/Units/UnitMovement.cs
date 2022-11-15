@@ -17,6 +17,9 @@ public class UnitMovement : NetworkBehaviour
     Power power;
     FloorNormal ground;
     Combat combat;
+    UnitSound _sound;
+    Posture _posture;
+    LocalPlayer localPlayer;
 
     public float syncAngleHard = 40;
     [HideInInspector]
@@ -36,6 +39,9 @@ public class UnitMovement : NetworkBehaviour
         ground = GetComponent<FloorNormal>();
         size = GetComponentInChildren<Size>();
         combat = GetComponent<Combat>();
+        _sound = GetComponent<UnitSound>();
+        _posture = GetComponent<Posture>();
+        localPlayer = GetComponent<LocalPlayer>();
         lifeManager.suscribeDeath(cleanup);
     }
 
@@ -95,7 +101,7 @@ public class UnitMovement : NetworkBehaviour
 
     public Posture posture
     {
-        get { return GetComponent<Posture>(); }
+        get { return _posture; }
     }
 
     public UnitInput input
@@ -105,7 +111,21 @@ public class UnitMovement : NetworkBehaviour
             return controller.GetUnitInput();
         }
     }
+    public UnitSound sound
+    {
+        get
+        {
+            return _sound;
+        }
+    }
 
+    public LocalPlayer local
+    {
+        get
+        {
+            return localPlayer;
+        }
+    }
     public Vector3 lookWorldPos
     {
         get

@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using static GenerateHit;
 using static UnitControl;
+using static UnitSound;
 using static Utils;
 
 public static class AttackUtils
@@ -196,7 +197,7 @@ public static class AttackUtils
 
 
 
-    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData)
+    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData, AudioDistances dists)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
@@ -206,7 +207,7 @@ public static class AttackUtils
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
         float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
-        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData);
+        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData, dists);
         NetworkServer.Spawn(instance);
     }
     public struct LineInfo
@@ -284,13 +285,13 @@ public static class AttackUtils
 
     }
 
-    public static void LineParticle(LineInfo info, HitFlair flair)
+    public static void LineParticle(LineInfo info, HitFlair flair, AudioDistances dists)
     {
         GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
         i.transform.localScale = info.boxHalfs * 2;
-        i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex]);
+        i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex], dists);
         
     }
     public static List<GameObject> GroundAttack(Vector3 origin, float radius)
@@ -312,13 +313,14 @@ public static class AttackUtils
 
     }
 
-    public static void GroundParticle(Vector3 origin, float radius, Quaternion aim, HitFlair flair)
+    public static void GroundParticle(Vector3 origin, float radius, Quaternion aim, HitFlair flair, AudioDistances dists)
     {
         GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, origin, aim);
         i.transform.localScale = Vector3.one * radius *2;
-        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex]);
+        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex],dists);
+        
 
     }
 }

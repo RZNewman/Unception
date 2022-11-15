@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using static UnitSound;
 
 public class Particle : MonoBehaviour
 {
@@ -13,14 +14,17 @@ public class Particle : MonoBehaviour
         StartCoroutine(cleanup());
     }
 
-    public void setVisualsLine(GameObject prefab)
+    public void setVisualsLine(GameObject prefab, AudioDistances dists)
     {
-        Instantiate(prefab, visualScaleLine.transform);
+        setAudioDistances(Instantiate(prefab, visualScaleLine.transform),dists);
+
     }
-    public void setVisualsCircle(GameObject prefab)
+    public void setVisualsCircle(GameObject prefab, AudioDistances dists)
     {
-        Instantiate(prefab, visualScaleCircle.transform);
+        setAudioDistances(Instantiate(prefab, visualScaleCircle.transform),dists);
     }
+
+    
 
     IEnumerator cleanup()
     {

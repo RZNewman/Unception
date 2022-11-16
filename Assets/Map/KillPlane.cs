@@ -17,7 +17,7 @@ public class KillPlane : MonoBehaviour
         {
             hp.takePercentDamage(0.15f);
             mover.stop(true);
-            mover.sound.playSound(UnitSound.SoundClip.Fall);
+            mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
             norm.transform.position = norm.nav + Vector3.up *s.scaledHalfHeight;
         }
         else

@@ -37,9 +37,11 @@ public class MapGenerator : NetworkBehaviour
 
 
     MonsterSpawn spawner;
+    SoundManager sound;
     // Start is called before the first frame update
     void Start()
     {
+        sound = FindObjectOfType<SoundManager>();
         if (isServer)
         {
             spawner = GetComponent<MonsterSpawn>();
@@ -62,42 +64,58 @@ public class MapGenerator : NetworkBehaviour
         return weights;
     }
 
-    public void endFloor()
+    public void endFloor(Vector3 position)
     {
-        StartCoroutine(endFloorRoutine());
+        StartCoroutine(endFloorRoutine(position));
     }
     public void destroyFloor()
     {
         Destroy(currentFloor);
     }
-
-    IEnumerator endFloorRoutine()
+    float portalTime = 1.5f;
+    IEnumerator endFloorRoutine(Vector3 position)
     {
-        yield return new WaitForSecondsRealtime(1f);
+        sound.sendSoundDuration(SoundManager.SoundClip.PortalStart,position,portalTime);
+        yield return new WaitForSecondsRealtime(portalTime);
+        sound.sendSound(SoundManager.SoundClip.PortalEnd, position);
+        PlayerGhost[] ghosts = FindObjectsOfType<PlayerGhost>();
+        GameObject[] units = ghosts.Select(g => g.unit).ToArray();
+        foreach (GameObject playerUnit in units)
+        {
+            playerUnit.transform.position = transform.position + Vector3.up * 5;
+            playerUnit.SetActive(false);
+        }
+        foreach (PlayerGhost ghost in ghosts)
+        {
+            ghost.RpcSetAudio(true);
+            ghost.transform.position = position;
+        }
+
+        yield return new WaitForSecondsRealtime(portalTime);
         Destroy(currentFloor);
         yield return null;
         currentFloorIndex++;
-        GameObject[] units = FindObjectsOfType<PlayerGhost>().Select(g => g.unit).ToArray();
+        
         if (currentFloorIndex >= currentMap.floors.Length)
         {
             foreach (GameObject playerUnit in units)
             {
                 Destroy(playerUnit);
-                FindObjectOfType<Atlas>().disembark();
+                
             }
+            FindObjectOfType<Atlas>().disembark();
         }
         else
         {
-            foreach (GameObject playerUnit in units)
+            foreach (PlayerGhost ghost in ghosts)
             {
-                playerUnit.transform.position = transform.position + Vector3.up * 5;
-                playerUnit.SetActive(false);
+                ghost.transform.position = transform.position;
+                ghost.RpcSetAudio(false);
+                ghost.refreshLives();
             }
-
             yield return buildGridRoutine();
             foreach (GameObject playerUnit in units)
             {
-                playerUnit.GetComponent<PlayerGhost>().refreshLives();
                 playerUnit.SetActive(true);
             }
         }

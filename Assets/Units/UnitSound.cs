@@ -27,7 +27,7 @@ public class UnitSound : MonoBehaviour
         UnitProperties props = GetComponent<UnitPropsHolder>().props;
         if (props.isPlayer)
         {
-            playSound(SoundClip.Spawn);
+            playSound(UnitSoundClip.Spawn);
         }
         GetComponent<Power>().subscribePower(setSoundFalloff);
     }
@@ -40,7 +40,7 @@ public class UnitSound : MonoBehaviour
             min = 4 * p.scale(),
             max = 100 * p.scale(),
         };
-        source.minDistance= dists.min;
+        source.minDistance = dists.min;
         source.maxDistance = dists.max;
     }
     public static void setAudioDistances(GameObject o, AudioDistances dists)
@@ -50,7 +50,7 @@ public class UnitSound : MonoBehaviour
         source.maxDistance = dists.max;
     }
 
-    public enum SoundClip
+    public enum UnitSoundClip
     {
         Spawn,
         Stun,
@@ -59,24 +59,24 @@ public class UnitSound : MonoBehaviour
         Dash,
     }
 
-    public void playSound(SoundClip sound)
+    public void playSound(UnitSoundClip sound)
     {
         AudioClip clip = null;
         switch (sound)
         {
-            case SoundClip.Spawn:
+            case UnitSoundClip.Spawn:
                 clip = spawn;
                 break;
-            case SoundClip.Stun:
+            case UnitSoundClip.Stun:
                 clip = stun;
                 break;
-            case SoundClip.Dash:
+            case UnitSoundClip.Dash:
                 clip = dash;
                 break;
-            case SoundClip.Fall:
+            case UnitSoundClip.Fall:
                 clip = fall;
                 break;
-            case SoundClip.LocalStun:
+            case UnitSoundClip.LocalStun:
                 clip = localStun;
                 break;
         }

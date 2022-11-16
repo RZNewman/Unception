@@ -11,7 +11,6 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject ItemDropPre;
 
     public GameObject ParticlePre;
-    public GameObject SoundPre;
 
     public GameObject LineIndPre;
     public GameObject GroundIndPre;

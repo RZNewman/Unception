@@ -68,6 +68,11 @@ public class AiHandler : MonoBehaviour, UnitControl
                 FloorNormal myGround = rotatingBody.GetComponentInParent<FloorNormal>();
                 FloorNormal thierGround = target.GetComponentInParent<FloorNormal>();
 
+                if (!thierGround)
+                {
+                    return;
+                }
+
                 Vector3 moveTarget;
                 Vector3 attackTarget = target.transform.position;
                 bool canSee = aggro.canSee(target);

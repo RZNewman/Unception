@@ -19,7 +19,7 @@ public class DashState : AttackStageState
     public override void enter()
     {
         inpSnapshot = mover.input;
-        mover.sound.playSound(UnitSound.SoundClip.Dash);
+        mover.sound.playSound(UnitSound.UnitSoundClip.Dash);
     }
     public override void exit(bool expired)
     {
@@ -68,7 +68,7 @@ public class DashState : AttackStageState
     {
         return new Cast.IndicatorOffsets
         {
-            distance = Vector3.forward * opts.distance * (opts.control==DashControl.Backward? -1:1) * currentDurration / (opts.distance / opts.speed),
+            distance = Vector3.forward * opts.distance * (opts.control == DashControl.Backward ? -1 : 1) * currentDurration / (opts.distance / opts.speed),
             time = currentDurration,
         };
     }

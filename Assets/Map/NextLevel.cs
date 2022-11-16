@@ -22,7 +22,7 @@ public class NextLevel : MonoBehaviour
         uint theirTeam = them.GetComponentInParent<TeamOwnership>().getTeam();
         if (theirTeam == 1u)
         {
-            gen.endFloor();
+            gen.endFloor(transform.position);
         }
     }
 }

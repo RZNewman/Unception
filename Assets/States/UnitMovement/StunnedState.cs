@@ -33,7 +33,7 @@ public class StunnedState : PlayerMovementState, BarValue
     }
     public override void enter()
     {
-        mover.sound.playSound(mover.local.isLocalUnit ? UnitSound.SoundClip.LocalStun : UnitSound.SoundClip.Stun);
+        mover.sound.playSound(mover.local.isLocalUnit ? UnitSound.UnitSoundClip.LocalStun : UnitSound.UnitSoundClip.Stun);
     }
 
     public override void exit(bool expired)

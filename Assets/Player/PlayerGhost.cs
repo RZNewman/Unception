@@ -9,7 +9,7 @@ public class PlayerGhost : NetworkBehaviour
 
     public int attacksToGenerate = 4;
 
-    [SyncVar(hook =nameof(hookSetUnit))]
+    [SyncVar]
     GameObject currentSelf;
 
     [SyncVar]
@@ -90,7 +90,7 @@ public class PlayerGhost : NetworkBehaviour
         u.GetComponent<LifeManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
         currentSelf = u;
-        setAudio(false);
+        RpcSetAudio(false);
     }
 
     [TargetRpc]
@@ -105,16 +105,11 @@ public class PlayerGhost : NetworkBehaviour
         FindObjectOfType<MenuHandler>().mainMenu();
     }
 
-    void hookSetUnit(GameObject old, GameObject current)
+
+    [ClientRpc]
+    public void RpcSetAudio(bool audio)
     {
-        if (current)
-        {
-            setAudio(false);
-        }
-        else
-        {
-            setAudio(true);
-        }
+        setAudio(audio);
     }
     void setAudio(bool audio)
     {
@@ -128,7 +123,7 @@ public class PlayerGhost : NetworkBehaviour
     //server
     void onUnitDeath()
     {
-        setAudio(false);
+        RpcSetAudio(true);
         currentSelf = null;
         Atlas atlas = FindObjectOfType<Atlas>();
         if (atlas && atlas.embarked)

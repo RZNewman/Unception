@@ -8,6 +8,7 @@ public class ItemDrop : MonoBehaviour
     public ColorIndividual itemAura;
     public ColorIndividual itemBase;
     GameObject target;
+    SoundManager sound;
 
     public float waitTime = 3f;
 
@@ -36,6 +37,7 @@ public class ItemDrop : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        sound = FindObjectOfType<SoundManager>();
     }
 
     private void FixedUpdate()
@@ -53,6 +55,7 @@ public class ItemDrop : MonoBehaviour
             rb.velocity = targetSpeed * dir.normalized;
             if (dir.magnitude < catchDistance)
             {
+                sound.playSound(SoundManager.SoundClip.Slurp, transform.position);
                 Destroy(gameObject);
             }
         }

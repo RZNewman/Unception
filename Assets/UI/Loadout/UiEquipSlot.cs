@@ -34,6 +34,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             int oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
             int newIndex = uiAbil.GetComponent<UiAbility>().inventoryIndex;
             FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
+            FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
         }
         uiAbility = uiAbil;
         uiAbility.transform.SetParent(transform);

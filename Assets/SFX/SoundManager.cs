@@ -10,6 +10,12 @@ public class SoundManager : NetworkBehaviour
 
     public AudioClip portalStart;
     public AudioClip portalEnd;
+    public AudioClip select;
+    public AudioClip embark;
+    public AudioClip equip;
+    public AudioClip shatter;
+    public AudioClip creak;
+    public AudioClip itemSlurp;
 
     [Server]
     public void sendSound(SoundClip sound, Vector3 position)
@@ -26,8 +32,12 @@ public class SoundManager : NetworkBehaviour
     public enum SoundClip:byte{
         PortalStart,
         PortalEnd,
-
-
+        Select,
+        Embark,
+        Equip,
+        Shatter,
+        Creak,
+        Slurp,
     }
 
     [ClientRpc]
@@ -57,6 +67,15 @@ public class SoundManager : NetworkBehaviour
         StartCoroutine(cleanupSound(o));
     }
 
+    [Client]
+    public void playSound(SoundClip sound)
+    {
+        AudioSource source = GetComponent<AudioSource>();
+        AudioClip clip = getClip(sound);
+        source.clip = clip;
+        source.Play();
+    }
+
     IEnumerator cleanupSound(GameObject o, float wait = 2f)
     {
         yield return new WaitForSeconds(wait);
@@ -69,8 +88,20 @@ public class SoundManager : NetworkBehaviour
         {
             case SoundClip.PortalStart:
                 return portalStart;
-                case SoundClip.PortalEnd:
+            case SoundClip.PortalEnd:
                 return portalEnd;
+            case SoundClip.Select:
+                return select;
+            case SoundClip.Embark:
+                return embark;
+            case SoundClip.Equip:
+                return equip;
+            case SoundClip.Shatter:
+                return shatter;
+            case SoundClip.Creak:
+                return creak;
+            case SoundClip.Slurp:
+                return itemSlurp;
             default:
                 return null;
         }

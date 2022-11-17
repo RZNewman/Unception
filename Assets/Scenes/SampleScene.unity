@@ -3326,6 +3326,12 @@ MonoBehaviour:
   soundPre: {fileID: 9175876420422456421, guid: ebbf4e66ccccfff40a36c941c6fb8258, type: 3}
   portalStart: {fileID: 8300000, guid: 40686fa15159ce642901deb76799d02d, type: 3}
   portalEnd: {fileID: 8300000, guid: 52d56703085b3f04f99c5bb9823f0a44, type: 3}
+  select: {fileID: 8300000, guid: eb7309801fa80774ebd10478e7d40b0c, type: 3}
+  embark: {fileID: 8300000, guid: c4b6457a27d63834ab88a388b7cc88f5, type: 3}
+  equip: {fileID: 8300000, guid: 1388afaf31b18034eb819a30981a5444, type: 3}
+  shatter: {fileID: 8300000, guid: 2c3b8339e0255e446924fc5e36396f53, type: 3}
+  creak: {fileID: 8300000, guid: 4c9ade448418b1c4895ed170e60e0acd, type: 3}
+  itemSlurp: {fileID: 8300000, guid: cfcb653d5ce9b7b488b2b9a0615891e4, type: 3}
 --- !u!1 &1282973643
 GameObject:
   m_ObjectHideFlags: 0

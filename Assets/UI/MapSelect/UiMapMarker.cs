@@ -11,10 +11,11 @@ public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     Atlas atlas;
     Map map;
-
+    SoundManager sound;
     private void Start()
     {
         selector.SetActive(false);
+        sound = FindObjectOfType<SoundManager>();
     }
     public void init(Atlas a, Map m)
     {
@@ -35,6 +36,7 @@ public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         selector.SetActive(true);
         atlas.selectMap(this);
+        sound.playSound(SoundManager.SoundClip.Select);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

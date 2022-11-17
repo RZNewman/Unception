@@ -18,6 +18,7 @@ public class Atlas : NetworkBehaviour
 
     PlayerGhost owner;
     GlobalPlayer gp;
+    SoundManager sound;
 
     [SyncVar(hook = nameof(hookMaps))]
     MapListing list;
@@ -39,6 +40,10 @@ public class Atlas : NetworkBehaviour
     {
         public int packs;
         public int tiles;
+    }
+    private void Start()
+    {
+        sound = FindObjectOfType<SoundManager>();
     }
 
 
@@ -153,6 +158,7 @@ public class Atlas : NetworkBehaviour
     public void embark()
     {
         embarkButton.interactable = false;
+        sound.playSound(SoundManager.SoundClip.Embark);
         gp.player.embark(selectedMap.getMap().index);
     }
     //Server

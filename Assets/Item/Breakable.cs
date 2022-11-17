@@ -9,6 +9,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
     public GameObject ChestPre;
     Reward r;
     LifeManager life;
+    SoundManager sound;
 
 
     public enum BreakableType
@@ -47,6 +48,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
     {
         r = GetComponent<Reward>();
         life = GetComponent<LifeManager>();
+        sound = FindObjectOfType<SoundManager>();
         instanceBody();
         if (isServer)
         {
@@ -64,6 +66,20 @@ public class Breakable : NetworkBehaviour, TeamOwnership
 
     void onDeath()
     {
+        SoundManager.SoundClip clip;
+        switch (type)
+        {
+            case BreakableType.Urn:
+                clip = SoundManager.SoundClip.Shatter;
+                break;
+            case BreakableType.Chest:
+                clip = SoundManager.SoundClip.Creak;
+                break;
+            default:
+                clip = SoundManager.SoundClip.Shatter;
+                break;
+        }
+        sound.sendSound(clip, transform.position);
         Destroy(gameObject);
     }
 

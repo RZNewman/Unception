@@ -293,7 +293,7 @@ public class MapGenerator : NetworkBehaviour
         }
 
         NavMeshBuildSettings agent = NavMesh.GetSettingsByID(0);
-        agent.agentRadius = 0.5f * currentFloorScale;
+        agent.agentRadius = 0.6f * currentFloorScale;
         agent.agentClimb = 0.3f * currentFloorScale;
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
         NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);

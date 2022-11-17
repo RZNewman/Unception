@@ -53,4 +53,12 @@ public class GlobalPlayer : MonoBehaviour
             return clientLocalPlayer && clientLocalPlayer.unit ? clientLocalPlayer.unit.GetComponent<Posture>().remainingToStun : int.MaxValue;
         }
     }
+
+    public bool localInCombat
+    {
+        get
+        {
+            return clientLocalPlayer && clientLocalPlayer.unit && clientLocalPlayer.unit.GetComponent<Combat>().inCombat;
+        }
+    }
 }

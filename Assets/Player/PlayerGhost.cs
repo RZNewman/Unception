@@ -19,9 +19,11 @@ public class PlayerGhost : NetworkBehaviour
     int extraLives = 1;
 
     AudioListener listener;
+    MusicBox music;
     void Start()
     {
         listener = GetComponent<AudioListener>();
+        music = FindObjectOfType<MusicBox>(true);
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
@@ -96,12 +98,13 @@ public class PlayerGhost : NetworkBehaviour
     [TargetRpc]
     void TargetGameplayMenu(NetworkConnection conn)
     {
-
+        music.Game();
         FindObjectOfType<MenuHandler>().spawn();
     }
     [TargetRpc]
     public void TargetMainMenu(NetworkConnection conn)
     {
+        music.Menu();
         FindObjectOfType<MenuHandler>().mainMenu();
     }
 

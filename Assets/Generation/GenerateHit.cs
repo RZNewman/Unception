@@ -44,6 +44,8 @@ public static class GenerateHit
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
+        public int multiple;
+        public float multipleArc;
 
 
         public override InstanceData populate(float power, float strength)
@@ -225,6 +227,8 @@ public static class GenerateHit
         hit.knockBackDirection = kbDir;
         hit.type = t;
         hit.flair = flair;
+        hit.multiple = 1;
+        hit.multipleArc = 0;
         
         hit = augmentHit(hit, augments, typeValues);
 

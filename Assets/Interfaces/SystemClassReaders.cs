@@ -53,6 +53,8 @@ public static class SystemClassReaders
                 hit.knockBackType = reader.ReadKnockBackType();
                 hit.knockBackDirection = reader.ReadKnockBackDirection();
                 hit.knockUp = reader.ReadFloat();
+                hit.multiple = reader.ReadInt();
+                hit.multipleArc = reader.ReadFloat();
                 hit.flair = new HitFlair
                 {
                     visualIndex = reader.ReadInt(),

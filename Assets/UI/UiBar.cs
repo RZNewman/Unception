@@ -1,11 +1,11 @@
+using RengeGames.HealthBars;
 using UnityEngine;
 using UnityEngine.UI;
 using static BarValue;
 
 public class UiBar : MonoBehaviour
 {
-    public RectTransform barBack;
-    public RectTransform barFront;
+    public RadialSegmentedHealthBar bar;
     public BarValue source;
     // Start is called before the first frame update
     void Start()
@@ -24,10 +24,9 @@ public class UiBar : MonoBehaviour
 
     void fill(BarData data)
     {
-        barFront.gameObject.SetActive(data.active);
-        barBack.gameObject.SetActive(data.active);
-        barFront.GetComponent<Image>().color = data.color;
-        barFront.sizeDelta = new Vector2(data.fillPercent, barFront.sizeDelta.y);
-        barBack.sizeDelta = new Vector2(1 - data.fillPercent, barFront.sizeDelta.y);
+
+        bar.gameObject.SetActive(data.active);
+        bar.InnerColor.Value = data.color;
+        bar.SetPercent(data.fillPercent);
     }
 }

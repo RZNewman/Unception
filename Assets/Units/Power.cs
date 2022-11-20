@@ -69,7 +69,7 @@ public class Power : NetworkBehaviour, TextValue
 
         MetricName currentMetricScale = (MetricName)(currentDecimalPlaces / 3);
 
-        int decimalRounding = currentDecimalPlaces - 3;
+        int decimalRounding = Mathf.Max(currentDecimalPlaces - 3,-3);
         int decimalMetric = (int)currentMetricScale * 3;
         int decimalDiff = decimalMetric - decimalRounding;
         float roundedPower = Mathf.Round(power / Mathf.Pow(10, decimalRounding));

@@ -12,6 +12,7 @@ using static Cast;
 using static RewardManager;
 using UnityEditor.PackageManager.UI;
 using static GenerateRepeating;
+using static UnityEngine.InputManagerEntry;
 
 public static class GenerateAttack
 {
@@ -79,13 +80,72 @@ public static class GenerateAttack
         public bool dashAfter;
         public bool dashInside;
 
+        private WindInstanceData[] windStages
+        {
+            get
+            {
+                WindInstanceData[] winds = new WindInstanceData[] { windup, winddown };
+                if(repeat != null)
+                {
+                    List<WindInstanceData> windsRepeat = new List<WindInstanceData>();
+                    for (int i = 0; i < repeat.repeatCount-1; i++)
+                    {
+                        windsRepeat.Add(windRepeat);
+                    }
+                    winds = winds.Concat(windsRepeat).ToArray();
+                }
+                return winds;
+            }
+        }
+
         public float castTime
         {
             get
             {
-                return windup.duration + winddown.duration + (repeat != null ? windRepeat.duration *repeat.repeatCount : 0);
+                return windStages.Sum(w =>w.duration);
             }
         }
+        public float effectPower
+        {
+            get
+            {
+                return hit.powerByStrength + (dash != null ? dash.powerByStrength : 0);
+            }
+        }
+        public float eps
+        {
+            get
+            {
+                return effectPower/castTime;
+            }
+        }
+        public float damage(float power)
+        {
+
+           return hit.damage(power);
+            
+        }
+        public float dps(float power)
+        {
+
+            return damage(power)/castTime;
+
+        }
+        public float avgMove
+        {
+            get
+            {
+                return windStages.Sum(x => x.moveMult * x.duration) / castTime;
+            }
+        }
+        public float avgTurn
+        {
+            get
+            {
+                return windStages.Sum(x => x.turnMult * x.duration) / castTime;
+            }
+        }
+
 
     }
     [System.Serializable]
@@ -118,6 +178,29 @@ public static class GenerateAttack
             {
                 return segments.Sum(s => s.castTime);
             }
+        }
+        public float effect
+        {
+            get
+            {
+                return segments.Sum(s => s.effectPower);
+            }
+        }
+        public float eps
+        {
+            get
+            {
+                return effect / castTime;
+            }
+        }
+
+        public float damage(float power)
+        {
+            return segments.Sum(s => s.damage(power));
+        }
+        public float dps(float power)
+        {
+            return damage(power)/castTime;
         }
     }
 

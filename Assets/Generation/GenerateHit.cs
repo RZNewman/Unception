@@ -160,6 +160,11 @@ public static class GenerateHit
                     return new EffectiveDistance(length, width / 2);
             }
         }
+
+        public float damage(float power)
+        {
+            return damageMult * Power.damageFalloff(powerAtGen, power);
+        }
     }
 
     static readonly int hitbaseValues = 5;

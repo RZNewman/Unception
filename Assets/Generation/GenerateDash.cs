@@ -38,6 +38,8 @@ public static class GenerateDash
 
             return new DashInstanceData
             {
+                powerByStrength = power * strength,
+
                 speed = speed,
                 distance = distance,
                 control = control,
@@ -51,6 +53,8 @@ public static class GenerateDash
     }
     public class DashInstanceData : InstanceData
     {
+        public float powerByStrength;
+
         public float speed;
         public float distance;
         public DashControl control;

@@ -24,7 +24,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     //menu only
     UiAbilityDetails deets;
     UiEquipmentDragger dragger;
-    public int inventoryIndex;
+    public string inventoryIndex;
 
     private void Update()
     {

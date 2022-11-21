@@ -9,14 +9,16 @@ using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {
-    List<AttackBlock> abilitiesSync = new List<AttackBlock>();
+    public static readonly int inventorySlots = 4;
+    List<AttackBlock> storage = new List<AttackBlock>();
 
-    List<AttackBlockFilled> abilities = new List<AttackBlockFilled>();
+    List<AttackBlock> equipped = new List<AttackBlock>();
+
 
     PlayerGhost player;
     SaveData save;
 
-    int[] equippedIndices = new int[] { 0, 1, 2, 3 };
+
 
     GameObject itemPre;
     PityTimer<Quality> pityQuality;
@@ -28,10 +30,10 @@ public class Inventory : NetworkBehaviour
 
         if (isServer)
         {
-            
 
-            
-            
+
+
+
         }
     }
     [Server]
@@ -46,7 +48,7 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public void loadPity(Dictionary<string,float> values)
+    public void loadPity(Dictionary<string, float> values)
     {
         pityQuality = new PityTimer<Quality>(Quality.Common, 0.25f);
         float uncChance = RewardManager.uncommonChance;
@@ -64,17 +66,18 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void reloadItems(AttackBlock[] items)
     {
-        abilitiesSync = items.ToList();
+        equipped = items.Take(inventorySlots).ToList();
+        storage = items.Skip(inventorySlots).ToList();
         genMinItems();
-        TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
+        TargetSyncInventory(connectionToClient, equipped.ToArray(), storage.ToArray());
     }
     [Server]
     public void genMinItems()
     {
-        for (int i = abilitiesSync.Count; i < 4; i++)
+        for (int i = equipped.Count; i < 4; i++)
         {
             AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
-            abilitiesSync.Add(item);
+            equipped.Add(item);
             save.saveItem(item);
         }
     }
@@ -82,7 +85,7 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)
     {
-        abilitiesSync.Add(item);
+        storage.Add(item);
         save.saveItem(item);
         TargetDropItem(connectionToClient, item, otherPosition);
     }
@@ -94,16 +97,18 @@ public class Inventory : NetworkBehaviour
     }
 
     //Server
-    public List<AttackBlock> equipped
+    public List<AttackBlock> equippedAbilities
     {
         get
         {
-            List<AttackBlock> e = new List<AttackBlock>();
-            foreach (int i in equippedIndices)
-            {
-                e.Add(abilitiesSync[i]);
-            }
-            return e;
+            return equipped;
+        }
+    }
+    public List<AttackBlock> stored
+    {
+        get
+        {
+            return storage;
         }
     }
 
@@ -142,7 +147,7 @@ public class Inventory : NetworkBehaviour
     //            break;
     //    }
     //}
-    AttackBlockFilled fillBlock(AttackBlock block)
+    public AttackBlockFilled fillBlock(AttackBlock block)
     {
 
         return GenerateAttack.fillBlock(block, player.power);
@@ -161,28 +166,29 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void syncInventoryUpwards()
     {
-        TargetSyncInventory(connectionToClient, abilitiesSync.ToArray());
+        TargetSyncInventory(connectionToClient, equipped.ToArray(), storage.ToArray());
     }
 
     [TargetRpc]
-    void TargetSyncInventory(NetworkConnection conn, AttackBlock[] blocks)
+    void TargetSyncInventory(NetworkConnection conn, AttackBlock[] eq, AttackBlock[] st)
     {
-        abilitiesSync = blocks.ToList();
-        abilities.Clear();
-        for (int i = 0; i < abilitiesSync.Count; i++)
-        {
-            abilities.Add(fillBlock(abilitiesSync[i]));
-        }
-        FindObjectOfType<ItemList>(true).fillAbilities(abilities, equippedIndices);
+        equipped = eq.ToList();
+        storage = st.ToList();
+
+
+        FindObjectOfType<ItemList>(true).fillAbilities(this);
     }
 
     [Command]
-    public void CmdEquipAbility(int oldInd, int newInd)
+    public void CmdEquipAbility(string oldId, string newId)
     {
-        int i = System.Array.IndexOf(equippedIndices, oldInd);
-        if (i >= 0 && newInd < abilitiesSync.Count)
+        int oldIndex = equipped.FindIndex(item => item.id == oldId);
+        int newIndex = storage.FindIndex(item => item.id == newId);
+        if (oldIndex >= 0 && newIndex >=0)
         {
-            equippedIndices[i] = newInd;
+            AttackBlock unequipped = equipped[oldIndex];
+            equipped[oldIndex] = storage[newIndex];
+            storage.Add(unequipped);
         }
     }
 }

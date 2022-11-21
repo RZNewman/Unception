@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public uint slotRank;
-
     public UiEquipmentDragger dragger;
     public ItemList itemTray;
 
@@ -31,8 +29,8 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (runEquip)
         {
             itemTray.grabAbility(uiAbility);
-            int oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
-            int newIndex = uiAbil.GetComponent<UiAbility>().inventoryIndex;
+            string oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
+            string newIndex = uiAbil.GetComponent<UiAbility>().inventoryIndex;
             FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
             FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
         }

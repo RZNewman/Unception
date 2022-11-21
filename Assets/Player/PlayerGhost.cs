@@ -88,7 +88,7 @@ public class PlayerGhost : NetworkBehaviour
         p.setPower(playerPower);
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
-        u.GetComponent<AbiltyList>().addAbility(inv.equipped);
+        u.GetComponent<AbiltyList>().addAbility(inv.equippedAbilities);
         u.GetComponent<LifeManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
         currentSelf = u;

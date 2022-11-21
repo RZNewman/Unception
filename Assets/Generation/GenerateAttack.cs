@@ -13,6 +13,7 @@ using static RewardManager;
 using UnityEditor.PackageManager.UI;
 using static GenerateRepeating;
 using static UnityEngine.InputManagerEntry;
+using UnityEditor;
 
 public static class GenerateAttack
 {
@@ -377,6 +378,7 @@ public static class GenerateAttack
             color = color,
             symbol = Random.Range(1, 117),
         };
+        block.id = System.Guid.NewGuid().ToString();
         return block;
 
     }

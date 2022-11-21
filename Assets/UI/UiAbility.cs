@@ -56,13 +56,15 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         background.sprite = bgFromQuality(filled.instance.quality);
     }
 
-    public void setDetails(UiAbilityDetails details, UiEquipmentDragger drag)
+    public void setDetails(UiAbilityDetails details)
     {
         deets = details;
-        dragger = drag;
 
     }
-
+    public void setDragger(UiEquipmentDragger drag)
+    {
+        dragger = drag;
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (deets)

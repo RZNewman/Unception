@@ -38,8 +38,8 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
         uiAbility = uiAbil;
         uiAbility.transform.SetParent(transform);
+        uiAbility.GetComponent<UiAbility>().setDragger(null);
         uiAbility.transform.localPosition = Vector3.zero;
-        uiAbility.GetComponent<Image>().raycastTarget = true;
     }
 
     public void clear()

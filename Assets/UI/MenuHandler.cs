@@ -9,6 +9,7 @@ public class MenuHandler : MonoBehaviour
     public GameObject loadout;
     public GameObject stageSelect;
     public GameObject login;
+    public GameObject network;
 
     public GameObject MusicBox;
     // Start is called before the first frame update
@@ -19,6 +20,8 @@ public class MenuHandler : MonoBehaviour
         loadout.SetActive(false);
         stageSelect.SetActive(false);
         login.SetActive(false);
+
+        networkMenu();
 
         MusicBox.SetActive(false);
     }
@@ -53,6 +56,11 @@ public class MenuHandler : MonoBehaviour
     public void loginMenu()
     {
         switchMenu(login);
+    }
+
+    public void networkMenu()
+    {
+        switchMenu(network);
     }
 
     GameObject activeMenu;

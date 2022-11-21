@@ -8,11 +8,11 @@ public class ItemList : MonoBehaviour
 {
     public GameObject abilityIconPre;
 
-
+    UiEquipmentDragger drag;
     public void fillAbilities(List<AttackBlockFilled> abils, int[] equipped)
     {
         UiAbilityDetails deets = FindObjectOfType<UiAbilityDetails>(true);
-        UiEquipmentDragger drag = FindObjectOfType<UiEquipmentDragger>(true);
+        drag = FindObjectOfType<UiEquipmentDragger>(true);
         UiEquipSlot[] slots = FindObjectsOfType<UiEquipSlot>(true).OrderBy(s => s.slotRank).ToArray();
         int currentSlot = 0;
 
@@ -29,22 +29,24 @@ public class ItemList : MonoBehaviour
         {
             AttackBlockFilled abil = abils[i];
             GameObject icon = Instantiate(abilityIconPre, transform);
+            UiAbility uia = icon.GetComponent<UiAbility>();
+            uia.setFill(abil);
+            uia.setDetails(deets);
+            uia.setDragger(drag);
+            uia.inventoryIndex = i;
             if (equipped.Contains(i))
             {
                 UiEquipSlot slot = slots[currentSlot];
                 currentSlot++;
                 slot.setEquiped(icon, false);
             }
-            UiAbility uia = icon.GetComponent<UiAbility>();
-            uia.setFill(abil);
-            uia.setDetails(deets, drag);
-            uia.inventoryIndex = i;
 
         }
     }
     public void grabAbility(GameObject icon)
     {
+
         icon.transform.SetParent(transform);
-        icon.GetComponent<Image>().raycastTarget = true;
+        icon.GetComponent<UiAbility>().setDragger(drag);
     }
 }

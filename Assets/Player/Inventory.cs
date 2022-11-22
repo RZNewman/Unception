@@ -74,11 +74,10 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void genMinItems()
     {
-        for (int i = equipped.Count; i < 4; i++)
+        for (int i = equipped.Count; i < inventorySlots; i++)
         {
             AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
             equipped.Add(item);
-            save.saveItem(item);
         }
     }
 
@@ -86,8 +85,13 @@ public class Inventory : NetworkBehaviour
     public void AddItem(AttackBlock item, Vector3 otherPosition)
     {
         storage.Add(item);
-        save.saveItem(item);
         TargetDropItem(connectionToClient, item, otherPosition);
+    }
+
+    //server
+    public AttackBlock[] exportItems()
+    {
+        return equipped.Concat(storage).ToArray();
     }
 
     [Server]

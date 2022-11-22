@@ -28,7 +28,7 @@ public class SaveData : NetworkBehaviour
         settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-
+            TypeNameAssemblyFormatHandling= TypeNameAssemblyFormatHandling.Simple,
         };
     }
 
@@ -43,12 +43,7 @@ public class SaveData : NetworkBehaviour
 
 
 
-    public void saveItem(AttackBlock block)
-    {
-
-        string json = santitizeJson(JsonConvert.SerializeObject(block, Formatting.None, settings));
-        db.Child("Characters").Child(auth.user).Child("items").Push().SetRawJsonValueAsync(json);
-    }
+    
 
     [Server]
     public void loadData()
@@ -126,7 +121,7 @@ public class SaveData : NetworkBehaviour
             DataSnapshot snapshot = items.Result;
             if (snapshot.Exists)
             {
-                AttackBlock[] itemData = JsonConvert.DeserializeObject<Dictionary<string, AttackBlock>>(unsantitizeJson(snapshot.GetRawJsonValue()), settings).Values.ToArray();
+                AttackBlock[] itemData = JsonConvert.DeserializeObject<AttackBlock[]>(unsantitizeJson(snapshot.GetRawJsonValue()), settings);
                 inv.reloadItems(itemData);
             }
             else
@@ -147,7 +142,15 @@ public class SaveData : NetworkBehaviour
         {
             db.Child("Characters").Child(auth.user).Child("power").SetValueAsync(player.power);
             db.Child("Characters").Child(auth.user).Child("pityQuality").SetRawJsonValueAsync(JsonConvert.SerializeObject(inv.savePity()));
+            saveItems();
         }
 
+    }
+
+    //server
+    public void saveItems()
+    {
+        string json = santitizeJson(JsonConvert.SerializeObject(inv.exportItems(), Formatting.None, settings));
+        db.Child("Characters").Child(auth.user).Child("items").SetRawJsonValueAsync(json);
     }
 }

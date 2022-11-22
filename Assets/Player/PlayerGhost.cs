@@ -20,9 +20,11 @@ public class PlayerGhost : NetworkBehaviour
 
     AudioListener listener;
     MusicBox music;
+    SaveData save;
     void Start()
     {
         listener = GetComponent<AudioListener>();
+        save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
         if (isLocalPlayer)
         {
@@ -64,6 +66,7 @@ public class PlayerGhost : NetworkBehaviour
     void CmdEmbark(int mapIndex)
     {
         refreshLives();
+        save.saveItems();
         StartCoroutine(embarkRoutine(mapIndex));
     }
 

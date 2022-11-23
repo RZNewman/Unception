@@ -45,6 +45,8 @@ public class ItemList : MonoBehaviour
     {
 
         icon.transform.SetParent(transform);
-        icon.GetComponent<UiAbility>().setDragger(drag);
+        UiAbility uia = icon.GetComponent<UiAbility>();
+        uia.setDragger(drag);
+        uia.setSlot(null);
     }
 }

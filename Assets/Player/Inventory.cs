@@ -10,10 +10,12 @@ using static UnityEditor.Progress;
 public class Inventory : NetworkBehaviour
 {
     public static readonly int inventorySlots = 4;
+
+
     List<AttackBlock> storage = new List<AttackBlock>();
 
     List<AttackBlock> equipped = new List<AttackBlock>();
-
+    AttackBlock deleteStaged;
 
     PlayerGhost player;
     SaveData save;
@@ -191,8 +193,42 @@ public class Inventory : NetworkBehaviour
         if (oldIndex >= 0 && newIndex >=0)
         {
             AttackBlock unequipped = equipped[oldIndex];
-            equipped[oldIndex] = storage[newIndex];
+            AttackBlock nowEquipped = storage[newIndex];
+            equipped[oldIndex] = nowEquipped;
             storage.Add(unequipped);
+            storage.Remove(nowEquipped);
+            
         }
+    }
+
+    [Command]
+    public void CmdStageDelete(string id)
+    {
+        int index = storage.FindIndex(item => item.id == id);
+        if(index >= 0)
+        {
+            deleteStaged = storage[index];
+            storage.RemoveAt(index);
+
+
+        }
+        
+    }
+    [Command]
+    public void CmdUnstageDelete()
+    {
+        if (deleteStaged)
+        {
+            storage.Add(deleteStaged);
+            deleteStaged = null;
+        }
+        
+
+    }
+    //server
+    public void clearDelete()
+    { 
+        deleteStaged = null;
+        
     }
 }

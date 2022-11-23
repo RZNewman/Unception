@@ -11,12 +11,13 @@ public class UiSlotList : MonoBehaviour
     {
         slots.ForEach(slot => Destroy(slot.gameObject));
         slots.Clear();
-        icons.ForEach(i => { 
-            GameObject slot = Instantiate(slotPre, transform); 
+        icons.ForEach(i =>
+        {
+            GameObject slot = Instantiate(slotPre, transform);
             UiEquipSlot uiSlot = slot.GetComponent<UiEquipSlot>();
             uiSlot.dragger = dragger;
             uiSlot.itemTray = list;
-            uiSlot.setEquiped(i, false);
+            uiSlot.slotObject(i, false);
             slots.Add(uiSlot);
         });
     }

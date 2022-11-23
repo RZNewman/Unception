@@ -24,6 +24,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     //menu only
     UiAbilityDetails deets;
     UiEquipmentDragger dragger;
+    UiEquipSlot slot;
     public string inventoryIndex;
 
     private void Update()
@@ -65,6 +66,20 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         dragger = drag;
     }
+
+    public void setSlot(UiEquipSlot s)
+    {
+        slot = s;
+    }
+
+    public void takeFromSlot()
+    {
+        if (slot)
+        {
+            slot.unslot();
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (deets)

@@ -1,7 +1,9 @@
 
+using Firebase.Database;
 using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using static MapGenerator;
 
@@ -53,6 +55,11 @@ public static class Utils
             targets.AddRange(t.gameObject.ChildrenWithTag(tag));
         }
         return targets;
+    }
+    public static Task<DataSnapshot> Get(this DatabaseReference db)
+    {
+        db.KeepSynced(true);
+        return db.GetValueAsync();
     }
 
 

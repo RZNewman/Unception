@@ -52,11 +52,13 @@ public class SaveData : NetworkBehaviour
     }
 
     
+
     IEnumerator loadDataRoutine()
     {
-        Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
-        Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
-        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();
+
+        Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").Get();
+        Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").Get();
+        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").Get();
 
         while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
         {
@@ -150,6 +152,7 @@ public class SaveData : NetworkBehaviour
     //server
     public void saveItems()
     {
+        inv.clearDelete();
         string json = santitizeJson(JsonConvert.SerializeObject(inv.exportItems(), Formatting.None, settings));
         db.Child("Characters").Child(auth.user).Child("items").SetRawJsonValueAsync(json);
     }

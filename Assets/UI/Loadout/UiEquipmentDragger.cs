@@ -54,6 +54,7 @@ public class UiEquipmentDragger : MonoBehaviour
                 drag = hover.gameObject;
                 drag.transform.SetParent(transform);
                 drag.GetComponent<Image>().raycastTarget = false;
+                drag.GetComponent<UiAbility>().takeFromSlot();
             }
         }
         if (!Input.GetMouseButton(0))
@@ -62,7 +63,7 @@ public class UiEquipmentDragger : MonoBehaviour
             {
                 if (slot)
                 {
-                    slot.setEquiped(drag);
+                    slot.slotObject(drag);
                 }
                 else
                 {

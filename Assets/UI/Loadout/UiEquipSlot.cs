@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,6 +14,18 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     GameObject uiAbility;
 
+    public enum SlotMode
+    {
+        Equipment,
+        Trash
+    }
+    public SlotMode mode = SlotMode.Equipment;
+
+    GlobalPlayer gp;
+    private void Start()
+    {
+        gp =FindObjectOfType<GlobalPlayer>(true);
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
         dragger.setSlot(this);
@@ -23,21 +36,45 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         dragger.unsetSlot(this);
     }
 
-    public void setEquiped(GameObject uiAbil, bool runEquip = true)
+    public void slotObject(GameObject uiAbil, bool unslot = true)
     {
-
-        if (runEquip)
+        UiAbility newUI = uiAbil.GetComponent<UiAbility>();
+        newUI.setSlot(this);
+        switch (mode)
         {
-            itemTray.grabAbility(uiAbility);
-            string oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
-            string newIndex = uiAbil.GetComponent<UiAbility>().inventoryIndex;
-            FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
-            FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
+            case SlotMode.Equipment:
+                if (unslot)
+                {
+                    itemTray.grabAbility(uiAbility);
+                    string oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
+                    string newIndex = newUI.inventoryIndex;
+                    gp.player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
+                    FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
+                }
+                uiAbility = uiAbil;
+                uiAbility.transform.SetParent(transform);
+                uiAbility.GetComponent<UiAbility>().setDragger(null);
+                uiAbility.transform.localPosition = Vector3.zero;
+                break;
+            case SlotMode.Trash:
+                string index = uiAbil.GetComponent<UiAbility>().inventoryIndex;
+                gp.player.GetComponent<Inventory>().CmdStageDelete(index);
+                uiAbility = uiAbil;
+                uiAbility.transform.SetParent(transform);
+                uiAbility.transform.localPosition = Vector3.zero;
+                break;
         }
-        uiAbility = uiAbil;
-        uiAbility.transform.SetParent(transform);
-        uiAbility.GetComponent<UiAbility>().setDragger(null);
-        uiAbility.transform.localPosition = Vector3.zero;
+        
+    }
+    public void unslot()
+    {
+        switch (mode)
+        {
+            case SlotMode.Trash:
+                gp.player.GetComponent<Inventory>().CmdUnstageDelete();
+
+                break;
+        }
     }
 
     public void clear()
@@ -46,6 +83,6 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             Destroy(uiAbility);
         }
-        
+
     }
 }

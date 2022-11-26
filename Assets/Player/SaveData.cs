@@ -25,11 +25,13 @@ public class SaveData : NetworkBehaviour
         inv = GetComponent<Inventory>();
         player = GetComponent<PlayerGhost>();
         db = FirebaseDatabase.DefaultInstance.RootReference;
+        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormatHandling= TypeNameAssemblyFormatHandling.Simple,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
         };
+
     }
 
     string santitizeJson(string json)
@@ -43,7 +45,7 @@ public class SaveData : NetworkBehaviour
 
 
 
-    
+
 
     [Server]
     public void loadData()
@@ -51,14 +53,14 @@ public class SaveData : NetworkBehaviour
         StartCoroutine(loadDataRoutine());
     }
 
-    
+
 
     IEnumerator loadDataRoutine()
     {
 
-        Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").Get();
-        Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").Get();
-        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").Get();
+        Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
+        Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
+        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();
 
         while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
         {
@@ -100,7 +102,7 @@ public class SaveData : NetworkBehaviour
             DataSnapshot snapshot = pity.Result;
             if (snapshot.Exists)
             {
-                inv.loadPity(JsonConvert.DeserializeObject<Dictionary<string,float>>( snapshot.GetRawJsonValue()));
+                inv.loadPity(JsonConvert.DeserializeObject<Dictionary<string, float>>(snapshot.GetRawJsonValue()));
             }
             else
             {
@@ -133,9 +135,9 @@ public class SaveData : NetworkBehaviour
             }
         }
 
-        
 
-        
+
+
     }
 
     private void OnDestroy()

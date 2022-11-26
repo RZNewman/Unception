@@ -65,7 +65,7 @@ public class Atlas : NetworkBehaviour
 
     void createMapMarkers()
     {
-        foreach(Map m in list.maps)
+        foreach (Map m in list.maps)
         {
             GameObject marker = Instantiate(mapMarkerPre, mapImage.transform);
             Vector2 size = mapImage.sizeDelta - Vector2.one * 25f;
@@ -83,7 +83,8 @@ public class Atlas : NetworkBehaviour
         }
     }
 
-    void hookMaps(MapListing old, MapListing neww){
+    void hookMaps(MapListing old, MapListing neww)
+    {
         createMapMarkers();
     }
 
@@ -98,12 +99,13 @@ public class Atlas : NetworkBehaviour
             float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
             int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
             Floor[] floors = new Floor[floorCount];
-            for(int j =0; j< floorCount; j++)
+            for (int j = 0; j < floorCount; j++)
             {
-                floors[j] = new Floor { 
-                    packs = avgPacksPerFloor, 
-                    tiles = avgPacksPerFloor + 10 
-                };    
+                floors[j] = new Floor
+                {
+                    packs = avgPacksPerFloor,
+                    tiles = avgPacksPerFloor + 10
+                };
             }
 
             mapsGen[i] = new Map
@@ -130,7 +132,7 @@ public class Atlas : NetworkBehaviour
 
     public void clearDisplay(UiMapMarker m)
     {
-        if(displayMap == m)
+        if (displayMap == m)
         {
             if (selectedMap)
             {
@@ -141,8 +143,8 @@ public class Atlas : NetworkBehaviour
                 mapDeets.clearLabels();
             }
         }
-        
-        
+
+
     }
     public void selectMap(UiMapMarker m)
     {
@@ -151,7 +153,28 @@ public class Atlas : NetworkBehaviour
             selectedMap.deselect();
         }
         selectedMap = m;
-        embarkButton.interactable = true;
+        checkEmbarkButton();
+    }
+
+    [Client]
+    public void inventoryChange(Inventory inv)
+    {
+        checkEmbarkButton();
+    }
+    void checkEmbarkButton()
+    {
+        embarkButton.interactable = selectedMap && !isBurdened();
+    }
+    bool isBurdened()
+    {
+        foreach (Inventory inv in FindObjectsOfType<Inventory>())
+        {
+            if (inv.overburdened)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     [Client]
@@ -173,13 +196,18 @@ public class Atlas : NetworkBehaviour
     [Server]
     public IEnumerator embarkServer(int index)
     {
+        bool success = !onMission && !isBurdened();
+        if (!success)
+        {
+            yield break;
+        }
         onMission = true;
         MapGenerator gen = FindObjectOfType<MapGenerator>();
         yield return gen.buildMap(list.maps[index]);
     }
 
     [Server]
-    public void disembark(bool needsMapDestroyed =false)
+    public void disembark(bool needsMapDestroyed = false)
     {
         onMission = false;
         if (needsMapDestroyed)
@@ -188,7 +216,7 @@ public class Atlas : NetworkBehaviour
         }
         clearMapMarkers();
         makeMaps();
-        foreach(Inventory inv in FindObjectsOfType<Inventory>())
+        foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {
             inv.syncInventoryUpwards();
             inv.GetComponent<PlayerGhost>().TargetMainMenu(inv.connectionToClient);

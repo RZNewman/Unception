@@ -6,11 +6,12 @@ using System.Linq;
 using static RewardManager;
 using Castle.Core.Internal;
 using static UnityEditor.Progress;
+using static Power;
 
 public class Inventory : NetworkBehaviour
 {
     public static readonly int inventorySlots = 4;
-
+    int inventoryLimit = 10;
 
     List<AttackBlock> storage = new List<AttackBlock>();
 
@@ -38,6 +39,17 @@ public class Inventory : NetworkBehaviour
 
         }
     }
+
+    public delegate void OnInvUpdate(Inventory inv);
+
+    List<OnInvUpdate> OnInvUpdateCallbacks = new List<OnInvUpdate>();
+
+    public void subscribeInventory(OnInvUpdate callback)
+    {
+        OnInvUpdateCallbacks.Add(callback);
+        callback(this);
+    }
+
     [Server]
     public void createBasePity()
     {
@@ -65,6 +77,21 @@ public class Inventory : NetworkBehaviour
         return pityQuality.export();
     }
 
+    public bool overburdened
+    {
+        get
+        {
+            return storage.Count > inventoryLimit;
+        }
+    }
+    public string inventoryCount
+    {
+        get
+        {
+            return storage.Count + " /" + inventoryLimit;
+        }
+    }
+
     [Server]
     public void reloadItems(AttackBlock[] items)
     {
@@ -72,6 +99,7 @@ public class Inventory : NetworkBehaviour
         storage = items.Skip(inventorySlots).ToList();
         genMinItems();
         TargetSyncInventory(connectionToClient, equipped.ToArray(), storage.ToArray());
+        RpcInvChange();
     }
     [Server]
     public void genMinItems()
@@ -128,31 +156,6 @@ public class Inventory : NetworkBehaviour
 
     }
 
-    //void OnAbilityUpdated(SyncList<AttackBlock>.Operation op, int index, AttackBlock oldItem, AttackBlock newItem)
-    //{
-    //    AttackBlockFilled filled;
-    //    switch (op)
-    //    {
-    //        case SyncList<AttackBlock>.Operation.OP_ADD:
-    //            filled = tryFillBlock(newItem);
-    //            abilities.Add(filled);
-    //            break;
-    //        case SyncList<AttackBlock>.Operation.OP_INSERT:
-    //            filled = tryFillBlock(newItem);
-    //            abilities.Insert(index, filled);
-    //            break;
-    //        case SyncList<AttackBlock>.Operation.OP_REMOVEAT:
-    //            abilities.RemoveAt(index);
-    //            break;
-    //        case SyncList<AttackBlock>.Operation.OP_SET:
-    //            filled = tryFillBlock(newItem);
-    //            abilities[index] = filled;
-    //            break;
-    //        case SyncList<AttackBlock>.Operation.OP_CLEAR:
-    //            abilities.Clear();
-    //            break;
-    //    }
-    //}
     public AttackBlockFilled fillBlock(AttackBlock block)
     {
 
@@ -185,19 +188,28 @@ public class Inventory : NetworkBehaviour
         FindObjectOfType<ItemList>(true).fillAbilities(this);
     }
 
+    [ClientRpc]
+    void RpcInvChange()
+    {
+        foreach (OnInvUpdate callback in OnInvUpdateCallbacks)
+        {
+            callback(this);
+        }
+    }
+
     [Command]
     public void CmdEquipAbility(string oldId, string newId)
     {
         int oldIndex = equipped.FindIndex(item => item.id == oldId);
         int newIndex = storage.FindIndex(item => item.id == newId);
-        if (oldIndex >= 0 && newIndex >=0)
+        if (oldIndex >= 0 && newIndex >= 0)
         {
             AttackBlock unequipped = equipped[oldIndex];
             AttackBlock nowEquipped = storage[newIndex];
             equipped[oldIndex] = nowEquipped;
             storage.Add(unequipped);
             storage.Remove(nowEquipped);
-            
+            RpcInvChange();
         }
     }
 
@@ -205,14 +217,14 @@ public class Inventory : NetworkBehaviour
     public void CmdStageDelete(string id)
     {
         int index = storage.FindIndex(item => item.id == id);
-        if(index >= 0)
+        if (index >= 0)
         {
             deleteStaged = storage[index];
             storage.RemoveAt(index);
 
-
+            RpcInvChange();
         }
-        
+
     }
     [Command]
     public void CmdUnstageDelete()
@@ -221,14 +233,15 @@ public class Inventory : NetworkBehaviour
         {
             storage.Add(deleteStaged);
             deleteStaged = null;
+            RpcInvChange();
         }
-        
+
 
     }
     //server
     public void clearDelete()
-    { 
+    {
         deleteStaged = null;
-        
+
     }
 }

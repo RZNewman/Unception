@@ -21,8 +21,10 @@ public class PlayerGhost : NetworkBehaviour
     AudioListener listener;
     MusicBox music;
     SaveData save;
+    Inventory inv;
     void Start()
     {
+        inv = GetComponent<Inventory>();
         listener = GetComponent<AudioListener>();
         save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
@@ -31,6 +33,10 @@ public class PlayerGhost : NetworkBehaviour
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
             FindObjectOfType<MenuHandler>().clientMenu();
             FindObjectOfType<PlayerUiReference>(true).setTarget(this);
+            foreach (UiInvLimit limit in FindObjectsOfType<UiInvLimit>(true))
+            {
+                limit.set(inv);
+            }
 
 
         }
@@ -41,6 +47,11 @@ public class PlayerGhost : NetworkBehaviour
         if (isServer)
         {
             FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
+        }
+        if (isClient)
+        {
+            inv.subscribeInventory(FindObjectOfType<Atlas>().inventoryChange);
+
         }
     }
     public float power
@@ -65,6 +76,7 @@ public class PlayerGhost : NetworkBehaviour
     [Command]
     void CmdEmbark(int mapIndex)
     {
+        //TODO every player
         refreshLives();
         save.saveItems();
         StartCoroutine(embarkRoutine(mapIndex));
@@ -77,6 +89,10 @@ public class PlayerGhost : NetworkBehaviour
         Atlas atlas = FindObjectOfType<Atlas>();
         yield return atlas.embarkServer(mapIndex);
 
+        if (!atlas.embarked)
+        {
+            yield break;
+        }
         buildUnit();
 
         TargetGameplayMenu(connectionToClient);
@@ -85,7 +101,7 @@ public class PlayerGhost : NetworkBehaviour
     [Server]
     void buildUnit()
     {
-        Inventory inv = GetComponent<Inventory>();
+
         GameObject u = Instantiate(unitPre);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower);

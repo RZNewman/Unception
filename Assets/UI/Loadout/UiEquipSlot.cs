@@ -24,7 +24,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     GlobalPlayer gp;
     private void Start()
     {
-        gp =FindObjectOfType<GlobalPlayer>(true);
+        gp = FindObjectOfType<GlobalPlayer>(true);
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -57,6 +57,10 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 uiAbility.transform.localPosition = Vector3.zero;
                 break;
             case SlotMode.Trash:
+                if (uiAbility)
+                {
+                    Destroy(uiAbility);
+                }
                 string index = uiAbil.GetComponent<UiAbility>().inventoryIndex;
                 gp.player.GetComponent<Inventory>().CmdStageDelete(index);
                 uiAbility = uiAbil;
@@ -64,7 +68,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 uiAbility.transform.localPosition = Vector3.zero;
                 break;
         }
-        
+
     }
     public void unslot()
     {
@@ -72,7 +76,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             case SlotMode.Trash:
                 gp.player.GetComponent<Inventory>().CmdUnstageDelete();
-
+                uiAbility = null;
                 break;
         }
     }

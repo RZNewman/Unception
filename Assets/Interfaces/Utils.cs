@@ -41,7 +41,7 @@ public static class Utils
     }
     public static string asPercent(this float value)
     {
-        return Mathf.Round( value*1000) /10 + "%";
+        return Mathf.Round(value * 1000) / 10 + "%";
     }
     public static List<GameObject> ChildrenWithTag(this GameObject o, string tag)
     {
@@ -55,11 +55,6 @@ public static class Utils
             targets.AddRange(t.gameObject.ChildrenWithTag(tag));
         }
         return targets;
-    }
-    public static Task<DataSnapshot> Get(this DatabaseReference db)
-    {
-        db.KeepSynced(true);
-        return db.GetValueAsync();
     }
 
 

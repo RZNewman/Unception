@@ -13,13 +13,14 @@ public class Inventory : NetworkBehaviour
     public static readonly int inventorySlots = 4;
     int inventoryLimit = 10;
 
+    List<AttackBlock> tempDrops = new List<AttackBlock>();
+
     List<AttackBlock> storage = new List<AttackBlock>();
 
     List<AttackBlock> equipped = new List<AttackBlock>();
     AttackBlock deleteStaged;
 
     PlayerGhost player;
-    SaveData save;
 
 
 
@@ -29,15 +30,6 @@ public class Inventory : NetworkBehaviour
     {
         player = GetComponent<PlayerGhost>();
         itemPre = GameObject.FindObjectOfType<GlobalPrefab>().ItemDropPre;
-        save = GetComponent<SaveData>();
-
-        if (isServer)
-        {
-
-
-
-
-        }
     }
 
     public delegate void OnInvUpdate(Inventory inv);
@@ -114,7 +106,7 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)
     {
-        storage.Add(item);
+        tempDrops.Add(item);
         TargetDropItem(connectionToClient, item, otherPosition);
     }
 
@@ -143,6 +135,13 @@ public class Inventory : NetworkBehaviour
         get
         {
             return storage;
+        }
+    }
+    public List<AttackBlock> dropped
+    {
+        get
+        {
+            return tempDrops;
         }
     }
 
@@ -185,7 +184,7 @@ public class Inventory : NetworkBehaviour
         storage = st.ToList();
 
 
-        FindObjectOfType<ItemList>(true).fillAbilities(this);
+
     }
 
     [ClientRpc]
@@ -198,18 +197,39 @@ public class Inventory : NetworkBehaviour
     }
 
     [Command]
-    public void CmdEquipAbility(string oldId, string newId)
+    public void CmdEquipAbility(string oldId, string newId, bool fromDrops)
     {
         int oldIndex = equipped.FindIndex(item => item.id == oldId);
-        int newIndex = storage.FindIndex(item => item.id == newId);
+        int newIndex;
+        if (fromDrops)
+        {
+            newIndex = tempDrops.FindIndex(item => item.id == newId);
+        }
+        else
+        {
+            newIndex = storage.FindIndex(item => item.id == newId);
+        }
+
         if (oldIndex >= 0 && newIndex >= 0)
         {
-            AttackBlock unequipped = equipped[oldIndex];
-            AttackBlock nowEquipped = storage[newIndex];
-            equipped[oldIndex] = nowEquipped;
-            storage.Add(unequipped);
-            storage.Remove(nowEquipped);
-            RpcInvChange();
+            if (fromDrops)
+            {
+                AttackBlock unequipped = equipped[oldIndex];
+                AttackBlock nowEquipped = tempDrops[newIndex];
+                equipped[oldIndex] = nowEquipped;
+                tempDrops.Add(unequipped);
+                tempDrops.Remove(nowEquipped);
+            }
+            else
+            {
+                AttackBlock unequipped = equipped[oldIndex];
+                AttackBlock nowEquipped = storage[newIndex];
+                equipped[oldIndex] = nowEquipped;
+                storage.Add(unequipped);
+                storage.Remove(nowEquipped);
+                RpcInvChange();
+            }
+
         }
     }
 
@@ -233,6 +253,20 @@ public class Inventory : NetworkBehaviour
         {
             storage.Add(deleteStaged);
             deleteStaged = null;
+            RpcInvChange();
+        }
+
+
+    }
+    [Command]
+    public void CmdSendStorage(string id)
+    {
+        int index = tempDrops.FindIndex(item => item.id == id);
+        if (index >= 0)
+        {
+            AttackBlock moved = tempDrops[index];
+            tempDrops.RemoveAt(index);
+            storage.Add(moved);
             RpcInvChange();
         }
 

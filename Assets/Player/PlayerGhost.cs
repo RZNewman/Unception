@@ -124,7 +124,7 @@ public class PlayerGhost : NetworkBehaviour
     public void TargetMainMenu(NetworkConnection conn)
     {
         music.Menu();
-        FindObjectOfType<MenuHandler>().mainMenu();
+        FindObjectOfType<MenuHandler>().dropsMenu();
     }
 
 

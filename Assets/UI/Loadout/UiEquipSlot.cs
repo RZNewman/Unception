@@ -6,18 +6,21 @@ using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static ItemList;
 
 public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public UiEquipmentDragger dragger;
     public ItemList itemTray;
+    public InventoryMode invMode;
 
     GameObject uiAbility;
 
     public enum SlotMode
     {
         Equipment,
-        Trash
+        Trash,
+        Store,
     }
     public SlotMode mode = SlotMode.Equipment;
 
@@ -48,7 +51,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                     itemTray.grabAbility(uiAbility);
                     string oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
                     string newIndex = newUI.inventoryIndex;
-                    gp.player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex);
+                    gp.player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex, invMode == InventoryMode.Drops);
                     FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
                 }
                 uiAbility = uiAbil;
@@ -66,6 +69,12 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 uiAbility = uiAbil;
                 uiAbility.transform.SetParent(transform);
                 uiAbility.transform.localPosition = Vector3.zero;
+                break;
+            case SlotMode.Store:
+
+                string storeID = uiAbil.GetComponent<UiAbility>().inventoryIndex;
+                gp.player.GetComponent<Inventory>().CmdSendStorage(storeID);
+                Destroy(uiAbil);
                 break;
         }
 

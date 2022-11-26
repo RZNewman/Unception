@@ -45,6 +45,12 @@ public class MenuHandler : MonoBehaviour
 
     public void loadoutMenu()
     {
+        loadout.GetComponent<UILoadoutMenu>().loadInvMode(ItemList.InventoryMode.Storage);
+        switchMenu(loadout);
+    }
+    public void dropsMenu()
+    {
+        loadout.GetComponent<UILoadoutMenu>().loadInvMode(ItemList.InventoryMode.Drops);
         switchMenu(loadout);
     }
 

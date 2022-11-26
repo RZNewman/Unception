@@ -12,22 +12,39 @@ public class ItemList : MonoBehaviour
     UiAbilityDetails deets;
     UiSlotList slotList;
     Inventory inv;
-    public void fillAbilities(Inventory i)
+
+    public enum InventoryMode
+    {
+        Storage,
+        Drops,
+    }
+    public void fillAbilities(Inventory i, InventoryMode mode)
     {
         inv = i;
         deets = FindObjectOfType<UiAbilityDetails>(true);
         drag = FindObjectOfType<UiEquipmentDragger>(true);
         slotList = FindObjectOfType<UiSlotList>(true);
 
-        foreach(Transform child in transform)
+        foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
         }
         slotList.clear();
-        
 
-        inv.stored.ForEach(a => createIcon(a));
-        slotList.fillSlots( inv.equippedAbilities.Select(a => createIcon(a)).ToList(), drag, this);
+        List<AttackBlock> source;
+        switch (mode)
+        {
+            case InventoryMode.Drops:
+                source = inv.dropped;
+                break;
+            case InventoryMode.Storage:
+            default:
+                source = inv.stored;
+                break;
+        }
+
+        source.ForEach(a => createIcon(a));
+        slotList.fillSlots(inv.equippedAbilities.Select(a => createIcon(a)).ToList(), drag, this, mode);
     }
     GameObject createIcon(AttackBlock ability)
     {
@@ -39,7 +56,7 @@ public class ItemList : MonoBehaviour
         uia.inventoryIndex = ability.id;
         return icon;
     }
-    
+
 
     public void grabAbility(GameObject icon)
     {

@@ -44,6 +44,7 @@ public class ItemList : MonoBehaviour
         }
 
         source.ForEach(a => createIcon(a));
+        sort();
         slotList.fillSlots(inv.equippedAbilities.Select(a => createIcon(a)).ToList(), drag, this, mode);
     }
     GameObject createIcon(AttackBlock ability)
@@ -56,6 +57,10 @@ public class ItemList : MonoBehaviour
         uia.inventoryIndex = ability.id;
         return icon;
     }
+    void sort()
+    {
+        transform.SortChildren((t1) => t1.GetComponent<UiAbility>().ability.instance.actingPower, true);
+    }
 
 
     public void grabAbility(GameObject icon)
@@ -65,5 +70,6 @@ public class ItemList : MonoBehaviour
         UiAbility uia = icon.GetComponent<UiAbility>();
         uia.setDragger(drag);
         uia.setSlot(null);
+        sort();
     }
 }

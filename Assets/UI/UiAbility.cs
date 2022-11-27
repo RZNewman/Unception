@@ -31,7 +31,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (target)
         {
-            bool fresh =  target.charges >= 1;
+            bool fresh = target.charges >= 1;
             float charges = target.charges;
             background.color = fresh ? Color.white : new Color(0.5f, 0.5f, 0.5f);
             foreground.fillAmount = charges == 1 ? 0 : 1 - (charges % 1);
@@ -52,7 +52,9 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Texture2D texture = FindObjectOfType<Symbol>().symbols[flair.symbol];
         symbol.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         symbol.color = flair.color;
-        identifier.color = flair.color;
+        Color partialColor = flair.color;
+        partialColor.a = 0.4f;
+        identifier.color = partialColor;
         identifier.text = flair.identifier;
         background.sprite = bgFromQuality(filled.instance.quality);
     }
@@ -127,5 +129,12 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return bg;
     }
 
+    public AttackBlockFilled ability
+    {
+        get
+        {
+            return filled;
+        }
+    }
 
 }

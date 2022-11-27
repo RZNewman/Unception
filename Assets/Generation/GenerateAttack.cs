@@ -17,7 +17,7 @@ using UnityEditor;
 
 public static class GenerateAttack
 {
-    public abstract class GenerationData :ScriptableObject
+    public abstract class GenerationData : ScriptableObject
     {
         public float strengthFactor = 1;
         public abstract InstanceData populate(float power, float strength);
@@ -86,10 +86,10 @@ public static class GenerateAttack
             get
             {
                 WindInstanceData[] winds = new WindInstanceData[] { windup, winddown };
-                if(repeat != null)
+                if (repeat != null)
                 {
                     List<WindInstanceData> windsRepeat = new List<WindInstanceData>();
-                    for (int i = 0; i < repeat.repeatCount-1; i++)
+                    for (int i = 0; i < repeat.repeatCount - 1; i++)
                     {
                         windsRepeat.Add(windRepeat);
                     }
@@ -103,7 +103,7 @@ public static class GenerateAttack
         {
             get
             {
-                return windStages.Sum(w =>w.duration);
+                return windStages.Sum(w => w.duration);
             }
         }
         public float effectPower
@@ -117,19 +117,19 @@ public static class GenerateAttack
         {
             get
             {
-                return effectPower/castTime;
+                return effectPower / castTime;
             }
         }
         public float damage(float power)
         {
 
-           return hit.damage(power);
-            
+            return hit.damage(power);
+
         }
         public float dps(float power)
         {
 
-            return damage(power)/castTime;
+            return damage(power) / castTime;
 
         }
         public float avgMove
@@ -173,6 +173,14 @@ public static class GenerateAttack
         public Quality quality;
         public float power;
 
+
+        public float actingPower
+        {
+            get
+            {
+                return power * qualityPercent(quality);
+            }
+        }
         public float castTime
         {
             get
@@ -201,7 +209,7 @@ public static class GenerateAttack
         }
         public float dps(float power)
         {
-            return damage(power)/castTime;
+            return damage(power) / castTime;
         }
     }
 
@@ -234,14 +242,14 @@ public static class GenerateAttack
                 repeat = (RepeatingInstanceData)segment.repeat.populate(power, 1.0f);
                 windRepeat = (WindInstanceData)segment.windRepeat.populate(power, 1.0f);
                 repeatCount = repeat.repeatCount;
-                for(int j = 0; j < segment.repeat.repeatCount; j++)
+                for (int j = 0; j < segment.repeat.repeatCount; j++)
                 {
                     windList.Add(windRepeat);
                 }
             }
 
             float strength = getWindValue(windList.ToArray());
-            strength += cooldownStrength * ( 1 - 0.03f*(repeatCount-1));
+            strength += cooldownStrength * (1 - 0.03f * (repeatCount - 1));
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 
@@ -250,7 +258,7 @@ public static class GenerateAttack
                 windup = up,
                 winddown = down,
                 hit = (HitInstanceData)segment.hit.populate(power, repeatStrength),
-                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside? repeatStrength: strength),
+                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
                 repeat = repeat,
                 windRepeat = windRepeat,
                 dashAfter = segment.dashAfter,
@@ -304,7 +312,7 @@ public static class GenerateAttack
                         open = false;
                     }
 
-                    
+
                 }
 
             }
@@ -388,7 +396,7 @@ public static class GenerateAttack
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
 
-        DashGenerationData d =null;
+        DashGenerationData d = null;
         RepeatingGenerationData r = null;
         WindGenerationData rWind = null;
         HitGenerationData h = createHit();
@@ -405,17 +413,17 @@ public static class GenerateAttack
         {
             //dash effect
             d = createDash();
-           
+
             float hitValue = Random.value.asRange(0.3f, 0.8f);
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
         }
 
-        if(r != null && d != null)
+        if (r != null && d != null)
         {
             gen = Random.value;
 
-            if(gen < 0.1f)
+            if (gen < 0.1f)
             {
                 //dash in the repeat
                 if (d.control == DashControl.Backward)
@@ -424,7 +432,7 @@ public static class GenerateAttack
                     effects.Add(h);
                     effects.Add(d);
                     effects.Add(rWind);
-                    
+
                 }
                 else
                 {

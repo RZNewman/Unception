@@ -56,6 +56,29 @@ public static class Utils
         }
         return targets;
     }
+    public static void SortChildren(this Transform t, System.Func<Transform, System.IComparable> comp, bool descending = false)
+    {
+
+
+        List<(Transform, System.IComparable)> childrenValues = new List<(Transform, System.IComparable)>();
+        foreach (Transform child in t)
+        {
+            childrenValues.Add((child, comp(child)));
+        }
+        if (descending)
+        {
+            childrenValues.Sort((a, b) => b.Item2.CompareTo(a.Item2));
+        }
+        else
+        {
+            childrenValues.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+        }
+        for (int i = 0; i < childrenValues.Count; i++)
+        {
+            childrenValues[i].Item1.SetSiblingIndex(i);
+        }
+
+    }
 
 
     public struct FloatComponents

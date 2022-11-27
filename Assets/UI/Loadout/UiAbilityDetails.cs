@@ -21,7 +21,7 @@ public class UiAbilityDetails : MonoBehaviour
     public Text eps;
     public GameObject segPanelHolder;
     public GameObject segPanelPre;
-    
+
 
     PlayerGhost player;
 
@@ -36,7 +36,7 @@ public class UiAbilityDetails : MonoBehaviour
         power.text = Power.displayPower(filled.instance.power);
         quality.text = qualitySymbol(filled.instance.quality);
         quality.color = colorQuality(filled.instance.quality);
-        powerTotal.text = Power.displayPower(filled.instance.power * qualityPercent(filled.instance.quality));
+        powerTotal.text = Power.displayPower(filled.instance.actingPower);
         castTime.text = Power.displayPower(filled.instance.castTime);
         cooldown.text = Power.displayPower(filled.instance.cooldown);
         charges.text = Power.displayPower(filled.instance.charges);
@@ -50,7 +50,7 @@ public class UiAbilityDetails : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        foreach(SegmentInstanceData seg in filled.instance.segments)
+        foreach (SegmentInstanceData seg in filled.instance.segments)
         {
             buildSegment(seg, player.power);
         }
@@ -66,7 +66,7 @@ public class UiAbilityDetails : MonoBehaviour
         segmentPanel.addLabel("EPS", instance.eps);
         segmentPanel.addLabel("Damage", instance.damage(power));
         segmentPanel.addLabel("DPS", instance.dps(power));
-        
+
         segmentPanel.addLabel("Windup", instance.windup.duration);
         segmentPanel.addLabel("Winddown", instance.winddown.duration);
         segmentPanel.addLabel("Move", instance.avgMove);
@@ -77,8 +77,8 @@ public class UiAbilityDetails : MonoBehaviour
         segmentPanel.addLabel("Knockback", instance.hit.knockback);
         segmentPanel.addLabel("KB Dir", instance.hit.knockBackDirection.ToString());
         segmentPanel.addLabel("Stagger", instance.hit.stagger);
-        
-        if(instance.dash!= null)
+
+        if (instance.dash != null)
         {
             segmentPanel.addLabel("Dash Len", instance.dash.distance);
             segmentPanel.addLabel("Dash Speed", instance.dash.speed);

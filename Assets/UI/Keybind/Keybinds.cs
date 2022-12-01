@@ -6,6 +6,7 @@ using UnityEngine;
 public class Keybinds : MonoBehaviour
 {
     public GameObject keyPre;
+    public GameObject keyPanel;
     public enum KeyName
     {
         Forward,
@@ -32,7 +33,7 @@ public class Keybinds : MonoBehaviour
     {
         foreach (KeyName name in Enum.GetValues(typeof(KeyName)))
         {
-            GameObject o = Instantiate(keyPre, transform);
+            GameObject o = Instantiate(keyPre, keyPanel.transform);
 
             KeySetter setter = o.GetComponent<KeySetter>();
             KeyCode code = getKey(name);

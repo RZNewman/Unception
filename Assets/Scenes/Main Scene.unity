@@ -5074,6 +5074,7 @@ GameObject:
   - component: {fileID: 1202127501}
   - component: {fileID: 1202127503}
   - component: {fileID: 1202127502}
+  - component: {fileID: 1202127504}
   m_Layer: 0
   m_Name: UpdateManager
   m_TagString: Untagged
@@ -5439,6 +5440,20 @@ MonoBehaviour:
   shatter: {fileID: 8300000, guid: 2c3b8339e0255e446924fc5e36396f53, type: 3}
   creak: {fileID: 8300000, guid: 4c9ade448418b1c4895ed170e60e0acd, type: 3}
   itemSlurp: {fileID: 8300000, guid: cfcb653d5ce9b7b488b2b9a0615891e4, type: 3}
+--- !u!114 &1202127504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202127495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b320beb909963124dbedba4a96b7b0a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyPre: {fileID: 6321039284502836555, guid: 3438e98e1975f8b4e801f10f50d70da9, type: 3}
+  keyPanel: {fileID: 1481173419}
 --- !u!1001 &1213712044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6793,7 +6808,6 @@ GameObject:
   - component: {fileID: 1481173424}
   - component: {fileID: 1481173423}
   - component: {fileID: 1481173422}
-  - component: {fileID: 1481173421}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -6821,19 +6835,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0.00012207031, y: 148.327}
   m_SizeDelta: {x: -0.00024414, y: 296.654}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1481173421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1481173419}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b320beb909963124dbedba4a96b7b0a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  keyPre: {fileID: 6321039284502836555, guid: 3438e98e1975f8b4e801f10f50d70da9, type: 3}
 --- !u!114 &1481173422
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -310,6 +310,7 @@ public static class GenerateAttack
                         segments.Add(segment);
                         segment = new SegmentGenerationData();
                         open = false;
+                        dashAfter = false;
                     }
 
 

@@ -6,7 +6,6 @@ using Firebase.Database;
 using Newtonsoft.Json;
 using Firebase.Extensions;
 using System.Linq;
-using static UnityEditor.Progress;
 using Mirror;
 using System.Threading.Tasks;
 using System;

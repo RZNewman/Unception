@@ -4,8 +4,6 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 using static RewardManager;
-using Castle.Core.Internal;
-using static UnityEditor.Progress;
 using static Power;
 
 public class Inventory : NetworkBehaviour

@@ -10,9 +10,7 @@ using static GenerateDash;
 using static WindState;
 using static Cast;
 using static RewardManager;
-using UnityEditor.PackageManager.UI;
 using static GenerateRepeating;
-using static UnityEngine.InputManagerEntry;
 using UnityEditor;
 
 public static class GenerateAttack

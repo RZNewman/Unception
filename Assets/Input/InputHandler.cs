@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static Keybinds;
 using static UnitControl;
 using static Utils;
 public class InputHandler : MonoBehaviour, UnitControl
@@ -8,6 +9,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     UnitInput currentInput;
     Power power;
+    Keybinds keys;
 
 
     public UnitInput getUnitInuput()
@@ -24,6 +26,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     private void Start()
     {
         power = GetComponentInParent<Power>();
+        keys = FindObjectOfType<Keybinds>(true);
     }
     // Update is called once per frame
     void Update()
@@ -40,42 +43,42 @@ public class InputHandler : MonoBehaviour, UnitControl
     void setLocalInput()
     {
         Vector2 move = Vector2.zero;
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(keys.binding(KeyName.Forward)))
         {
             move += Vector2.up;
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(keys.binding(KeyName.Backward)))
         {
             move += Vector2.down;
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(keys.binding(KeyName.Left)))
         {
             move += Vector2.left;
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(keys.binding(KeyName.Right)))
         {
             move += Vector2.right;
         }
         move.Normalize();
         currentInput.move = move;
 
-        currentInput.jump = Input.GetKey(KeyCode.Space);
-        currentInput.dash = Input.GetKeyDown(KeyCode.LeftShift);
+        currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
+        currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
 
         HashSet<AttackKey> atks = new HashSet<AttackKey>();
-        if (Input.GetMouseButton(0))
+        if (Input.GetKey(keys.binding(KeyName.Attack1)))
         {
             atks.Add(AttackKey.One);
         }
-        if (Input.GetMouseButton(1))
+        if (Input.GetKey(keys.binding(KeyName.Attack2)))
         {
             atks.Add(AttackKey.Two);
         }
-        if (Input.GetKey(KeyCode.Alpha1))
+        if (Input.GetKey(keys.binding(KeyName.Attack3)))
         {
             atks.Add(AttackKey.Three);
         }
-        if (Input.GetKey(KeyCode.Alpha2))
+        if (Input.GetKey(keys.binding(KeyName.Attack4)))
         {
             atks.Add(AttackKey.Four);
         }

@@ -350,17 +350,17 @@ public static class GenerateAttack
 
         int segmentCount = 1;
         float r = Random.value;
-        if (r < 0.2)
+        if (r < 0.1)
         {
             segmentCount = 2;
         }
 
         for (int i = 0; i < segmentCount; i++)
         {
-
-            stages.Add(createWind());
+            WindGenerationData windup = createWind();
+            stages.Add(windup);
             stages.AddRange(getEffect());
-            stages.Add(createWind(0.65f));
+            stages.Add(createWind(Mathf.Clamp01(windup.duration * 2)));
 
         }
 

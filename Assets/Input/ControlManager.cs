@@ -69,6 +69,8 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
         serverRead = true;
         return current;
     }
+    //Used to sync keydown events between update and Fixedupdate
+    //set to true on read, so that the buttons can be cleared the next write
     bool serverRead = false;
 
     private void Update()

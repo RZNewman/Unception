@@ -12,6 +12,7 @@ public interface UnitControl
         public Vector3 lookOffset;
         public bool jump;
         public bool dash;
+        public bool cancel;
         public AttackKey[] attacks;
 
 
@@ -21,12 +22,14 @@ public interface UnitControl
             lookOffset = Vector3.zero;
             jump = false;
             dash = false;
+            cancel = false;
             attacks = new AttackKey[0];
         }
         public void cleanButtons()
         {
             jump = false;
             dash = false;
+            cancel = false;
             attacks = new AttackKey[0];
         }
         public AttackKey popKey()
@@ -55,6 +58,7 @@ public interface UnitControl
                 lookOffset = Vector3.zero,
                 jump = false,
                 dash = false,
+                cancel = false,
                 attacks = new AttackKey[0],
             };
         }
@@ -77,6 +81,7 @@ public interface UnitControl
                 lookOffset = newer.lookOffset,
                 jump = jump || newer.jump,
                 dash = dash || newer.dash,
+                cancel = cancel || newer.cancel,
                 attacks = aArray,
             };
         }

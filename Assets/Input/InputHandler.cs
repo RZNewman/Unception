@@ -64,6 +64,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
+        currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
 
         HashSet<AttackKey> atks = new HashSet<AttackKey>();
         if (Input.GetKey(keys.binding(KeyName.Attack1)))

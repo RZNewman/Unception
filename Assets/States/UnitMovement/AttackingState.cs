@@ -60,6 +60,10 @@ public class AttackingState : PlayerMovementState
             }
 
         }
+        if (mover.input.cancel && currentSegment.inWindup())
+        {
+            return new StateTransition(new FreeState(mover), true);
+        }
         attackMachine.transition();
         if (ended)
         {

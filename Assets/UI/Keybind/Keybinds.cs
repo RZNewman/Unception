@@ -15,6 +15,7 @@ public class Keybinds : MonoBehaviour
         Right,
         Dash,
         Jump,
+        Cancel,
         Attack1,
         Attack2,
         Attack3,
@@ -112,6 +113,8 @@ public class Keybinds : MonoBehaviour
                 return KeyCode.Space;
             case KeyName.Dash:
                 return KeyCode.LeftShift;
+            case KeyName.Cancel:
+                return KeyCode.LeftControl;
             case KeyName.Attack1:
                 return KeyCode.Mouse0;
             case KeyName.Attack2:

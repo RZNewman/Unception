@@ -111,18 +111,18 @@ public static class AttackUtils
             }
             currentState = states[0];
 
-            if (currentState is WindState && states.Count >1)
+            if (currentState is WindState && states.Count > 1)
             {
                 cleanInstances();
 
                 List<AttackStageState> indicatorBuild = new List<AttackStageState>();
                 indicatorBuild.Add(states[0]);
                 int i = 1;
-                while (i<states.Count && !(states[i] is WindState))
+                while (i < states.Count && !(states[i] is WindState))
                 {
                     AttackStageState state = states[i];
                     indicatorBuild.Add(state);
-                    if(state is ActionState)
+                    if (state is ActionState)
                     {
                         ActionState action = (ActionState)state;
                         HitInstanceData source = action.getSource();
@@ -136,7 +136,7 @@ public static class AttackUtils
                             windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {
                                 radius = 0.2f,
-                                distance = s.scaledHalfHeight* 1.1f,
+                                distance = s.scaledHalfHeight * 1.1f,
                             });
                             action.setGroundTarget(groundTargetInstance);
                         }
@@ -146,12 +146,12 @@ public static class AttackUtils
                 }
                 cast.buildIndicator(indicatorBuild, this);
             }
-            
 
 
 
 
-            
+
+
             states.RemoveAt(0);
             return currentState;
         }
@@ -166,6 +166,10 @@ public static class AttackUtils
             {
                 return 0;
             }
+        }
+        public bool inWindup()
+        {
+            return currentState == windup;
         }
     }
 
@@ -223,7 +227,7 @@ public static class AttackUtils
     public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
     {
         float playerHeightOversize = halfHeight * 2 * 1.5f;
-        
+
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
         Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
         Vector2 attackVec = new Vector2(length, width / 2);
@@ -256,7 +260,7 @@ public static class AttackUtils
 
         RaycastHit[] boxHits = Physics.BoxCastAll(info.boxCenter, info.boxHalfs, info.bodyForward, info.aim, 0.0f, LayerMask.GetMask("Players", "Breakables"));
         //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
-        
+
         RaycastHit[] capsuleHits = Physics.CapsuleCastAll(info.capsuleStart, info.capsuleEnd, info.maxDistance, info.bodyForward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
 
         //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
@@ -292,7 +296,7 @@ public static class AttackUtils
         GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
         i.transform.localScale = info.boxHalfs * 2;
         i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex], dists);
-        
+
     }
     public static List<GameObject> GroundAttack(Vector3 origin, float radius)
     {
@@ -318,9 +322,9 @@ public static class AttackUtils
         GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, origin, aim);
-        i.transform.localScale = Vector3.one * radius *2;
-        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex],dists);
-        
+        i.transform.localScale = Vector3.one * radius * 2;
+        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex], dists);
+
 
     }
 }

@@ -276,4 +276,8 @@ public class Inventory : NetworkBehaviour
         deleteStaged = null;
 
     }
+    public void clearDrops()
+    {
+        tempDrops.Clear();
+    }
 }

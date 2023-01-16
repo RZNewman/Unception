@@ -2,6 +2,7 @@ using UnityEngine;
 using static GenerateDash;
 using static UnitControl;
 using static UnitMovement;
+using static Utils;
 
 public class DashState : AttackStageState
 {
@@ -19,6 +20,10 @@ public class DashState : AttackStageState
     public override void enter()
     {
         inpSnapshot = mover.input;
+        if (inpSnapshot.move == Vector2.zero)
+        {
+            inpSnapshot.move = vec2input(inpSnapshot.lookOffset.normalized);
+        }
         mover.sound.playSound(UnitSound.UnitSoundClip.Dash);
     }
     public override void exit(bool expired)

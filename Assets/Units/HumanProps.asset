@@ -30,4 +30,6 @@ MonoBehaviour:
   stunnedPostureCeilingAcceleration: 80
   maxStamina: 65
   staminaRecover: 8
-  visualsId: 0
+  visuals:
+    colors: []
+    parts: 

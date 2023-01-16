@@ -66,15 +66,22 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             //Local look for smoother client turning
             current.lookOffset = localInput.lookOffset;
         }
+        serverRead = true;
         return current;
     }
+    bool serverRead = false;
 
     private void Update()
     {
         if (isLocalAuthority && isServer)
         {
+            if (serverRead)
+            {
+                currentInput.cleanButtons();
+                serverRead = false;
+            }
             controller.refreshInput();
-            currentInput = controller.getUnitInuput();
+            currentInput = currentInput.merge(controller.getUnitInuput());
             localInput = localInput.merge(currentInput);
         }
         else if (isLocalAuthority)

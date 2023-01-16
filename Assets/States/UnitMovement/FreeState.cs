@@ -45,7 +45,7 @@ public class FreeState : PlayerMovementState
 
 
         Stamina s = mover.GetComponent<Stamina>();
-        if (inp.dash && inp.move.magnitude > 0 && s.stamina > Stamina.dashCost)
+        if (inp.dash && s.stamina > Stamina.dashCost)
         {
             s.spendStamina(Stamina.dashCost);
             DashInstanceData o = mover.baseDash();

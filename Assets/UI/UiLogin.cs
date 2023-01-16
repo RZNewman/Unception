@@ -18,7 +18,11 @@ public class UiLogin : MonoBehaviour
     public void login()
     {
         string name = username.text;
-        PlayerPrefs.SetString("username",name);
-        FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signIn(name);
+        if (name.Length > 0)
+        {
+            PlayerPrefs.SetString("username", name);
+            FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signIn(name);
+        }
+
     }
 }

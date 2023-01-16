@@ -78,6 +78,7 @@ public class PlayerGhost : NetworkBehaviour
     {
         //TODO every player
         refreshLives();
+        inv.clearDrops();
         save.saveItems();
         StartCoroutine(embarkRoutine(mapIndex));
     }

@@ -32,11 +32,11 @@ public interface UnitControl
             cancel = false;
             attacks = new AttackKey[0];
         }
-        public AttackKey popKey()
+        public Optional<AttackKey> popKey()
         {
             if (attacks.Length == 0)
             {
-                return AttackKey.None;
+                return new Optional<AttackKey>();
             }
             AttackKey key = attacks[0];
 
@@ -48,7 +48,7 @@ public interface UnitControl
             attacks = nextArray;
 
 
-            return key;
+            return new Optional<AttackKey>(key);
         }
         public static UnitInput zero()
         {
@@ -103,8 +103,6 @@ public interface UnitControl
         Two,
         Three,
         Four,
-
-        None,
     }
     public UnitInput getUnitInuput();
 

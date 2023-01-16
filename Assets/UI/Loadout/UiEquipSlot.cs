@@ -5,12 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static ItemList;
+using static UnitControl;
 
 public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public UiEquipmentDragger dragger;
     public ItemList itemTray;
     public InventoryMode invMode;
+    public AttackKey attackKey;
 
     GameObject uiAbility;
 
@@ -47,9 +49,8 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 if (unslot)
                 {
                     itemTray.grabAbility(uiAbility);
-                    string oldIndex = uiAbility.GetComponent<UiAbility>().inventoryIndex;
                     string newIndex = newUI.inventoryIndex;
-                    gp.player.GetComponent<Inventory>().CmdEquipAbility(oldIndex, newIndex, invMode == InventoryMode.Drops);
+                    gp.player.GetComponent<Inventory>().CmdEquipAbility(attackKey, newIndex, invMode == InventoryMode.Drops);
                     FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
                 }
                 uiAbility = uiAbil;

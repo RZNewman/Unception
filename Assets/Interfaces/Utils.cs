@@ -9,6 +9,10 @@ using static MapGenerator;
 
 public static class Utils
 {
+    public static IEnumerable<T> EnumValues<T>()
+    {
+        return System.Enum.GetValues(typeof(T)).Cast<T>();
+    }
     public static Vector3 input2vec(Vector2 inp)
     {
         return new Vector3(inp.x, 0, inp.y);
@@ -146,6 +150,44 @@ public static class Utils
             index--;
         }
         return list.Skip(index).First();
+    }
+
+    public struct Optional<T>
+    {
+        public bool HasValue { get; private set; }
+        private T value;
+        public T Value
+        {
+            get
+            {
+                if (HasValue)
+                    return value;
+                else
+                    throw new System.InvalidOperationException();
+            }
+        }
+
+        public Optional(T value)
+        {
+            this.value = value;
+            HasValue = true;
+        }
+
+        public static explicit operator T(Optional<T> optional)
+        {
+            return optional.Value;
+        }
+        public static implicit operator Optional<T>(T value)
+        {
+            return new Optional<T>(value);
+        }
+        public bool Equals(Optional<T> other)
+        {
+            if (HasValue && other.HasValue)
+                return object.Equals(value, other.value);
+            else
+                return HasValue == other.HasValue;
+        }
     }
     public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
     {

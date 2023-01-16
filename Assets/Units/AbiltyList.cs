@@ -7,7 +7,7 @@ public class AbiltyList : NetworkBehaviour
 {
 
 
-    List<AttackBlock> abilitiesToCreate = new List<AttackBlock>();
+    Dictionary<AttackKey, AttackBlock> abilitiesToCreate = new Dictionary<AttackKey, AttackBlock>();
     Dictionary<AttackKey, Ability> instancedAbilitites = new Dictionary<AttackKey, Ability>();
 
     bool started = false;
@@ -22,19 +22,18 @@ public class AbiltyList : NetworkBehaviour
     }
     void createAbilities()
     {
-        for (int i = 0; i < abilitiesToCreate.Count; i++)
+        foreach ((AttackKey key, AttackBlock block) in abilitiesToCreate)
         {
-            instanceAbility(abilitiesToCreate[i]);
+            instanceAbility(key, block);
         }
     }
-    void instanceAbility(AttackBlock block)
+    void instanceAbility(AttackKey key, AttackBlock block)
     {
         GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
         a.setFormat(block);
-        AttackKey k = (AttackKey)instancedAbilitites.Count;
-        instancedAbilitites.Add(k, a);
-        a.clientSyncKey = k;
+        instancedAbilitites.Add(key, a);
+        a.clientSyncKey = key;
         o.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(o);
     }
@@ -43,32 +42,42 @@ public class AbiltyList : NetworkBehaviour
     {
         instancedAbilitites.Add(k, a);
     }
-    public void addAbility(AttackBlock block)
+    public void addAbility(Dictionary<AttackKey, AttackBlock> blocks)
     {
         if (started)
         {
-            instanceAbility(block);
-        }
-        else
-        {
-            abilitiesToCreate.Add(block);
-        }
-
-    }
-    public void addAbility(List<AttackBlock> blocks)
-    {
-        if (started)
-        {
-            foreach (AttackBlock block in blocks)
+            foreach ((AttackKey key, AttackBlock block) in blocks)
             {
-                instanceAbility(block);
+                instanceAbility(key, block);
             }
 
         }
         else
         {
-            abilitiesToCreate.AddRange(blocks);
+            foreach ((AttackKey key, AttackBlock block) in blocks)
+            {
+                abilitiesToCreate.Add(key, block);
+            }
+
         }
+
+    }
+    public void addAbility(List<AttackBlock> blocks)
+    {
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            AttackKey key = (AttackKey)i;
+            AttackBlock block = blocks[i];
+            if (started)
+            {
+                instanceAbility(key, block);
+            }
+            else
+            {
+                abilitiesToCreate.Add(key, block);
+            }
+        }
+
 
     }
 

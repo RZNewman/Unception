@@ -2,6 +2,7 @@ using UnityEngine;
 using static DashState;
 using static GenerateDash;
 using static UnitControl;
+using static Utils;
 
 public class FreeState : PlayerMovementState
 {
@@ -28,12 +29,12 @@ public class FreeState : PlayerMovementState
         }
         UnitInput inp = mover.input;
 
-        AttackKey key = inp.popKey();
+        Optional<AttackKey> key = inp.popKey();
 
 
-        while (key != AttackKey.None)
+        while (key.HasValue)
         {
-            Ability a = mover.GetComponent<AbiltyList>().getAbility(key);
+            Ability a = mover.GetComponent<AbiltyList>().getAbility(key.Value);
             //Debug.Log(key);
             //Debug.Log(a.ready);
             if (a.ready)

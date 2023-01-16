@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnitControl;
 
 public class ItemList : MonoBehaviour
 {
@@ -45,7 +46,10 @@ public class ItemList : MonoBehaviour
 
         source.ForEach(a => createIcon(a));
         sort();
-        slotList.fillSlots(inv.equippedAbilities.Select(a => createIcon(a)).ToList(), drag, this, mode);
+        List<(AttackKey, GameObject)> iconList = inv.equippedAbilities.Select(pair => (pair.Key, createIcon(pair.Value))).ToList();
+        Dictionary<AttackKey, GameObject> icons = new Dictionary<AttackKey, GameObject>();
+        iconList.ForEach((item) => icons.Add(item.Item1, item.Item2));
+        slotList.fillSlots(icons, drag, this, mode);
     }
     GameObject createIcon(AttackBlock ability)
     {

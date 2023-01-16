@@ -5,6 +5,9 @@ using Mirror;
 using System.Linq;
 using static RewardManager;
 using static Power;
+using static UnitControl;
+using static Keybinds;
+using static Utils;
 
 public class Inventory : NetworkBehaviour
 {
@@ -15,7 +18,7 @@ public class Inventory : NetworkBehaviour
 
     List<AttackBlock> storage = new List<AttackBlock>();
 
-    List<AttackBlock> equipped = new List<AttackBlock>();
+    Dictionary<AttackKey, AttackBlock> equipped = new Dictionary<AttackKey, AttackBlock>();
     AttackBlock deleteStaged;
 
     PlayerGhost player;
@@ -82,13 +85,33 @@ public class Inventory : NetworkBehaviour
         }
     }
 
+    AttackBlock[] equipArray
+    {
+        get
+        {
+            return EnumValues<AttackKey>().Select(key => equipped[key]).ToArray();
+        }
+        set
+        {
+            equipped = new Dictionary<AttackKey, AttackBlock>();
+            int index = 0;
+            foreach (AttackBlock block in value)
+            {
+                equipped.Add((AttackKey)index, block);
+                index++;
+            }
+        }
+
+    }
+
     [Server]
     public void reloadItems(AttackBlock[] items)
     {
-        equipped = items.Take(inventorySlots).ToList();
+        AttackBlock[] equippedArray = items.Take(inventorySlots).ToArray();
+        equipArray = equippedArray;
         storage = items.Skip(inventorySlots).ToList();
         genMinItems();
-        TargetSyncInventory(connectionToClient, equipped.ToArray(), storage.ToArray());
+        TargetSyncInventory(connectionToClient, equippedArray, storage.ToArray());
         RpcInvChange();
     }
     [Server]
@@ -97,7 +120,7 @@ public class Inventory : NetworkBehaviour
         for (int i = equipped.Count; i < inventorySlots; i++)
         {
             AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
-            equipped.Add(item);
+            equipped.Add((AttackKey)i, item);
         }
     }
 
@@ -111,7 +134,7 @@ public class Inventory : NetworkBehaviour
     //server
     public AttackBlock[] exportItems()
     {
-        return equipped.Concat(storage).ToArray();
+        return equipArray.Concat(storage).ToArray();
     }
 
     [Server]
@@ -121,7 +144,7 @@ public class Inventory : NetworkBehaviour
     }
 
     //Server
-    public List<AttackBlock> equippedAbilities
+    public Dictionary<AttackKey, AttackBlock> equippedAbilities
     {
         get
         {
@@ -172,13 +195,13 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void syncInventoryUpwards()
     {
-        TargetSyncInventory(connectionToClient, equipped.ToArray(), storage.ToArray());
+        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray());
     }
 
     [TargetRpc]
     void TargetSyncInventory(NetworkConnection conn, AttackBlock[] eq, AttackBlock[] st)
     {
-        equipped = eq.ToList();
+        equipArray = eq;
         storage = st.ToList();
 
 
@@ -195,9 +218,8 @@ public class Inventory : NetworkBehaviour
     }
 
     [Command]
-    public void CmdEquipAbility(string oldId, string newId, bool fromDrops)
+    public void CmdEquipAbility(AttackKey key, string newId, bool fromDrops)
     {
-        int oldIndex = equipped.FindIndex(item => item.id == oldId);
         int newIndex;
         if (fromDrops)
         {
@@ -208,23 +230,29 @@ public class Inventory : NetworkBehaviour
             newIndex = storage.FindIndex(item => item.id == newId);
         }
 
-        if (oldIndex >= 0 && newIndex >= 0)
+        if (newIndex >= 0)
         {
             if (fromDrops)
             {
-                AttackBlock unequipped = equipped[oldIndex];
+                AttackBlock unequipped = equipped[key];
                 AttackBlock nowEquipped = tempDrops[newIndex];
-                equipped[oldIndex] = nowEquipped;
-                tempDrops.Add(unequipped);
+                equipped[key] = nowEquipped;
                 tempDrops.Remove(nowEquipped);
+                if (unequipped)
+                {
+                    tempDrops.Add(unequipped);
+                }
             }
             else
             {
-                AttackBlock unequipped = equipped[oldIndex];
+                AttackBlock unequipped = equipped[key];
                 AttackBlock nowEquipped = storage[newIndex];
-                equipped[oldIndex] = nowEquipped;
-                storage.Add(unequipped);
+                equipped[key] = nowEquipped;
                 storage.Remove(nowEquipped);
+                if (unequipped)
+                {
+                    storage.Add(unequipped); ;
+                }
                 RpcInvChange();
             }
 

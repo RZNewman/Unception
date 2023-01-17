@@ -11,8 +11,6 @@ public class MenuHandler : MonoBehaviour
     public GameObject login;
     public GameObject network;
     public GameObject settings;
-
-    public GameObject MusicBox;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,13 +23,11 @@ public class MenuHandler : MonoBehaviour
 
         networkMenu();
 
-        MusicBox.SetActive(false);
     }
 
     public void clientMenu()
     {
         loginMenu();
-        MusicBox.SetActive(true);
 
     }
 

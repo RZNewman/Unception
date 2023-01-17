@@ -51,7 +51,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         keys = FindObjectOfType<Keybinds>(true);
         string keybind = keys.binding(toKeyName(key)).ToString();
         label.text = "A " + key.ToString() + ": " + keybind;
-        label.enabled = true;
+        label.gameObject.SetActive(true);
         attackKey = key;
 
     }

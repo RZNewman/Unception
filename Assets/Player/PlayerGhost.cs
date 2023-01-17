@@ -25,9 +25,10 @@ public class PlayerGhost : NetworkBehaviour
     void Start()
     {
         inv = GetComponent<Inventory>();
-        listener = GetComponent<AudioListener>();
+
         save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
+        listener = music.GetComponent<AudioListener>();
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);

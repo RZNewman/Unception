@@ -34,7 +34,7 @@ public class MusicBox : MonoBehaviour
         game.volume = 1;
         inGame = true;
     }
-    
+
 
     private void Update()
     {
@@ -51,7 +51,7 @@ public class MusicBox : MonoBehaviour
             }
             gameCombatGradient += multi * gradientRate * Time.deltaTime;
             gameCombatGradient = Mathf.Clamp01(gameCombatGradient);
-            game.volume = (1 - gameCombatGradient)* maxVolume;
+            game.volume = (1 - gameCombatGradient) * maxVolume;
             combat.volume = (gameCombatGradient) * maxVolume;
         }
     }

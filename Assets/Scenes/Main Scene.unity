@@ -4248,7 +4248,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &898590380
 GameObject:
@@ -5675,6 +5675,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5944507416678703451, guid: 744cbd533b0fcfa469c50be4bc0a59d4, type: 3}
       propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731729188145845965, guid: 744cbd533b0fcfa469c50be4bc0a59d4, type: 3}
+      propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8169311663804529768, guid: 744cbd533b0fcfa469c50be4bc0a59d4, type: 3}
@@ -7243,6 +7247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1535004383}
   - component: {fileID: 1535004384}
+  - component: {fileID: 1535004385}
   m_Layer: 0
   m_Name: Music Box
   m_TagString: Untagged
@@ -7257,7 +7262,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535004382}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 470.05743, y: 174.06926, z: 69.53969}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7266,7 +7271,7 @@ Transform:
   - {fileID: 898590381}
   - {fileID: 1557347812}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1535004384
 MonoBehaviour:
@@ -7284,6 +7289,14 @@ MonoBehaviour:
   game: {fileID: 898590382}
   combat: {fileID: 1557347813}
   maxVolume: 0.6
+--- !u!81 &1535004385
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1535004382}
+  m_Enabled: 1
 --- !u!1 &1550961649
 GameObject:
   m_ObjectHideFlags: 0
@@ -9275,7 +9288,7 @@ RectTransform:
   - {fileID: 1199375470}
   - {fileID: 1893574391}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -9319,7 +9332,6 @@ MonoBehaviour:
   login: {fileID: 280340036}
   network: {fileID: 1199375469}
   settings: {fileID: 1893574390}
-  MusicBox: {fileID: 1535004382}
 --- !u!28 &2123328005
 Texture2D:
   m_ObjectHideFlags: 0

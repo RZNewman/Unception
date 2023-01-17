@@ -120,7 +120,7 @@ public class PlayerGhost : NetworkBehaviour
     void TargetGameplayMenu(NetworkConnection conn)
     {
         music.Game();
-        FindObjectOfType<MenuHandler>().spawn();
+        FindObjectOfType<MenuHandler>().gameplayMenu();
     }
     [TargetRpc]
     public void TargetMainMenu(NetworkConnection conn)

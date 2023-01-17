@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using static MonsterSpawn;
@@ -210,6 +211,10 @@ public class Atlas : NetworkBehaviour
     public void disembark(bool needsMapDestroyed = false)
     {
         onMission = false;
+        foreach (GameObject unit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit))
+        {
+            Destroy(unit);
+        }
         if (needsMapDestroyed)
         {
             FindObjectOfType<MapGenerator>().destroyFloor();

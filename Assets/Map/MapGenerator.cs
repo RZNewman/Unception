@@ -75,7 +75,7 @@ public class MapGenerator : NetworkBehaviour
     float portalTime = 1.5f;
     IEnumerator endFloorRoutine(Vector3 position)
     {
-        sound.sendSoundDuration(SoundManager.SoundClip.PortalStart,position,portalTime);
+        sound.sendSoundDuration(SoundManager.SoundClip.PortalStart, position, portalTime);
         yield return new WaitForSecondsRealtime(portalTime);
         sound.sendSound(SoundManager.SoundClip.PortalEnd, position);
         PlayerGhost[] ghosts = FindObjectsOfType<PlayerGhost>();
@@ -95,14 +95,9 @@ public class MapGenerator : NetworkBehaviour
         Destroy(currentFloor);
         yield return null;
         currentFloorIndex++;
-        
+
         if (currentFloorIndex >= currentMap.floors.Length)
         {
-            foreach (GameObject playerUnit in units)
-            {
-                Destroy(playerUnit);
-                
-            }
             FindObjectOfType<Atlas>().disembark();
         }
         else
@@ -119,7 +114,7 @@ public class MapGenerator : NetworkBehaviour
                 playerUnit.SetActive(true);
             }
         }
-        
+
 
     }
 
@@ -160,7 +155,7 @@ public class MapGenerator : NetworkBehaviour
 
             foreach (Door d in delta.removed)
             {
-                if(mode == TileDistanceMode.tiles)
+                if (mode == TileDistanceMode.tiles)
                 {
                     if (distSet)
                     {
@@ -187,8 +182,8 @@ public class MapGenerator : NetworkBehaviour
                 {
                     dist = Vector3.Dot(delta.tile.transform.localPosition, tileDirection);
                 }
-                doors.Enqueue(d,dist);   
-                
+                doors.Enqueue(d, dist);
+
             }
         };
 
@@ -282,7 +277,7 @@ public class MapGenerator : NetworkBehaviour
             {
                 buildDoorBlocker(hole.transform.position, hole.transform.rotation);
             }
-            
+
         }
         foreach (Door hole in badDoors)
         {
@@ -297,7 +292,7 @@ public class MapGenerator : NetworkBehaviour
         agent.agentClimb = 0.3f * currentFloorScale;
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
         NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
-        NavMesh.AddNavMeshData( NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one*4000), Vector3.zero, Quaternion.identity));
+        NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
 
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);
@@ -366,7 +361,7 @@ public class MapGenerator : NetworkBehaviour
         List<GameObject> zonesPre = tilePrefab.GetComponent<MapTile>().Zones();
         foreach (GameObject zone in zonesPre)
         {
-            if (Physics.OverlapBox(position + rotation * zone.transform.position * currentFloorScale, (zone.transform.lossyScale * 0.5f * 0.99f + new Vector3(0,2,0)) * currentFloorScale, rotation * zone.transform.rotation, LayerMask.GetMask("MapTile")).Length > 0)
+            if (Physics.OverlapBox(position + rotation * zone.transform.position * currentFloorScale, (zone.transform.lossyScale * 0.5f * 0.99f + new Vector3(0, 2, 0)) * currentFloorScale, rotation * zone.transform.rotation, LayerMask.GetMask("MapTile")).Length > 0)
             {
                 return false;
             }

@@ -42,6 +42,11 @@ public class ItemDrop : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!target)
+        {
+            Destroy(gameObject);
+            return;
+        }
         if (waitTime > 0)
         {
             waitTime -= Time.deltaTime;

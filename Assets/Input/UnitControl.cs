@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static Keybinds;
 using static Utils;
 
 public interface UnitControl
@@ -103,6 +104,23 @@ public interface UnitControl
         Two,
         Three,
         Four,
+    }
+
+    public static KeyName toKeyName(AttackKey key)
+    {
+        switch (key)
+        {
+            case AttackKey.One:
+                return KeyName.Attack1;
+            case AttackKey.Two:
+                return KeyName.Attack2;
+            case AttackKey.Three:
+                return KeyName.Attack3;
+            case AttackKey.Four:
+                return KeyName.Attack4;
+            default:
+                return KeyName.Attack1;
+        }
     }
     public UnitInput getUnitInuput();
 

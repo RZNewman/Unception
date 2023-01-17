@@ -20,7 +20,7 @@ public class UiSlotList : MonoBehaviour
             uiSlot.dragger = dragger;
             uiSlot.itemTray = list;
             uiSlot.invMode = mode;
-            uiSlot.attackKey = key;
+            uiSlot.setAttackKey(key);
             uiSlot.slotObject(icon, false);
             slots.Add(uiSlot);
         };

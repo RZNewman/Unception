@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,12 +10,17 @@ using static UnitControl;
 
 public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public TextMeshProUGUI label;
+
     public UiEquipmentDragger dragger;
     public ItemList itemTray;
     public InventoryMode invMode;
-    public AttackKey attackKey;
+
+    AttackKey attackKey;
 
     GameObject uiAbility;
+
+    Keybinds keys;
 
     public enum SlotMode
     {
@@ -28,6 +34,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private void Start()
     {
         gp = FindObjectOfType<GlobalPlayer>(true);
+
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -37,6 +44,16 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerExit(PointerEventData eventData)
     {
         dragger.unsetSlot(this);
+    }
+
+    public void setAttackKey(AttackKey key)
+    {
+        keys = FindObjectOfType<Keybinds>(true);
+        string keybind = keys.binding(toKeyName(key)).ToString();
+        label.text = "A " + key.ToString() + ": " + keybind;
+        label.enabled = true;
+        attackKey = key;
+
     }
 
     public void slotObject(GameObject uiAbil, bool unslot = true)

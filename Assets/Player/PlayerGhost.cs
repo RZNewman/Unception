@@ -196,4 +196,10 @@ public class PlayerGhost : NetworkBehaviour
         playerPower = p;
     }
 
+    [ClientRpc]
+    public void RpcSetCompassDirection(Vector3 dir)
+    {
+        FindObjectOfType<Compass>(true).setDirection(dir);
+    }
+
 }

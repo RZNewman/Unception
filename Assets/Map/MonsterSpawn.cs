@@ -73,7 +73,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     public IEnumerator spawnLevel(List<GameObject> tiles, int packCount, Difficulty baseDiff)
     {
-        
+
         List<Difficulty> packs = new List<Difficulty>();
         for (int i = 0; i < packCount; i++)
         {
@@ -84,7 +84,7 @@ public class MonsterSpawn : NetworkBehaviour
                 pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, i / (packCount - 1)),
                 veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, i / (packCount - 1))
             });
-            
+
         }
 
 
@@ -118,11 +118,11 @@ public class MonsterSpawn : NetworkBehaviour
         }
     }
 
-    void spawnBreakables(Transform spawn, bool isChest ,float totalDifficulty)
+    void spawnBreakables(Transform spawn, bool isChest, float totalDifficulty)
     {
         float diffMult = totalDifficulty + 1;
         int numberBreakables = isChest ? 1 : Random.Range(3, 6);
-        float packPercent = (isChest ? 5 : 0.5f) *diffMult;
+        float packPercent = (isChest ? 5 : 0.5f) * diffMult;
         Vector3 halfSize = spawn.lossyScale / 2;
         for (int j = 0; j < numberBreakables; j++)
         {
@@ -431,6 +431,10 @@ public class MonsterSpawn : NetworkBehaviour
     {
         spawnPower = power;
         float powerMultDiff = 1.2f;
+        //clear data
+        monsterProps.Clear();
+        lastPowerAdded = power / 10;
+
         while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
         {
             lastPowerAdded *= powerMultDiff;

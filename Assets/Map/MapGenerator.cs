@@ -207,7 +207,7 @@ public class MapGenerator : NetworkBehaviour
                         weight = 7;
                         break;
                     case TileDistanceMode.direction:
-                        weight = 5f;
+                        weight = 9f;
                         break;
 
                 }
@@ -298,6 +298,7 @@ public class MapGenerator : NetworkBehaviour
         tiles.RemoveAt(tiles.Count - 1);
         tiles.RemoveAt(0);
         yield return spawner.spawnLevel(tiles, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
+        FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 
 

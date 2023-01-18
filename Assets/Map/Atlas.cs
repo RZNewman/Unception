@@ -16,6 +16,7 @@ public class Atlas : NetworkBehaviour
     public GameObject mapMarkerPre;
     public UiMapDetails mapDeets;
     public Button embarkButton;
+    public UiServerMap serverMap;
 
     PlayerGhost owner;
     GlobalPlayer gp;
@@ -45,6 +46,7 @@ public class Atlas : NetworkBehaviour
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
+        serverMap.gameObject.SetActive(isServer);
     }
 
 
@@ -98,29 +100,33 @@ public class Atlas : NetworkBehaviour
         {
             float difficultyRangePercent = (float)i / (mapsToGen - 1);
             float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
-            int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
-            Floor[] floors = new Floor[floorCount];
-            for (int j = 0; j < floorCount; j++)
-            {
-                floors[j] = new Floor
-                {
-                    packs = avgPacksPerFloor,
-                    tiles = avgPacksPerFloor + 10
-                };
-            }
-
             mapsGen[i] = new Map
             {
                 index = i,
                 power = power,
                 difficulty = Difficulty.fromTotal(currentDifficulty),
-                floors = floors,
+                floors = defaultMapFloors(),
                 visualLocation = new Vector2(Random.value, Random.value),
                 difficultyRangePercent = difficultyRangePercent,
             };
         }
 
         return mapsGen;
+    }
+
+    public static Floor[] defaultMapFloors()
+    {
+        int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
+        Floor[] floors = new Floor[floorCount];
+        for (int j = 0; j < floorCount; j++)
+        {
+            floors[j] = new Floor
+            {
+                packs = avgPacksPerFloor,
+                tiles = avgPacksPerFloor + 10
+            };
+        }
+        return floors;
     }
 
     UiMapMarker displayMap;
@@ -185,6 +191,14 @@ public class Atlas : NetworkBehaviour
         sound.playSound(SoundManager.SoundClip.Embark);
         gp.player.embark(selectedMap.getMap().index);
     }
+
+    [Server]
+    public void embarkManual()
+    {
+        embarkButton.interactable = false;
+        sound.playSound(SoundManager.SoundClip.Embark);
+        gp.player.embark(-1);
+    }
     //Server
     bool onMission = false;
     public bool embarked
@@ -204,7 +218,17 @@ public class Atlas : NetworkBehaviour
         }
         onMission = true;
         MapGenerator gen = FindObjectOfType<MapGenerator>();
-        yield return gen.buildMap(list.maps[index]);
+        Map m;
+        if (index > 0)
+        {
+            m = list.maps[index];
+        }
+        else
+        {
+            m = serverMap.getMap(gp.serverPlayer.power);
+        }
+        //Debug.Log(m.difficulty.pack + " - " + m.difficulty.veteran);
+        yield return gen.buildMap(m);
     }
 
     [Server]

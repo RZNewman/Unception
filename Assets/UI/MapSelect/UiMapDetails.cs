@@ -13,9 +13,9 @@ public class UiMapDetails : MonoBehaviour
     {
         clearLabels();
         addLabel("Packs", m.floors.Sum(f => f.packs));
-        addLabel("Difficutly", (m.difficulty.total+1).asPercent());
+        addLabel("Difficutly", (m.difficulty.total + 1).asPercent());
         addLabel("Pack size", (m.difficulty.pack + 1).asPercent());
-        addLabel("Veterans", (m.difficulty.veteran + 1).asPercent());
+        addLabel("Veterans", (m.difficulty.veteran).asPercent());
     }
 
 

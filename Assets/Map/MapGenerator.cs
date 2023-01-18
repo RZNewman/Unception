@@ -145,7 +145,7 @@ public class MapGenerator : NetworkBehaviour
         List<Door> badDoors = new List<Door>();
 
         TileDistanceMode mode = TileDistanceMode.direction;
-        Vector3 tileDirection = new Vector3(Random.value, 0, Random.value).normalized;
+        Vector3 tileDirection = new Vector3(Random.value.asRange(-1, 1), 0, Random.value.asRange(-1, 1)).normalized;
 
         System.Action<TileDelta> processDelta = (TileDelta delta) =>
         {

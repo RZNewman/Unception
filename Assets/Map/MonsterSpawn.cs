@@ -81,8 +81,8 @@ public class MonsterSpawn : NetworkBehaviour
             float veteranRange = baseDiff.veteran / 2;
             packs.Add(new Difficulty
             {
-                pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, i / (packCount - 1)),
-                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, i / (packCount - 1))
+                pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, (float)i / (packCount - 1)),
+                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, (float)i / (packCount - 1))
             });
 
         }
@@ -199,6 +199,7 @@ public class MonsterSpawn : NetworkBehaviour
             InstanceInfo info = maxInstances(data.power, powerPoolPackPotential, wiggle);
             if (info.filledPool)
             {
+                //Debug.Log(string.Format("count: {0}, diff: {1}, power: {2}", info.instanceCount, spawnData.difficulty.pack, data.power));
                 addUnitsPack(data, info.instanceCount);
             }
             else
@@ -438,16 +439,24 @@ public class MonsterSpawn : NetworkBehaviour
         while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
         {
             lastPowerAdded *= powerMultDiff;
+            //Debug.Log(lastPowerAdded);
             monsterProps.Add(createType(lastPowerAdded));
         }
         float pool = weightedPool();
-        for (int i = 0; i < monsterProps.Count; i++)
+        int originalCount = monsterProps.Count;
+        for (int i = 0; i < originalCount; i++)
         {
             UnitData data = monsterProps[0];
-            if (maxInstances(data.power, pool).instanceCount > maxPackSize)
+            InstanceInfo info = maxInstances(data.power, pool);
+            //Debug.Log(string.Format("count: {0} > {2}, power: {1}", info.instanceCount, data.power, maxPackSize));
+            if (info.instanceCount > maxPackSize)
             {
+                //Debug.Log("removed");
                 monsterProps.RemoveAt(0);
-                //Debug.Log("Remove" + data.power);
+            }
+            else
+            {
+                break;
             }
         }
         //Debug.Log(monsterProps.Count);

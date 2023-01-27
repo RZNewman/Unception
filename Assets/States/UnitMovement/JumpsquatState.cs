@@ -18,10 +18,10 @@ public class JumpsquatState : PlayerMovementState
         {
             return new StateTransition(new StunnedState(mover), true);
         }
-        if (!mover.grounded)
-        {
-            return new StateTransition(new FreeState(mover), true);
-        }
+        //if (!mover.grounded)
+        //{
+        //    return new StateTransition(new FreeState(mover), true);
+        //}
         return base.transition();
     }
 

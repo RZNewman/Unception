@@ -141,18 +141,26 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
+    public Vector3 worldVelocity
+    {
+        get
+        {
+            return rb.velocity;
+        }
+    }
+
     public MoveDirection moveDirection
     {
         get
         {
-            if(planarVelocityCache.magnitude < 0.05f)
+            if (planarVelocityCache.magnitude < 0.05f)
             {
                 return MoveDirection.None;
             }
             float angle = Vector3.SignedAngle(Vector3.forward, planarVelocityCache, Vector3.up);
             float diff = angle - currentLookAngle;
             diff = normalizeAngle(diff);
-            if(Mathf.Abs(diff) < 45)
+            if (Mathf.Abs(diff) < 45)
             {
                 return MoveDirection.Forward;
             }
@@ -254,7 +262,7 @@ public class UnitMovement : NetworkBehaviour
 
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = accMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff ;
+        float addingMult = accMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
         float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * power.scale();
 
         if (diff.magnitude <= addingFrameMag)
@@ -325,7 +333,7 @@ public class UnitMovement : NetworkBehaviour
         {
             planarVelocityCalculated = Vector3.zero;
         }
-        
+
     }
 
     float toMoveMultiplier(Vector2 inputMove)

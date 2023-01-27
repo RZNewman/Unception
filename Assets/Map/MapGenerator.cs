@@ -21,6 +21,7 @@ public class MapGenerator : NetworkBehaviour
     float currentFloorScale = 1f;
     GameObject currentFloor;
     Map currentMap;
+    NavMeshDataInstance navData = new NavMeshDataInstance();
     int currentFloorIndex;
 
 
@@ -287,12 +288,16 @@ public class MapGenerator : NetworkBehaviour
             }
         }
 
+        if (navData.valid)
+        {
+            NavMesh.RemoveNavMeshData(navData);
+        }
         NavMeshBuildSettings agent = NavMesh.GetSettingsByID(0);
         agent.agentRadius = 0.6f * currentFloorScale;
         agent.agentClimb = 0.3f * currentFloorScale;
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
         NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
-        NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
+        navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
 
         //remove the end tile from spawner
         tiles.RemoveAt(tiles.Count - 1);

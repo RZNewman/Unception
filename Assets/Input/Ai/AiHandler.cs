@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static UnitControl;
 using static Utils;
 
@@ -9,10 +10,9 @@ public class AiHandler : MonoBehaviour, UnitControl
     AggroHandler aggro;
     UnitMovement mover;
     GameObject rotatingBody;
-    NavMeshPath currentPath;
-    int pathingCorner = -1;
+    float scale = 1;
 
-
+    NavMeshAgent agent;
     public enum EffectiveDistanceType
     {
         None,
@@ -51,12 +51,47 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
         mover = GetComponentInParent<UnitMovement>();
-        currentPath = new NavMeshPath();
+        //pathCalculator = FindObjectOfType<NavPathCalc>();
+        //obstacle = GetComponent<NavMeshObstacle>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.updatePosition = false;
+        agent.updateRotation = false;
         rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
+        GetComponentInParent<Power>().subscribePower(setRadius);
+    }
+
+    void setRadius(Power p)
+    {
+        scale = p.scale();
+        agent.baseOffset = 0.75f * scale;
+        agent.radius = 0.7f * scale;
+        agent.height = 1.5f * scale;
+    }
+    float timePathed;
+    readonly float pathPeriod = 1f;
+    float timeAgentSync;
+    readonly float agentSyncPeriod = 0.2f;
+    void makePath(Vector3 navTarget)
+    {
+        agent.SetDestination(navTarget);
+        //pathingCorner = 0;
+        timePathed = Time.time;
+
+    }
+
+    void syncAgent()
+    {
+        timeAgentSync = Time.time;
+        agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
+        agent.velocity = mover.worldVelocity;
+        agent.speed = mover.props.maxSpeed * scale;
+        agent.acceleration = agent.speed * 5;
+        //agent.angularSpeed = mover.props.lookSpeedDegrees;
     }
 
     public void refreshInput()
     {
+
         //Get current target and move to it
         if (aggro)
         {
@@ -65,7 +100,6 @@ public class AiHandler : MonoBehaviour, UnitControl
             {
                 Size mySize = rotatingBody.GetComponentInChildren<Size>();
                 Size thierSize = target.GetComponent<Size>();
-                FloorNormal myGround = rotatingBody.GetComponentInParent<FloorNormal>();
                 FloorNormal thierGround = target.GetComponentInParent<FloorNormal>();
 
                 if (!thierGround)
@@ -76,65 +110,22 @@ public class AiHandler : MonoBehaviour, UnitControl
                 Vector3 moveTarget;
                 Vector3 attackTarget = target.transform.position;
                 bool canSee = aggro.canSee(target);
-                if (canSee)
+
+                if (Time.time > timePathed + pathPeriod)
                 {
-                    moveTarget = thierGround.nav;
-                    pathingCorner = -1;
+                    makePath(thierGround.nav);
+
                 }
-                else
+                moveTarget = agent.nextPosition;
+                //syncAgent();
+                if (Time.time > timeAgentSync + agentSyncPeriod)
                 {
-                    if (pathingCorner < 0)
-                    {
-                        
-                        NavMesh.CalculatePath(myGround.nav, thierGround.nav, NavMesh.AllAreas, currentPath);
-                        pathingCorner = 0;
-                    }
-
-                    if (currentPath.status == NavMeshPathStatus.PathPartial)
-                    {
-
-                        //Debug.Log("Partial");
-                    }
-
-                    if (currentPath.status == NavMeshPathStatus.PathInvalid)
-                    {
-                        moveTarget = transform.position;
-                        pathingCorner = -1;
-                        Debug.Log("INVALID");
-                    }
-                    else
-                    {
-                        Vector3 current = currentPath.corners[pathingCorner];
-
-                        Vector3 diff = current - (transform.position + Vector3.down * mySize.scaledHalfHeight);
-                        //Debug.Log(modelLoader.size.scaledRadius - diff.magnitude);
-                        Debug.DrawLine(transform.position, current, Color.red);
-                        if (diff.magnitude <= mySize.scaledRadius)
-                        {
-                            pathingCorner++;
-
-                        }
-                        
-
-                        if (pathingCorner >= currentPath.corners.Length)
-                        {
-                            pathingCorner = -1;
-                            moveTarget = transform.position;
-
-                        }
-                        else
-                        {
-                            current = currentPath.corners[pathingCorner];
-
-                            moveTarget = current;
-                        }
-
-
-                    }
+                    syncAgent();
 
                 }
 
 
+                Debug.DrawLine(transform.position, moveTarget, Color.red);
                 Vector3 rawDiff = moveTarget - transform.position;
                 Vector3 planarDiff = rawDiff;
                 planarDiff.y = 0;
@@ -146,8 +137,10 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                 if (canSee)
                 {
-                    //TODO check height
                     Vector3 rawDiffAttack = attackTarget - transform.position;
+                    currentInput.lookOffset = rawDiffAttack;
+
+                    //TODO check height
                     Vector3 planarDiffAttack = rawDiffAttack;
                     planarDiffAttack.y = 0;
                     float edgeDiffMag = planarDiffAttack.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
@@ -158,7 +151,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
                     {
                         currentInput.attacks = new AttackKey[] { AttackKey.One };
-                        if(edgeDiffMag <= eff.distance * 0.8f)
+                        if (edgeDiffMag <= eff.distance * 0.8f)
                         {
                             currentInput.move = Vector2.zero;
                         }

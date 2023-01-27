@@ -400,7 +400,14 @@ public class MonsterSpawn : NetworkBehaviour
 
     void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Vector3 positionOffset, Pack p)
     {
-        GameObject o = Instantiate(UnitPre, spawnData.spawnTransform.position + positionOffset, Quaternion.identity, floor);
+        float scale = Power.scale(spawnPower);
+        Vector3 unitPos = spawnData.spawnTransform.position + positionOffset;
+        RaycastHit hit;
+        if (Physics.Raycast(unitPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
+        {
+            unitPos = hit.point + Vector3.up * scale;
+        }
+        GameObject o = Instantiate(UnitPre, unitPos, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);

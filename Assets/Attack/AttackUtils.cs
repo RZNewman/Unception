@@ -220,6 +220,7 @@ public static class AttackUtils
         public Vector3 boxHalfs;
         public Vector3 capsuleStart;
         public Vector3 capsuleEnd;
+        public Vector3 lineFocus;
         public Quaternion aim;
         public float maxDistance;
         public Vector3 bodyForward;
@@ -250,6 +251,7 @@ public static class AttackUtils
             aim = aim,
             maxDistance = maxDistance,
             bodyForward = body.forward,
+            lineFocus = bodyFocus,
         };
     }
 
@@ -279,8 +281,11 @@ public static class AttackUtils
         foreach (RaycastHit hit in capsuleHits)
         {
             GameObject obj = hit.collider.gameObject;
-            if (tempHits.Contains(obj))
+            Vector3 lineDiff = hit.collider.bounds.center - info.lineFocus;
+            if (tempHits.Contains(obj)
+                && !Physics.Raycast(info.lineFocus, lineDiff, lineDiff.magnitude, LayerMask.GetMask("Terrain")))
             {
+                
                 hits.Add(obj);
             }
         }

@@ -50,6 +50,8 @@ public class SaveData : NetworkBehaviour
     public void loadData()
     {
         StartCoroutine(loadDataRoutine());
+        //use below for offline dev
+        //loadDataOffline();
     }
 
 
@@ -138,7 +140,16 @@ public class SaveData : NetworkBehaviour
 
 
     }
-
+     
+    void loadDataOffline()
+    {
+        if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
+        {
+            FindObjectOfType<Atlas>(true).makeMaps();
+        }
+        inv.createBasePity();
+        inv.genRandomItems();
+    }
     private void OnDestroy()
     {
         if (isServer)

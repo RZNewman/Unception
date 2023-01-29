@@ -63,7 +63,35 @@ public class ItemList : MonoBehaviour
     }
     void sort()
     {
-        transform.SortChildren((t1) => t1.GetComponent<UiAbility>().ability.instance.actingPower, true);
+        transform.SortChildren(sortFunction(), true);
+    }
+    public enum SortMode
+    {
+        ActingPower,
+        Cooldown,
+        CastTime,
+    }
+    public SortMode sortMode = SortMode.ActingPower;
+
+    public void setSortMode(SortModeID id)
+    {
+        sortMode = id.mode;
+        sort();
+    }
+
+    public System.Func<Transform, System.IComparable> sortFunction()
+    {
+        switch (sortMode)
+        {
+            case SortMode.Cooldown:
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.cooldown;
+            case SortMode.CastTime:
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.castTime;
+            case SortMode.ActingPower:
+            default:
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.actingPower;
+
+        }
     }
 
 

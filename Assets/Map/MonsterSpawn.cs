@@ -138,7 +138,7 @@ public class MonsterSpawn : NetworkBehaviour
         GameObject o = Instantiate(UrnPre, spawn.position + positionOffset, Quaternion.identity, floor);
         o.transform.localScale = Vector3.one * Power.scale(spawnPower);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
-        o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent);
+        o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
         if (isChest)
         {
             o.GetComponent<Breakable>().type = Breakable.BreakableType.Chest;

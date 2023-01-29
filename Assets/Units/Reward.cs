@@ -9,6 +9,7 @@ public class Reward : MonoBehaviour
     Inventory inventory;
     float rewardPackPercent = 0;
     float rewardMultiplier = 1f;
+    float qualityMultiplier = 1f;
     float rewardBasePower = 0;
 
     public bool givesPower = true;
@@ -20,9 +21,9 @@ public class Reward : MonoBehaviour
         p = GetComponent<Power>();
 
     }
-    public void setReward(float basePower, float multiplier, float packPercent)
+    public void setReward(float basePower, float multiplier, float packPercent, float quality = 1f)
     {
-        rewardBasePower = basePower; rewardPackPercent = packPercent; rewardMultiplier = multiplier;
+        rewardBasePower = basePower; rewardPackPercent = packPercent; rewardMultiplier = multiplier; qualityMultiplier = quality;
     }
     public void setInventory(Inventory i)
     {
@@ -37,7 +38,7 @@ public class Reward : MonoBehaviour
     {
         get
         {
-            return ((rewardMultiplier * RewardManager.rewardPerDifficulty) - rewardMultiplier + 1) * rewardPackPercent;
+            return ((rewardMultiplier * RewardManager.bonusRewardPerDifficulty) + 1) * rewardPackPercent;
         }
     }
 
@@ -74,10 +75,10 @@ public class Reward : MonoBehaviour
             gatheredPower += other.power;
             float packPerItem = 1 / RewardManager.itemsPerPack;
             float powerPerItem = other.rewardBasePower * packPerItem;
-            while (gatheredPower > powerPerItem)
+            while (gatheredPower > powerPerItem * other.qualityMultiplier)
             {
-                gatheredPower -= powerPerItem;
-                Quality q = inventory.rollQuality();
+                gatheredPower -= powerPerItem * other.qualityMultiplier;
+                Quality q = inventory.rollQuality(other.qualityMultiplier);
                 inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, false, q), other.transform.position);
             }
         }

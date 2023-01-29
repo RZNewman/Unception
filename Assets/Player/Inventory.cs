@@ -154,9 +154,9 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public Quality rollQuality()
+    public Quality rollQuality(float qualityMultiplier)
     {
-        return pityQuality.roll();
+        return pityQuality.roll(qualityMultiplier);
     }
 
     //Server

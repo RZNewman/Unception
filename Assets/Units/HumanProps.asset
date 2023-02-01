@@ -25,10 +25,9 @@ MonoBehaviour:
   dashSpeed: 30
   maxHealthMult: 10
   maxPosture: 40
-  passivePostureRecover: 40
-  stunnedPostureRecover: 160
-  stunnedPostureCeilingAcceleration: 80
-  maxStamina: 65
+  passivePostureRecover: 35
+  stunnedPostureRecover: 350
+  maxStamina: 350
   staminaRecover: 8
   visuals:
     colors: []

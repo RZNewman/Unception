@@ -4,17 +4,17 @@ using UnityEngine;
 public class Posture : NetworkBehaviour, BarValue
 {
     [SyncVar]
-    float maxPostureBase;
+    float maxPosture;
     [SyncVar]
     float currentPosture;
-    [SyncVar]
-    float currentPostureCeiling;
+
 
     float passivePostureRecover;
     float stunnedPostureRecover;
 
-    float stunnedPostureCeilingAcceleration;
-    float postureCeilingRecover;
+    float recentlyStunnedTime;
+
+
 
 
 
@@ -36,7 +36,7 @@ public class Posture : NetworkBehaviour, BarValue
     {
         get
         {
-            return isStunned ? currentPostureCeiling : currentPostureCeiling - currentPosture;
+            return isStunned ? maxPosture : maxPosture - currentPosture;
         }
     }
 
@@ -47,8 +47,8 @@ public class Posture : NetworkBehaviour, BarValue
 
 
         currentPosture = 0;
-        maxPostureBase = props.maxPosture;
-        currentPostureCeiling = props.maxPosture;
+        maxPosture = props.maxPosture;
+        recentlyStunnedTime = 0;
         if (isServer)
         {
             GetComponent<Power>().subscribePower(updateMaxPosture);
@@ -57,19 +57,17 @@ public class Posture : NetworkBehaviour, BarValue
     }
     void updateMaxPosture(Power p)
     {
-        float lastMax = maxPostureBase;
+        float lastMax = maxPosture;
 
 
-        maxPostureBase = props.maxPosture * p.scale();
+        maxPosture = props.maxPosture * p.scale();
         passivePostureRecover = props.passivePostureRecover * p.scale();
         stunnedPostureRecover = props.stunnedPostureRecover * p.scale();
-        stunnedPostureCeilingAcceleration = props.stunnedPostureCeilingAcceleration * p.scale();
-        postureCeilingRecover = stunnedPostureCeilingAcceleration * 0.5f;
 
-        float proportion = maxPostureBase / lastMax;
+
+        float proportion = maxPosture / lastMax;
 
         currentPosture *= proportion;
-        currentPostureCeiling *= proportion;
         currentStunHighestPosture *= proportion;
     }
 
@@ -77,11 +75,7 @@ public class Posture : NetworkBehaviour, BarValue
     public void takeStagger(float damage)
     {
         currentPosture += damage;
-        if (!stunned && currentPosture > currentPostureCeiling)
-        {
-            stunned = true;
-            currentStunHighestPosture = currentPosture;
-        }
+        
         if (stunned)
         {
             if (currentPosture > currentStunHighestPosture)
@@ -95,20 +89,22 @@ public class Posture : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void OrderedUpdate()
     {
+        if (!stunned && currentPosture > maxPosture)
+        {
+            stunned = true;
+            currentStunHighestPosture = currentPosture;
+        }
         float currentPostureRecover;
         if (stunned)
         {
-            currentPostureCeiling += stunnedPostureCeilingAcceleration * Time.fixedDeltaTime;
-            currentPostureRecover = stunnedPostureRecover + (currentPostureCeiling - maxPostureBase) * 1.5f;
+            currentPostureRecover = stunnedPostureRecover * (1+ recentlyStunnedTime/2);
+            recentlyStunnedTime += Time.fixedDeltaTime;
         }
         else
         {
-            currentPostureCeiling -= postureCeilingRecover * Time.fixedDeltaTime;
-            if (currentPostureCeiling < maxPostureBase)
-            {
-                currentPostureCeiling = maxPostureBase;
-            }
             currentPostureRecover = passivePostureRecover;
+            recentlyStunnedTime -= Time.fixedDeltaTime * (0.2f);
+            recentlyStunnedTime = Mathf.Max(recentlyStunnedTime, 0);
         }
 
         //change posture
@@ -135,7 +131,7 @@ public class Posture : NetworkBehaviour, BarValue
         }
         else
         {
-            denom = currentPostureCeiling;
+            denom = maxPosture;
         }
         return new BarValue.BarData
         {

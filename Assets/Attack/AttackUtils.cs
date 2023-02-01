@@ -25,11 +25,17 @@ public static class AttackUtils
                 other.GetComponentInParent<LifeManager>().getHit(mover.gameObject);
             }
             Health h = other.GetComponentInParent<Health>();
+            Posture p = other.GetComponentInParent<Posture>();
             if (h)
             {
-                h.takeDamage(hitData.damage(power));
+                float damage = hitData.damage(power);
+                if (p && p.isStunned)
+                {
+                    damage *= 1.1f;
+                }
+                h.takeDamage(damage);
             }
-            Posture p = other.GetComponentInParent<Posture>();
+            
             if (p)
             {
                 p.takeStagger(hitData.stagger);

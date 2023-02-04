@@ -215,7 +215,7 @@ public static class GenerateAttack
     {
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
-        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 15 + 1), 2.5f);
+        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 30 + 1), 1.5f);
         float charges = atk.charges.asRange(1, 4);
 
 

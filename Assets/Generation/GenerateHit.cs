@@ -170,7 +170,7 @@ public static class GenerateHit
     static readonly int hitbaseValues = 5;
     public static HitGenerationData createHit()
     {
-        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1f, 0.8f });
+        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1.5f, 0.8f });
         List<HitAugment> augments = new List<HitAugment>();
 
         if (Random.value < 0.2f)

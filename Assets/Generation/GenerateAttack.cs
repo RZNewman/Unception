@@ -34,8 +34,8 @@ public static class GenerateAttack
     }
 
     //value added for 100% reduced effect (50% speed)
-    static readonly float moveValue = 0.15f;
-    static readonly float turnValue = 0.07f;
+    static readonly float moveValue = 0.12f;
+    static readonly float turnValue = 0.05f;
     static public float getWindValue(WindInstanceData[] winds)
     {
         float totalTime = winds.Sum(x => x.duration);
@@ -224,7 +224,7 @@ public static class GenerateAttack
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
 
         cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.9f;
-        cooldownStrength *= (1 - 0.05f * (charges - 1));
+        cooldownStrength *= (1 - 0.07f * (charges - 1));
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {

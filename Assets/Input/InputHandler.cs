@@ -60,6 +60,11 @@ public class InputHandler : MonoBehaviour, UnitControl
             move += Vector2.right;
         }
         move.Normalize();
+        if (Camera.main)
+        {
+            move = move.Rotate(-Camera.main.GetComponent<LocalCamera>().currentLookAngle);
+        }
+        
         currentInput.move = move;
 
         currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
@@ -102,7 +107,15 @@ public class InputHandler : MonoBehaviour, UnitControl
         {
             return;
         }
-        Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray r;
+        if (Camera.main.GetComponent<LocalCamera>().mode == LocalCamera.CameraMode.Turn)
+        {
+            r = Camera.main.ScreenPointToRay(new Vector3(Camera.main.scaledPixelWidth/2, Camera.main.scaledPixelHeight/2));
+        }
+        else
+        {
+            r = Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
         RaycastHit info;
         Vector3 dir;
         if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain")))

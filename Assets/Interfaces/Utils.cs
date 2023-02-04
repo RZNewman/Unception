@@ -28,6 +28,17 @@ public static class Utils
         if (angle < -180) angle += 360;
         return angle;
     }
+    public static Vector2 Rotate(this Vector2 v, float degrees)
+    {
+        float radians = degrees * Mathf.Deg2Rad;
+        float sin = Mathf.Sin(radians);
+        float cos = Mathf.Cos(radians);
+
+        float tx = v.x;
+        float ty = v.y;
+
+        return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
+    }
     public static Vector3 positiveVector(Vector3 v)
     {
         return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));

@@ -40,5 +40,6 @@ public class Pause : MonoBehaviour
             menu.pauseMenu();
         }
         paused = !paused;
+        player.pause(paused);
     }
 }

@@ -108,14 +108,9 @@ public class InputHandler : MonoBehaviour, UnitControl
             return;
         }
         Ray r;
-        if (Camera.main.GetComponent<LocalCamera>().mode == LocalCamera.CameraMode.Turn)
-        {
-            r = Camera.main.ScreenPointToRay(new Vector3(Camera.main.scaledPixelWidth/2, Camera.main.scaledPixelHeight/2));
-        }
-        else
-        {
-            r = Camera.main.ScreenPointToRay(Input.mousePosition);
-        }
+
+        r = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         RaycastHit info;
         Vector3 dir;
         if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain")))

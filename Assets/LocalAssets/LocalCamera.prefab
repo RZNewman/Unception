@@ -167,7 +167,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 9
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -199,6 +199,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0089783607dce41904bd10321f92b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lockedOffset: {x: 0, y: 20, z: -7}
+  turnOffset: {x: 0, y: 9, z: -5}
   currentLookAngle: 0
   currentPitchAngle: 70
   rootRotation: {fileID: 1085608404565328798}

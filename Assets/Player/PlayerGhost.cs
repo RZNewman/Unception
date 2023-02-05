@@ -202,4 +202,12 @@ public class PlayerGhost : NetworkBehaviour
         FindObjectOfType<Compass>(true).setDirection(dir);
     }
 
+    public void pause(bool paused)
+    {
+        if (currentSelf)
+        {
+            currentSelf.GetComponentInChildren<LocalCamera>().pause(paused);
+        }
+    }
+
 }

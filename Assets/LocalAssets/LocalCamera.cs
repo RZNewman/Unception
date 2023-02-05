@@ -4,7 +4,6 @@ using static Utils;
 
 public class LocalCamera : MonoBehaviour
 {
-    Vector3 localPosition;
     float localClip;
     Vector3 targetPosition;
     float lastMag = 0;
@@ -12,10 +11,14 @@ public class LocalCamera : MonoBehaviour
     float currentTransition = 1f;
     Camera cam;
 
+    public Vector3 lockedOffset = new Vector3(0, 20, -7);
+    public Vector3 turnOffset = new Vector3(0, 12, -7);
+    [HideInInspector]
     public float currentLookAngle = 0;
+    [HideInInspector]
     public float currentPitchAngle = 70;
-    float pitchMax = 70;
-    float pitchMin = 45;
+    float pitchMax = 60;
+    float pitchMin = 40;
     public GameObject rootRotation;
 
     public enum CameraMode
@@ -32,14 +35,12 @@ public class LocalCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        localPosition = transform.localPosition;
         localClip = cam.nearClipPlane;
-        lastMag = localPosition.magnitude;
+        lastMag = transform.localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
         if(mode == CameraMode.Turn)
         {
-
-            Cursor.visible = false;
+            setCursorLocks(true);
         }
 
     }
@@ -47,14 +48,26 @@ public class LocalCamera : MonoBehaviour
     {
         if (mode == CameraMode.Turn)
         {
-            Cursor.visible = true;
+            setCursorLocks(false);
         }
 
+    }
+    Vector3 cameraOffset()
+    {
+        switch (mode)
+        {
+            
+            case CameraMode.Turn:
+                return turnOffset;
+            case CameraMode.Locked:
+            default:
+                return lockedOffset;
+        }
     }
     bool initial = true;
     void scaleCameraSize(Power p)
     {
-        targetPosition = localPosition * p.scale();
+        targetPosition = cameraOffset() * p.scale();
         cam.nearClipPlane = localClip * p.scale();
         currentTransition = 0;
         lastMag = transform.localPosition.magnitude;
@@ -75,7 +88,7 @@ public class LocalCamera : MonoBehaviour
         {
             float targetMag = targetPosition.magnitude;
             float frameMag = Mathf.SmoothStep(lastMag, targetMag, currentTransition / transitionTime);
-            transform.localPosition = localPosition.normalized * frameMag;
+            transform.localPosition = cameraOffset().normalized * frameMag;
 
             currentTransition += Time.deltaTime;
         }
@@ -83,8 +96,9 @@ public class LocalCamera : MonoBehaviour
 
         if(mode == CameraMode.Turn)
         {
-            
-            Vector2 mouseDelta = Input.mousePosition - lastMousePosition;
+
+            //Vector2 mouseDelta = Input.mousePosition - lastMousePosition;
+            Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
             currentLookAngle += mouseDelta.x * 0.2f;
             currentLookAngle = normalizeAngle(currentLookAngle);
@@ -94,10 +108,31 @@ public class LocalCamera : MonoBehaviour
             rootRotation.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
             transform.localRotation = Quaternion.Euler(currentPitchAngle, 0, 0);
 
-            lastMousePosition = Input.mousePosition;
+            //lastMousePosition = Input.mousePosition;
         }
         
 
+    }
+    public void pause(bool paused)
+    {
+        if (mode == CameraMode.Turn)
+        {
+            setCursorLocks(!paused);
+        }
+    }
+
+    void setCursorLocks(bool locked)
+    {
+        if (locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
 

@@ -199,7 +199,7 @@ public class MapGenerator : NetworkBehaviour
         //int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
         int packCount = currentMap.floors[currentFloorIndex].packs + chestPerFloor + potPerFloor;
         //increase packs to make sure not every location is populated
-        packCount = Mathf.FloorToInt(packCount * 1.5f);
+        packCount = Mathf.FloorToInt(packCount * currentMap.floors[currentFloorIndex].sparseness);
         bool ending = false;
 
         while ((spawnLocations.Count < packCount || ending) && doors.Count > 0)

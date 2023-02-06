@@ -43,6 +43,7 @@ public class Atlas : NetworkBehaviour
     public struct Floor
     {
         public int packs;
+        public float sparseness;
     }
     private void Start()
     {
@@ -124,6 +125,7 @@ public class Atlas : NetworkBehaviour
             floors[j] = new Floor
             {
                 packs = avgPacksPerFloor,
+                sparseness = 2,
             };
         }
         return floors;

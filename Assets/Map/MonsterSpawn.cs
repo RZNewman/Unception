@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static GenerateValues;
+using static Atlas;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -19,6 +20,9 @@ public class MonsterSpawn : NetworkBehaviour
     bool ready = false;
 
     Transform floor;
+
+
+    public static readonly float lengthPerPack = 11f;
 
     float lastPowerAdded = 100;
     float spawnPower = 100;
@@ -58,9 +62,26 @@ public class MonsterSpawn : NetworkBehaviour
             };
         }
     }
+    public struct SpawnTransform
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector2 halfExtents;
+
+        public Vector3 randomLocaion
+        {
+            get
+            {
+                Vector3 positionOffset = new Vector3(Random.Range(-halfExtents.x, halfExtents.x), 0, Random.Range(-halfExtents.y, halfExtents.y));
+                positionOffset *= 0.9f;
+                positionOffset = rotation * positionOffset;
+                return position + positionOffset;
+            }
+        }
+    }
     struct SpawnPack
     {
-        public Transform spawnTransform;
+        public SpawnTransform spawnTransform;
         public Difficulty difficulty;
     }
 
@@ -71,7 +92,7 @@ public class MonsterSpawn : NetworkBehaviour
         public float poolCost;
     }
 
-    public IEnumerator spawnLevel(List<GameObject> tiles, int packCount, Difficulty baseDiff)
+    public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff)
     {
 
         List<Difficulty> packs = new List<Difficulty>();
@@ -87,55 +108,47 @@ public class MonsterSpawn : NetworkBehaviour
 
         }
 
-
-        List<GameObject> zones = tiles.Select(t => t.GetComponent<MapTile>().Spawns()).SelectMany(z => z).ToList();
-
         for (int i = 0; i < packCount; i++)
         {
             int p = packs.RandomIndex();
             Difficulty packDifficulty = packs[p];
             packs.RemoveAt(p);
 
-            //TODO bigger rooms can have more packs?
-            int z = zones.RandomIndex();
-            GameObject zone = zones[z];
-            zones.RemoveAt(z);
+            int z = locations.RandomIndex();
+            SpawnTransform t = locations[z];
+            locations.RemoveAt(z);
 
-            spawnCreatures(zone.transform, packDifficulty);
+            spawnCreatures(t, packDifficulty);
             yield return null;
         }
 
-        int zoneCount = zones.Count;
-        for (int i = 0; i < zoneCount && i < 4; i++)
+        int zoneCount = locations.Count;
+        for (int i = 0; i < zoneCount && i < (chestPerFloor + potPerFloor); i++)
         {
             //TODO pity chests + normalize Pot spawn
-            int z = zones.RandomIndex();
-            GameObject zone = zones[z];
-            zones.RemoveAt(z);
-            bool isChest = i == 0;
-            spawnBreakables(zone.transform, isChest, baseDiff.total);
+            int z = locations.RandomIndex();
+            SpawnTransform t = locations[z];
+            locations.RemoveAt(z);
+            bool isChest = i < chestPerFloor;
+
+            spawnBreakables(t, isChest, baseDiff.total);
             yield return null;
         }
     }
 
-    void spawnBreakables(Transform spawn, bool isChest, float totalDifficulty)
+    void spawnBreakables(SpawnTransform spawn, bool isChest, float totalDifficulty)
     {
         float diffMult = totalDifficulty + 1;
         int numberBreakables = isChest ? 1 : Random.Range(3, 6);
         float packPercent = (isChest ? 5 : 0.5f) * diffMult;
-        Vector3 halfSize = spawn.lossyScale / 2;
         for (int j = 0; j < numberBreakables; j++)
         {
-            //Debug.Log(data.power + " " + spawnData.difficulty.pack + " " + spawnData.difficulty.veteran + " " + veteranMajorIndex);
-            Vector3 offset = isChest ? Vector3.zero : new Vector3(Random.Range(-halfSize.x, halfSize.x), 0, Random.Range(-halfSize.z, halfSize.z));
-            offset *= 0.9f;
-            offset = spawn.rotation * offset;
-            InstanceBreakable(spawn, packPercent / numberBreakables, offset, isChest);
+            InstanceBreakable(spawn, packPercent / numberBreakables, isChest);
         }
     }
-    void InstanceBreakable(Transform spawn, float packPercent, Vector3 positionOffset, bool isChest)
+    void InstanceBreakable(SpawnTransform spawn, float packPercent, bool isChest)
     {
-        GameObject o = Instantiate(UrnPre, spawn.position + positionOffset, Quaternion.identity, floor);
+        GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
         o.transform.localScale = Vector3.one * Power.scale(spawnPower);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
@@ -146,11 +159,11 @@ public class MonsterSpawn : NetworkBehaviour
         NetworkServer.Spawn(o);
     }
 
-    void spawnCreatures(Transform spawn, Difficulty difficulty)
+    void spawnCreatures(SpawnTransform spawnTransform, Difficulty difficulty)
     {
         SpawnPack d = new SpawnPack
         {
-            spawnTransform = spawn,
+            spawnTransform = spawnTransform,
             difficulty = difficulty,
         };
         if (ready)
@@ -315,7 +328,7 @@ public class MonsterSpawn : NetworkBehaviour
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
-        Vector3 halfSize = spawnData.spawnTransform.lossyScale / 2;
+
         float totalPool = 0;
         for (int j = 0; j < unitsToSpawn.Count; j++)
         {
@@ -327,10 +340,8 @@ public class MonsterSpawn : NetworkBehaviour
 
             SpawnUnit data = unitsToSpawn[j];
             //Debug.Log(data.power + " " + spawnData.difficulty.pack + " " + spawnData.difficulty.veteran + " " + veteranMajorIndex);
-            Vector3 offset = new Vector3(Random.Range(-halfSize.x, halfSize.x), 0, Random.Range(-halfSize.z, halfSize.z));
-            offset *= 0.9f;
-            offset = spawnData.spawnTransform.rotation * offset;
-            InstanceCreature(spawnData, data, offset, p);
+
+            InstanceCreature(spawnData, data, p);
         }
     }
     float weightedPool()
@@ -400,10 +411,11 @@ public class MonsterSpawn : NetworkBehaviour
         };
     }
 
-    void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Vector3 positionOffset, Pack p)
+    void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Pack p)
     {
+
         float scale = Power.scale(spawnPower);
-        Vector3 unitPos = spawnData.spawnTransform.position + positionOffset;
+        Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
         RaycastHit hit;
         if (Physics.Raycast(unitPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
         {

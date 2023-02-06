@@ -9,6 +9,8 @@ using static MonsterSpawn;
 public class Atlas : NetworkBehaviour
 {
     public static readonly int avgPacksPerFloor = 20;
+    public static readonly int chestPerFloor = 1;
+    public static readonly int potPerFloor = 3;
     public readonly static float avgFloorsPerMap = 2f;
     public static readonly float difficultyRange = 1;
 
@@ -41,7 +43,6 @@ public class Atlas : NetworkBehaviour
     public struct Floor
     {
         public int packs;
-        public int tiles;
     }
     private void Start()
     {
@@ -123,7 +124,6 @@ public class Atlas : NetworkBehaviour
             floors[j] = new Floor
             {
                 packs = avgPacksPerFloor,
-                tiles = avgPacksPerFloor + 10
             };
         }
         return floors;

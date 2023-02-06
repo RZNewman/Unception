@@ -8,6 +8,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using static Atlas;
 using static Utils;
+using static MonsterSpawn;
 
 public class MapGenerator : NetworkBehaviour
 {
@@ -142,6 +143,7 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(currentFloor);
 
         List<GameObject> tiles = new List<GameObject>();
+        List<SpawnTransform> spawnLocations = new List<SpawnTransform>();
         SimplePriorityQueue<Door> doors = new SimplePriorityQueue<Door>();
         List<Door> badDoors = new List<Door>();
 
@@ -153,6 +155,10 @@ public class MapGenerator : NetworkBehaviour
             tiles.Add(delta.tile);
             float dist = 0;
             bool distSet = false;
+            if (!delta.skipZones)
+            {
+                spawnLocations.AddRange(delta.locations);
+            }
 
             foreach (Door d in delta.removed)
             {
@@ -187,12 +193,17 @@ public class MapGenerator : NetworkBehaviour
 
             }
         };
+        TileDelta delta = buildTile(getTilePrefab(tilesPre.ToList()).prefab, new TilePlacement { position = currentFloor.transform.position, rotation = Quaternion.identity });
+        delta.skipZones = true;
+        processDelta(delta);
+        //int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
+        int packCount = currentMap.floors[currentFloorIndex].packs + chestPerFloor + potPerFloor;
+        //increase packs to make sure not every location is populated
+        packCount = Mathf.FloorToInt(packCount * 1.5f);
+        bool ending = false;
 
-        processDelta(buildTile(getTilePrefab(tilesPre.ToList()).prefab, new TilePlacement { position = currentFloor.transform.position, rotation = Quaternion.identity }));
-        int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
-        for (int i = 0; i < tileCount && doors.Count > 0; i++)
+        while ((spawnLocations.Count < packCount || ending) && doors.Count > 0)
         {
-            bool ending = i == tileCount - 1;
 
             Door door;
             if (ending)
@@ -225,7 +236,6 @@ public class MapGenerator : NetworkBehaviour
             {
                 doors.Remove(door);
                 badDoors.Add(door);
-                i--;
                 continue;
             }
             List<TileWeight> weights;
@@ -246,7 +256,9 @@ public class MapGenerator : NetworkBehaviour
                 TilePlacement place = checkTile(door, weight.prefab);
                 if (place.success)
                 {
-                    processDelta(buildTile(weight.prefab, place));
+                    delta = buildTile(weight.prefab, place);
+                    delta.skipZones = ending;
+                    processDelta(delta);
                     didCreate = true;
                     break;
                 }
@@ -257,15 +269,20 @@ public class MapGenerator : NetworkBehaviour
 
             }
 
-            if (didCreate)
-            {
-                continue;
-            }
-            else
+            if (!didCreate)
             {
                 doors.Remove(door);
                 badDoors.Add(door);
-                i--;
+                continue;
+            }
+
+            if (ending)
+            {
+                ending = false;
+            }
+            else if (spawnLocations.Count >= packCount)
+            {
+                ending = true;
             }
 
             yield return null;
@@ -299,10 +316,7 @@ public class MapGenerator : NetworkBehaviour
         NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
         navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
 
-        //remove the end tile from spawner
-        tiles.RemoveAt(tiles.Count - 1);
-        tiles.RemoveAt(0);
-        yield return spawner.spawnLevel(tiles, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
+        yield return spawner.spawnLevel(spawnLocations, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 
@@ -318,6 +332,8 @@ public class MapGenerator : NetworkBehaviour
         public GameObject tile;
         public List<Door> added;
         public List<Door> removed;
+        public List<SpawnTransform> locations;
+        public bool skipZones;
     }
 
     static TileWeight getTilePrefab(List<TileWeight> weights)
@@ -406,7 +422,7 @@ public class MapGenerator : NetworkBehaviour
             }
 
         }
-        return new TileDelta { tile = t, added = added, removed = removed };
+        return new TileDelta { tile = t, added = added, removed = removed, locations = t.GetComponent<MapTile>().Spawns(currentFloorScale) };
     }
     void buildDoorBlocker(Vector3 position, Quaternion rotation)
     {

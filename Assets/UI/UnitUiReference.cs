@@ -7,6 +7,7 @@ public class UnitUiReference : MonoBehaviour
     public UiBar staggerbar;
     public UiBar castbar;
     public UiBar staminaBar;
+    public UiBar packHealBar;
     public UiText powerDisplay;
     public GameObject unitTarget;
 
@@ -30,6 +31,10 @@ public class UnitUiReference : MonoBehaviour
         if (powerDisplay)
         {
             powerDisplay.source = unitTarget.GetComponentInParent<Power>();
+        }
+        if (packHealBar)
+        {
+            packHealBar.source = unitTarget.GetComponentInParent<PackHeal>();
         }
     }
     public void setTarget(GameObject t)

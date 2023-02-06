@@ -5,10 +5,20 @@ using UnityEngine;
 
 public class Compass : MonoBehaviour
 {
+    public float storedAngle = 0;
     public void setDirection(Vector3 dir)
     {
+        storedAngle = Vector3.SignedAngle(dir, Vector3.forward, Vector3.up);
         //Debug.Log(dir);
-        transform.rotation = Quaternion.AngleAxis(Vector3.SignedAngle(dir, Vector3.forward, Vector3.up), Vector3.forward);
+
+    }
+    private void Update()
+    {
+        LocalCamera c = FindObjectOfType<LocalCamera>();
+        if (c)
+        {
+            transform.rotation = Quaternion.AngleAxis(storedAngle + c.currentLookAngle, Vector3.forward);
+        }
     }
 
 }

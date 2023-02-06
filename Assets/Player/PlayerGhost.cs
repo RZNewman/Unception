@@ -145,7 +145,7 @@ public class PlayerGhost : NetworkBehaviour
 
 
     //server
-    void onUnitDeath()
+    void onUnitDeath(bool natural)
     {
         RpcSetAudio(true);
         currentSelf = null;

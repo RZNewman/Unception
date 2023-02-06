@@ -90,7 +90,7 @@ public class UnitMovement : NetworkBehaviour
         }
 
     }
-    void cleanup()
+    void cleanup(bool natural)
     {
         movement.exit();
     }

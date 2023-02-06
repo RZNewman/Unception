@@ -695,6 +695,7 @@ GameObject:
   - component: {fileID: 7523574754519777489}
   - component: {fileID: 206218011199495340}
   - component: {fileID: 3160391284218651226}
+  - component: {fileID: 8494582117542451375}
   m_Layer: 7
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -1192,6 +1193,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8494582117542451375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563495925269500109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08c87062bfa696648bddbbbb9d37d293, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &566532740388109760
 GameObject:
   m_ObjectHideFlags: 0
@@ -9249,6 +9262,7 @@ GameObject:
   - component: {fileID: 9109085706746148427}
   - component: {fileID: 4273032795900019437}
   - component: {fileID: 4939385002557404499}
+  - component: {fileID: 5544075366061217260}
   m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
@@ -9368,6 +9382,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22121286e35666141a6a56f941412958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5544075366061217260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6379880392911411916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd86842bb255354493e90630fdb5ef9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6380993432389529296

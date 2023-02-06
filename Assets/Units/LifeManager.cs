@@ -12,7 +12,7 @@ public class LifeManager : NetworkBehaviour
         }
     }
 
-    public delegate void OnDeath();
+    public delegate void OnDeath(bool natural);
     public delegate void OnHit(GameObject other);
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
@@ -52,7 +52,7 @@ public class LifeManager : NetworkBehaviour
         isDead = true;
         foreach (OnDeath c in OnDeathCallbacks)
         {
-            c();
+            c(true);
         }
 
         Destroy(gameObject);
@@ -65,7 +65,7 @@ public class LifeManager : NetworkBehaviour
         {
             foreach (OnDeath c in OnDeathCallbacks)
             {
-                c();
+                c(false);
             }
         }
 

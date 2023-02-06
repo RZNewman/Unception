@@ -20,6 +20,8 @@ public class LocalCamera : MonoBehaviour
     float pitchMax = 60;
     float pitchMin = 40;
     public GameObject rootRotation;
+    public float turnXSens = 0.5f;
+    public float turnYSens = 0.3f;
 
     public enum CameraMode
     {
@@ -38,7 +40,7 @@ public class LocalCamera : MonoBehaviour
         localClip = cam.nearClipPlane;
         lastMag = transform.localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
-        if(mode == CameraMode.Turn)
+        if (mode == CameraMode.Turn)
         {
             setCursorLocks(true);
         }
@@ -56,7 +58,7 @@ public class LocalCamera : MonoBehaviour
     {
         switch (mode)
         {
-            
+
             case CameraMode.Turn:
                 return turnOffset;
             case CameraMode.Locked:
@@ -81,7 +83,7 @@ public class LocalCamera : MonoBehaviour
         //cam.nearClipPlane = 1.0f * p.scale();
 
     }
-    Vector3 lastMousePosition =Vector3.zero;
+    Vector3 lastMousePosition = Vector3.zero;
     private void Update()
     {
         if (currentTransition < transitionTime)
@@ -94,15 +96,15 @@ public class LocalCamera : MonoBehaviour
         }
 
 
-        if(mode == CameraMode.Turn)
+        if (mode == CameraMode.Turn)
         {
 
             //Vector2 mouseDelta = Input.mousePosition - lastMousePosition;
             Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-            currentLookAngle += mouseDelta.x * 0.2f;
+            currentLookAngle += mouseDelta.x * turnXSens;
             currentLookAngle = normalizeAngle(currentLookAngle);
-            currentPitchAngle -= mouseDelta.y * 0.2f;
+            currentPitchAngle -= mouseDelta.y * turnYSens;
             currentPitchAngle = Mathf.Clamp(currentPitchAngle, pitchMin, pitchMax);
 
             rootRotation.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
@@ -110,7 +112,7 @@ public class LocalCamera : MonoBehaviour
 
             //lastMousePosition = Input.mousePosition;
         }
-        
+
 
     }
     public void pause(bool paused)

@@ -273,6 +273,7 @@ public class MonsterSpawn : NetworkBehaviour
 
 
         float powerPoolVeteran = powerPoolBase * spawnData.difficulty.veteran;
+        powerPoolPack += powerPoolVeteran;
         propsSelect = Random.value;
         int veteranMajorIndex = -1;
         int splitCount = unitsToSpawn.Count;
@@ -313,6 +314,7 @@ public class MonsterSpawn : NetworkBehaviour
 
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
+        p.powerPoolPack = powerPoolPack;
         Vector3 halfSize = spawnData.spawnTransform.lossyScale / 2;
         float totalPool = 0;
         for (int j = 0; j < unitsToSpawn.Count; j++)
@@ -414,6 +416,7 @@ public class MonsterSpawn : NetworkBehaviour
 
         float percentOfBasePack = spawnUnit.poolCost / weightedPool();
         o.GetComponent<Reward>().setReward(spawnPower, spawnData.difficulty.total, percentOfBasePack);
+        o.GetComponent<PackHeal>().packPool = spawnUnit.poolCost;
 
         //Debug.Log(spawnUnit.power + " - " + spawnUnit.poolCost + " - " + weightedPool() + " - " + spawnPower + " - " + reward);
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();

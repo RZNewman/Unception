@@ -64,8 +64,12 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         life.die();
     }
 
-    void onDeath()
+    void onDeath(bool natural)
     {
+        if (!natural)
+        {
+            return;
+        }
         SoundManager.SoundClip clip;
         switch (type)
         {
@@ -80,7 +84,6 @@ public class Breakable : NetworkBehaviour, TeamOwnership
                 break;
         }
         sound.sendSound(clip, transform.position);
-        Destroy(gameObject);
     }
 
 

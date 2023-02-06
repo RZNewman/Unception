@@ -64,6 +64,11 @@ public class Health : NetworkBehaviour, BarValue
 
     }
 
+    public void healToFull()
+    {
+        currentHealth = maxHealth;
+    }
+
     public BarValue.BarData getBarFill()
     {
         return new BarValue.BarData

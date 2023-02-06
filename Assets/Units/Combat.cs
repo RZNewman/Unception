@@ -42,7 +42,7 @@ public class Combat : NetworkBehaviour
         }
     }
 
-    void onDeath()
+    void onDeath(bool natural)
     {
         rewardKiller();
         clearFighting();
@@ -52,18 +52,19 @@ public class Combat : NetworkBehaviour
         if (lastUnitHitBy)
         {
             lastUnitHitBy.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
+            lastUnitHitBy.GetComponent<PackHeal>().rewardKill(GetComponent<PackHeal>().packPool);
         }
     }
     void clearFighting()
     {
         foreach (GameObject other in active)
         {
-            
+
             if (other)
             {
                 other.GetComponent<Combat>().removeTarget(gameObject);
             }
-            
+
         }
         active.Clear();
     }

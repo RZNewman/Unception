@@ -19,6 +19,10 @@ public class DeterministicUpdate : NetworkBehaviour
     {
         foreach (UnitUpdateOrder unit in unitList)
         {
+            unit.packHealTick();
+        }
+        foreach (UnitUpdateOrder unit in unitList)
+        {
             unit.healthTick();
         }
         foreach (UnitUpdateOrder unit in unitList)

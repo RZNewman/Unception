@@ -8,6 +8,7 @@ public class UnitUpdateOrder : NetworkBehaviour
     Stamina stamina;
     Cast cast;
     AnimationController anim;
+    PackHeal packHeal;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +20,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         stamina = GetComponent<Stamina>();
         cast = GetComponent<Cast>();
         anim = GetComponent<AnimationController>();
+        packHeal = GetComponent<PackHeal>();
 
 
     }
@@ -34,6 +36,10 @@ public class UnitUpdateOrder : NetworkBehaviour
     }
 
 
+    public void packHealTick()
+    {
+        packHeal.OrderedUpdate();
+    }
     public void healthTick()
     {
         health.OrderedUpdate();

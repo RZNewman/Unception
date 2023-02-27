@@ -34,8 +34,8 @@ public static class GenerateAttack
     }
 
     //value added for 100% reduced effect (50% speed)
-    static readonly float moveValue = 0.12f;
-    static readonly float turnValue = 0.05f;
+    static readonly float moveValue = 0.07f;
+    static readonly float turnValue = 0.025f;
     static public float getWindValue(WindInstanceData[] winds)
     {
         float totalTime = winds.Sum(x => x.duration);
@@ -247,7 +247,7 @@ public static class GenerateAttack
             }
 
             float strength = getWindValue(windList.ToArray());
-            strength += cooldownStrength * (1 - 0.03f * (repeatCount - 1));
+            strength *= 1 + (cooldownStrength * (1 - 0.03f * (repeatCount - 1)));
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 

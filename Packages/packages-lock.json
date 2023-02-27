@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.github.idbrii.unity-navgen": {
+      "version": "https://github.com/idbrii/unity-navgen.git#latest-release",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ac8e7e4aaea273ab6fb35f152e1b8f6cf3a50465"
+    },
     "com.unity.burst": {
       "version": "1.7.3",
       "depth": 1,

@@ -247,7 +247,15 @@ public static class GenerateAttack
             }
 
             float strength = getWindValue(windList.ToArray());
-            strength *= 1 + (cooldownStrength * (1 - 0.03f * (repeatCount - 1)));
+            float addedCDStrength = cooldownStrength * (1 - 0.03f * (repeatCount - 1));
+            if (strength * (1 + addedCDStrength) > strength + addedCDStrength)
+            {
+                strength *= 1 + addedCDStrength;
+            }
+            else
+            {
+                strength += addedCDStrength;
+            }
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 

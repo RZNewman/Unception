@@ -2663,6 +2663,8 @@ MonoBehaviour:
   - {fileID: 2287204686885174507, guid: 693c74817e7b21e47952900f6c613452, type: 3}
   - {fileID: 2287204686885174507, guid: 713b2f445dd63834da5bc028147d549e, type: 3}
   - {fileID: 2287204686885174507, guid: 4e7db043591de614bb0a347dec2fcfa0, type: 3}
+  - {fileID: 2287204686885174507, guid: e631c6a084de55f46b804157aeee8acd, type: 3}
+  - {fileID: 2287204686885174507, guid: ce984b043a04b9f4b9daa4e15a1e4e5b, type: 3}
 --- !u!4 &449408942
 Transform:
   m_ObjectHideFlags: 0
@@ -12031,7 +12033,7 @@ MonoBehaviour:
   syncInterval: 0.1
   tilesPre:
   - prefab: {fileID: 2287204686885174507, guid: f3c1c0c242645e0488c36c4eb6a0415f, type: 3}
-    weight: 10
+    weight: 6
   - prefab: {fileID: 2287204686885174507, guid: 0b940ff0310aa774fa13aa9b7aa09106, type: 3}
     weight: 7
   - prefab: {fileID: 2287204686885174507, guid: 09ba0b9a40526ce4b833240dc600ccd4, type: 3}
@@ -12048,6 +12050,10 @@ MonoBehaviour:
     weight: 4
   - prefab: {fileID: 2287204686885174507, guid: 4e7db043591de614bb0a347dec2fcfa0, type: 3}
     weight: 5
+  - prefab: {fileID: 2287204686885174507, guid: e631c6a084de55f46b804157aeee8acd, type: 3}
+    weight: 0.7
+  - prefab: {fileID: 2287204686885174507, guid: ce984b043a04b9f4b9daa4e15a1e4e5b, type: 3}
+    weight: 1
   doorPre: {fileID: 2287204686885174507, guid: 1ab4c5fdc8aacf840bfe788bd62476b6, type: 3}
   endPre: {fileID: 6715917580406317018, guid: b4934a7717e3dd043816c1451b64c437, type: 3}
   stitchPre: {fileID: 2287204686885174507, guid: c6a5ef7790cb8424b91fc1ed1f990daf, type: 3}

@@ -542,7 +542,7 @@ public class MapGenerator : NetworkBehaviour
                     link.endPoint = link.transform.InverseTransformPoint(nav_hit.position) + (Vector3.forward * inset);
                     link.width = edge.m_Length;
                     link.UpdateLink();
-                    Debug.Log("Created NavLink");
+                    //Debug.Log("Created NavLink");
                     Undo.RegisterCompleteObjectUndo(link.gameObject, "Create NavMeshLink");
 
 

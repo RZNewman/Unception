@@ -27,7 +27,7 @@ public class UiServerMap : MonoBehaviour
         {
             visualLocation = Vector2.zero,
             difficultyRangePercent = 0,
-            floors = defaultMapFloors(),
+            floors = mapFloors(),
             index = -1,
             power = power,
             difficulty = new MonsterSpawn.Difficulty

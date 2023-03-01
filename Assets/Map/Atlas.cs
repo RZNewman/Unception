@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using static MonsterSpawn;
+using static Utils;
 
 public class Atlas : NetworkBehaviour
 {
@@ -44,6 +45,16 @@ public class Atlas : NetworkBehaviour
     {
         public int packs;
         public float sparseness;
+        public EncounterData[] encounters;
+    }
+    public struct EncounterData
+    {
+        public Difficulty difficulty;
+        public EncounterType type;
+    }
+    public enum EncounterType
+    {
+        Ambush
     }
     private void Start()
     {
@@ -102,12 +113,13 @@ public class Atlas : NetworkBehaviour
         {
             float difficultyRangePercent = (float)i / (mapsToGen - 1);
             float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
+            Difficulty difficulty = Difficulty.fromTotal(currentDifficulty);
             mapsGen[i] = new Map
             {
                 index = i,
                 power = power,
-                difficulty = Difficulty.fromTotal(currentDifficulty),
-                floors = defaultMapFloors(),
+                difficulty = difficulty,
+                floors = mapFloors(difficulty),
                 visualLocation = new Vector2(Random.value, Random.value),
                 difficultyRangePercent = difficultyRangePercent,
             };
@@ -116,7 +128,7 @@ public class Atlas : NetworkBehaviour
         return mapsGen;
     }
 
-    public static Floor[] defaultMapFloors()
+    public static Floor[] mapFloors(Difficulty difficulty)
     {
         int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
         Floor[] floors = new Floor[floorCount];
@@ -126,9 +138,26 @@ public class Atlas : NetworkBehaviour
             {
                 packs = avgPacksPerFloor,
                 sparseness = 3,
+                encounters = floorEncounters(difficulty),
             };
         }
         return floors;
+    }
+    public static EncounterData[] floorEncounters(Difficulty difficulty)
+    {
+        int encounterCount = Mathf.RoundToInt(GaussRandomDecline().asRange(1, 2));
+        EncounterData[] encounters = new EncounterData[encounterCount];
+        float addedDifficulty = (0.25f + 0.3f * difficulty.total) * Random.value.asRange(0.5f, 1);
+        for (int j = 0; j < encounterCount; j++)
+        {
+
+            encounters[j] = new EncounterData
+            {
+                difficulty = difficulty.add(addedDifficulty),
+                type = EncounterType.Ambush,
+            };
+        }
+        return encounters;
     }
 
     UiMapMarker displayMap;

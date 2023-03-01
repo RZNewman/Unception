@@ -200,7 +200,7 @@ public class MapGenerator : NetworkBehaviour
         delta.skipZones = true;
         processDelta(delta);
         //int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
-        int packCount = currentMap.floors[currentFloorIndex].packs + chestPerFloor + potPerFloor;
+        int packCount = currentMap.floors[currentFloorIndex].packs + currentMap.floors[currentFloorIndex].encounters.Length + chestPerFloor + potPerFloor;
         //increase packs to make sure not every location is populated
         packCount = Mathf.FloorToInt(packCount * currentMap.floors[currentFloorIndex].sparseness);
         bool ending = false;
@@ -331,7 +331,7 @@ public class MapGenerator : NetworkBehaviour
         GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(spawnLocations, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
+        yield return spawner.spawnLevel(spawnLocations, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 

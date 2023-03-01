@@ -61,6 +61,20 @@ public class MonsterSpawn : NetworkBehaviour
                 veteran = split[1] * difficulty / sum,
             };
         }
+        public Difficulty add(float difficulty)
+        {
+            Difficulty added = fromTotal(difficulty);
+            return add(added);
+        }
+
+        public Difficulty add(Difficulty difficulty)
+        {
+            return new Difficulty
+            {
+                pack = pack + difficulty.pack,
+                veteran = veteran + difficulty.veteran,
+            };
+        }
     }
     public struct SpawnTransform
     {
@@ -92,7 +106,7 @@ public class MonsterSpawn : NetworkBehaviour
         public float poolCost;
     }
 
-    public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff)
+    public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff, EncounterData[] encounters)
     {
 
         List<Difficulty> packs = new List<Difficulty>();
@@ -353,6 +367,11 @@ public class MonsterSpawn : NetworkBehaviour
         return Mathf.Pow(power, lowerUnitPowerExponent);
     }
 
+    static float inverseWeightedPower(float pool)
+    {
+        return Mathf.Pow(pool, 1 / lowerUnitPowerExponent);
+    }
+
     static float getVeteranPower(float powerOriginal, float veteranPool)
     {
         return Mathf.Pow(Mathf.Pow(powerOriginal, lowerUnitPowerExponent) + veteranPool, 1 / lowerUnitPowerExponent);
@@ -456,7 +475,9 @@ public class MonsterSpawn : NetworkBehaviour
         float powerMultDiff = 1.2f;
         //clear data
         monsterProps.Clear();
-        lastPowerAdded = power / 10;
+
+        float pool = weightedPool();
+        lastPowerAdded = inverseWeightedPower(pool / maxPackSize);
 
         while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
         {
@@ -464,24 +485,7 @@ public class MonsterSpawn : NetworkBehaviour
             //Debug.Log(lastPowerAdded);
             monsterProps.Add(createType(lastPowerAdded));
         }
-        float pool = weightedPool();
-        int originalCount = monsterProps.Count;
-        for (int i = 0; i < originalCount; i++)
-        {
-            UnitData data = monsterProps[0];
-            InstanceInfo info = maxInstances(data.power, pool);
-            //Debug.Log(string.Format("count: {0} > {2}, power: {1}", info.instanceCount, data.power, maxPackSize));
-            if (info.instanceCount > maxPackSize)
-            {
-                //Debug.Log("removed");
-                monsterProps.RemoveAt(0);
-            }
-            else
-            {
-                break;
-            }
-        }
-        //Debug.Log(monsterProps.Count);
+
     }
 
 

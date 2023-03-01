@@ -17,7 +17,7 @@ public static class GenerateUnit
 
         float speed = (3f + 5f * speedVal);
         float turn = 75f + 60f * turnVal;
-        float health = 3f + 3f * healthVal;
+        float health = 4f + 3f * healthVal;
         float posture = (50f + 200f * postureVal);
 
         properties.maxSpeed = speed;
@@ -32,7 +32,7 @@ public static class GenerateUnit
         properties.maxHealthMult = health;
 
         properties.maxPosture = posture;
-        properties.passivePostureRecover = posture* 0.1f;
+        properties.passivePostureRecover = posture * 0.1f;
         properties.stunnedPostureRecover = posture;
 
         properties.visuals = vis;

@@ -22,7 +22,7 @@ public class MonsterSpawn : NetworkBehaviour
     Transform floor;
 
 
-    public static readonly float lengthPerPack = 11f;
+    public static readonly float lengthPerPack = 8f;
 
     float lastPowerAdded = 100;
     float spawnPower = 100;

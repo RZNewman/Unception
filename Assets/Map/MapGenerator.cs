@@ -329,6 +329,7 @@ public class MapGenerator : NetworkBehaviour
         linkGenerator.m_AgentRadius = agent.agentRadius;
         linkGenerator.m_AgentHeight = agent.agentHeight;
         GenerateLinks(linkGenerator);
+        yield return null;
 
         yield return spawner.spawnLevel(spawnLocations, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));

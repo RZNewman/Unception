@@ -28,20 +28,21 @@ public class MapTile : MonoBehaviour
             float height = zone.transform.lossyScale.z;
             int spawnWidth = Mathf.Max(Mathf.RoundToInt(width / (lengthPerPack * scale)), 1);
             int spawnHeight = Mathf.Max(Mathf.RoundToInt(height / (lengthPerPack * scale)), 1);
-            float widthPerSpawn = width / (spawnWidth + 2);
-            float heightPerSpawn = height / (spawnHeight + 2);
+            float widthPerSpawn = width / (spawnWidth);
+            float heightPerSpawn = height / (spawnHeight);
 
-            Vector3 root = zone.transform.position - transform.right * width / 2 - transform.forward * height / 2;
+            Vector3 root = zone.transform.position - zone.transform.right * width / 2 - zone.transform.forward * height / 2;
+            Vector3 halfTile = zone.transform.right * widthPerSpawn / 2 + zone.transform.forward * heightPerSpawn / 2;
 
-            for (int x = 1; x <= spawnWidth; x++)
+            for (int x = 0; x < spawnWidth; x++)
             {
-                for (int y = 1; y <= spawnHeight; y++)
+                for (int y = 0; y < spawnHeight; y++)
                 {
                     spawns.Add(new SpawnTransform
                     {
                         rotation = zone.transform.rotation,
                         halfExtents = new Vector2(widthPerSpawn, heightPerSpawn) / 2,
-                        position = root + transform.right * widthPerSpawn * x + transform.forward * heightPerSpawn * y,
+                        position = root + halfTile + zone.transform.right * widthPerSpawn * x + zone.transform.forward * heightPerSpawn * y,
 
                     });
 

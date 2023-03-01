@@ -125,7 +125,7 @@ public class Atlas : NetworkBehaviour
             floors[j] = new Floor
             {
                 packs = avgPacksPerFloor,
-                sparseness = 2,
+                sparseness = 3,
             };
         }
         return floors;

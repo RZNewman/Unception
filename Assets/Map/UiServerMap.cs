@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using static Atlas;
+using static MonsterSpawn;
 
 public class UiServerMap : MonoBehaviour
 {
@@ -23,18 +24,20 @@ public class UiServerMap : MonoBehaviour
             v = 0;
         }
 
+        Difficulty d = new Difficulty
+        {
+            pack = p,
+            veteran = v,
+        };
+
         return new Map
         {
             visualLocation = Vector2.zero,
             difficultyRangePercent = 0,
-            floors = mapFloors(),
+            floors = mapFloors(d),
             index = -1,
             power = power,
-            difficulty = new MonsterSpawn.Difficulty
-            {
-                pack = p,
-                veteran = v,
-            }
+            difficulty = d
         };
     }
 }

@@ -52,7 +52,12 @@ public class Combat : NetworkBehaviour
         if (lastUnitHitBy)
         {
             lastUnitHitBy.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
-            lastUnitHitBy.GetComponent<PackHeal>().rewardKill(GetComponent<PackHeal>().packPool);
+            PackHeal heal = GetComponent<PackHeal>();
+            if (heal)
+            {
+                lastUnitHitBy.GetComponent<PackHeal>().rewardKill(heal.packPool);
+            }
+            
         }
     }
     void clearFighting()
@@ -86,6 +91,10 @@ public class Combat : NetworkBehaviour
         setFighting(other);
     }
 
+    public void setHitBy(GameObject hitter)
+    {
+        lastUnitHitBy = hitter;
+    }
     public bool inCombat
     {
         get

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7889506511530161962}
   - component: {fileID: 3357880112568807660}
   - component: {fileID: 7509966662331016041}
-  - component: {fileID: 3282803504095104361}
   m_Layer: 17
   m_Name: Sphere
   m_TagString: Untagged
@@ -84,19 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3282803504095104361
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3582044093960127471}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3812198904467190130
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,6 +97,10 @@ GameObject:
   - component: {fileID: 5225787586129273210}
   - component: {fileID: 4948730091227268459}
   - component: {fileID: -744868919891808761}
+  - component: {fileID: 7764656419332715607}
+  - component: {fileID: 4427844137082266887}
+  - component: {fileID: 3467875537268174668}
+  - component: {fileID: 8993142039762591822}
   m_Layer: 17
   m_Name: Encounter
   m_TagString: Untagged
@@ -229,3 +219,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f726fa0f9543845b9522157e52eeff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7764656419332715607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3812198904467190130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39478e86f3a8b4844a85be719f2828ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &4427844137082266887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3812198904467190130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a165c106d5b2bdc4da637bb43f04bddf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  givesPower: 0
+  givesItems: 1
+--- !u!114 &3467875537268174668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3812198904467190130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa34f8f4c364d8a4cba593fe8d602ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!135 &8993142039762591822
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3812198904467190130}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

@@ -18,6 +18,7 @@ public class SaveData : NetworkBehaviour
     Inventory inv;
     PlayerGhost player;
     // Start is called before the first frame update
+
     void Start()
     {
         auth = GetComponent<Auth>();
@@ -58,7 +59,7 @@ public class SaveData : NetworkBehaviour
 
     IEnumerator loadDataRoutine()
     {
-
+        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
         Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
         Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();

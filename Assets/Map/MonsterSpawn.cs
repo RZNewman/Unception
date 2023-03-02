@@ -5,19 +5,19 @@ using System.Linq;
 using UnityEngine;
 using static GenerateValues;
 using static Atlas;
+using static Utils;
 
 public class MonsterSpawn : NetworkBehaviour
 {
     public GameObject UnitPre;
     public GameObject PackPre;
     public GameObject UrnPre;
+    public GameObject EncounterPre;
 
 
 
     List<UnitData> monsterProps = new List<UnitData>();
 
-    List<SpawnPack> buildRequests = new List<SpawnPack>();
-    bool ready = false;
 
     Transform floor;
 
@@ -105,6 +105,10 @@ public class MonsterSpawn : NetworkBehaviour
         public float power;
         public float poolCost;
     }
+    public void setFloor(Transform f)
+    {
+        floor = f;
+    }
 
     public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff, EncounterData[] encounters)
     {
@@ -124,15 +128,30 @@ public class MonsterSpawn : NetworkBehaviour
 
         for (int i = 0; i < packCount; i++)
         {
-            int p = packs.RandomIndex();
-            Difficulty packDifficulty = packs[p];
-            packs.RemoveAt(p);
+            Difficulty packDifficulty = packs[i];
+
+            int z = locations.RandomIndex();
+            SpawnTransform t = locations[z];
+            locations.RemoveAt(z);
+            SpawnPack packData = new SpawnPack
+            {
+                spawnTransform = t,
+                difficulty = packDifficulty,
+            };
+
+            spawnCreatures(packData);
+            yield return null;
+        }
+
+        for (int i = 0; i < encounters.Length; i++)
+        {
+            EncounterData e = encounters[i];
 
             int z = locations.RandomIndex();
             SpawnTransform t = locations[z];
             locations.RemoveAt(z);
 
-            spawnCreatures(t, packDifficulty);
+            spawnEncounter(e,t);
             yield return null;
         }
 
@@ -150,52 +169,68 @@ public class MonsterSpawn : NetworkBehaviour
         }
     }
 
+    void spawnEncounter(EncounterData encounterData, SpawnTransform spawn)
+    {
+        float scale = Power.scale(spawnPower);
+        Vector3 encounterPos = spawn.position;
+        RaycastHit hit;
+        if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
+        {
+            encounterPos = hit.point + Vector3.up * scale;
+        }
+        GameObject o = Instantiate(EncounterPre, encounterPos, Quaternion.identity, floor);
+        o.transform.localScale = Vector3.one * scale;
+        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
+        Encounter encounter = o.GetComponent<Encounter>();
+        encounter.setScale(scale);
+        
+        
+        NetworkServer.Spawn(o);
+        Optional<Pack> packOption;
+        float poolTotal=0;
+        for(int i =0; i< encounterData.packs; i++)
+        {
+            SpawnPack packData = new SpawnPack
+            {
+                spawnTransform = spawn,
+                difficulty = encounterData.difficulty,
+            };
+            packOption = spawnCreatures(packData);
+            if (packOption.HasValue)
+            {
+                encounter.addPack(packOption.Value);
+                poolTotal += packOption.Value.powerPoolPack;
+            }
+        }
+
+        float percentOfBasePack = poolTotal / weightedPool();
+        o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, percentOfBasePack, 2);
+    }
+
     void spawnBreakables(SpawnTransform spawn, bool isChest, float totalDifficulty)
     {
         float diffMult = totalDifficulty + 1;
         int numberBreakables = isChest ? 1 : Random.Range(3, 6);
-        float packPercent = (isChest ? 5 : 0.5f) * diffMult;
+        float packPercentTotal = (isChest ? 5 : 0.5f) * diffMult;
+        float packPercent = packPercentTotal / numberBreakables;
         for (int j = 0; j < numberBreakables; j++)
         {
-            InstanceBreakable(spawn, packPercent / numberBreakables, isChest);
-        }
-    }
-    void InstanceBreakable(SpawnTransform spawn, float packPercent, bool isChest)
-    {
-        GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
-        o.transform.localScale = Vector3.one * Power.scale(spawnPower);
-        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
-        o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
-        if (isChest)
-        {
-            o.GetComponent<Breakable>().type = Breakable.BreakableType.Chest;
-        }
-        NetworkServer.Spawn(o);
-    }
 
-    void spawnCreatures(SpawnTransform spawnTransform, Difficulty difficulty)
-    {
-        SpawnPack d = new SpawnPack
-        {
-            spawnTransform = spawnTransform,
-            difficulty = difficulty,
-        };
-        if (ready)
-        {
-            instancePack(d);
-        }
-        else
-        {
-            buildRequests.Add(d);
+            GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
+            o.transform.localScale = Vector3.one * Power.scale(spawnPower);
+            o.GetComponent<ClientAdoption>().parent = floor.gameObject;
+            o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
+            if (isChest)
+            {
+                o.GetComponent<Breakable>().type = Breakable.BreakableType.Chest;
+            }
+            NetworkServer.Spawn(o);
         }
     }
-    public void setFloor(Transform f)
-    {
-        floor = f;
-    }
+    
 
-    static float packWiggleRoom = 0.1f;
-    void instancePack(SpawnPack spawnData)
+    static readonly float packWiggleRoom = 0.1f;
+    Optional<Pack> spawnCreatures(SpawnPack spawnData)
     {
 
         float powerPoolBase = weightedPool();
@@ -242,7 +277,7 @@ public class MonsterSpawn : NetworkBehaviour
                 {
 
                     Debug.LogError("Couldnt fill out in single Mode " + data.power + ":" + info.instanceCount + " - " + fillData.power + ":" + fillInfo.instanceCount);
-                    return;
+                    return new Optional<Pack>();
                 }
             }
 
@@ -267,7 +302,7 @@ public class MonsterSpawn : NetworkBehaviour
                     {
                         //Debug.Log("Multi " + data.power + ":" + info.instanceCount);
                         Debug.LogError("Couldnt fill out in multi Mode");
-                        return;
+                        return new Optional<Pack>();
                     }
                 }
                 if (info.instanceCount > 0 && Random.value < 0.4f)
@@ -288,12 +323,12 @@ public class MonsterSpawn : NetworkBehaviour
         if (powerPoolPack > powerPoolPackPotential * (1 + packWiggleRoom))
         {
             Debug.LogError("Too much power in pack!");
-            return;
+            return new Optional<Pack>();
         }
         if (unitsToSpawn.Count == 0)
         {
             Debug.LogError("NO units in pack");
-            return;
+            return new Optional<Pack>();
         }
         //account for the wiggle room in the result(reward) difficulty
         spawnData.difficulty.pack = (powerPoolPack / powerPoolBase) - 1;
@@ -342,12 +377,9 @@ public class MonsterSpawn : NetworkBehaviour
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
+        NetworkServer.Spawn(p.gameObject);
 
-        float totalPool = 0;
-        for (int j = 0; j < unitsToSpawn.Count; j++)
-        {
-            totalPool += unitsToSpawn[j].poolCost;
-        }
+
 
         for (int j = 0; j < unitsToSpawn.Count; j++)
         {
@@ -357,6 +389,7 @@ public class MonsterSpawn : NetworkBehaviour
 
             InstanceCreature(spawnData, data, p);
         }
+        return new Optional<Pack>(p);
     }
     float weightedPool()
     {
@@ -442,7 +475,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
         GameObject o = Instantiate(UnitPre, unitPos, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
-        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
+        o.GetComponent<ClientAdoption>().parent = floor.gameObject; 
         o.GetComponent<Power>().setPower(spawnUnit.power);
 
         float percentOfBasePack = spawnUnit.poolCost / weightedPool();
@@ -450,6 +483,7 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<PackHeal>().packPool = spawnUnit.poolCost;
 
         //Debug.Log(spawnUnit.power + " - " + spawnUnit.poolCost + " - " + weightedPool() + " - " + spawnPower + " - " + reward);
+        p.addToPack(o);
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
         holder.pack = p;
         holder.props = spawnUnit.data.props;
@@ -457,16 +491,6 @@ public class MonsterSpawn : NetworkBehaviour
         //al.clear();
         al.addAbility(spawnUnit.data.abilitites);
         NetworkServer.Spawn(o);
-    }
-
-    public override void OnStartServer()
-    {
-        ready = true;
-        foreach (SpawnPack position in buildRequests)
-        {
-            instancePack(position);
-        }
-
     }
 
     public void setSpawnPower(float power)

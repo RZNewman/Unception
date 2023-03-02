@@ -1205,6 +1205,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c87062bfa696648bddbbbb9d37d293, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  packPool: 0
 --- !u!1 &566532740388109760
 GameObject:
   m_ObjectHideFlags: 0
@@ -9370,6 +9373,7 @@ MonoBehaviour:
   staggerbar: {fileID: 8466512819678452069}
   castbar: {fileID: 9193841722235240491}
   staminaBar: {fileID: 0}
+  packHealBar: {fileID: 0}
   powerDisplay: {fileID: 0}
   unitTarget: {fileID: 563495925269500109}
 --- !u!114 &4939385002557404499

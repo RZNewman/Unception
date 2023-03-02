@@ -1,6 +1,7 @@
 using Mirror;
 using UnityEngine;
 using static UnitControl;
+using static TeamOwnership;
 
 public class ControlManager : NetworkBehaviour, TeamOwnership
 {
@@ -29,9 +30,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     }
 
     void Start()
-    {
-        propHolder = GetComponent<UnitPropsHolder>();
-        isPlayer = propHolder.props.isPlayer;
+    { 
         spawnControl();
         currentInput = new UnitInput();
         currentInput.reset();
@@ -40,6 +39,12 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     }
     public void spawnControl()
     {
+        if (controller != null)
+        {
+            return;
+        }
+        propHolder = GetComponent<UnitPropsHolder>();
+        isPlayer = propHolder.props.isPlayer;
 
         if (isLocalAuthority)
         {
@@ -154,6 +159,6 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 
     public uint getTeam()
     {
-        return isPlayer ? 1u : 0u;
+        return isPlayer ? PLAYER_TEAM : ENEMY_TEAM;
     }
 }

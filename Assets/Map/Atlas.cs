@@ -50,6 +50,7 @@ public class Atlas : NetworkBehaviour
     public struct EncounterData
     {
         public Difficulty difficulty;
+        public int packs;
         public EncounterType type;
     }
     public enum EncounterType
@@ -155,6 +156,7 @@ public class Atlas : NetworkBehaviour
             {
                 difficulty = difficulty.add(addedDifficulty),
                 type = EncounterType.Ambush,
+                packs = 4,
             };
         }
         return encounters;

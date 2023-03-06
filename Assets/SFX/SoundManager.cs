@@ -16,6 +16,7 @@ public class SoundManager : NetworkBehaviour
     public AudioClip shatter;
     public AudioClip creak;
     public AudioClip itemSlurp;
+    public AudioClip encounterStart;
 
     [Server]
     public void sendSound(SoundClip sound, Vector3 position)
@@ -29,7 +30,8 @@ public class SoundManager : NetworkBehaviour
     }
 
 
-    public enum SoundClip:byte{
+    public enum SoundClip : byte
+    {
         PortalStart,
         PortalEnd,
         Select,
@@ -38,6 +40,7 @@ public class SoundManager : NetworkBehaviour
         Shatter,
         Creak,
         Slurp,
+        EncounterStart,
     }
 
     [ClientRpc]
@@ -52,17 +55,17 @@ public class SoundManager : NetworkBehaviour
     }
 
     [Client]
-    public void playSound(SoundClip sound, Vector3 position, float? forcedDuration =null)
+    public void playSound(SoundClip sound, Vector3 position, float? forcedDuration = null)
     {
         GameObject o = Instantiate(soundPre, position, Quaternion.identity);
         AudioSource source = o.GetComponent<AudioSource>();
         AudioClip clip = getClip(sound);
         source.clip = clip;
-        if(forcedDuration.HasValue)
+        if (forcedDuration.HasValue)
         {
             source.pitch = clip.length / forcedDuration.Value;
         }
-        
+
         source.Play();
         StartCoroutine(cleanupSound(o));
     }
@@ -102,6 +105,8 @@ public class SoundManager : NetworkBehaviour
                 return creak;
             case SoundClip.Slurp:
                 return itemSlurp;
+            case SoundClip.EncounterStart:
+                return encounterStart;
             default:
                 return null;
         }

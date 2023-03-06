@@ -1,12 +1,16 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static TeamOwnership;
 
-public class Encounter : MonoBehaviour
+public class Encounter : NetworkBehaviour
 {
-    List<Pack>packs = new List<Pack> ();
+    public GameObject activeInd;
+
+
+    List<Pack> packs = new List<Pack>();
     float scale;
     Combat combat;
 
@@ -21,10 +25,14 @@ public class Encounter : MonoBehaviour
     }
     public void setScale(float s)
     {
-        scale =s;
+        scale = s;
     }
     private void OnTriggerEnter(Collider otherCol)
     {
+        if (!isServer)
+        {
+            return;
+        }
         GameObject colliderBody = otherCol.gameObject;
         uint theirTeam = colliderBody.GetComponentInParent<TeamOwnership>().getTeam();
         if (ENEMY_TEAM != theirTeam && !encounterRunning)
@@ -34,7 +42,15 @@ public class Encounter : MonoBehaviour
             combat.setFighting(triggeringUnit);
             encounterRunning = true;
             launchPack();
+            RpcClientActivate();
         }
+    }
+
+    [ClientRpc]
+    void RpcClientActivate()
+    {
+        activeInd.SetActive(true);
+        FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.EncounterStart, transform.position, 3f);
     }
 
     private void Update()
@@ -45,11 +61,11 @@ public class Encounter : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            
+
             if (!currentPack.packAlive())
             {
                 packs.RemoveAt(0);
-                if(packs.Count == 0)
+                if (packs.Count == 0)
                 {
                     encounterRunning = false;
                     combat.setHitBy(triggeringUnit);
@@ -59,7 +75,7 @@ public class Encounter : MonoBehaviour
                 {
                     launchPack();
                 }
-                
+
             }
         }
     }
@@ -93,7 +109,7 @@ public class Encounter : MonoBehaviour
             p.disableItemReward();
             List<Vector3> spawns = new List<Vector3>();
 
-            for(int i = 0; i < 60 && spawns.Count <p.unitCount; i++)
+            for (int i = 0; i < 60 && spawns.Count < p.unitCount; i++)
             {
                 Vector2 circlePoint = Random.insideUnitCircle;
                 Vector3 planePoint = transform.position + new Vector3(circlePoint.x, 0, circlePoint.y) * scaledAmbushRadius;
@@ -103,7 +119,7 @@ public class Encounter : MonoBehaviour
                     spawns.Add(hit.position + Vector3.up * 1 * scale);
                 }
             }
-            
+
 
 
             p.reposition(spawns);

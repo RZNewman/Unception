@@ -82,8 +82,9 @@ public class Encounter : NetworkBehaviour
     void launchPack()
     {
         currentPack = packs[0];
-        currentPack.enableUnits();
         currentPack.packAggro(triggeringUnitBody);
+        currentPack.enableUnitsChain(triggeringUnit.transform.position);
+
     }
     private void OnDestroy()
     {
@@ -98,10 +99,21 @@ public class Encounter : NetworkBehaviour
     private void Start()
     {
         combat = GetComponent<Combat>();
-
-
-
         float scaledAmbushRadius = scale * ambushRadius;
+        NavMeshHit hit;
+        NavMeshPath path = new NavMeshPath();
+
+        Vector3 rootPos;
+        if (NavMesh.SamplePosition(transform.position, out hit, scaledAmbushRadius, NavMesh.AllAreas))
+        {
+            rootPos = hit.position;
+        }
+        else
+        {
+            rootPos = transform.position;
+        }
+
+
         //server
         foreach (Pack p in packs)
         {
@@ -113,10 +125,20 @@ public class Encounter : NetworkBehaviour
             {
                 Vector2 circlePoint = Random.insideUnitCircle;
                 Vector3 planePoint = transform.position + new Vector3(circlePoint.x, 0, circlePoint.y) * scaledAmbushRadius;
-                NavMeshHit hit;
+
                 if (NavMesh.SamplePosition(planePoint, out hit, scaledAmbushRadius, NavMesh.AllAreas))
                 {
-                    spawns.Add(hit.position + Vector3.up * 1 * scale);
+                    Vector3 target = hit.position;
+                    NavMesh.CalculatePath(rootPos, target, NavMesh.AllAreas, path);
+                    if (path.status == NavMeshPathStatus.PathComplete && path.distance() < scaledAmbushRadius * 1.3f)
+                    {
+                        spawns.Add(target + Vector3.up * 1 * scale);
+                    }
+                    else
+                    {
+                        i--;
+                    }
+
                 }
             }
 

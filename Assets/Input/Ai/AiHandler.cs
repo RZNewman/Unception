@@ -50,14 +50,14 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput = new UnitInput();
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
-        mover = GetComponentInParent<UnitMovement>();
+        mover = GetComponentInParent<UnitMovement>(true);
         //pathCalculator = FindObjectOfType<NavPathCalc>();
         //obstacle = GetComponent<NavMeshObstacle>();
         agent = GetComponent<NavMeshAgent>();
         agent.updatePosition = false;
         agent.updateRotation = false;
-        rotatingBody = mover.GetComponentInChildren<UnitRotation>().gameObject;
-        GetComponentInParent<Power>().subscribePower(setRadius);
+        rotatingBody = mover.GetComponentInChildren<UnitRotation>(true).gameObject;
+        GetComponentInParent<Power>(true).subscribePower(setRadius);
     }
 
     void setRadius(Power p)

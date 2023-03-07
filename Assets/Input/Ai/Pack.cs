@@ -1,12 +1,26 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Pack : NetworkBehaviour
 {
     List<GameObject> pack = new List<GameObject>();
+    public GameObject spawnWarning;
 
+    [HideInInspector]
     public float powerPoolPack;
+    [HideInInspector]
+    public float scale;
+
+    SoundManager sound;
+
+    private void Start()
+    {
+        sound = FindObjectOfType<SoundManager>();
+    }
 
 
     public void addToPack(GameObject u)
@@ -40,7 +54,7 @@ public class Pack : NetworkBehaviour
     [Server]
     public void disableUnits()
     {
-        foreach(GameObject u in pack)
+        foreach (GameObject u in pack)
         {
             u.SetActive(false);
         }
@@ -57,7 +71,7 @@ public class Pack : NetworkBehaviour
                 u.SetActive(false);
             }
         }
-        
+
     }
 
     [Server]
@@ -80,7 +94,35 @@ public class Pack : NetworkBehaviour
                 u.SetActive(true);
             }
         }
-        
+
+    }
+    [Server]
+    public void enableUnitsChain(Vector3 location)
+    {
+        pack = pack.OrderBy(p => (p.transform.position - location).magnitude).Reverse().ToList();
+        StartCoroutine(unitChainCoroutine());
+    }
+
+    //server
+    IEnumerator unitChainCoroutine()
+    {
+        foreach (GameObject u in pack)
+        {
+            StartCoroutine(unitSpawnCoroutine(u));
+            yield return new WaitForSeconds(0.3f);
+        }
+
+    }
+    //server
+    IEnumerator unitSpawnCoroutine(GameObject u)
+    {
+        GameObject o = Instantiate(spawnWarning, u.transform.position, Quaternion.identity);
+        o.transform.localScale = scale * Vector3.one;
+        NetworkServer.Spawn(o);
+        yield return new WaitForSeconds(1f);
+        Destroy(o);
+        sound.sendSound(SoundManager.SoundClip.EncounterSpawn, u.transform.position);
+        u.SetActive(true);
     }
 
 
@@ -97,7 +139,7 @@ public class Pack : NetworkBehaviour
     public void reposition(List<Vector3> positions)
     {
         positions.Shuffle();
-        for(int i =0; i< pack.Count; i++)
+        for (int i = 0; i < pack.Count; i++)
         {
             pack[i].transform.position = positions[i];
         }

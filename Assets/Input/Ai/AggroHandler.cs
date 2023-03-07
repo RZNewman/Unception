@@ -26,9 +26,9 @@ public class AggroHandler : MonoBehaviour
     }
     void setCombat()
     {
-        if(combat == null)
+        if (combat == null)
         {
-            combat = GetComponentInParent<Combat>();
+            combat = GetComponentInParent<Combat>(true);
             combat.setAggroHandler(this);
         }
     }

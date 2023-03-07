@@ -151,7 +151,7 @@ public class MonsterSpawn : NetworkBehaviour
             SpawnTransform t = locations[z];
             locations.RemoveAt(z);
 
-            spawnEncounter(e,t);
+            spawnEncounter(e, t);
             yield return null;
         }
 
@@ -183,12 +183,12 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         Encounter encounter = o.GetComponent<Encounter>();
         encounter.setScale(scale);
-        
-        
+
+
         NetworkServer.Spawn(o);
         Optional<Pack> packOption;
-        float poolTotal=0;
-        for(int i =0; i< encounterData.packs; i++)
+        float poolTotal = 0;
+        for (int i = 0; i < encounterData.packs; i++)
         {
             SpawnPack packData = new SpawnPack
             {
@@ -227,7 +227,7 @@ public class MonsterSpawn : NetworkBehaviour
             NetworkServer.Spawn(o);
         }
     }
-    
+
 
     static readonly float packWiggleRoom = 0.1f;
     Optional<Pack> spawnCreatures(SpawnPack spawnData)
@@ -377,6 +377,7 @@ public class MonsterSpawn : NetworkBehaviour
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
+        p.scale = Power.scale(spawnPower);
         NetworkServer.Spawn(p.gameObject);
 
 
@@ -475,7 +476,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
         GameObject o = Instantiate(UnitPre, unitPos, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
-        o.GetComponent<ClientAdoption>().parent = floor.gameObject; 
+        o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);
 
         float percentOfBasePack = spawnUnit.poolCost / weightedPool();

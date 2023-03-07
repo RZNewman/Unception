@@ -21,11 +21,11 @@ public class SaveData : NetworkBehaviour
 
     void Start()
     {
+        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
         player = GetComponent<PlayerGhost>();
         db = FirebaseDatabase.DefaultInstance.RootReference;
-        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
@@ -59,7 +59,6 @@ public class SaveData : NetworkBehaviour
 
     IEnumerator loadDataRoutine()
     {
-        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
         Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
         Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();
@@ -141,7 +140,7 @@ public class SaveData : NetworkBehaviour
 
 
     }
-     
+
     void loadDataOffline()
     {
         if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)

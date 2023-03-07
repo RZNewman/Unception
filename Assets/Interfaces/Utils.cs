@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 using static MapGenerator;
 
 public static class Utils
@@ -57,6 +58,15 @@ public static class Utils
     public static string asPercent(this float value)
     {
         return Mathf.Round(value * 1000) / 10 + "%";
+    }
+    public static float distance(this NavMeshPath path)
+    {
+        float distance = 0;
+        for (int i = 0; i < path.corners.Length - 1; i++)
+        {
+            distance += (path.corners[i] - path.corners[i + 1]).magnitude;
+        }
+        return distance;
     }
     public static List<GameObject> ChildrenWithTag(this GameObject o, string tag)
     {

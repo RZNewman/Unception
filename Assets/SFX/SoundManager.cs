@@ -17,6 +17,7 @@ public class SoundManager : NetworkBehaviour
     public AudioClip creak;
     public AudioClip itemSlurp;
     public AudioClip encounterStart;
+    public AudioClip encounterSpawn;
 
     [Server]
     public void sendSound(SoundClip sound, Vector3 position)
@@ -41,6 +42,7 @@ public class SoundManager : NetworkBehaviour
         Creak,
         Slurp,
         EncounterStart,
+        EncounterSpawn,
     }
 
     [ClientRpc]
@@ -107,6 +109,8 @@ public class SoundManager : NetworkBehaviour
                 return itemSlurp;
             case SoundClip.EncounterStart:
                 return encounterStart;
+            case SoundClip.EncounterSpawn:
+                return encounterSpawn;
             default:
                 return null;
         }

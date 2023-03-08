@@ -6,7 +6,7 @@ public class LocalCamera : MonoBehaviour
 {
     float localClip;
     Vector3 targetPosition;
-    float lastMag = 0;
+    float oldPowerMag = 0;
     readonly float transitionTime = 1f;
     float currentTransition = 1f;
     Camera cam;
@@ -17,8 +17,8 @@ public class LocalCamera : MonoBehaviour
     public float currentLookAngle = 0;
     [HideInInspector]
     public float currentPitchAngle = 70;
-    float pitchMax = 60;
-    float pitchMin = 40;
+    public float pitchMax = 60;
+    public float pitchMin;
     public GameObject rootRotation;
     public float turnXSens = 0.5f;
     public float turnYSens = 0.3f;
@@ -38,10 +38,11 @@ public class LocalCamera : MonoBehaviour
     void Start()
     {
         localClip = cam.nearClipPlane;
-        lastMag = transform.localPosition.magnitude;
+        oldPowerMag = transform.localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
         if (mode == CameraMode.Turn)
         {
+            pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
             setCursorLocks(true);
         }
 
@@ -72,7 +73,7 @@ public class LocalCamera : MonoBehaviour
         targetPosition = cameraOffset() * p.scale();
         cam.nearClipPlane = localClip * p.scale();
         currentTransition = 0;
-        lastMag = transform.localPosition.magnitude;
+        oldPowerMag = transform.localPosition.magnitude;
         if (initial)
         {
             initial = false;
@@ -86,13 +87,24 @@ public class LocalCamera : MonoBehaviour
     Vector3 lastMousePosition = Vector3.zero;
     private void Update()
     {
+        float targetMag = targetPosition.magnitude;
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.parent.position, transform.parent.rotation * targetPosition, out hit, targetMag, LayerMask.GetMask("Terrain")))
+        {
+            targetMag = hit.distance;
+        }
+
         if (currentTransition < transitionTime)
         {
-            float targetMag = targetPosition.magnitude;
-            float frameMag = Mathf.SmoothStep(lastMag, targetMag, currentTransition / transitionTime);
+            float frameMag = Mathf.SmoothStep(oldPowerMag, targetMag, currentTransition / transitionTime);
             transform.localPosition = cameraOffset().normalized * frameMag;
 
             currentTransition += Time.deltaTime;
+        }
+        else
+        {
+            transform.localPosition = cameraOffset().normalized * targetMag;
         }
 
 

@@ -223,7 +223,7 @@ public static class GenerateAttack
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
 
-        cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.9f;
+        cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.75f;
         cooldownStrength *= (1 - 0.07f * (charges - 1));
 
         for (int i = 0; i < segmentsGen.Count; i++)

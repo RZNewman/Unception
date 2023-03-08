@@ -200,10 +200,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lockedOffset: {x: 0, y: 20, z: -7}
-  turnOffset: {x: 0, y: 9, z: -5}
+  turnOffset: {x: 0, y: 7, z: -5}
   currentLookAngle: 0
   currentPitchAngle: 70
+  pitchMax: 60
+  pitchMin: 25
   rootRotation: {fileID: 1085608404565328798}
+  turnXSens: 0.5
+  turnYSens: 0.3
   mode: 1
 --- !u!114 &8550200792430441527
 MonoBehaviour:

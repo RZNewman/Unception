@@ -1157,6 +1157,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64296674650864242, guid: 447936a1f1a90cd4186467e33c751882, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: a2c56d03187b05947ae448fae042bc18, type: 3}
+    - target: {fileID: 64296674650864242, guid: 447936a1f1a90cd4186467e33c751882, type: 3}
+      propertyPath: m_CookingOptions
+      value: -1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 447936a1f1a90cd4186467e33c751882, type: 3}
 --- !u!4 &9181592058346769977 stripped

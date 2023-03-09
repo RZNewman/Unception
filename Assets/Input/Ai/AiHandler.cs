@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
+using static AbiltyList;
 using static UnitControl;
 using static Utils;
 
@@ -145,12 +146,13 @@ public class AiHandler : MonoBehaviour, UnitControl
                     planarDiffAttack.y = 0;
                     float edgeDiffMag = planarDiffAttack.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
 
-                    EffectiveDistance eff = GetComponentInParent<AbiltyList>().getAbility(0).GetEffectiveDistance();
+                    AbilityPair pair = GetComponentInParent<AbiltyList>().getBestAbility();
+                    EffectiveDistance eff = pair.ability.GetEffectiveDistance();
                     Vector3 perpendicularWidth = planarDiffAttack - Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward) * rotatingBody.transform.forward;
                     float dot = Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward);
                     if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
                     {
-                        currentInput.attacks = new AttackKey[] { AttackKey.One };
+                        currentInput.attacks = new AttackKey[] { pair.key };
                         if (edgeDiffMag <= eff.distance * 0.8f)
                         {
                             currentInput.move = Vector2.zero;

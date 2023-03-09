@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnitControl;
+using System.Linq;
 
 public class AbiltyList : NetworkBehaviour
 {
@@ -85,4 +86,19 @@ public class AbiltyList : NetworkBehaviour
     {
         return instancedAbilitites[key];
     }
+
+    public struct AbilityPair
+    {
+        public AttackKey key;
+        public Ability ability;
+    }
+    public AbilityPair getBestAbility()
+    {
+        return instancedAbilitites.Keys
+            .Select(k => new AbilityPair { key = k, ability = instancedAbilitites[k] })
+            .Where(p => p.ability.ready)
+            .OrderBy(p => p.ability.cooldownPerCharge).Reverse()
+            .First();
+    }
+
 }

@@ -21,7 +21,7 @@ public static class GenerateHit
     }
     public enum KnockBackDirection : byte
     {
-        Foward,
+        Forward,
         Backward
     }
 
@@ -53,8 +53,8 @@ public static class GenerateHit
             strength *= this.strengthFactor;
             float scale = Power.scale(power);
 
-            float length = this.length.asRange(0.8f, 5f) * strength * scale;
-            float width = this.width.asRange(0.5f, 3.5f) * strength * scale;
+            float length = 0.5f *scale +this.length.asRange(0f, 5f) * strength * scale;
+            float width = 0.5f*scale + this.width.asRange(0f, 3f) * strength * scale;
             float knockback = this.knockback.asRange(0, 6) * scale * strength;
             float damage = this.damageMult.asRange(0.5f, 0.7f) * strength;
             float stagger = this.stagger.asRange(0f, 150f) * scale * strength;
@@ -95,6 +95,7 @@ public static class GenerateHit
                         flair = input.flair,
 
                         knockBackType = input.knockBackType,
+                        knockBackDirection = input.knockBackDirection,
                         knockback = input.knockback,
                         length = input.length * 4f,
                         width = input.width * 0.4f,
@@ -112,6 +113,7 @@ public static class GenerateHit
                         flair = input.flair,
 
                         knockBackType = input.knockBackType,
+                        knockBackDirection = input.knockBackDirection,
                         knockback = input.knockback,
                         length = input.length * 2f,
                         width = input.width * 1.3f,
@@ -208,7 +210,7 @@ public static class GenerateHit
         r = Random.value;
         if (r < 0.8f)
         {
-            kbDir = KnockBackDirection.Foward;
+            kbDir = KnockBackDirection.Forward;
         }
         else
         {

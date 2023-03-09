@@ -9,39 +9,28 @@ using System.Linq;
 using Mirror;
 using System.Threading.Tasks;
 using System;
+using static GlobalSaveData;
 
 public class SaveData : NetworkBehaviour
 {
-    DatabaseReference db;
-    JsonSerializerSettings settings;
+    
     Auth auth;
     Inventory inv;
     PlayerGhost player;
+    GlobalSaveData globalSave;
     // Start is called before the first frame update
 
     void Start()
     {
-        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
+        globalSave = FindObjectOfType<GlobalSaveData>();
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
         player = GetComponent<PlayerGhost>();
-        db = FirebaseDatabase.DefaultInstance.RootReference;
-        settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-        };
+        
 
     }
 
-    string santitizeJson(string json)
-    {
-        return json.Replace('$', '@');
-    }
-    string unsantitizeJson(string json)
-    {
-        return json.Replace('@', '$');
-    }
+
 
 
 
@@ -59,9 +48,11 @@ public class SaveData : NetworkBehaviour
 
     IEnumerator loadDataRoutine()
     {
-        Task<DataSnapshot> items = db.Child("Characters").Child(auth.user).Child("items").GetValueAsync();
-        Task<DataSnapshot> power = db.Child("Characters").Child(auth.user).Child("power").GetValueAsync();
-        Task<DataSnapshot> pity = db.Child("Characters").Child(auth.user).Child("pityQuality").GetValueAsync();
+        
+        PlayerLoadTasks tasks = globalSave.getLoadTasks(auth.user);
+        Task<DataSnapshot> items = tasks.items;
+        Task<DataSnapshot> power = tasks.power;
+        Task<DataSnapshot> pity = tasks.pity;
 
         while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
         {
@@ -126,7 +117,7 @@ public class SaveData : NetworkBehaviour
             DataSnapshot snapshot = items.Result;
             if (snapshot.Exists)
             {
-                AttackBlock[] itemData = JsonConvert.DeserializeObject<AttackBlock[]>(unsantitizeJson(snapshot.GetRawJsonValue()), settings);
+                AttackBlock[] itemData = globalSave.itemsFromSnapshot(snapshot);
                 inv.reloadItems(itemData);
             }
             else
@@ -154,8 +145,11 @@ public class SaveData : NetworkBehaviour
     {
         if (isServer)
         {
-            db.Child("Characters").Child(auth.user).Child("power").SetValueAsync(player.power);
-            db.Child("Characters").Child(auth.user).Child("pityQuality").SetRawJsonValueAsync(JsonConvert.SerializeObject(inv.savePity()));
+            globalSave.savePlayerData(auth.user, new PlayerSaveData
+            {
+                power = player.power,
+                pity = inv.savePity(),
+            });
             saveItems();
         }
 
@@ -165,7 +159,6 @@ public class SaveData : NetworkBehaviour
     public void saveItems()
     {
         inv.clearDelete();
-        string json = santitizeJson(JsonConvert.SerializeObject(inv.exportItems(), Formatting.None, settings));
-        db.Child("Characters").Child(auth.user).Child("items").SetRawJsonValueAsync(json);
+        globalSave.savePlayerItems(auth.user, inv.exportItems());
     }
 }

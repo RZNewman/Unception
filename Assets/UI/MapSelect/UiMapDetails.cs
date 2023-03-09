@@ -16,6 +16,7 @@ public class UiMapDetails : MonoBehaviour
         addLabel("Difficulty", (m.difficulty.total + 1).asPercent());
         addLabel("Pack size", (m.difficulty.pack + 1).asPercent());
         addLabel("Veterans", (m.difficulty.veteran).asPercent());
+        addLabel("Champions", (m.difficulty.champion).asPercent());
     }
 
 

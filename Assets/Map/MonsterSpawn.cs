@@ -16,8 +16,8 @@ public class MonsterSpawn : NetworkBehaviour
 
 
 
-    List<UnitData> monsterProps = new List<UnitData>();
-
+    List<UnitTemplate> monsterProps = new List<UnitTemplate>();
+    List<AttackBlock> championAbilitites = new List<AttackBlock>();
 
     Transform floor;
 
@@ -34,7 +34,22 @@ public class MonsterSpawn : NetworkBehaviour
     static int maxPackSize = 8;
 
     //float difficultyMultiplier = 1f;
-    struct UnitData
+
+    private void Start()
+    {
+        if (isServer)
+        {
+            StartCoroutine(FindObjectOfType<GlobalSaveData>().championItems(assignItems));
+            
+        }
+    }
+
+    void assignItems(List<AttackBlock> loaded)
+    {
+        championAbilitites = loaded;
+    }
+
+    struct UnitTemplate
     {
         public float power;
         public UnitProperties props;
@@ -44,21 +59,23 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public float pack;
         public float veteran;
+        public float champion;
         public float total
         {
             get
             {
-                return veteran + pack;
+                return veteran + pack + champion;
             }
         }
         public static Difficulty fromTotal(float difficulty)
         {
-            float[] split = generateRandomValues(2, 1).Select(v => v.val).ToArray();
+            float[] split = generateRandomValues(3, 1).Select(v => v.val).ToArray();
             float sum = split.Sum();
             return new Difficulty
             {
                 pack = split[0] * difficulty / sum,
                 veteran = split[1] * difficulty / sum,
+                champion = split[2] * difficulty / sum,
             };
         }
         public Difficulty add(float difficulty)
@@ -73,6 +90,7 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 pack = pack + difficulty.pack,
                 veteran = veteran + difficulty.veteran,
+                champion = champion + difficulty.champion,
             };
         }
     }
@@ -101,7 +119,10 @@ public class MonsterSpawn : NetworkBehaviour
 
     struct SpawnUnit
     {
-        public UnitData data;
+        public UnitProperties props;
+        public List<AttackBlock> abilitites;
+        public bool hasIndicator;
+        public Color indicatorColor;
         public float power;
         public float poolCost;
     }
@@ -118,10 +139,12 @@ public class MonsterSpawn : NetworkBehaviour
         {
             float packRange = baseDiff.pack / 2;
             float veteranRange = baseDiff.veteran / 2;
+            float championRange = baseDiff.veteran / 2;
             packs.Add(new Difficulty
             {
                 pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, (float)i / (packCount - 1)),
-                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, (float)i / (packCount - 1))
+                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, (float)i / (packCount - 1)),
+                champion = Mathf.Lerp(baseDiff.champion - championRange, baseDiff.champion + championRange, (float)i / (packCount - 1))
             });
 
         }
@@ -241,22 +264,23 @@ public class MonsterSpawn : NetworkBehaviour
         float powerPoolPackPotential = powerPoolBase * (1 + spawnData.difficulty.pack);
         float wiggle = packWiggleRoom * powerPoolPackPotential;
         float powerPoolPack = 0;
-        System.Action<UnitData, int> addUnitsPack = (UnitData data, int instances) =>
+        System.Action<UnitTemplate, int> addUnitsPack = (UnitTemplate data, int instances) =>
         {
             float poolCost = weightedPower(data.power);
             powerPoolPack += poolCost * instances;
 
             for (int j = 0; j < instances; j++)
             {
-                unitsToSpawn.Add(new SpawnUnit { data = data, power = data.power, poolCost = poolCost });
+                unitsToSpawn.Add(new SpawnUnit { props = data.props, abilitites = new List<AttackBlock>(data.abilitites), power = data.power, poolCost = poolCost });
             }
         };
 
+        #region pack
         if (propsSelect < 0.5f)
         {
             //mode: single
             int index = Random.Range(0, monsterProps.Count);
-            UnitData data = monsterProps[index];
+            UnitTemplate data = monsterProps[index];
 
             InstanceInfo info = maxInstances(data.power, powerPoolPackPotential, wiggle);
             if (info.filledPool)
@@ -266,7 +290,7 @@ public class MonsterSpawn : NetworkBehaviour
             }
             else
             {
-                UnitData fillData = monsterProps[0];
+                UnitTemplate fillData = monsterProps[0];
                 InstanceInfo fillInfo = maxInstances(fillData.power, info.remainingPool, wiggle);
                 if (fillInfo.filledPool)
                 {
@@ -289,7 +313,7 @@ public class MonsterSpawn : NetworkBehaviour
             for (int i = monsterProps.Count - 1; i >= 0; i--)
             {
                 float remainingPower = powerPoolPackPotential - powerPoolPack;
-                UnitData data = monsterProps[i];
+                UnitTemplate data = monsterProps[i];
                 InstanceInfo info = maxInstances(data.power, remainingPower, wiggle);
                 if (i == 0)
                 {
@@ -332,8 +356,9 @@ public class MonsterSpawn : NetworkBehaviour
         }
         //account for the wiggle room in the result(reward) difficulty
         spawnData.difficulty.pack = (powerPoolPack / powerPoolBase) - 1;
+        #endregion
 
-
+        #region veteran
         float powerPoolVeteran = powerPoolBase * spawnData.difficulty.veteran;
         powerPoolPack += powerPoolVeteran;
         propsSelect = Random.value;
@@ -373,7 +398,32 @@ public class MonsterSpawn : NetworkBehaviour
             }
 
         }
+        #endregion
 
+        #region champion
+        float powerPoolChampion = powerPoolBase * spawnData.difficulty.champion;
+        powerPoolPack += powerPoolChampion;
+        unitsToSpawn = unitsToSpawn.OrderBy(u => u.power).Reverse().ToList();
+        float championAbilityPoolMultiplier = 0.7f;
+        //TODO multiple abilities
+        AttackBlock ability = championAbilitites.RandomItem();
+        for(int i =0; i< unitsToSpawn.Count; i++)
+        {
+            SpawnUnit u = unitsToSpawn[i];
+            float poolIncrease = u.poolCost * championAbilityPoolMultiplier;
+            //Debug.Log(poolIncrease+" - "+ powerPoolChampion);
+            if (poolIncrease < powerPoolChampion)
+            {
+                u.abilitites.Add(ability);
+                u.poolCost += poolIncrease;
+                u.hasIndicator = true;
+                u.indicatorColor = ability.flair.color;
+                powerPoolChampion -= poolIncrease;
+                unitsToSpawn[i] = u;
+            }
+        }
+        //TODO heath increase
+        #endregion
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
@@ -478,6 +528,12 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);
+        if (spawnUnit.hasIndicator)
+        {
+            UnitChampInd ind = o.GetComponent<UnitChampInd>();
+            ind.hasIndicator = true;
+            ind.color = spawnUnit.indicatorColor;
+        }
 
         float percentOfBasePack = spawnUnit.poolCost / weightedPool();
         o.GetComponent<Reward>().setReward(spawnPower, spawnData.difficulty.total, percentOfBasePack);
@@ -487,10 +543,10 @@ public class MonsterSpawn : NetworkBehaviour
         p.addToPack(o);
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
         holder.pack = p;
-        holder.props = spawnUnit.data.props;
+        holder.props = spawnUnit.props;
         AbiltyList al = o.GetComponent<AbiltyList>();
         //al.clear();
-        al.addAbility(spawnUnit.data.abilitites);
+        al.addAbility(spawnUnit.abilitites);
         NetworkServer.Spawn(o);
     }
 
@@ -514,9 +570,9 @@ public class MonsterSpawn : NetworkBehaviour
     }
 
 
-    UnitData createType(float power)
+    UnitTemplate createType(float power)
     {
-        UnitData u = new UnitData();
+        UnitTemplate u = new UnitTemplate();
         u.power = power;
         u.props = GenerateUnit.generate(power, UnitPre.GetComponentInChildren<PartAssignment>().getVisuals());
         u.abilitites = new List<AttackBlock>();

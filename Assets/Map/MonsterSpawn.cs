@@ -121,6 +121,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public UnitProperties props;
         public List<AttackBlock> abilitites;
+        public float championHealthMult;
         public bool hasIndicator;
         public Color indicatorColor;
         public float power;
@@ -271,7 +272,13 @@ public class MonsterSpawn : NetworkBehaviour
 
             for (int j = 0; j < instances; j++)
             {
-                unitsToSpawn.Add(new SpawnUnit { props = data.props, abilitites = new List<AttackBlock>(data.abilitites), power = data.power, poolCost = poolCost });
+                unitsToSpawn.Add(new SpawnUnit { 
+                    props = data.props, 
+                    abilitites = new List<AttackBlock>(data.abilitites), 
+                    power = data.power, 
+                    poolCost = poolCost,
+                    championHealthMult = 1,
+                });
             }
         };
 

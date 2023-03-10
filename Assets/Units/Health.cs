@@ -27,7 +27,8 @@ public class Health : NetworkBehaviour, BarValue
     void updateMaxHealth(Power p)
     {
         float currentPercent = currentHealth / maxHealth;
-        maxHealth = GetComponent<UnitPropsHolder>().props.maxHealthMult * p.power;
+        UnitPropsHolder holder = GetComponent<UnitPropsHolder>();
+        maxHealth = holder.props.maxHealthMult * holder.championHealthMultiplier * p.power;
         currentHealth = maxHealth * currentPercent;
     }
 

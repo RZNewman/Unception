@@ -8,26 +8,28 @@ public class UnitChampInd : NetworkBehaviour
 {
     public GameObject indicator;
 
-    [SyncVar]
-    public bool hasIndicator;
-    [SyncVar]
-    public Color color;
+    public readonly SyncList<Color> colors = new SyncList<Color>();
     void Start()
     {
-        if (hasIndicator)
+        float offset = 0;
+        foreach (Color color in colors)
         {
             GameObject o = Instantiate(indicator, GetComponentInChildren<Size>().transform);
+            o.transform.localPosition += offset * Vector3.up;
+            Color colorAlpha = color;
+            colorAlpha.a = 0.7f;
             foreach (ColorIndividual c in o.GetComponentsInChildren<ColorIndividual>())
             {
-                c.setColor(color);
+                c.setColor(colorAlpha);
             }
-            
+
+            offset += 0.15f;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

@@ -7,6 +7,8 @@ public class UnitPropsHolder : NetworkBehaviour
 
     public Pack pack;
 
+    public float championHealthMultiplier = 1;
+
     private void Start()
     {
         GetComponent<LifeManager>().suscribeDeath(onDeath);

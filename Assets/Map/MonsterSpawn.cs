@@ -40,7 +40,7 @@ public class MonsterSpawn : NetworkBehaviour
         if (isServer)
         {
             StartCoroutine(FindObjectOfType<GlobalSaveData>().championItems(assignItems));
-            
+
         }
     }
 
@@ -122,8 +122,7 @@ public class MonsterSpawn : NetworkBehaviour
         public UnitProperties props;
         public List<AttackBlock> abilitites;
         public float championHealthMult;
-        public bool hasIndicator;
-        public Color indicatorColor;
+        public List<Color> indicatorColors;
         public float power;
         public float poolCost;
     }
@@ -272,15 +271,18 @@ public class MonsterSpawn : NetworkBehaviour
 
             for (int j = 0; j < instances; j++)
             {
-                unitsToSpawn.Add(new SpawnUnit { 
-                    props = data.props, 
-                    abilitites = new List<AttackBlock>(data.abilitites), 
-                    power = data.power, 
+                unitsToSpawn.Add(new SpawnUnit
+                {
+                    props = data.props,
+                    abilitites = new List<AttackBlock>(data.abilitites),
+                    power = data.power,
                     poolCost = poolCost,
                     championHealthMult = 1,
+                    indicatorColors = new List<Color>(),
                 });
             }
         };
+        SpawnUnit u;
 
         #region pack
         if (propsSelect < 0.5f)
@@ -376,7 +378,7 @@ public class MonsterSpawn : NetworkBehaviour
             //veteran mode: single
             veteranMajorIndex = unitsToSpawn.RandomIndex();
             splitCount--;
-            SpawnUnit u = unitsToSpawn[veteranMajorIndex];
+            u = unitsToSpawn[veteranMajorIndex];
 
             float poolCap = weightedPower(u.power) * (1f + 1.5f * spawnData.difficulty.veteran);
             //Debug.Log(u.power + " " + potentialPower + " " + powerCap + " " + powerPoolVeteran);
@@ -397,7 +399,7 @@ public class MonsterSpawn : NetworkBehaviour
         {
             if (j != veteranMajorIndex)
             {
-                SpawnUnit u = unitsToSpawn[j];
+                u = unitsToSpawn[j];
                 u.power = getVeteranPower(u.power, splitPool);
                 u.poolCost += splitPool;
                 //Debug.Log(unitsToSpawn[j].power + " " + u.power);
@@ -412,24 +414,50 @@ public class MonsterSpawn : NetworkBehaviour
         powerPoolPack += powerPoolChampion;
         unitsToSpawn = unitsToSpawn.OrderBy(u => u.power).Reverse().ToList();
         float championAbilityPoolMultiplier = 0.7f;
-        //TODO multiple abilities
-        AttackBlock ability = championAbilitites.RandomItem();
-        for(int i =0; i< unitsToSpawn.Count; i++)
+        float championHealthPoolMultiplier = 0.5f;
+        float championHealthPercentIncrease = 1.0f;
+        float percentToIncrease, poolChange;
+        bool abilityGranted = true;
+        while (abilityGranted)
         {
-            SpawnUnit u = unitsToSpawn[i];
-            float poolIncrease = u.poolCost * championAbilityPoolMultiplier;
-            //Debug.Log(poolIncrease+" - "+ powerPoolChampion);
-            if (poolIncrease < powerPoolChampion)
+            for (int i = 0; i < unitsToSpawn.Count; i++)
             {
-                u.abilitites.Add(ability);
-                u.poolCost += poolIncrease;
-                u.hasIndicator = true;
-                u.indicatorColor = ability.flair.color;
-                powerPoolChampion -= poolIncrease;
-                unitsToSpawn[i] = u;
+                u = unitsToSpawn[i];
+                float poolIncrease = u.poolCost * championAbilityPoolMultiplier;
+                //Debug.Log(poolIncrease+" - "+ powerPoolChampion);
+                if (poolIncrease < powerPoolChampion)
+                {
+                    //TODO no duplicates
+                    AttackBlock ability = championAbilitites.RandomItem();
+                    u.abilitites.Add(ability);
+                    u.poolCost += poolIncrease;
+                    u.indicatorColors.Add(ability.flair.color);
+                    powerPoolChampion -= poolIncrease;
+
+                    float percentRemaining = powerPoolChampion / u.poolCost;
+                    percentToIncrease = Mathf.Min(percentRemaining, championHealthPercentIncrease * championHealthPoolMultiplier);
+                    u.championHealthMult += percentToIncrease * championHealthPercentIncrease;
+                    poolChange = percentToIncrease * u.poolCost;
+                    u.poolCost += poolChange;
+                    powerPoolChampion -= poolChange;
+
+                    unitsToSpawn[i] = u;
+                }
+                else
+                {
+                    abilityGranted = false;
+                }
             }
         }
-        //TODO heath increase
+
+        u = unitsToSpawn[0];
+        percentToIncrease = powerPoolChampion / u.poolCost;
+        u.championHealthMult += percentToIncrease * championHealthPercentIncrease;
+        poolChange = percentToIncrease * u.poolCost;
+        u.poolCost += poolChange;
+        powerPoolChampion -= poolChange;
+        unitsToSpawn[0] = u;
+
         #endregion
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
@@ -535,11 +563,11 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);
-        if (spawnUnit.hasIndicator)
+        UnitChampInd ind = o.GetComponent<UnitChampInd>();
+        ind.colors.Clear();
+        foreach (Color color in spawnUnit.indicatorColors)
         {
-            UnitChampInd ind = o.GetComponent<UnitChampInd>();
-            ind.hasIndicator = true;
-            ind.color = spawnUnit.indicatorColor;
+            ind.colors.Add(color);
         }
 
         float percentOfBasePack = spawnUnit.poolCost / weightedPool();
@@ -551,6 +579,7 @@ public class MonsterSpawn : NetworkBehaviour
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
         holder.pack = p;
         holder.props = spawnUnit.props;
+        holder.championHealthMultiplier = spawnUnit.championHealthMult;
         AbiltyList al = o.GetComponent<AbiltyList>();
         //al.clear();
         al.addAbility(spawnUnit.abilitites);

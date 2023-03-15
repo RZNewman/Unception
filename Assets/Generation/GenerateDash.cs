@@ -60,9 +60,9 @@ public static class GenerateDash
         public DashControl control;
         public DashEndMomentum endMomentum;
 
-        public override EffectiveDistance GetEffectiveDistance()
+        public override EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
-            return new EffectiveDistance(distance, 0, EffectiveDistanceType.Modifier);
+            return new EffectiveDistance(distance, 0, 0, EffectiveDistanceType.Modifier);
         }
     }
     public static DashGenerationData createDash()

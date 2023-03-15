@@ -10,6 +10,7 @@ public class AiHandler : MonoBehaviour, UnitControl
     UnitInput currentInput;
     AggroHandler aggro;
     UnitMovement mover;
+    FloorNormal ground;
     GameObject rotatingBody;
     float scale = 1;
 
@@ -22,13 +23,11 @@ public class AiHandler : MonoBehaviour, UnitControl
     }
     public struct EffectiveDistance
     {
-        public float distance;
-        public float width;
+        public Vector3 maximums;
         public EffectiveDistanceType type;
-        public EffectiveDistance(float distance, float width, EffectiveDistanceType t = EffectiveDistanceType.Hit)
+        public EffectiveDistance(float distance, float width, float height, EffectiveDistanceType t = EffectiveDistanceType.Hit)
         {
-            this.distance = distance;
-            this.width = width;
+            this.maximums = new Vector3(width, height, distance);
             this.type = t;
         }
 
@@ -36,8 +35,7 @@ public class AiHandler : MonoBehaviour, UnitControl
         {
             return new EffectiveDistance
             {
-                distance = other.distance + distance,
-                width = other.width + width,
+                maximums = other.maximums + maximums,
                 type = other.type,
             };
         }
@@ -52,6 +50,7 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
         mover = GetComponentInParent<UnitMovement>(true);
+        ground = GetComponentInParent<FloorNormal>(true);
         //pathCalculator = FindObjectOfType<NavPathCalc>();
         //obstacle = GetComponent<NavMeshObstacle>();
         agent = GetComponent<NavMeshAgent>();
@@ -141,19 +140,16 @@ public class AiHandler : MonoBehaviour, UnitControl
                     Vector3 rawDiffAttack = attackTarget - transform.position;
                     currentInput.lookOffset = rawDiffAttack;
 
-                    //TODO check height
-                    Vector3 planarDiffAttack = rawDiffAttack;
-                    planarDiffAttack.y = 0;
-                    float edgeDiffMag = planarDiffAttack.magnitude - mySize.scaledRadius - thierSize.scaledRadius;
-
                     AbilityPair pair = GetComponentInParent<AbiltyList>().getBestAbility();
-                    EffectiveDistance eff = pair.ability.GetEffectiveDistance();
-                    Vector3 perpendicularWidth = planarDiffAttack - Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward) * rotatingBody.transform.forward;
-                    float dot = Vector3.Dot(planarDiffAttack, rotatingBody.transform.forward);
-                    if ((edgeDiffMag <= eff.distance || eff.distance == 0) && perpendicularWidth.magnitude < eff.width && dot > 0)
+                    EffectiveDistance eff = pair.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
+
+                    Quaternion aim = ground.getAimRotation(rotatingBody.transform.forward);
+                    Vector3 aimedDiff = Quaternion.Inverse(aim) * rawDiffAttack;
+                    float fullRange = eff.maximums.z + mySize.scaledRadius + thierSize.scaledRadius;
+                    if (aimedDiff.z > 0 && aimedDiff.z <= fullRange && Mathf.Abs(aimedDiff.x) < eff.maximums.x && Mathf.Abs(aimedDiff.y) < eff.maximums.y)
                     {
                         currentInput.attacks = new AttackKey[] { pair.key };
-                        if (edgeDiffMag <= eff.distance * 0.8f)
+                        if (aimedDiff.z <= fullRange * 0.8f)
                         {
                             currentInput.move = Vector2.zero;
                         }

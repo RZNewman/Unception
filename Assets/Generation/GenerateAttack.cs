@@ -22,12 +22,11 @@ public static class GenerateAttack
     }
     public abstract class InstanceData
     {
-        public virtual EffectiveDistance GetEffectiveDistance()
+        public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
             return new EffectiveDistance()
             {
-                distance = 0,
-                width = 0,
+                maximums = Vector3.zero,
                 type = EffectiveDistanceType.None,
             };
         }

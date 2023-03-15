@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using static AiHandler;
+using UnityEngine.UIElements;
 using static GenerateHit;
 using static UnitControl;
 using static UnitSound;
@@ -35,7 +37,7 @@ public static class AttackUtils
                 }
                 h.takeDamage(damage);
             }
-            
+
             if (p)
             {
                 p.takeStagger(hitData.stagger);
@@ -205,7 +207,20 @@ public static class AttackUtils
         return instance;
     }
 
-
+    public static float attackHitboxHalfHeight(HitType type, float halfUnitHeight, float attackDistance)
+    {
+        switch (type)
+        {
+            case HitType.Line:
+                return Mathf.Max(halfUnitHeight * 1.5f, attackDistance);
+            case HitType.Projectile:
+                return Mathf.Max(halfUnitHeight, attackDistance);
+            case HitType.Ground:
+                return attackDistance;
+            default:
+                return halfUnitHeight * 2;
+        }
+    }
 
     public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData, AudioDistances dists)
     {
@@ -233,7 +248,6 @@ public static class AttackUtils
     }
     public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
     {
-        float playerHeightOversize = halfHeight * 2 * 1.5f;
 
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
         Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
@@ -241,7 +255,7 @@ public static class AttackUtils
         float maxDistance = attackVec.magnitude;
         Quaternion aim = floor.getAimRotation(body.forward);
         Vector3 boxCenter = bodyFocus + maxDistance * 0.5f * (aim * Vector3.forward);
-        float boxHeight = Mathf.Max(playerHeightOversize, maxDistance);
+        float boxHeight = attackHitboxHalfHeight(HitType.Line, halfHeight, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
@@ -291,7 +305,7 @@ public static class AttackUtils
             if (tempHits.Contains(obj)
                 && !Physics.Raycast(info.lineFocus, lineDiff, lineDiff.magnitude, LayerMask.GetMask("Terrain")))
             {
-                
+
                 hits.Add(obj);
             }
         }

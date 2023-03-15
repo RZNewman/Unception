@@ -44,7 +44,7 @@ public class Projectile : NetworkBehaviour
     struct ProjectileData
     {
         public float terrainRadius;
-        public float playerRadius;
+        public float hitboxRadius;
         public float halfHeight;
         public uint team;
         public float power;
@@ -53,13 +53,13 @@ public class Projectile : NetworkBehaviour
 
     }
     [Server]
-    public void init(float terrainRadius, float playerRadius, float halfHeight, UnitMovement m, HitInstanceData hitData, AudioDistances dists)
+    public void init(float terrainRadius, float hitboxRadius, float halfHeight, UnitMovement m, HitInstanceData hitData, AudioDistances dists)
     {
         mover = m;
         data = new ProjectileData
         {
             terrainRadius = terrainRadius,
-            playerRadius = playerRadius,
+            hitboxRadius = hitboxRadius,
             halfHeight = halfHeight,
             team = mover.GetComponent<TeamOwnership>().getTeam(),
             power = mover.GetComponent<Power>().power,
@@ -72,13 +72,13 @@ public class Projectile : NetworkBehaviour
     void setup(ProjectileData data)
     {
         float terrainR = data.terrainRadius;
-        float playerR = data.playerRadius;
+        float hitR = data.hitboxRadius;
         terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
-        playerHit.transform.localScale = new Vector3(playerR, Mathf.Max(data.halfHeight / 2, playerR / 2), playerR) * 2;
+        playerHit.transform.localScale = new Vector3(hitR, attackHitboxHalfHeight(HitType.Projectile, data.halfHeight, hitR) / 2, hitR) * 2;
         float speed = data.hitData.length / ProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
-        setAudioDistances( Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform),data.dists);
+        setAudioDistances(Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform), data.dists);
         setThreatColor();
     }
     public void setThreatColor()

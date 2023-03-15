@@ -55,7 +55,7 @@ public class Ability : NetworkBehaviour
     void bufferClientCast(float old, float newcharge)
     {
         //Debug.Log(newCD + " - " + old + ",   " + cooldownMax);
-        if (old - newcharge  >  0.8f)
+        if (old - newcharge > 0.8f)
         {
             clientCastBuffer++;
         }
@@ -66,7 +66,7 @@ public class Ability : NetworkBehaviour
     {
         if (charges < chargeMax && cooldownTicking)
         {
-            charges += Time.fixedDeltaTime/cooldownPerCharge;
+            charges += Time.fixedDeltaTime / cooldownPerCharge;
         }
         if (charges >= chargeMax)
         {
@@ -101,11 +101,11 @@ public class Ability : NetworkBehaviour
     }
     public void startCooldown()
     {
-        if(cooldownPerCharge > 0)
+        if (cooldownPerCharge > 0)
         {
             cooldownTicking = true;
         }
-        
+
     }
     //static float clientCooldownThreshold = 0.001f;
     public bool ready
@@ -140,7 +140,7 @@ public class Ability : NetworkBehaviour
     void fillFormat()
     {
         attackFilled = GenerateAttack.fillBlock(attackFormat);
-        
+
     }
     void scaleAbility(Power p)
     {
@@ -148,9 +148,9 @@ public class Ability : NetworkBehaviour
     }
 
 
-    public EffectiveDistance GetEffectiveDistance()
+    public EffectiveDistance GetEffectiveDistance(float halfHeight)
     {
-        return attackFilled.GetEffectiveDistance();
+        return attackFilled.GetEffectiveDistance(halfHeight);
     }
 
     public AttackBlockFilled source()

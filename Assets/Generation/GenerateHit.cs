@@ -5,6 +5,7 @@ using static GenerateAttack;
 using static Utils;
 using static AiHandler;
 using static GenerateValues;
+using static AttackUtils;
 
 public static class GenerateHit
 {
@@ -146,20 +147,20 @@ public static class GenerateHit
         public HitFlair flair;
 
 
-        public override EffectiveDistance GetEffectiveDistance()
+        public override EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
-
+            Vector2 max = new Vector2(length, width / 2);
             switch (type)
             {
                 case HitType.Line:
-                    Vector2 max = new Vector2(length, width / 2);
-                    return new EffectiveDistance(max.magnitude, max.y);
+
+                    return new EffectiveDistance(max.magnitude, max.y, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
                 case HitType.Projectile:
-                    return new EffectiveDistance(length, width / 2);
+                    return new EffectiveDistance(length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
                 case HitType.Ground:
-                    return new EffectiveDistance(length + width / 2, width / 4);
+                    return new EffectiveDistance(length + width / 2, width / 4, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.5f);
                 default:
-                    return new EffectiveDistance(length, width / 2);
+                    return new EffectiveDistance(length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude));
             }
         }
 

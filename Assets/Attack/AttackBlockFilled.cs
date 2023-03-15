@@ -29,7 +29,7 @@ public class AttackBlockFilled : ScriptableObject
             if (seg.repeat != null)
             {
                 List<AttackStageState> repeatStates = new List<AttackStageState>();
-                for (int j =0;j < seg.repeat.repeatCount; j++)
+                for (int j = 0; j < seg.repeat.repeatCount; j++)
                 {
                     repeatStates.Add(new ActionState(controller, seg.hit));
                     if (seg.dash != null && seg.dashInside)
@@ -89,12 +89,11 @@ public class AttackBlockFilled : ScriptableObject
         return instance.charges;
     }
 
-    public AiHandler.EffectiveDistance GetEffectiveDistance()
+    public AiHandler.EffectiveDistance GetEffectiveDistance(float halfHeight)
     {
         AiHandler.EffectiveDistance saved = new AiHandler.EffectiveDistance
         {
-            width = 0,
-            distance = 0,
+            maximums = Vector3.zero,
             type = AiHandler.EffectiveDistanceType.None
         };
 
@@ -102,18 +101,13 @@ public class AttackBlockFilled : ScriptableObject
         SegmentInstanceData prime = instance.segments[0];
         if (prime.dash != null && !prime.dashAfter)
         {
-            saved = saved.sum(prime.dash.GetEffectiveDistance());
+            saved = saved.sum(prime.dash.GetEffectiveDistance(halfHeight));
         }
-        AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance();
+        AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance(halfHeight);
 
         if (saved.type != AiHandler.EffectiveDistanceType.None)
         {
-            return new AiHandler.EffectiveDistance
-            {
-                width = e.width + saved.width,
-                distance = e.distance + saved.distance,
-                type = AiHandler.EffectiveDistanceType.Hit,
-            };
+            return saved.sum(e);
         }
         else
         {

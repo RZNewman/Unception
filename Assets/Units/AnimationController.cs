@@ -13,7 +13,7 @@ public class AnimationController : MonoBehaviour
 
     enum AnimationState
     {
-        Idle=0,
+        Idle = 0,
         Stunned,
         Dash,
         Jumpsquat,
@@ -33,8 +33,12 @@ public class AnimationController : MonoBehaviour
         power = GetComponent<Power>();
         props = GetComponent<UnitPropsHolder>().props;
         anim.SetFloat("Jumpsquat Time", props.jumpsquatTime);
+        power.subscribePower(scaleMovement);
+    }
+
+    void scaleMovement(Power p)
+    {
         moveSpeedMult = 1.0f / (2 * power.scale());
-        //TODO subscribe scale
     }
 
     // Update is called once per frame
@@ -42,7 +46,7 @@ public class AnimationController : MonoBehaviour
     {
         anim.SetBool("Grounded", mover.grounded);
         anim.SetFloat("MoveSpeed", mover.planarVelocity.magnitude * moveSpeedMult);
-        
+
         switch (mover.currentState())
         {
             case StunnedState s:
@@ -59,7 +63,7 @@ public class AnimationController : MonoBehaviour
                 anim.SetInteger("MoveDirection", (int)mover.moveDirection);
                 break;
         }
-    } 
+    }
 
     public void setAttack()
     {

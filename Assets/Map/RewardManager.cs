@@ -69,9 +69,12 @@ public static class RewardManager
     //~1.56
     readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
     //the XP rate is directly calulated from the desired falloff speed
-    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff / Atlas.avgFloorsPerMap / (Atlas.avgPacksPerFloor * clearPercent);
+    public readonly static float packsPerMap = Atlas.avgPacksPerMap * clearPercent;
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * Atlas.avgFloorsPerMap * Atlas.avgPacksPerFloor * clearPercent);
+    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff  / packsPerMap;
+
+
+    public static readonly float uncommonChance = 4f / (itemsPerPack  * Atlas.avgPacksPerMap * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
 
 }

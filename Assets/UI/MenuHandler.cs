@@ -12,6 +12,7 @@ public class MenuHandler : MonoBehaviour
     public GameObject network;
     public GameObject settings;
     public GameObject pause;
+    public GameObject quest;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +23,7 @@ public class MenuHandler : MonoBehaviour
         login.SetActive(false);
         settings.SetActive(false);
         pause.SetActive(false);
+        quest.SetActive(false);
 
         networkMenu();
 
@@ -76,6 +78,11 @@ public class MenuHandler : MonoBehaviour
     public void pauseMenu()
     {
         switchMenu(pause);
+    }
+
+    public void questMenu()
+    {
+        switchMenu(quest);
     }
 
     GameObject activeMenu;

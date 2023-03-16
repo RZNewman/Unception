@@ -9,7 +9,7 @@ using static Utils;
 
 public class Atlas : NetworkBehaviour
 {
-    public static readonly int avgPacksPerFloor = 20;
+    public static readonly int avgPacksPerMap = 40;
     public static readonly int chestPerFloor = 1;
     public static readonly int potPerFloor = 3;
     public readonly static float avgFloorsPerMap = 2f;
@@ -20,6 +20,7 @@ public class Atlas : NetworkBehaviour
     public UiMapDetails mapDeets;
     public Button embarkButton;
     public UiServerMap serverMap;
+    public WorldData worldData;
 
     PlayerGhost owner;
     GlobalPlayer gp;
@@ -31,6 +32,26 @@ public class Atlas : NetworkBehaviour
     public struct MapListing
     {
         public Map[] maps;
+    }
+
+    public struct Location
+    {
+        public Vector2 visualLocation;
+        public QuestVertical[] verticals;
+        public int overrideTier;
+    }
+    public struct QuestVertical
+    {
+        public Quest[] quests;
+    }
+
+    public struct Quest
+    {
+        public int tier;
+        public Difficulty difficulty;
+        public int packs;
+        public int floors;
+        public int encounters;
     }
     public struct Map
     {
@@ -61,6 +82,70 @@ public class Atlas : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         serverMap.gameObject.SetActive(isServer);
+        makeWorld();
+        FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
+    }
+    void makeWorld ()
+    {
+        if(worldData.locations != null && worldData.locations.Count > 0)
+        {
+            //return;
+        }
+        List<Location> locations = new List<Location>();
+        locations.Add(new Location
+        {
+            visualLocation = new Vector2(0.2f, 0.2f),
+            verticals = new QuestVertical[] { makeQuestVeritcal(0, 20) }
+        });
+        locations.Add(new Location
+        {
+            visualLocation = new Vector2(0.8f, 0.2f),
+            verticals = new QuestVertical[] { makeQuestVeritcal(5, 20), makeQuestVeritcal(12, 22) }
+        });
+        locations.Add(new Location
+        {
+            visualLocation = new Vector2(0.5f, 0.5f),
+            verticals = new QuestVertical[] {  },
+            overrideTier = 6
+        });
+        locations.Add(new Location
+         {
+             visualLocation = new Vector2(0.8f, 0.8f),
+             verticals = new QuestVertical[] { makeQuestVeritcal(10, 25) },
+         });
+
+        worldData.locations = locations;
+    }
+    QuestVertical makeQuestVeritcal(int begin, int end)
+    {
+        int count = end - begin + 1;
+        Quest[] quests = new Quest[count];
+        for(int i = 0; i < count; i++)
+        {
+            quests[i] = makeQuest(begin + i);
+        }
+        return new QuestVertical
+        {
+            quests = quests,
+        };
+    }
+
+    Quest makeQuest(int tier)
+    {
+        float totalDifficutly = Mathf.Max(0, tier - 2) * 0.2f;
+        int encounters = tier switch
+        {
+            int i when i >4 && i< 10 => 1,
+            int i when i >= 10 => 2,
+            _ => 0
+        };
+        return new Quest {
+             tier = tier,
+            difficulty = Difficulty.fromTotal(totalDifficutly),
+             packs = avgPacksPerMap,
+             floors = Mathf.RoundToInt(avgFloorsPerMap),
+             encounters = encounters,
+        };
     }
 
 
@@ -137,7 +222,7 @@ public class Atlas : NetworkBehaviour
         {
             floors[j] = new Floor
             {
-                packs = avgPacksPerFloor,
+                packs = avgPacksPerMap/floorCount,
                 sparseness = 3,
                 encounters = floorEncounters(difficulty),
             };
@@ -196,6 +281,7 @@ public class Atlas : NetworkBehaviour
         checkEmbarkButton();
     }
 
+    #region embark
     [Client]
     public void inventoryChange(Inventory inv)
     {
@@ -285,6 +371,6 @@ public class Atlas : NetworkBehaviour
         }
 
     }
-
+    #endregion
 
 }

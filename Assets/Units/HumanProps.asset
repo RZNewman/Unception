@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayer: 1
   maxSpeed: 9
-  acceleration: 20
-  decceleration: 20
+  acceleration: 40
+  decceleration: 40
   jumpForce: 20
   jumpsquatTime: 0.2
   lookSpeedDegrees: 500

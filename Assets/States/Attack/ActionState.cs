@@ -17,7 +17,7 @@ public class ActionState : AttackStageState
     public override void enter()
     {
         mover.GetComponent<AnimationController>().setAttack();
-       
+
         GameObject body = mover.getSpawnBody();
         FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
         Size s = body.GetComponentInChildren<Size>();
@@ -54,7 +54,7 @@ public class ActionState : AttackStageState
                 break;
             case HitType.Ground:
                 float radius = attackData.width / 2;
-                Quaternion aim = Quaternion.LookRotation(groundTarget.transform.forward,groundTarget.GetComponent<FloorNormal>().normal);
+                Quaternion aim = Quaternion.LookRotation(groundTarget.transform.forward, groundTarget.GetComponent<FloorNormal>().normal);
                 GroundParticle(groundTarget.transform.position, radius, aim, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
@@ -99,7 +99,7 @@ public class ActionState : AttackStageState
 
 
         mover.rotate(inp, lookMultiplier);
-        mover.move(inp, moveMultiplier, moveMultiplier);
+        mover.move(inp, moveMultiplier);
 
 
     }

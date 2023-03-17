@@ -21,8 +21,8 @@ public static class GenerateUnit
         float posture = (50f + 200f * postureVal);
 
         properties.maxSpeed = speed;
-        properties.acceleration = speed * 3;
-        properties.decceleration = speed * 2;
+        properties.acceleration = speed * 4;
+        properties.decceleration = speed * 4;
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;

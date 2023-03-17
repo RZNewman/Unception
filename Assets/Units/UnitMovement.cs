@@ -208,11 +208,12 @@ public class UnitMovement : NetworkBehaviour
         rb.AddForce(force, ForceMode.Impulse);
     }
 
-    public void move(UnitInput inp, float speedMultiplier = 1.0f, float accMultiplier = 1.0f)
+    public void move(UnitInput inp, float speedMultiplier = 1.0f)
     {
         float lookMultiplier = toMoveMultiplier(inp.move);
         float airMultiplier = 1.0f;
         float combatMultiplier = 1.0f;
+        float stunnedMultiplier = 1.0f;
         if (!grounded)
         {
             airMultiplier = 0.6f;
@@ -220,6 +221,10 @@ public class UnitMovement : NetworkBehaviour
         if (!combat.inCombat)
         {
             combatMultiplier = 1.5f;
+        }
+        if (posture.isStunned)
+        {
+            stunnedMultiplier = 0.6f;
         }
 
 
@@ -247,7 +252,7 @@ public class UnitMovement : NetworkBehaviour
         float stoppingMagnitude = Vector3.Dot(diff, -planarVelocity);
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
-        float stoppingMult = accMultiplier * airMultiplier * combatMultiplier;
+        float stoppingMult = stunnedMultiplier * airMultiplier * combatMultiplier;
         float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * power.scale();
 
         if (stoppingDir.magnitude <= stoppingFrameMag)
@@ -262,7 +267,7 @@ public class UnitMovement : NetworkBehaviour
 
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = accMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
+        float addingMult = speedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
         float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * power.scale();
 
         if (diff.magnitude <= addingFrameMag)
@@ -280,10 +285,15 @@ public class UnitMovement : NetworkBehaviour
 
     public DashInstanceData baseDash()
     {
+        float combatMultiplier = 1.0f;
+        if (!combat.inCombat)
+        {
+            combatMultiplier = 1.5f;
+        }
         return new DashInstanceData
         {
             distance = props.dashDistance * power.scale(),
-            speed = props.dashSpeed * power.scale(),
+            speed = props.dashSpeed * combatMultiplier * power.scale(),
             control = DashControl.Input,
             endMomentum = DashEndMomentum.Walk,
         };
@@ -314,12 +324,17 @@ public class UnitMovement : NetworkBehaviour
         Vector3 planarVelocity = planarVelocityCalculated;
         float lookMultiplier = toMoveMultiplier(vec2input(planarVelocity));
         float airMultiplier = 1.0f;
+        float combatMultiplier = 1.0f;
+        if (!combat.inCombat)
+        {
+            combatMultiplier = 1.5f;
+        }
         if (!grounded)
         {
             airMultiplier = 0.6f;
         };
 
-        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * power.scale();
+        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * combatMultiplier * power.scale();
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }

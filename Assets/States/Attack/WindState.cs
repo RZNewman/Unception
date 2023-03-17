@@ -45,7 +45,7 @@ public class WindState : AttackStageState, BarValue
             groundTarget.GetComponent<GroundTarget>().setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scale() * lookMultiplier);
         }
         mover.rotate(inp, lookMultiplier);
-        mover.move(inp, moveMultiplier, moveMultiplier);
+        mover.move(inp, moveMultiplier);
 
 
     }

@@ -415,7 +415,7 @@ public static class GenerateAttack
         }
 
         gen = Random.value;
-        if (gen < 0.2f)
+        if (gen < 0.2f && h.type != HitType.Ground)
         {
             //dash effect
             d = createDash();

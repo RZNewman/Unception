@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ using static Atlas;
 public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject selector;
+    public TMP_Text tierText;
 
     Atlas atlas;
     Map map;
@@ -21,7 +23,17 @@ public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         atlas = a;
         map = m;
-        GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, m.difficultyRangePercent);
+        if (m.quest)
+        {
+            GetComponent<Image>().color = Color.blue;
+            tierText.text = m.tier.ToString();
+        }
+        else
+        {
+            tierText.gameObject.SetActive(false);
+            GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, m.difficultyRangePercent);
+        }
+
     }
     public Map getMap()
     {

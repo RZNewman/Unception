@@ -50,6 +50,13 @@ public static class Utils
         float value = Random.value;
         return Mathf.Pow(value, balance);
     }
+
+    public static float GaussRandomCentered(float balance = 2)
+    {
+        float mult = Random.value < 0.5f ? -1 : 1;
+        float value = GaussRandomDecline(balance) * mult;
+        return (value + 1) / 2;
+    }
     public static float asRange(this float value, float min, float max)
     {
         value = Mathf.Clamp01(value);

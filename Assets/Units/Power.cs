@@ -12,6 +12,8 @@ public class Power : NetworkBehaviour, TextValue
     public readonly static float exponentDownscale = 1.5f;
     public readonly static float basePower = 100;
 
+    public readonly static float playerStartingPower = 1000;
+
     public delegate void OnPowerUpdate(Power p);
 
     List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();
@@ -69,7 +71,7 @@ public class Power : NetworkBehaviour, TextValue
 
         MetricName currentMetricScale = (MetricName)(currentDecimalPlaces / 3);
 
-        int decimalRounding = Mathf.Max(currentDecimalPlaces - 3,-3);
+        int decimalRounding = Mathf.Max(currentDecimalPlaces - 3, -3);
         int decimalMetric = (int)currentMetricScale * 3;
         int decimalDiff = decimalMetric - decimalRounding;
         float roundedPower = Mathf.Round(power / Mathf.Pow(10, decimalRounding));

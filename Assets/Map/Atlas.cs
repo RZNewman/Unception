@@ -6,14 +6,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using static MonsterSpawn;
 using static Utils;
+using static RewardManager;
+using static Power;
+using static Atlas;
+using Castle.Core.Internal;
 
 public class Atlas : NetworkBehaviour
 {
-    public static readonly int avgPacksPerMap = 40;
+    static readonly int avgPacksPerfloor = 20;
+    public static readonly float packVariance = 0.3f;
     public static readonly int chestPerFloor = 1;
     public static readonly int potPerFloor = 3;
     public readonly static float avgFloorsPerMap = 2f;
-    public static readonly float difficultyRange = 1;
+    public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;
@@ -36,13 +41,38 @@ public class Atlas : NetworkBehaviour
 
     public struct Location
     {
+        public string id;
         public Vector2 visualLocation;
         public QuestVertical[] verticals;
         public int overrideTier;
+
+        public int unlockTier
+        {
+            get
+            {
+                return verticals.Length == 0 ? overrideTier : verticals.Min(v => v.quests[0].tier);
+            }
+        }
     }
     public struct QuestVertical
     {
+        public string id;
         public Quest[] quests;
+
+        public bool nextQuest(int tierComplete, out Quest q)
+        {
+            q = quests[0];
+            if (quests.Last().tier <= tierComplete) { return false; }
+            foreach (Quest quest in quests)
+            {
+                if (quest.tier == tierComplete + 1)
+                {
+                    q = quest;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public struct Quest
@@ -56,6 +86,8 @@ public class Atlas : NetworkBehaviour
     public struct Map
     {
         public int index;
+        public int tier;
+        public bool quest;
         public float power;
         public Difficulty difficulty;
         public Floor[] floors;
@@ -82,50 +114,56 @@ public class Atlas : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         serverMap.gameObject.SetActive(isServer);
-        makeWorld();
-        FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
+
     }
-    void makeWorld ()
+    void makeWorld()
     {
-        if(worldData.locations != null && worldData.locations.Count > 0)
+        if (worldData.locations != null && worldData.locations.Count > 0)
         {
+            FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
             //return;
         }
         List<Location> locations = new List<Location>();
         locations.Add(new Location
         {
+            id = "Town",
             visualLocation = new Vector2(0.2f, 0.2f),
-            verticals = new QuestVertical[] { makeQuestVeritcal(0, 20) }
+            verticals = new QuestVertical[] { makeQuestVeritcal(0, 20, "Intro") }
         });
         locations.Add(new Location
         {
+            id = "Ruins",
             visualLocation = new Vector2(0.8f, 0.2f),
-            verticals = new QuestVertical[] { makeQuestVeritcal(5, 20), makeQuestVeritcal(12, 22) }
+            verticals = new QuestVertical[] { makeQuestVeritcal(5, 20, "Explore"), makeQuestVeritcal(12, 22, "Help") }
         });
         locations.Add(new Location
         {
+            id = "Wilds",
             visualLocation = new Vector2(0.5f, 0.5f),
-            verticals = new QuestVertical[] {  },
+            verticals = new QuestVertical[] { },
             overrideTier = 6
         });
         locations.Add(new Location
-         {
-             visualLocation = new Vector2(0.8f, 0.8f),
-             verticals = new QuestVertical[] { makeQuestVeritcal(10, 25) },
-         });
+        {
+            id = "Castle",
+            visualLocation = new Vector2(0.8f, 0.8f),
+            verticals = new QuestVertical[] { makeQuestVeritcal(10, 25, "Finale") },
+        });
 
         worldData.locations = locations;
+        FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
     }
-    QuestVertical makeQuestVeritcal(int begin, int end)
+    QuestVertical makeQuestVeritcal(int begin, int end, string id)
     {
         int count = end - begin + 1;
         Quest[] quests = new Quest[count];
-        for(int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++)
         {
             quests[i] = makeQuest(begin + i);
         }
         return new QuestVertical
         {
+            id = id,
             quests = quests,
         };
     }
@@ -135,17 +173,67 @@ public class Atlas : NetworkBehaviour
         float totalDifficutly = Mathf.Max(0, tier - 2) * 0.2f;
         int encounters = tier switch
         {
-            int i when i >4 && i< 10 => 1,
+            int i when i > 4 && i < 10 => 1,
             int i when i >= 10 => 2,
             _ => 0
         };
-        return new Quest {
-             tier = tier,
-            difficulty = Difficulty.fromTotal(totalDifficutly),
-             packs = avgPacksPerMap,
-             floors = Mathf.RoundToInt(avgFloorsPerMap),
-             encounters = encounters,
+        int floors = Mathf.Max(Mathf.CeilToInt(tier / 7f), 1);
+        int packs = tier switch
+        {
+            int i when i == 0 => 10,
+            int i when i == 1 => 20,
+            int i => Mathf.RoundToInt(avgPacksPerfloor * (1 + i * 0.07f) * floors),
         };
+        return new Quest
+        {
+            tier = tier,
+            difficulty = Difficulty.fromTotal(totalDifficutly),
+            packs = packs,
+            floors = floors,
+            encounters = encounters,
+        };
+    }
+
+    int playerTier
+    {
+        get
+        {
+            return gp.serverPlayer.progress.highestTier();
+        }
+    }
+
+    float difficultyRange
+    {
+        get
+        {
+            return playerTier * 0.07f;
+        }
+    }
+    float baseDifficulty
+    {
+        get
+        {
+            return playerTier * 0.03f;
+        }
+    }
+
+    float powerAtTier(int tier)
+    {
+        return tier switch
+        {
+            int i when i == 0 => playerStartingPower * 0.8f,
+            int i when i == 1 => playerStartingPower,
+            int i => playerStartingPower * (1 + Mathf.Pow(powerMapPercent, mapClearsToTier(i))),
+        };
+    }
+    float mapClearsToTier(int tier)
+    {
+        return Enumerable.Range(1, tier - 1).Select(t => mapClearsAtTier(t)).Sum();
+    }
+    float mapClearsAtTier(int tier)
+    {
+
+        return 0.6f + 0.2f * tier;
     }
 
 
@@ -155,9 +243,10 @@ public class Atlas : NetworkBehaviour
         {
             gp = FindObjectOfType<GlobalPlayer>();
         }
+        makeWorld();
         list = new MapListing
         {
-            maps = generateMapOpitons(gp.serverPlayer.power),
+            maps = generateMapOpitons(),
         };
         if (isClient)
         {
@@ -190,39 +279,111 @@ public class Atlas : NetworkBehaviour
         createMapMarkers();
     }
 
-    public Map[] generateMapOpitons(float power, float baseDifficulty = 0)
+    public Map[] generateMapOpitons()
     {
-        int mapsToGen = Random.Range(4, 7);
-        Map[] mapsGen = new Map[mapsToGen];
+        List<Map> mapsGen = new List<Map>();
 
-        for (int i = 0; i < mapsToGen; i++)
+
+        List<Location> locations = new List<Location>(worldData.locations);
+        locations.Shuffle();
+        bool guaranteedQuest = true;
+
+        int mapIndex = 0;
+        foreach (Location location in locations)
         {
-            float difficultyRangePercent = (float)i / (mapsToGen - 1);
-            float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
-            Difficulty difficulty = Difficulty.fromTotal(currentDifficulty);
-            mapsGen[i] = new Map
+            if (location.unlockTier > playerTier + 1)
             {
-                index = i,
-                power = power,
-                difficulty = difficulty,
-                floors = mapFloors(difficulty),
-                visualLocation = new Vector2(Random.value, Random.value),
-                difficultyRangePercent = difficultyRangePercent,
-            };
+                continue;
+            }
+
+            List<Quest> questsAtLocation = new List<Quest>();
+            Quest q;
+            foreach (QuestVertical vertical in location.verticals)
+            {
+
+                if (vertical.nextQuest(gp.player.progress.questTier(location.id, vertical.id), out q))
+                {
+                    questsAtLocation.Add(q);
+                }
+            }
+
+
+
+            if (questsAtLocation.Count > 0 && (guaranteedQuest || Random.value > 0.5f))
+            {
+                q = questsAtLocation.RandomItem();
+
+
+                mapsGen.Add(new Map
+                {
+                    index = mapIndex,
+                    tier = q.tier,
+                    quest = true,
+                    power = powerAtTier(q.tier),
+                    difficulty = q.difficulty,
+                    floors = Enumerable.Repeat(
+                        new Floor
+                        {
+                            encounters = floorEncounters(q.difficulty, q.encounters),
+                            sparseness = 3,
+                            packs = q.packs / q.floors
+
+                        }
+                    , q.floors).ToArray(),
+                    visualLocation = location.visualLocation,
+                });
+            }
+            else
+            {
+                float difficultyRangePercent = Random.value;
+                float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
+                Difficulty difficulty = Difficulty.fromTotal(currentDifficulty);
+
+                List<int> floorPacks = new List<int>();
+                int floors = Mathf.RoundToInt(avgFloorsPerMap);
+                for (int i = 0; i < floors; i++)
+                {
+                    float packs = avgPacksPerfloor;
+
+                    floorPacks.Add(Mathf.RoundToInt(GaussRandomCentered().asRange(packs * (1 - packVariance), packs * (1 + packVariance))));
+                }
+                mapsGen.Add(new Map
+                {
+                    index = mapIndex,
+                    power = gp.serverPlayer.power,
+                    difficulty = difficulty,
+                    floors = mapRandomFloors(difficulty, floorPacks.ToArray()),
+                    visualLocation = location.visualLocation,
+                    difficultyRangePercent = difficultyRangePercent,
+                });
+            }
+
+
+
+            mapIndex++;
         }
 
-        return mapsGen;
+        return mapsGen.ToArray();
     }
 
     public static Floor[] mapFloors(Difficulty difficulty)
     {
-        int floorCount = Mathf.RoundToInt(avgFloorsPerMap);
+        List<int> packs = new List<int>();
+        for (int i = 0; i < Mathf.RoundToInt(avgFloorsPerMap); i++)
+        {
+            packs.Add(avgPacksPerfloor);
+        }
+        return mapRandomFloors(difficulty, packs.ToArray());
+    }
+    public static Floor[] mapRandomFloors(Difficulty difficulty, int[] packs)
+    {
+        int floorCount = packs.Length;
         Floor[] floors = new Floor[floorCount];
         for (int j = 0; j < floorCount; j++)
         {
             floors[j] = new Floor
             {
-                packs = avgPacksPerMap/floorCount,
+                packs = packs[j],
                 sparseness = 3,
                 encounters = floorEncounters(difficulty),
             };
@@ -232,6 +393,10 @@ public class Atlas : NetworkBehaviour
     public static EncounterData[] floorEncounters(Difficulty difficulty)
     {
         int encounterCount = Mathf.RoundToInt(GaussRandomDecline().asRange(1, 2));
+        return floorEncounters(difficulty, encounterCount);
+    }
+    public static EncounterData[] floorEncounters(Difficulty difficulty, int encounterCount)
+    {
         EncounterData[] encounters = new EncounterData[encounterCount];
         float addedDifficulty = (0.25f + 0.3f * difficulty.total) * Random.value.asRange(0.5f, 1);
         for (int j = 0; j < encounterCount; j++)
@@ -338,15 +503,15 @@ public class Atlas : NetworkBehaviour
         onMission = true;
         MapGenerator gen = FindObjectOfType<MapGenerator>();
         Map m;
-        if (index > 0)
+        if (index >= 0)
         {
-            m = list.maps[index];
+            m = list.maps.Find(m => m.index == index);
         }
         else
         {
             m = serverMap.getMap(gp.serverPlayer.power);
         }
-        //Debug.Log(m.difficulty.pack + " - " + m.difficulty.veteran);
+        //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
         yield return gen.buildMap(m);
     }
 

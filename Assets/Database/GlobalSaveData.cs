@@ -20,7 +20,7 @@ public class GlobalSaveData : MonoBehaviour
     {
         FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         db = FirebaseDatabase.DefaultInstance.RootReference;
-        
+
     }
 
     static string santitizeJson(string json)
@@ -36,6 +36,7 @@ public class GlobalSaveData : MonoBehaviour
         public Task<DataSnapshot> items;
         public Task<DataSnapshot> power;
         public Task<DataSnapshot> pity;
+        public Task<DataSnapshot> quests;
     }
     public PlayerLoadTasks getLoadTasks(string playerName)
     {
@@ -44,6 +45,7 @@ public class GlobalSaveData : MonoBehaviour
             items = db.Child("Characters").Child(playerName).Child("items").GetValueAsync(),
             power = db.Child("Characters").Child(playerName).Child("power").GetValueAsync(),
             pity = db.Child("Characters").Child(playerName).Child("pityQuality").GetValueAsync(),
+            quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
         };
     }
 
@@ -81,12 +83,14 @@ public class GlobalSaveData : MonoBehaviour
     {
         public float power;
         public Dictionary<string, float> pity;
+        public WorldProgress worldProgress;
     }
 
     public void savePlayerData(string playerName, PlayerSaveData data)
     {
         db.Child("Characters").Child(playerName).Child("power").SetValueAsync(data.power);
         db.Child("Characters").Child(playerName).Child("pityQuality").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.pity));
+        db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
     }
 
     public void savePlayerItems(string playerName, AttackBlock[] items)
@@ -95,9 +99,36 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("items").SetRawJsonValueAsync(json);
     }
 
+    public struct WorldProgress
+    {
+        public Dictionary<string, Dictionary<string, QuestVerticalProgress>> locations;
+
+        public int highestTier()
+        {
+
+            return locations == null || locations.Count == 0 ? -1 : locations.Values.SelectMany(d => d.Values).Max(v => v.highestTier);
+
+        }
+        public int questTier(string locationId, string verticalId)
+        {
+            if (locations != null && locations.ContainsKey(locationId))
+            {
+                if (locations[locationId].ContainsKey(verticalId))
+                {
+                    return locations[locationId][verticalId].highestTier;
+                }
+            }
+            return -1;
+        }
+    }
+    public struct QuestVerticalProgress
+    {
+        public int highestTier;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

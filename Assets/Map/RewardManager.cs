@@ -61,7 +61,7 @@ public static class RewardManager
     public readonly static float itemsPerPack = 2f;
 
     readonly static int mapsPerFalloff = 16;
-    
+
     readonly static float clearPercent = 0.65f;
 
     //the percent increase in power to create a scale change equal to the % increase of the highest quality
@@ -71,10 +71,11 @@ public static class RewardManager
     //the XP rate is directly calulated from the desired falloff speed
     public readonly static float packsPerMap = Atlas.avgPacksPerMap * clearPercent;
 
-    public readonly static float powerPackPercent = (powerPercentFalloff - 1) / mapsPerFalloff  / packsPerMap;
+    public readonly static float powerMapPercent = (powerPercentFalloff - 1) / mapsPerFalloff;
+    public readonly static float powerPackPercent = powerMapPercent / packsPerMap;
 
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack  * Atlas.avgPacksPerMap * clearPercent);
+    public static readonly float uncommonChance = 4f / (itemsPerPack * Atlas.avgPacksPerMap * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
 
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using static GlobalSaveData;
 
 public class PlayerGhost : NetworkBehaviour
 {
@@ -13,7 +14,7 @@ public class PlayerGhost : NetworkBehaviour
     GameObject currentSelf;
 
     [SyncVar]
-    float playerPower = 1000;
+    float playerPower = Power.playerStartingPower;
 
     [SyncVar]
     int extraLives = 1;
@@ -60,6 +61,13 @@ public class PlayerGhost : NetworkBehaviour
         get
         {
             return playerPower;
+        }
+    }
+    public WorldProgress progress
+    {
+        get
+        {
+            return save.progress;
         }
     }
 

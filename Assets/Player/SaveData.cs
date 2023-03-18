@@ -13,12 +13,14 @@ using static GlobalSaveData;
 
 public class SaveData : NetworkBehaviour
 {
-    
+
     Auth auth;
     Inventory inv;
     PlayerGhost player;
     GlobalSaveData globalSave;
     // Start is called before the first frame update
+
+    WorldProgress worldProgress;
 
     void Start()
     {
@@ -26,12 +28,18 @@ public class SaveData : NetworkBehaviour
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
         player = GetComponent<PlayerGhost>();
-        
+
 
     }
 
 
-
+    public WorldProgress progress
+    {
+        get
+        {
+            return worldProgress;
+        }
+    }
 
 
 
@@ -48,11 +56,32 @@ public class SaveData : NetworkBehaviour
 
     IEnumerator loadDataRoutine()
     {
-        
+
         PlayerLoadTasks tasks = globalSave.getLoadTasks(auth.user);
         Task<DataSnapshot> items = tasks.items;
         Task<DataSnapshot> power = tasks.power;
         Task<DataSnapshot> pity = tasks.pity;
+        Task<DataSnapshot> quests = tasks.quests;
+
+        while (!quests.IsFaulted && !quests.IsCompleted && !quests.IsCanceled)
+        {
+            yield return null;
+        }
+
+
+        if (quests.IsFaulted)
+        {
+            Debug.LogError("Error loading quests");
+        }
+        else if (quests.IsCompleted)
+        {
+            DataSnapshot snapshot = quests.Result;
+            if (snapshot.Exists)
+            {
+                worldProgress = JsonConvert.DeserializeObject<WorldProgress>(snapshot.GetRawJsonValue());
+            }
+
+        }
 
         while (!power.IsFaulted && !power.IsCompleted && !power.IsCanceled)
         {
@@ -149,6 +178,7 @@ public class SaveData : NetworkBehaviour
             {
                 power = player.power,
                 pity = inv.savePity(),
+                worldProgress = worldProgress,
             });
             saveItems();
         }

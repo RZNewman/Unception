@@ -34,6 +34,10 @@ public class Atlas : NetworkBehaviour
     [SyncVar(hook = nameof(hookMaps))]
     MapListing list;
 
+    Map embarkedMap;
+
+    public Map currentMap { get { return embarkedMap; } }
+
     public struct MapListing
     {
         public Map[] maps;
@@ -83,11 +87,19 @@ public class Atlas : NetworkBehaviour
         public int floors;
         public int encounters;
     }
+
+    public struct QuestIds
+    {
+        public string locationId;
+        public string verticalId;
+        public int tier;
+    }
     public struct Map
     {
         public int index;
         public int tier;
         public bool quest;
+        public QuestIds ids;
         public float power;
         public Difficulty difficulty;
         public Floor[] floors;
@@ -223,7 +235,7 @@ public class Atlas : NetworkBehaviour
         {
             int i when i == 0 => playerStartingPower * 0.8f,
             int i when i == 1 => playerStartingPower,
-            int i => playerStartingPower * (1 + Mathf.Pow(powerMapPercent, mapClearsToTier(i))),
+            int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
         };
     }
     float mapClearsToTier(int tier)
@@ -296,14 +308,14 @@ public class Atlas : NetworkBehaviour
                 continue;
             }
 
-            List<Quest> questsAtLocation = new List<Quest>();
+            List<(Quest, string)> questsAtLocation = new List<(Quest, string)>();
             Quest q;
             foreach (QuestVertical vertical in location.verticals)
             {
 
                 if (vertical.nextQuest(gp.player.progress.questTier(location.id, vertical.id), out q))
                 {
-                    questsAtLocation.Add(q);
+                    questsAtLocation.Add((q, vertical.id));
                 }
             }
 
@@ -311,7 +323,9 @@ public class Atlas : NetworkBehaviour
 
             if (questsAtLocation.Count > 0 && (guaranteedQuest || Random.value > 0.5f))
             {
-                q = questsAtLocation.RandomItem();
+                (Quest, string) questData = questsAtLocation.RandomItem();
+                string verticalId = questData.Item2;
+                q = questData.Item1;
 
 
                 mapsGen.Add(new Map
@@ -319,6 +333,12 @@ public class Atlas : NetworkBehaviour
                     index = mapIndex,
                     tier = q.tier,
                     quest = true,
+                    ids = new QuestIds
+                    {
+                        locationId = location.id,
+                        verticalId = verticalId,
+                        tier = q.tier,
+                    },
                     power = powerAtTier(q.tier),
                     difficulty = q.difficulty,
                     floors = Enumerable.Repeat(
@@ -511,22 +531,35 @@ public class Atlas : NetworkBehaviour
         {
             m = serverMap.getMap(gp.serverPlayer.power);
         }
-        //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
-        yield return gen.buildMap(m);
+        embarkedMap = m;
+        Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
+        yield return gen.buildMap();
     }
 
     [Server]
-    public void disembark(bool needsMapDestroyed = false)
+    public void disembark(bool mapSuccess = true)
     {
         onMission = false;
         foreach (GameObject unit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit))
         {
             Destroy(unit);
         }
-        if (needsMapDestroyed)
+        if (mapSuccess)
         {
+            if (embarkedMap.quest)
+            {
+                foreach (SaveData save in FindObjectsOfType<SaveData>())
+                {
+                    save.saveQuestProgress(embarkedMap.ids);
+                }
+            }
+        }
+        else
+        {
+            //floor wasnt cleaned up by next floor routine
             FindObjectOfType<MapGenerator>().destroyFloor();
         }
+
         clearMapMarkers();
         makeMaps();
         foreach (Inventory inv in FindObjectsOfType<Inventory>())

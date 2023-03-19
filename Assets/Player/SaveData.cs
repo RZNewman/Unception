@@ -10,6 +10,7 @@ using Mirror;
 using System.Threading.Tasks;
 using System;
 using static GlobalSaveData;
+using static Atlas;
 
 public class SaveData : NetworkBehaviour
 {
@@ -41,6 +42,20 @@ public class SaveData : NetworkBehaviour
         }
     }
 
+    public void saveQuestProgress(QuestIds ids)
+    {
+        if (worldProgress.locations == null)
+        {
+            worldProgress.locations = new Dictionary<string, Dictionary<string, QuestVerticalProgress>>();
+        }
+        if (!worldProgress.locations.ContainsKey(ids.locationId))
+        {
+            worldProgress.locations[ids.locationId] = new Dictionary<string, QuestVerticalProgress>();
+        }
+
+        //TODO restrict to next level only
+        worldProgress.locations[ids.locationId][ids.verticalId] = new QuestVerticalProgress() { highestTier = ids.tier };
+    }
 
 
 

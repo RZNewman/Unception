@@ -182,7 +182,7 @@ public class PlayerGhost : NetworkBehaviour
         }
         else
         {
-            atlas.disembark(true);
+            atlas.disembark(false);
         }
 
     }

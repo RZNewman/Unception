@@ -23,7 +23,7 @@ public class MapGenerator : NetworkBehaviour
 
     float currentFloorScale = 1f;
     GameObject currentFloor;
-    Map currentMap;
+    Atlas atlas;
     NavMeshDataInstance navData = new NavMeshDataInstance();
     List<NavMeshLink> navLinks = new List<NavMeshLink>();
     int currentFloorIndex;
@@ -46,12 +46,21 @@ public class MapGenerator : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        atlas = FindObjectOfType<Atlas>();
         sound = FindObjectOfType<SoundManager>();
         if (isServer)
         {
             spawner = GetComponent<MonsterSpawn>();
         }
 
+    }
+
+    Map currentMap
+    {
+        get
+        {
+            return atlas.currentMap;
+        }
     }
     static List<TileWeight> normalizeWeights(List<TileWeight> weights)
     {
@@ -123,12 +132,11 @@ public class MapGenerator : NetworkBehaviour
 
     }
 
-    public IEnumerator buildMap(Map m)
+    public IEnumerator buildMap()
     {
-        currentFloorScale = Power.scale(m.power);
-        currentMap = m;
+        currentFloorScale = Power.scale(currentMap.power);
         currentFloorIndex = 0;
-        spawner.setSpawnPower(m.power);
+        spawner.setSpawnPower(currentMap.power);
         yield return buildGridRoutine();
     }
     enum TileDistanceMode

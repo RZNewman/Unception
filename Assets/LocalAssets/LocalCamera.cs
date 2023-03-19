@@ -40,10 +40,14 @@ public class LocalCamera : MonoBehaviour
         localClip = cam.nearClipPlane;
         oldPowerMag = transform.localPosition.magnitude;
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
+        pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
         if (mode == CameraMode.Turn)
         {
-            pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
             setCursorLocks(true);
+        }
+        else
+        {
+            transform.localRotation = Quaternion.Euler(pitchMax, 0, 0);
         }
 
     }
@@ -124,6 +128,7 @@ public class LocalCamera : MonoBehaviour
 
             //lastMousePosition = Input.mousePosition;
         }
+
 
 
     }

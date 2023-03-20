@@ -18,7 +18,7 @@ MonoBehaviour:
   decceleration: 40
   jumpForce: 20
   jumpsquatTime: 0.2
-  lookSpeedDegrees: 500
+  lookSpeedDegrees: 180
   sidewaysMoveMultiplier: 0.85
   backwardsMoveMultiplier: 0.7
   dashDistance: 5

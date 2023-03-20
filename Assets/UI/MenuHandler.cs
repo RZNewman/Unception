@@ -13,6 +13,8 @@ public class MenuHandler : MonoBehaviour
     public GameObject settings;
     public GameObject pause;
     public GameObject quest;
+
+    GlobalPlayer gp;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,8 @@ public class MenuHandler : MonoBehaviour
         pause.SetActive(false);
         quest.SetActive(false);
 
+
+        gp = FindObjectOfType<GlobalPlayer>(true);
         networkMenu();
 
     }
@@ -42,6 +46,7 @@ public class MenuHandler : MonoBehaviour
 
     public void stageMenu()
     {
+        stageSelect.GetComponent<UiStageSelect>().powerDisplay.GetComponent<UiText>().source = gp.player;
         switchMenu(stageSelect);
     }
 

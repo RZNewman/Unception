@@ -370,15 +370,18 @@ public class UnitMovement : NetworkBehaviour
             return Mathf.Lerp(1.0f, props.sidewaysMoveMultiplier, angleDiff / 90);
         }
     }
-    public void rotate(UnitInput inp, float speedMultiplier = 1.0f)
+    public void rotate(UnitInput inp, bool canSnap = true, float speedMultiplier = 1.0f)
     {
         if (inp.look == Vector2.zero)
         {
             return;
         }
+        canSnap &= props.isPlayer;
+        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : props.lookSpeedDegrees;
+
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;
-        float frameMagnitude = props.lookSpeedDegrees * speedMultiplier * Time.fixedDeltaTime;
+        float frameMagnitude = turnSpeed * speedMultiplier * Time.fixedDeltaTime;
         diff = normalizeAngle(diff);
         if (Mathf.Abs(diff) <= frameMagnitude)
         {

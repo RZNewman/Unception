@@ -98,7 +98,7 @@ public class ActionState : AttackStageState
         UnitInput inp = mover.input;
 
 
-        mover.rotate(inp, lookMultiplier);
+        mover.rotate(inp, false, lookMultiplier);
         mover.move(inp, moveMultiplier);
 
 

@@ -22,10 +22,12 @@ public class SaveData : NetworkBehaviour
     // Start is called before the first frame update
 
     WorldProgress worldProgress;
+    UIQuestDisplay questDisplay;
 
     void Start()
     {
         globalSave = FindObjectOfType<GlobalSaveData>();
+        questDisplay = FindObjectOfType<UIQuestDisplay>(true);
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
         player = GetComponent<PlayerGhost>();
@@ -55,6 +57,7 @@ public class SaveData : NetworkBehaviour
 
         //TODO restrict to next level only
         worldProgress.locations[ids.locationId][ids.verticalId] = new QuestVerticalProgress() { highestTier = ids.tier };
+        questDisplay.displayWorld(worldProgress);
     }
 
 
@@ -94,6 +97,7 @@ public class SaveData : NetworkBehaviour
             if (snapshot.Exists)
             {
                 worldProgress = JsonConvert.DeserializeObject<WorldProgress>(snapshot.GetRawJsonValue());
+                questDisplay.displayWorld(worldProgress);
             }
 
         }

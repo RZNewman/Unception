@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0089783607dce41904bd10321f92b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockedOffset: {x: 0, y: 15, z: -9}
+  lockedOffset: {x: 0, y: 18, z: -9}
   turnOffset: {x: 0, y: 7, z: -5}
   currentLookAngle: 0
   currentPitchAngle: 70

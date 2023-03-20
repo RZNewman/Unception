@@ -38,7 +38,8 @@ public static class SystemClassWriters
         Dash,
         Repeat,
     }
-    public static void WriteAttackKey(this NetworkWriter writer, GenerateAttack.GenerationData data)
+
+    public static void WriteGenerationData(this NetworkWriter writer, GenerateAttack.GenerationData data)
     {
         writer.WriteFloat(data.strengthFactor);
         switch (data)

@@ -12,7 +12,14 @@ public class UiMapDetails : MonoBehaviour
     public void setMapDetails(Map m)
     {
         clearLabels();
+        if (m.quest)
+        {
+            addLabel("Quest Tier", m.tier);
+        }
+        addLabel("Power", Power.displayExaggertatedPower(m.power));
+        addLabel("Floors", m.floors.Length);
         addLabel("Packs", m.floors.Sum(f => f.packs));
+        addLabel("Encounters", m.floors.Sum(f => f.encounters.Length));
         addLabel("Difficulty", (m.difficulty.total + 1).asPercent());
         addLabel("Pack size", (m.difficulty.pack + 1).asPercent());
         addLabel("Veterans", (m.difficulty.veteran).asPercent());

@@ -94,7 +94,7 @@ public class LocalCamera : MonoBehaviour
         float targetMag = targetPosition.magnitude;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.parent.position, transform.parent.rotation * targetPosition, out hit, targetMag, LayerMask.GetMask("Terrain")))
+        if (mode == CameraMode.Turn && Physics.Raycast(transform.parent.position, transform.parent.rotation * targetPosition, out hit, targetMag, LayerMask.GetMask("Terrain")))
         {
             targetMag = hit.distance;
         }

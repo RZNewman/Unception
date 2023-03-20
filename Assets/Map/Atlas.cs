@@ -132,7 +132,7 @@ public class Atlas : NetworkBehaviour
     {
         if (worldData.locations != null && worldData.locations.Count > 0)
         {
-            FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
+            RpcDisplayQuests(worldData.locations);
             //return;
         }
         List<Location> locations = new List<Location>();
@@ -163,8 +163,16 @@ public class Atlas : NetworkBehaviour
         });
 
         worldData.locations = locations;
+        RpcDisplayQuests(worldData.locations);
+    }
+    [ClientRpc]
+    void RpcDisplayQuests(List<Location> locations)
+    {
+        WorldData worldData = ScriptableObject.CreateInstance<WorldData>();
+        worldData.locations = locations;
         FindObjectOfType<UIQuestDisplay>(true).displayWorld(worldData);
     }
+
     QuestVertical makeQuestVeritcal(int begin, int end, string id)
     {
         int count = end - begin + 1;

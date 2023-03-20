@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using static GlobalSaveData;
+using static Power;
 
-public class PlayerGhost : NetworkBehaviour
+public class PlayerGhost : NetworkBehaviour, TextValue
 {
     public GameObject unitPre;
 
@@ -218,4 +219,13 @@ public class PlayerGhost : NetworkBehaviour
         }
     }
 
+    public TextValue.TextData getText()
+    {
+        return new TextValue.TextData
+        {
+            color = Color.white,
+            text = displayExaggertatedPower(playerPower),
+
+        };
+    }
 }

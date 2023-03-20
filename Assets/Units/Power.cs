@@ -53,16 +53,22 @@ public class Power : NetworkBehaviour, TextValue
     }
     void setMetricScale()
     {
-        float exaggeratedPower = Mathf.Pow(currentPower / 100, 2f);
-
 
         displayText = new TextValue.TextData
         {
             color = Color.white,
-            text = displayPower(exaggeratedPower),
+            text = displayExaggertatedPower(currentPower),
 
         };
 
+    }
+    static float exaggeratedPower(float power)
+    {
+        return Mathf.Pow(power / 100, 2f);
+    }
+    public static string displayExaggertatedPower(float power)
+    {
+        return displayPower(exaggeratedPower(power));
     }
 
     public static string displayPower(float power)

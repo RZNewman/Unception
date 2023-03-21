@@ -40,7 +40,7 @@ public class PackHeal : NetworkBehaviour, BarValue
                 packTargets.Clear();
                 currentPackProgress = 0;
             }
-            if (packTargets.Count > 0 && currentPackProgress >= packTargets[0])
+            if (packTargets.Count > 0 && currentPackProgress >= packTargets[0] * 0.999f)
             {
                 GetComponent<Health>().healToFull();
                 currentPackProgress -= packTargets[0];

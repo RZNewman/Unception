@@ -66,7 +66,9 @@ public class Atlas : NetworkBehaviour
         public bool nextQuest(int tierComplete, out Quest q)
         {
             q = quests[0];
+            if (tierComplete == -1) { return true; }
             if (quests.Last().tier <= tierComplete) { return false; }
+
             foreach (Quest quest in quests)
             {
                 if (quest.tier == tierComplete + 1)

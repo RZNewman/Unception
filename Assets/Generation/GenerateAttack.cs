@@ -355,6 +355,12 @@ public static class GenerateAttack
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
 
+        float cd = Random.value;
+        if (cd < 0.01f)
+        {
+            noCooldown = true;
+        }
+
         int segmentCount = 1;
         float r = Random.value;
         if (r < 0.1)

@@ -141,7 +141,7 @@ public static class AttackUtils
                             //TODO Two ground target options, how to sync up?
                             groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.length, mover.isServer);
                             groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
-                            windup.setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
+                            ((WindState)currentState).setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {
                                 radius = 0.2f,
                                 distance = s.scaledHalfHeight * 1.1f,

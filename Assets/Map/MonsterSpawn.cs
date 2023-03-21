@@ -194,7 +194,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     void spawnEncounter(EncounterData encounterData, SpawnTransform spawn)
     {
-        float scale = Power.scale(spawnPower);
+        float scale = Power.scalePhysical(spawnPower);
         Vector3 encounterPos = spawn.position;
         RaycastHit hit;
         if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
@@ -240,7 +240,7 @@ public class MonsterSpawn : NetworkBehaviour
         {
 
             GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
-            o.transform.localScale = Vector3.one * Power.scale(spawnPower);
+            o.transform.localScale = Vector3.one * Power.scalePhysical(spawnPower);
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
             o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
             if (isChest)
@@ -462,7 +462,7 @@ public class MonsterSpawn : NetworkBehaviour
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
-        p.scale = Power.scale(spawnPower);
+        p.scale = Power.scalePhysical(spawnPower);
         NetworkServer.Spawn(p.gameObject);
 
 
@@ -552,7 +552,7 @@ public class MonsterSpawn : NetworkBehaviour
     void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Pack p)
     {
 
-        float scale = Power.scale(spawnPower);
+        float scale = Power.scalePhysical(spawnPower);
         Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
         RaycastHit hit;
         if (Physics.Raycast(unitPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))

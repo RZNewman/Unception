@@ -134,7 +134,7 @@ public class MapGenerator : NetworkBehaviour
 
     public IEnumerator buildMap()
     {
-        currentFloorScale = Power.scale(currentMap.power);
+        currentFloorScale = Power.scalePhysical(currentMap.power);
         currentFloorIndex = 0;
         spawner.setSpawnPower(currentMap.power);
         yield return buildGridRoutine();

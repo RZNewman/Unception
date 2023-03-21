@@ -62,7 +62,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     void setRadius(Power p)
     {
-        scale = p.scale();
+        scale = p.scalePhysical();
         agent.baseOffset = 0.75f * scale;
         agent.radius = 0.7f * scale;
         agent.height = 1.5f * scale;

@@ -31,7 +31,7 @@ public static class GenerateDash
         public override InstanceData populate(float power, float strength)
         {
             strength *= this.strengthFactor;
-            float scale = Power.scale(power);
+            float scale = Power.scalePhysical(power);
 
             float speed = this.speed.asRange(15f, 30f) * scale * strength;
             float distance = this.distance.asRange(2f, 6f) * scale * strength;

@@ -38,7 +38,7 @@ public class AnimationController : MonoBehaviour
 
     void scaleMovement(Power p)
     {
-        moveSpeedMult = 1.0f / (2 * power.scale());
+        moveSpeedMult = 1.0f / (2 * power.scalePhysical());
     }
 
     // Update is called once per frame

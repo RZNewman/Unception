@@ -59,10 +59,11 @@ public class Posture : NetworkBehaviour, BarValue
     {
         float lastMax = maxPosture;
 
+        float scaleNum = p.scaleNumerical();
 
-        maxPosture = props.maxPosture * p.scale();
-        passivePostureRecover = props.passivePostureRecover * p.scale();
-        stunnedPostureRecover = props.stunnedPostureRecover * p.scale();
+        maxPosture = props.maxPosture * scaleNum;
+        passivePostureRecover = props.passivePostureRecover * scaleNum;
+        stunnedPostureRecover = props.stunnedPostureRecover * scaleNum;
 
 
         float proportion = maxPosture / lastMax;
@@ -75,7 +76,7 @@ public class Posture : NetworkBehaviour, BarValue
     public void takeStagger(float damage)
     {
         currentPosture += damage;
-        
+
         if (stunned)
         {
             if (currentPosture > currentStunHighestPosture)
@@ -97,7 +98,7 @@ public class Posture : NetworkBehaviour, BarValue
         float currentPostureRecover;
         if (stunned)
         {
-            currentPostureRecover = stunnedPostureRecover * (1+ recentlyStunnedTime/2);
+            currentPostureRecover = stunnedPostureRecover * (1 + recentlyStunnedTime / 2);
             recentlyStunnedTime += Time.fixedDeltaTime;
         }
         else

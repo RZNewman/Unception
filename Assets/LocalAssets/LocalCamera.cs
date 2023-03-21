@@ -74,8 +74,9 @@ public class LocalCamera : MonoBehaviour
     bool initial = true;
     void scaleCameraSize(Power p)
     {
-        targetPosition = cameraOffset() * p.scale();
-        cam.nearClipPlane = localClip * p.scale();
+        float scalePhys = p.scalePhysical();
+        targetPosition = cameraOffset() * scalePhys;
+        cam.nearClipPlane = localClip * scalePhys;
         currentTransition = 0;
         oldPowerMag = transform.localPosition.magnitude;
         if (initial)

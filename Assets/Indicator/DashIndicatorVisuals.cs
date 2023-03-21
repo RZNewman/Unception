@@ -24,7 +24,7 @@ public class DashIndicatorVisuals : IndicatorInstance
     public void setSource(DashState dash, Power p)
     {
         state = dash;
-        scale = p.scale();
+        scale = p.scalePhysical();
         setSize();
     }
 
@@ -32,7 +32,7 @@ public class DashIndicatorVisuals : IndicatorInstance
     {
         DashInstanceData dash = state.getSource();
 
-        
+
 
         length = dash.distance;
         float width = 0.1f * scale;

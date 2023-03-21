@@ -542,7 +542,8 @@ public class Atlas : NetworkBehaviour
             m = serverMap.getMap(gp.serverPlayer.power);
         }
         embarkedMap = m;
-        Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
+        //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
+        setPhysicalScaleServer(Power.scaleNumerical(m.power));
         yield return gen.buildMap();
     }
 
@@ -569,7 +570,7 @@ public class Atlas : NetworkBehaviour
             //floor wasnt cleaned up by next floor routine
             FindObjectOfType<MapGenerator>().destroyFloor();
         }
-
+        setPhysicalScaleServer(1);
         clearMapMarkers();
         makeMaps();
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
@@ -578,6 +579,17 @@ public class Atlas : NetworkBehaviour
             inv.GetComponent<PlayerGhost>().TargetMainMenu(inv.connectionToClient);
         }
 
+    }
+    [Server]
+    void setPhysicalScaleServer(float scale)
+    {
+        Power.setPhysicalScale(scale);
+        RpcSetPhysicalScale(scale);
+    }
+    [ClientRpc]
+    void RpcSetPhysicalScale(float scale)
+    {
+        Power.setPhysicalScale(scale);
     }
     #endregion
 

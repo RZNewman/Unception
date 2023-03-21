@@ -64,7 +64,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         {
             move = move.Rotate(-Camera.main.GetComponent<LocalCamera>().currentLookAngle);
         }
-        
+
         currentInput.move = move;
 
         currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
@@ -98,7 +98,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     {
         get
         {
-            return power ? 100f * power.scale() : 100f;
+            return power ? 100f * power.scalePhysical() : 100f;
         }
     }
     void setLocalLook()

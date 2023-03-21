@@ -21,7 +21,7 @@ public class Size : MonoBehaviour, IndicatorHolder
 
     void updateSize(Power p)
     {
-        transform.localScale = baseSize * p.scale();
+        transform.localScale = baseSize * p.scalePhysical();
     }
 
     public void setBaseSize(Vector3 size)

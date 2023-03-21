@@ -35,10 +35,11 @@ public class UnitSound : MonoBehaviour
 
     void setSoundFalloff(Power p)
     {
+        float scalePhys = p.scalePhysical();
         dists = new AudioDistances
         {
-            min = 4 * p.scale(),
-            max = 100 * p.scale(),
+            min = 4 * scalePhys,
+            max = 100 * scalePhys,
         };
         source.minDistance = dists.min;
         source.maxDistance = dists.max;

@@ -18,6 +18,8 @@ public class Power : NetworkBehaviour, TextValue
 
     List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();
 
+    static float baseWorldScale = 1;
+
     public void subscribePower(OnPowerUpdate callback)
     {
         OnPowerUpdateCallbacks.Add(callback);
@@ -102,7 +104,7 @@ public class Power : NetworkBehaviour, TextValue
     }
     public static float relativeScale(float powerA, float powerB)
     {
-        return scale(powerA) / scale(powerB);
+        return scaleNumerical(powerA) / scaleNumerical(powerB);
     }
 
 
@@ -120,14 +122,27 @@ public class Power : NetworkBehaviour, TextValue
             return downscalePower(currentPower);
         }
     }
-    public float scale()
+    public float scaleNumerical()
     {
-        return scale(currentPower);
+        return scaleNumerical(currentPower);
+    }
+    public float scalePhysical()
+    {
+        return scalePhysical(currentPower);
     }
 
-    public static float scale(float power)
+    public static float scaleNumerical(float power)
     {
         return downscalePower(power) / baseDownscale;
+    }
+
+    public static float scalePhysical(float power)
+    {
+        return downscalePower(power) / baseDownscale / baseWorldScale;
+    }
+    public static void setPhysicalScale(float scale)
+    {
+        baseWorldScale = scale;
     }
 
     public static float downscalePower(float power)

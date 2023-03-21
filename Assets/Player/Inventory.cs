@@ -135,7 +135,7 @@ public class Inventory : NetworkBehaviour
         for (int i = 0; i < 5; i++)
         {
             AttackBlock item = GenerateAttack.generate(player.power, false, Quality.Common);
-            storage.Add( item);
+            storage.Add(item);
         }
         RpcInvChange();
     }
@@ -186,7 +186,7 @@ public class Inventory : NetworkBehaviour
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {
         AttackBlockFilled filled = fillBlock(item);
-        float scale = Power.scale(player.power);
+        float scale = Power.scalePhysical(player.power);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
         i.GetComponent<ItemDrop>().init(scale, player.unit, filled.instance.quality);
 

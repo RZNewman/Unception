@@ -12,7 +12,8 @@ public class LocalClick : MonoBehaviour
 
     void scaleUi(Power p)
     {
-        transform.localPosition = localPosition * p.scale();
-        transform.localScale = Vector3.one * p.scale();
+        float scalePhys = p.scalePhysical();
+        transform.localPosition = localPosition * scalePhys;
+        transform.localScale = Vector3.one * scalePhys;
     }
 }

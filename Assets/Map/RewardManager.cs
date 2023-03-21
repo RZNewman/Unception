@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class RewardManager
 {
-    public readonly static float itemQualityPercent = 1.3f;
+    public readonly static float itemQualityPercent = 1.5f;
     public readonly static float bonusRewardPerDifficulty = 0.3f;
 
     [Serializable]
@@ -60,7 +60,7 @@ public static class RewardManager
 
     public readonly static float itemsPerPack = 2f;
 
-    readonly static int mapsPerFalloff = 16;
+    readonly static float mapsPerFalloff = 16;
 
     readonly static float clearPercent = 0.65f;
 

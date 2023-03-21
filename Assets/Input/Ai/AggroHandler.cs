@@ -34,7 +34,7 @@ public class AggroHandler : MonoBehaviour
     }
     void setRadius(Power p)
     {
-        col.radius = aggroRadius * p.scale();
+        col.radius = aggroRadius * p.scalePhysical();
     }
     private void OnTriggerEnter(Collider otherCol)
     {

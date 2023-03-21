@@ -33,10 +33,10 @@ public class UiAbilityDetails : MonoBehaviour
         }
 
         title.text = filled.flair.name;
-        power.text = Power.displayPower(filled.instance.power);
+        power.text = Power.displayExaggertatedPower(filled.instance.power);
         quality.text = qualitySymbol(filled.instance.quality);
         quality.color = colorQuality(filled.instance.quality);
-        powerTotal.text = Power.displayPower(filled.instance.actingPower);
+        powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
         castTime.text = Power.displayPower(filled.instance.castTime);
         cooldown.text = Power.displayPower(filled.instance.cooldown);
         charges.text = Power.displayPower(filled.instance.charges);

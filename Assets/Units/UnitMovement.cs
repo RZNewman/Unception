@@ -201,7 +201,7 @@ public class UnitMovement : NetworkBehaviour
 
     public void jump()
     {
-        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scale(), rb.velocity.z);
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scalePhysical(), rb.velocity.z);
     }
     public void applyForce(Vector3 force)
     {
@@ -210,6 +210,8 @@ public class UnitMovement : NetworkBehaviour
 
     public void move(UnitInput inp, float speedMultiplier = 1.0f)
     {
+        float scalePhys = power.scalePhysical();
+
         float lookMultiplier = toMoveMultiplier(inp.move);
         float airMultiplier = 1.0f;
         float combatMultiplier = 1.0f;
@@ -235,7 +237,7 @@ public class UnitMovement : NetworkBehaviour
 
 
         Vector3 planarVelocity = planarVelocityCalculated;
-        float potentialSpeed = props.maxSpeed * speedMultiplier * power.scale();
+        float potentialSpeed = props.maxSpeed * speedMultiplier * scalePhys;
         float desiredSpeed;
         if (grounded)
         {
@@ -253,7 +255,7 @@ public class UnitMovement : NetworkBehaviour
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
         float stoppingMult = stunnedMultiplier * airMultiplier * combatMultiplier;
-        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * power.scale();
+        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scalePhys;
 
         if (stoppingDir.magnitude <= stoppingFrameMag)
         {
@@ -268,7 +270,7 @@ public class UnitMovement : NetworkBehaviour
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
         float addingMult = speedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
-        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * power.scale();
+        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * scalePhys;
 
         if (diff.magnitude <= addingFrameMag)
         {
@@ -290,10 +292,11 @@ public class UnitMovement : NetworkBehaviour
         {
             combatMultiplier = 1.5f;
         }
+        float scalePhys = power.scalePhysical();
         return new DashInstanceData
         {
-            distance = props.dashDistance * power.scale(),
-            speed = props.dashSpeed * combatMultiplier * power.scale(),
+            distance = props.dashDistance * scalePhys,
+            speed = props.dashSpeed * combatMultiplier * scalePhys,
             control = DashControl.Input,
             endMomentum = DashEndMomentum.Walk,
         };
@@ -334,7 +337,7 @@ public class UnitMovement : NetworkBehaviour
             airMultiplier = 0.6f;
         };
 
-        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * combatMultiplier * power.scale();
+        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * combatMultiplier * power.scalePhysical();
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }
@@ -422,7 +425,7 @@ public class UnitMovement : NetworkBehaviour
             if (ground && ground.hasGround)
             {
                 float mag = Vector3.Dot(rb.velocity, ground.normal);
-                return mag <= 0.05f * power.scale();
+                return mag <= 0.05f * power.scalePhysical();
             }
             return false;
 

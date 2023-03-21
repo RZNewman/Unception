@@ -37,9 +37,9 @@ public static class GenerateAttack
     static readonly float turnValue = 0.025f;
     static public float getWindValue(WindInstanceData[] winds)
     {
-        float totalTime = winds.Sum(x => x.duration);
-        float avgMove = winds.Sum(x => x.moveMult * x.duration) / totalTime;
-        float avgTurn = winds.Sum(x => x.turnMult * x.duration) / totalTime;
+        float totalTime = winds.Sum(x => x.baseDuration);
+        float avgMove = winds.Sum(x => x.moveMult * x.baseDuration) / totalTime;
+        float avgTurn = winds.Sum(x => x.turnMult * x.baseDuration) / totalTime;
 
 
         float moveMagnitude = Mathf.Max(avgMove, 1 / avgMove) - 1;
@@ -96,12 +96,11 @@ public static class GenerateAttack
             }
         }
 
-        public float castTime
+        public float castTimeDisplay(float power)
         {
-            get
-            {
-                return windStages.Sum(w => w.duration);
-            }
+
+            return windStages.Sum(w => w.duration) * Power.scaleTime(power);
+
         }
         public float effectPower
         {
@@ -110,38 +109,29 @@ public static class GenerateAttack
                 return hit.powerByStrength + (dash != null ? dash.powerByStrength : 0);
             }
         }
-        public float eps
+        public float eps(float power)
         {
-            get
-            {
-                return effectPower / castTime;
-            }
+            return effectPower / castTimeDisplay(power);
         }
         public float damage(float power)
         {
 
-            return hit.damage(power);
+            return hit.damage(power) * (repeat == null ? 1 : repeat.repeatCount);
 
         }
         public float dps(float power)
         {
 
-            return damage(power) / castTime;
+            return damage(power) / castTimeDisplay(power);
 
         }
-        public float avgMove
+        public float avgMove(float power)
         {
-            get
-            {
-                return windStages.Sum(x => x.moveMult * x.duration) / castTime;
-            }
+            return windStages.Sum(x => x.moveMult * x.duration) / castTimeDisplay(power);
         }
-        public float avgTurn
+        public float avgTurn(float power)
         {
-            get
-            {
-                return windStages.Sum(x => x.turnMult * x.duration) / castTime;
-            }
+            return windStages.Sum(x => x.turnMult * x.duration) / castTimeDisplay(power);
         }
 
 
@@ -178,12 +168,13 @@ public static class GenerateAttack
                 return power * qualityPercent(quality);
             }
         }
-        public float castTime
+        public float castTimeDisplay(float power)
         {
-            get
-            {
-                return segments.Sum(s => s.castTime);
-            }
+            return segments.Sum(s => s.castTimeDisplay(power));
+        }
+        public float cooldownDisplay(float power)
+        {
+            return cooldown * Power.scaleTime(power);
         }
         public float effect
         {
@@ -192,12 +183,9 @@ public static class GenerateAttack
                 return segments.Sum(s => s.effectPower);
             }
         }
-        public float eps
+        public float eps(float power)
         {
-            get
-            {
-                return effect / castTime;
-            }
+            return effect / castTimeDisplay(power);
         }
 
         public float damage(float power)
@@ -206,7 +194,7 @@ public static class GenerateAttack
         }
         public float dps(float power)
         {
-            return damage(power) / castTime;
+            return damage(power) / castTimeDisplay(power);
         }
     }
 
@@ -215,6 +203,7 @@ public static class GenerateAttack
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 30 + 1), 1.5f);
+        cooldownTime /= Power.scaleTime(power);
         float charges = atk.charges.asRange(1, 4);
 
 

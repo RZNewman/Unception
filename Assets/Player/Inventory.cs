@@ -107,11 +107,19 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void reloadItems(AttackBlock[] items)
     {
-        AttackBlock[] equippedArray = items.Take(inventorySlots).ToArray();
-        equipArray = equippedArray;
-        storage = items.Skip(inventorySlots).ToList();
-        genMinItems();
-        TargetSyncInventory(connectionToClient, equippedArray, storage.ToArray());
+        if (items.Length > 0)
+        {
+            AttackBlock[] equippedArray = items.Take(inventorySlots).ToArray();
+            equipArray = equippedArray;
+            storage = items.Skip(inventorySlots).ToList();
+        }
+        else
+        {
+            genMinItems();
+        }
+
+
+        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray());
         RpcInvChange();
     }
     [Server]
@@ -186,9 +194,8 @@ public class Inventory : NetworkBehaviour
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {
         AttackBlockFilled filled = fillBlock(item);
-        float scale = Power.scalePhysical(player.power);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(scale, player.unit, filled.instance.quality);
+        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.instance.quality);
 
     }
 

@@ -19,15 +19,18 @@ public class ItemDrop : MonoBehaviour
     Rigidbody rb;
 
     float targetSpeed = 0;
-    public void init(float scale, GameObject t, Quality q)
+    public void init(float power, GameObject t, Quality q)
     {
-        transform.localScale = Vector3.one * scale;
+        float scalePhys = Power.scalePhysical(power);
+        float scaleSpeed = Power.scaleSpeed(power);
+
+        transform.localScale = Vector3.one * scalePhys;
         grav = GetComponent<Gravity>();
-        grav.gravity *= scale;
-        accel *= scale;
-        catchDistance *= scale;
+        grav.gravity *= scaleSpeed;
+        accel *= scaleSpeed;
+        catchDistance *= scalePhys;
         Vector2 dir = Random.insideUnitCircle;
-        GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scale;
+        GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scaleSpeed;
         Color qual = RewardManager.colorQuality(q);
         qual.a = 0.05f;
         itemAura.setColor(qual);
@@ -40,6 +43,15 @@ public class ItemDrop : MonoBehaviour
         sound = FindObjectOfType<SoundManager>();
     }
 
+    private void Update()
+    {
+
+        if (waitTime > 0)
+        {
+            waitTime -= Time.deltaTime;
+        }
+    }
+
     private void FixedUpdate()
     {
         if (!target)
@@ -47,11 +59,7 @@ public class ItemDrop : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        if (waitTime > 0)
-        {
-            waitTime -= Time.deltaTime;
-        }
-        else
+        if (waitTime <= 0)
         {
             grav.gravity = 0;
             Vector3 dir = target.transform.position - transform.position;

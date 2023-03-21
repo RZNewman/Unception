@@ -13,12 +13,12 @@ public class KillPlane : MonoBehaviour
         Health hp = other.GetComponentInParent<Health>();
         Size s = other.GetComponent<Size>();
 
-        if (props.props.isPlayer)
+        if (props && props.props.isPlayer)
         {
             hp.takePercentDamage(0.15f);
             mover.stop(true);
             mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
-            norm.transform.position = norm.nav + Vector3.up *s.scaledHalfHeight;
+            norm.transform.position = norm.nav + Vector3.up * s.scaledHalfHeight;
         }
         else
         {

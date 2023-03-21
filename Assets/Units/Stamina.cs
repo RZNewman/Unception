@@ -12,6 +12,8 @@ public class Stamina : NetworkBehaviour, BarValue
 
     public static float dashCost = 30;
 
+    Power power;
+
     public float stamina
     {
         get
@@ -27,6 +29,7 @@ public class Stamina : NetworkBehaviour, BarValue
     void Start()
     {
         UnitProperties props = GetComponent<UnitPropsHolder>().props;
+        power = GetComponent<Power>();
         maxStamina = props.maxStamina;
         staminaRecover = props.staminaRecover;
 
@@ -37,11 +40,11 @@ public class Stamina : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void OrderedUpdate()
     {
-
+        float scaleTime = power.scaleTime();
         //change posture
         if (currentStamina < maxStamina)
         {
-            currentStamina += staminaRecover * Time.fixedDeltaTime;
+            currentStamina += staminaRecover * Time.fixedDeltaTime * scaleTime;
         }
         if (currentStamina > maxStamina)
         {

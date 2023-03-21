@@ -24,11 +24,14 @@ public static class GenerateWind
             float turnMag = this.turnMult.asRange(-3.0f, 1f);
             bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
+
+            float baseDuration = this.duration.asRange(0.15f, 3f);
             return new WindInstanceData
             {
-                duration = this.duration.asRange(0.15f, 3f),
+                duration = baseDuration / Power.scaleTime(power),
                 moveMult = moveMult,
                 turnMult = turnMult,
+                baseDuration = baseDuration,
             };
         }
 
@@ -39,6 +42,12 @@ public static class GenerateWind
         public float duration;
         public float moveMult;
         public float turnMult;
+        public float baseDuration;
+
+        public float durationDisplay(float power)
+        {
+            return duration * Power.scaleTime(power);
+        }
     }
     public static WindGenerationData createWind(float durrationLimit = 1.0f)
     {

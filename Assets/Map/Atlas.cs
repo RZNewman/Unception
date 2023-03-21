@@ -254,8 +254,12 @@ public class Atlas : NetworkBehaviour
     }
     float mapClearsAtTier(int tier)
     {
-
-        return 0.6f + 0.2f * tier;
+        return tier switch
+        {
+            int i when i < 2 => 0,
+            int i when i < 6 => 1,
+            int i => 0.1f + 0.2f * tier,
+        };
     }
 
 
@@ -543,7 +547,7 @@ public class Atlas : NetworkBehaviour
         }
         embarkedMap = m;
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
-        setPhysicalScaleServer(Power.scaleNumerical(m.power));
+        setScaleServer(Power.scaleNumerical(m.power), Power.scaleNumerical(gp.serverPlayer.power));
         yield return gen.buildMap();
     }
 
@@ -570,7 +574,7 @@ public class Atlas : NetworkBehaviour
             //floor wasnt cleaned up by next floor routine
             FindObjectOfType<MapGenerator>().destroyFloor();
         }
-        setPhysicalScaleServer(1);
+        setScaleServer(1, 1);
         clearMapMarkers();
         makeMaps();
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
@@ -581,15 +585,18 @@ public class Atlas : NetworkBehaviour
 
     }
     [Server]
-    void setPhysicalScaleServer(float scale)
+    void setScaleServer(float scalePhys, float scaleTime)
     {
-        Power.setPhysicalScale(scale);
-        RpcSetPhysicalScale(scale);
+
+        Power.setPhysicalScale(scalePhys);
+        Power.setTimeScale(scaleTime);
+        RpcSetScale(scalePhys, scaleTime);
     }
     [ClientRpc]
-    void RpcSetPhysicalScale(float scale)
+    void RpcSetScale(float scalePhys, float scaleTime)
     {
-        Power.setPhysicalScale(scale);
+        Power.setTimeScale(scaleTime);
+        Power.setPhysicalScale(scalePhys);
     }
     #endregion
 

@@ -19,6 +19,7 @@ public class Power : NetworkBehaviour, TextValue
     List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();
 
     static float baseWorldScale = 1;
+    static float baseTimeScale = 1;
 
     public void subscribePower(OnPowerUpdate callback)
     {
@@ -126,9 +127,24 @@ public class Power : NetworkBehaviour, TextValue
     {
         return scaleNumerical(currentPower);
     }
+
+    public float scaleSpeed()
+    {
+        return scaleSpeed(currentPower);
+    }
     public float scalePhysical()
     {
         return scalePhysical(currentPower);
+    }
+
+    public float scaleTime()
+    {
+        return scaleTime(currentPower);
+    }
+
+    public static float scaleSpeed(float power)
+    {
+        return scalePhysical(power) * scaleTime(power);
     }
 
     public static float scaleNumerical(float power)
@@ -136,13 +152,23 @@ public class Power : NetworkBehaviour, TextValue
         return downscalePower(power) / baseDownscale;
     }
 
+
     public static float scalePhysical(float power)
     {
         return downscalePower(power) / baseDownscale / baseWorldScale;
     }
+
+    public static float scaleTime(float power)
+    {
+        return downscalePower(power) / baseDownscale / baseTimeScale;
+    }
     public static void setPhysicalScale(float scale)
     {
         baseWorldScale = scale;
+    }
+    public static void setTimeScale(float scale)
+    {
+        baseTimeScale = scale;
     }
 
     public static float downscalePower(float power)

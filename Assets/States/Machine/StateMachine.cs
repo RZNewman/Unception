@@ -14,7 +14,7 @@ public class StateMachine<T> where T : State
     public void transition()
     {
         StateTransition t = currentState.transition();
-        if (t.shouldTrasition)
+        while (t.shouldTransition)
         {
             T nextState;
             if (t.nextState == null)
@@ -28,6 +28,7 @@ public class StateMachine<T> where T : State
             currentState.exit(t.expired);
             currentState = nextState;
             currentState.enter();
+            t = currentState.transition();
         }
     }
 

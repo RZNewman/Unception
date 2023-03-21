@@ -54,13 +54,14 @@ public static class GenerateHit
             strength *= this.strengthFactor;
             float scale = Power.scalePhysical(power);
             float scaleNum = Power.scaleNumerical(power);
+            float scaleSpeed = Power.scaleSpeed(power);
 
             float length = 0.5f * scale + this.length.asRange(0f, 5f) * strength * scale;
             float width = 0.5f * scale + this.width.asRange(0f, 3f) * strength * scale;
-            float knockback = this.knockback.asRange(0, 10) * scale * strength;
+            float knockback = this.knockback.asRange(0, 10) * scaleSpeed * strength;
             float damage = this.damageMult.asRange(0.5f, 0.7f) * strength;
             float stagger = this.stagger.asRange(0f, 150f) * scaleNum * strength;
-            float knockUp = this.knockUp.asRange(0, 15) * scale * strength;
+            float knockUp = this.knockUp.asRange(0, 10) * scaleSpeed * strength;
 
             HitInstanceData baseData = new HitInstanceData
             {

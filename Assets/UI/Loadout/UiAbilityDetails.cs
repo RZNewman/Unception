@@ -37,14 +37,14 @@ public class UiAbilityDetails : MonoBehaviour
         quality.text = qualitySymbol(filled.instance.quality);
         quality.color = colorQuality(filled.instance.quality);
         powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
-        castTime.text = Power.displayPower(filled.instance.castTime);
+        castTime.text = Power.displayPower(filled.instance.castTimeDisplay(player.power));
         cooldown.text = Power.displayPower(filled.instance.cooldown);
         charges.text = Power.displayPower(filled.instance.charges);
 
         damage.text = Power.displayPower(filled.instance.damage(player.power));
         dps.text = Power.displayPower(filled.instance.dps(player.power));
         effect.text = Power.displayPower(filled.instance.effect);
-        eps.text = Power.displayPower(filled.instance.eps);
+        eps.text = Power.displayPower(filled.instance.eps(player.power));
 
         foreach (Transform child in segPanelHolder.transform)
         {
@@ -63,14 +63,15 @@ public class UiAbilityDetails : MonoBehaviour
 
         segmentPanel.hitType.text = instance.hit.type.ToString();
         segmentPanel.addLabel("Effect", instance.effectPower);
-        segmentPanel.addLabel("EPS", instance.eps);
+        segmentPanel.addLabel("EPS", instance.eps(power));
         segmentPanel.addLabel("Damage", instance.damage(power));
         segmentPanel.addLabel("DPS", instance.dps(power));
 
-        segmentPanel.addLabel("Windup", instance.windup.duration);
-        segmentPanel.addLabel("Winddown", instance.winddown.duration);
-        segmentPanel.addLabel("Move", instance.avgMove);
-        segmentPanel.addLabel("Turn", instance.avgTurn);
+        //TODO display actual duration here
+        segmentPanel.addLabel("Windup", instance.windup.durationDisplay(power));
+        segmentPanel.addLabel("Winddown", instance.winddown.durationDisplay(power));
+        segmentPanel.addLabel("Move", instance.avgMove(power));
+        segmentPanel.addLabel("Turn", instance.avgTurn(power));
 
         segmentPanel.addLabel("Length", instance.hit.length);
         segmentPanel.addLabel("Width", instance.hit.width);
@@ -87,7 +88,7 @@ public class UiAbilityDetails : MonoBehaviour
         if (instance.repeat != null)
         {
             segmentPanel.addLabel("Repeats", instance.repeat.repeatCount);
-            segmentPanel.addLabel("Repeat delay", instance.windRepeat.duration);
+            segmentPanel.addLabel("Repeat delay", instance.windRepeat.durationDisplay(power));
         }
     }
 

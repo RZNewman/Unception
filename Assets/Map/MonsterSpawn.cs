@@ -242,6 +242,7 @@ public class MonsterSpawn : NetworkBehaviour
             GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
             o.transform.localScale = Vector3.one * Power.scalePhysical(spawnPower);
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
+            o.GetComponent<Gravity>().gravity *= Power.scaleSpeed(spawnPower);
             o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
             if (isChest)
             {

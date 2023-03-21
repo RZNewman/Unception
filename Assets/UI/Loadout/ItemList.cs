@@ -13,7 +13,12 @@ public class ItemList : MonoBehaviour
     UiAbilityDetails deets;
     UiSlotList slotList;
     Inventory inv;
+    GlobalPlayer gp;
 
+    private void Start()
+    {
+        gp = FindObjectOfType<GlobalPlayer>();
+    }
     public enum InventoryMode
     {
         Storage,
@@ -84,9 +89,9 @@ public class ItemList : MonoBehaviour
         switch (sortMode)
         {
             case SortMode.Cooldown:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.cooldown;
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.cooldownDisplay(gp.player.power);
             case SortMode.CastTime:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.castTime;
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:
             default:
                 return (t1) => t1.GetComponent<UiAbility>().ability.instance.actingPower;

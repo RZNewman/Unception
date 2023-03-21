@@ -32,8 +32,9 @@ public static class GenerateDash
         {
             strength *= this.strengthFactor;
             float scale = Power.scalePhysical(power);
+            float scaleSpeed = Power.scaleSpeed(power);
 
-            float speed = this.speed.asRange(15f, 30f) * scale * strength;
+            float speed = this.speed.asRange(15f, 30f) * scaleSpeed * strength;
             float distance = this.distance.asRange(2f, 6f) * scale * strength;
 
             return new DashInstanceData

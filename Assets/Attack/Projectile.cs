@@ -16,7 +16,9 @@ public class Projectile : NetworkBehaviour
 
     public float speed;
 
-    public static readonly float ProjectileLifetime = 1.5f;
+    public static readonly float BaseProjectileLifetime = 1.5f;
+
+    float lifetime;
     float birth;
 
     UnitMovement mover;
@@ -36,7 +38,7 @@ public class Projectile : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        if (Time.time > birth + ProjectileLifetime)
+        if (Time.time > birth + lifetime)
         {
             Destroy(gameObject);
         }
@@ -50,21 +52,24 @@ public class Projectile : NetworkBehaviour
         public float power;
         public HitInstanceData hitData;
         public AudioDistances dists;
+        public float lifetime;
 
     }
     [Server]
     public void init(float terrainRadius, float hitboxRadius, float halfHeight, UnitMovement m, HitInstanceData hitData, AudioDistances dists)
     {
         mover = m;
+        Power p = mover.GetComponent<Power>();
         data = new ProjectileData
         {
             terrainRadius = terrainRadius,
             hitboxRadius = hitboxRadius,
             halfHeight = halfHeight,
             team = mover.GetComponent<TeamOwnership>().getTeam(),
-            power = mover.GetComponent<Power>().power,
+            power = p.power,
             hitData = hitData,
             dists = dists,
+            lifetime = BaseProjectileLifetime / p.scaleTime(),
         };
         setup(data);
     }
@@ -75,7 +80,8 @@ public class Projectile : NetworkBehaviour
         float hitR = data.hitboxRadius;
         terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
         playerHit.transform.localScale = new Vector3(hitR, attackHitboxHalfHeight(HitType.Projectile, data.halfHeight, hitR) / 2, hitR) * 2;
-        float speed = data.hitData.length / ProjectileLifetime;
+        lifetime = data.lifetime;
+        float speed = data.hitData.length / BaseProjectileLifetime;
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
 
         setAudioDistances(Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.hitData.flair.visualIndex], visualScale.transform), data.dists);

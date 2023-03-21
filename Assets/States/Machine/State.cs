@@ -5,12 +5,12 @@ public abstract class State
     public struct StateTransition
     {
         public State nextState;
-        public bool shouldTrasition;
+        public bool shouldTransition;
         public bool expired;
         public StateTransition(State s, bool t, bool e = false)
         {
             this.nextState = s;
-            this.shouldTrasition = t;
+            this.shouldTransition = t;
             this.expired = e;
         }
     }

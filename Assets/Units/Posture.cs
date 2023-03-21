@@ -24,6 +24,7 @@ public class Posture : NetworkBehaviour, BarValue
     float currentStunHighestPosture;
 
     UnitProperties props;
+    Power power;
     public bool isStunned
     {
         get
@@ -44,7 +45,7 @@ public class Posture : NetworkBehaviour, BarValue
     void Start()
     {
         props = GetComponent<UnitPropsHolder>().props;
-
+        power = GetComponent<Power>();
 
         currentPosture = 0;
         maxPosture = props.maxPosture;
@@ -90,6 +91,7 @@ public class Posture : NetworkBehaviour, BarValue
     // Update is called once per frame
     public void OrderedUpdate()
     {
+        float scaleTime = power.scaleTime();
         if (!stunned && currentPosture > maxPosture)
         {
             stunned = true;
@@ -98,7 +100,7 @@ public class Posture : NetworkBehaviour, BarValue
         float currentPostureRecover;
         if (stunned)
         {
-            currentPostureRecover = stunnedPostureRecover * (1 + recentlyStunnedTime / 2);
+            currentPostureRecover = stunnedPostureRecover * (1 + (recentlyStunnedTime / scaleTime) / 2);
             recentlyStunnedTime += Time.fixedDeltaTime;
         }
         else

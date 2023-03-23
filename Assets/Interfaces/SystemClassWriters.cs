@@ -1,5 +1,5 @@
 using Mirror;
-
+using System.Collections.Generic;
 
 public static class SystemClassWriters
 {
@@ -28,6 +28,23 @@ public static class SystemClassWriters
     public static void WriteQuality(this NetworkWriter writer, RewardManager.Quality key)
     {
         writer.WriteByte((byte)key);
+    }
+
+    public static void WriteStat(this NetworkWriter writer, StatTypes.Stat key)
+    {
+        writer.WriteByte((byte)key);
+    }
+
+    public static void WriteStatDict(this NetworkWriter writer, Dictionary<StatTypes.Stat, float> dict)
+    {
+        int count = dict.Keys.Count;
+        writer.WriteInt(count);
+        foreach(StatTypes.Stat s in dict.Keys)
+        {
+            writer.WriteStat(s);
+            writer.WriteFloat(dict[s]);
+        }
+        
     }
 
 

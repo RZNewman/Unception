@@ -66,6 +66,36 @@ public static class Utils
     {
         return Mathf.Round(value * 1000) / 10 + "%";
     }
+    public static Dictionary<T, float> invert<T>(this IDictionary<T, float> dict)
+    {
+        Dictionary<T, float> newDict = new Dictionary<T, float>();
+        foreach (T key in dict.Keys)
+        {
+            newDict[key] = -dict[key];
+        }
+        return newDict;
+    }
+    public static Dictionary<T, float> sum<T>(this IDictionary<T, float> dict1, IDictionary<T, float> dict2)
+    {
+        Dictionary<T, float> newDict = new Dictionary<T, float>();
+        foreach (T key in dict1.Keys)
+        {
+            newDict[key] = dict1[key];
+        }
+        foreach (T key in dict2.Keys)
+        {
+            if (newDict.ContainsKey(key))
+            {
+                newDict[key] += dict2[key];
+            }
+            else
+            {
+                newDict[key] = dict2[key];
+            }
+            
+        }
+        return newDict;
+    }
     public static float distance(this NavMeshPath path)
     {
         float distance = 0;

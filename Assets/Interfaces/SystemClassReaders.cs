@@ -5,6 +5,7 @@ using static SystemClassWriters;
 using static GenerateWind;
 using static GenerateDash;
 using static GenerateRepeating;
+using System.Collections.Generic;
 
 public static class SystemClassReaders
 {
@@ -33,6 +34,23 @@ public static class SystemClassReaders
     public static RewardManager.Quality ReadQuality(this NetworkReader reader)
     {
         return (RewardManager.Quality)reader.ReadByte();
+    }
+
+    public static StatTypes.Stat ReadStat(this NetworkReader reader)
+    {
+        return (StatTypes.Stat)reader.ReadByte();
+    }
+
+    public static Dictionary<StatTypes.Stat, float> ReadStatDict(this NetworkReader reader)
+    {
+        int count = reader.ReadInt();
+        Dictionary<StatTypes.Stat, float> dict = new Dictionary<StatTypes.Stat, float>();
+        for(int i =0; i< count; i++)
+        {
+            StatTypes.Stat s = reader.ReadStat();
+            dict[s] = reader.ReadFloat();
+        }
+        return dict;
     }
 
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)

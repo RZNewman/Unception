@@ -6,6 +6,7 @@ using static Cast;
 using static GenerateAttack;
 using static GenerateValues;
 using static GenerateWind;
+using static StatTypes;
 using static WindState;
 
 public static class GenerateDash
@@ -28,7 +29,7 @@ public static class GenerateDash
         public float distance;
         public DashControl control;
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, float baseStatAmount = 0)
         {
             strength *= this.strengthFactor;
             float scale = Power.scalePhysical(power);

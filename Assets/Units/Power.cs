@@ -162,6 +162,20 @@ public class Power : NetworkBehaviour, TextValue
     {
         return downscalePower(power) / baseDownscale / baseTimeScale;
     }
+    public static float worldScale
+    {
+        get
+        {
+            return baseWorldScale;
+        }
+    }
+    public static float timeScale
+    {
+        get
+        {
+            return baseTimeScale;
+        }
+    }
     public static void setPhysicalScale(float scale)
     {
         baseWorldScale = scale;

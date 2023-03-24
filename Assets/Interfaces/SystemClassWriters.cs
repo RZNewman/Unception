@@ -39,12 +39,12 @@ public static class SystemClassWriters
     {
         int count = dict.Keys.Count;
         writer.WriteInt(count);
-        foreach(StatTypes.Stat s in dict.Keys)
+        foreach (StatTypes.Stat s in dict.Keys)
         {
             writer.WriteStat(s);
             writer.WriteFloat(dict[s]);
         }
-        
+
     }
 
 
@@ -70,14 +70,9 @@ public static class SystemClassWriters
             case GenerateHit.HitGenerationData a:
                 writer.WriteByte((byte)GenerationDataClass.Hit);
                 writer.WriteHitType(a.type);
-                writer.WriteFloat(a.length);
-                writer.WriteFloat(a.width);
-                writer.WriteFloat(a.knockback);
-                writer.WriteFloat(a.damageMult);
-                writer.WriteFloat(a.stagger);
+                writer.WriteStatDict(a.statValues);
                 writer.WriteKnockBackType(a.knockBackType);
                 writer.WriteKnockBackDirection(a.knockBackDirection);
-                writer.WriteFloat(a.knockUp);
                 writer.WriteInt(a.multiple);
                 writer.WriteFloat(a.multipleArc);
                 writer.WriteInt(a.flair.visualIndex);

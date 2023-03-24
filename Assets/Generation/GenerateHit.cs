@@ -6,6 +6,7 @@ using static Utils;
 using static AiHandler;
 using static GenerateValues;
 using static AttackUtils;
+using static StatTypes;
 
 public static class GenerateHit
 {
@@ -36,12 +37,7 @@ public static class GenerateHit
     public class HitGenerationData : GenerationData
     {
         public HitType type;
-        public float length;
-        public float width;
-        public float knockback;
-        public float damageMult;
-        public float stagger;
-        public float knockUp;
+        public Dictionary<Stat, float> statValues;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
@@ -49,108 +45,121 @@ public static class GenerateHit
         public float multipleArc;
 
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, float baseStatAmount = 0)
         {
             strength *= this.strengthFactor;
-            float scale = Power.scalePhysical(power);
             float scaleNum = Power.scaleNumerical(power);
-            float scaleSpeed = Power.scaleSpeed(power);
 
-            float length = 0.5f * scale + this.length.asRange(0f, 5f) * strength * scale;
-            float width = 0.5f * scale + this.width.asRange(0f, 3f) * strength * scale;
-            float knockback = this.knockback.asRange(0, 10) * scaleSpeed * strength;
-            float damage = this.damageMult.asRange(0.5f, 0.7f) * strength;
-            float stagger = this.stagger.asRange(0f, 150f) * scaleNum * strength;
-            float knockUp = this.knockUp.asRange(0, 10) * scaleSpeed * strength;
+            Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
+            foreach (Stat s in statValues.Keys)
+            {
+                stats[s] = statValues[s].asRange(0, itemMax(s));
+            }
+            float leftoverStatScale = baseStatAmount / itemHitStatPool();
+            stats = stats.scale(leftoverStatScale);
+            stats = stats.sum(itemStatBase);
+            stats = stats.scale(scaleNum);
 
             HitInstanceData baseData = new HitInstanceData
             {
-                powerByStrength = power * strength,
+                strength = strength,
                 powerAtGen = power,
 
                 flair = flair,
 
-                length = length,
-                width = width,
-                knockback = knockback,
+                _baseStats = stats,
                 knockBackType = this.knockBackType,
                 knockBackDirection = this.knockBackDirection,
-                damageMult = damage,
-                stagger = stagger,
-                knockUp = knockUp,
                 type = this.type,
             };
-            return relativeStats(baseData);
+            return baseData;
 
         }
-        static HitInstanceData relativeStats(HitInstanceData input)
-        {
-            switch (input.type)
-            {
-                case HitType.Line:
-                    return input;
-                case HitType.Projectile:
-                    return new HitInstanceData
-                    {
-                        type = HitType.Projectile,
-                        powerByStrength = input.powerByStrength,
-                        powerAtGen = input.powerAtGen,
-                        flair = input.flair,
 
-                        knockBackType = input.knockBackType,
-                        knockBackDirection = input.knockBackDirection,
-                        knockback = input.knockback,
-                        length = input.length * 4f,
-                        width = input.width * 0.4f,
-                        damageMult = input.damageMult * 0.8f,
-                        knockUp = input.knockUp,
-                        stagger = input.stagger,
-
-                    };
-                case HitType.Ground:
-                    return new HitInstanceData
-                    {
-                        type = HitType.Ground,
-                        powerByStrength = input.powerByStrength,
-                        powerAtGen = input.powerAtGen,
-                        flair = input.flair,
-
-                        knockBackType = input.knockBackType,
-                        knockBackDirection = input.knockBackDirection,
-                        knockback = input.knockback,
-                        length = input.length * 2f,
-                        width = input.width * 1.3f,
-                        damageMult = input.damageMult * 0.9f,
-                        knockUp = input.knockUp,
-                        stagger = input.stagger,
-
-                    };
-                default:
-                    return input;
-            }
-        }
 
     }
 
     public class HitInstanceData : InstanceData
     {
-        public float powerByStrength;
+        public float strength;
         public float powerAtGen;
+        public float powerByStrength
+        {
+            get
+            {
+                return powerAtGen * strength;
+            }
+        }
 
         public HitType type;
-        public float length;
-        public float width;
-        public float knockback;
-        public float damageMult;
-        public float stagger;
+        public Dictionary<Stat, float> _baseStats;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
-        public float knockUp;
         public HitFlair flair;
+        public AttackInstanceData parentData;
 
+        Dictionary<Stat, float> stats
+        {
+            get
+            {
+                return _baseStats.sum(parentData.stats);
+            }
+        }
+        #region getStats
+        public float length
+        {
+            get
+            {
+                return getStat(Stat.Length);
+            }
+        }
+        public float width
+        {
+            get
+            {
+                return getStat(Stat.Width);
+            }
+        }
+        public float stagger
+        {
+            get
+            {
+                return getStat(Stat.Stagger);
+            }
+        }
+        public float knockback
+        {
+            get
+            {
+                return getStat(Stat.Knockback);
+            }
+        }
+        public float knockup
+        {
+            get
+            {
+                return getStat(Stat.Knockup);
+            }
+        }
+        #endregion
+
+        float getStat(Stat stat)
+        {
+            if (stats.ContainsKey(stat))
+            {
+                return statToValue(stat, stats[stat], Power.scaleNumerical(parentData.power), type) * strength;
+            }
+            else
+            {
+                return 0;
+            }
+
+        }
 
         public override EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
+            float length = getStat(Stat.Length);
+            float width = getStat(Stat.Width);
             Vector2 max = new Vector2(length, width / 2);
             switch (type)
             {
@@ -168,20 +177,17 @@ public static class GenerateHit
 
         public float damage(float power)
         {
-            return damageMult * Power.damageFalloff(powerAtGen, power);
+            return getStat(Stat.DamageMult) * Power.damageFalloff(powerAtGen, power);
         }
     }
 
-    static readonly int hitbaseValues = 5;
     public static HitGenerationData createHit()
     {
-        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .8f, 0.6f, 1.5f, 0.8f });
-        List<HitAugment> augments = new List<HitAugment>();
+        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(Stat.Length, Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger));
 
         if (Random.value < 0.2f)
         {
-            typeValues = augment(typeValues, new float[] { 0.5f });
-            augments.Add(HitAugment.Knockup);
+            vg.augmentInner(itemMaxDict(Stat.Knockup));
         }
         HitType t;
         float r = Random.value;
@@ -228,11 +234,7 @@ public static class GenerateHit
         };
 
         HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
-        hit.length = typeValues[0].val;
-        hit.width = typeValues[1].val;
-        hit.knockback = typeValues[2].val;
-        hit.damageMult = typeValues[3].val;
-        hit.stagger = typeValues[4].val;
+        hit.statValues = vg.getValues();
         hit.knockBackType = kbType;
         hit.knockBackDirection = kbDir;
         hit.type = t;
@@ -240,29 +242,9 @@ public static class GenerateHit
         hit.multiple = 1;
         hit.multipleArc = 0;
 
-        hit = augmentHit(hit, augments, typeValues);
-
         return hit;
 
 
     }
-    enum HitAugment
-    {
-        Knockup,
-    }
 
-    static HitGenerationData augmentHit(HitGenerationData hit, List<HitAugment> augs, Value[] values)
-    {
-        for (int i = 0; i < augs.Count; i++)
-        {
-            HitAugment aug = augs[i];
-            switch (aug)
-            {
-                case HitAugment.Knockup:
-                    hit.knockUp = values[hitbaseValues + i].val;
-                    break;
-            }
-        }
-        return hit;
-    }
 }

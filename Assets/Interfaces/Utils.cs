@@ -92,7 +92,21 @@ public static class Utils
             {
                 newDict[key] = dict2[key];
             }
-            
+
+        }
+        return newDict;
+    }
+
+    public static Dictionary<T, float> scale<T>(this IDictionary<T, float> dict, float scale, params T[] exclusions)
+    {
+        Dictionary<T, float> newDict = new Dictionary<T, float>();
+        foreach (T key in dict.Keys)
+        {
+            newDict[key] = dict[key];
+            if (!exclusions.Contains(key))
+            {
+                newDict[key] *= scale;
+            }
         }
         return newDict;
     }

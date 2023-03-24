@@ -11,6 +11,7 @@ using static WindState;
 using static Cast;
 using static RewardManager;
 using static GenerateRepeating;
+using static StatTypes;
 using UnityEditor;
 
 public static class GenerateAttack
@@ -18,7 +19,7 @@ public static class GenerateAttack
     public abstract class GenerationData : ScriptableObject
     {
         public float strengthFactor = 1;
-        public abstract InstanceData populate(float power, float strength);
+        public abstract InstanceData populate(float power, float strength, float baseStatAmount = 0);
     }
     public abstract class InstanceData
     {
@@ -156,10 +157,29 @@ public static class GenerateAttack
     {
         public SegmentInstanceData[] segments;
         public float cooldown;
-        public float charges;
+        public Dictionary<Stat, float> _baseStats;
+        public Dictionary<Stat, float> stats
+        {
+            get
+            {
+                return _baseStats;
+            }
+        }
         public Quality quality;
         public float power;
 
+
+        public float getStat(Stat stat)
+        {
+            if (stats.ContainsKey(stat))
+            {
+                return statToValue(stat, stats[stat], Power.scaleNumerical(power));
+            }
+            else
+            {
+                return 0;
+            }
+        }
 
         public float actingPower
         {
@@ -197,22 +217,24 @@ public static class GenerateAttack
             return damage(power) / castTimeDisplay(power);
         }
     }
-
+    static readonly float baseStatsSpread = itemHitStatPool() + 30;
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
+        float scaleNum = Power.scaleNumerical(power);
+        float statsToDistribute = baseStatsSpread;
+
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 30 + 1), 1.5f);
         cooldownTime /= Power.scaleTime(power);
-        float charges = atk.charges.asRange(1, 4);
-
-
+        Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
+        stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
+        statsToDistribute -= stats[Stat.Charges];
+        stats = stats.scale(scaleNum);
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
-
-        cooldownStrength *= segmentsGen.Count == 1 ? 1.0f : 0.75f;
-        cooldownStrength *= (1 - 0.07f * (charges - 1));
+        List<HitInstanceData> hitsToParent = new List<HitInstanceData>();
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {
@@ -247,11 +269,14 @@ public static class GenerateAttack
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 
+            HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength, statsToDistribute);
+            hitsToParent.Add(hit);
+
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
                 winddown = down,
-                hit = (HitInstanceData)segment.hit.populate(power, repeatStrength),
+                hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
                 repeat = repeat,
                 windRepeat = windRepeat,
@@ -262,16 +287,22 @@ public static class GenerateAttack
 
         }
 
-        return new AttackInstanceData
+        AttackInstanceData atkIn = new AttackInstanceData
         {
 
             cooldown = cooldownTime,
-            charges = charges,
+            _baseStats = stats,
             segments = segmentsInst,
             quality = atk.quality,
             power = power,
 
         };
+
+        foreach (HitInstanceData hit in hitsToParent)
+        {
+            hit.parentData = atkIn;
+        }
+        return atkIn;
 
     }
     public static List<SegmentGenerationData> splitSegments(GenerationData[] stages)
@@ -343,6 +374,7 @@ public static class GenerateAttack
     {
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
+        float windMax = 1f;
 
         float cd = Random.value;
         if (cd < 0.01f)
@@ -355,11 +387,13 @@ public static class GenerateAttack
         if (r < 0.1)
         {
             segmentCount = 2;
+            windMax = 0.6f;
         }
 
         for (int i = 0; i < segmentCount; i++)
         {
-            WindGenerationData windup = createWind();
+
+            WindGenerationData windup = createWind(windMax);
             stages.Add(windup);
             stages.AddRange(getEffect());
             stages.Add(createWind(Mathf.Clamp01(windup.duration * 2)));

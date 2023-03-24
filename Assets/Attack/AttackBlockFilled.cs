@@ -6,6 +6,7 @@ using static GenerateHit;
 using static GenerateWind;
 using static GenerateDash;
 using static AttackUtils;
+using static StatTypes;
 
 public class AttackBlockFilled : ScriptableObject
 {
@@ -86,7 +87,8 @@ public class AttackBlockFilled : ScriptableObject
     }
     public float getCharges()
     {
-        return instance.charges;
+
+        return instance.getStat(Stat.Charges) + 1;
     }
 
     public AiHandler.EffectiveDistance GetEffectiveDistance(float halfHeight)

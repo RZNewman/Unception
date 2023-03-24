@@ -5,6 +5,42 @@ using static Utils;
 
 public static class GenerateValues
 {
+    public struct ValueGenerator<T>
+    {
+        Dictionary<T, Value> storedValues;
+
+        public ValueGenerator(IDictionary<T, float> equivDict, float balance = 2)
+        {
+            T[] keys = equivDict.Keys.ToArray();
+            float[] equivs = keys.Select(k => equivDict[k]).ToArray();
+            Value[] vals = generateRandomValues(equivs, balance);
+            storedValues = new Dictionary<T, Value>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                storedValues[keys[i]] = vals[i];
+            }
+        }
+        public void augmentInner(IDictionary<T, float> equivDict)
+        {
+            ValueGenerator<T> vg = this;
+            T[] keys = storedValues.Keys.ToArray();
+            Value[] vals = keys.Select(k => vg.storedValues[k]).ToArray();
+
+            T[] newKeys = equivDict.Keys.ToArray();
+            float[] equivs = newKeys.Select(k => equivDict[k]).ToArray();
+            keys = keys.Concat(newKeys).ToArray();
+            vals = augment(vals, equivs);
+            for (int i = 0; i < keys.Length; i++)
+            {
+                storedValues[keys[i]] = vals[i];
+            }
+        }
+        public Dictionary<T, float> getValues()
+        {
+            return storedValues.ToDictionary(p => p.Key, p => p.Value.val);
+        }
+    }
+
 
     public struct Value
     {

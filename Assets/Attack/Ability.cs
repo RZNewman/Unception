@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
 using static AttackUtils;
+using static StatTypes;
 using static UnitControl;
 
 public class Ability : NetworkBehaviour

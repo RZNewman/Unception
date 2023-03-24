@@ -45,7 +45,7 @@ public static class SystemClassReaders
     {
         int count = reader.ReadInt();
         Dictionary<StatTypes.Stat, float> dict = new Dictionary<StatTypes.Stat, float>();
-        for(int i =0; i< count; i++)
+        for (int i = 0; i < count; i++)
         {
             StatTypes.Stat s = reader.ReadStat();
             dict[s] = reader.ReadFloat();
@@ -63,14 +63,9 @@ public static class SystemClassReaders
                 HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
                 hit.strengthFactor = strengthFactor;
                 hit.type = reader.ReadHitType();
-                hit.length = reader.ReadFloat();
-                hit.width = reader.ReadFloat();
-                hit.knockback = reader.ReadFloat();
-                hit.damageMult = reader.ReadFloat();
-                hit.stagger = reader.ReadFloat();
+                hit.statValues = reader.ReadStatDict();
                 hit.knockBackType = reader.ReadKnockBackType();
                 hit.knockBackDirection = reader.ReadKnockBackDirection();
-                hit.knockUp = reader.ReadFloat();
                 hit.multiple = reader.ReadInt();
                 hit.multipleArc = reader.ReadFloat();
                 hit.flair = new HitFlair

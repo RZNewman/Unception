@@ -68,7 +68,7 @@ public static class AttackUtils
                         break;
                 }
                 otherMover.applyForce(knockBackVec);
-                otherMover.applyForce(hitData.knockUp * Vector3.up);
+                otherMover.applyForce(hitData.knockup * Vector3.up);
             }
 
 

@@ -13,13 +13,14 @@ using static RewardManager;
 using static GenerateRepeating;
 using static StatTypes;
 using UnityEditor;
+using System.Runtime.InteropServices;
 
 public static class GenerateAttack
 {
     public abstract class GenerationData : ScriptableObject
     {
         public float strengthFactor = 1;
-        public abstract InstanceData populate(float power, float strength, float baseStatAmount = 0);
+        public abstract InstanceData populate(float power, float strength);
     }
     public abstract class InstanceData
     {
@@ -217,11 +218,10 @@ public static class GenerateAttack
             return damage(power) / castTimeDisplay(power);
         }
     }
-    static readonly float baseStatsSpread = itemHitStatPool() + 30;
+
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
     {
         float scaleNum = Power.scaleNumerical(power);
-        float statsToDistribute = baseStatsSpread;
 
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
@@ -229,7 +229,6 @@ public static class GenerateAttack
         cooldownTime /= Power.scaleTime(power);
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
-        statsToDistribute -= stats[Stat.Charges];
         stats = stats.scale(scaleNum);
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
@@ -269,7 +268,7 @@ public static class GenerateAttack
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 
-            HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength, statsToDistribute);
+            HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
             hitsToParent.Add(hit);
 
             segmentsInst[i] = new SegmentInstanceData
@@ -381,6 +380,8 @@ public static class GenerateAttack
         {
             noCooldown = true;
         }
+        float charges = noCooldown ? 0 : GaussRandomDecline(4);
+        float chargeBaseStats = charges.asRange(0, itemMax(Stat.Charges));
 
         int segmentCount = 1;
         float r = Random.value;
@@ -395,7 +396,7 @@ public static class GenerateAttack
 
             WindGenerationData windup = createWind(windMax);
             stages.Add(windup);
-            stages.AddRange(getEffect());
+            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats));
             stages.Add(createWind(Mathf.Clamp01(windup.duration * 2)));
 
         }
@@ -408,7 +409,7 @@ public static class GenerateAttack
         {
             stages = stages.ToArray(),
             cooldown = noCooldown ? -1 : GaussRandomDecline(4),
-            charges = noCooldown ? 0 : GaussRandomDecline(4),
+            charges = charges,
             quality = quality,
 
         };
@@ -426,7 +427,7 @@ public static class GenerateAttack
 
     }
 
-    static List<GenerationData> getEffect()
+    static List<GenerationData> getEffect(float remainingBaseStats)
     {
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
@@ -434,7 +435,7 @@ public static class GenerateAttack
         DashGenerationData d = null;
         RepeatingGenerationData r = null;
         WindGenerationData rWind = null;
-        HitGenerationData h = createHit();
+        HitGenerationData h = createHit(remainingBaseStats);
 
         if (gen < 0.3f)
         {

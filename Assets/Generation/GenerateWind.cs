@@ -15,7 +15,7 @@ public static class GenerateWind
         public float moveMult;
         public float turnMult;
 
-        public override InstanceData populate(float power, float strength, float baseStatAmount = 0)
+        public override InstanceData populate(float power, float strength)
         {
             float moveMag = this.moveMult.asRange(-3.0f, 1f);
             bool moveDir = moveMag >= 0;

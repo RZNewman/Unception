@@ -108,18 +108,23 @@ public static class StatTypes
         {Stat.Knockup,32},
         {Stat.Charges,65},
     };
+    public static readonly float itemStatSpread = 175;
 
-    static float sumMax(params Stat[] stats)
+    public static float sumMax(params Stat[] stats)
+    {
+        return stats.Select(s => itemStatMax[s]).Sum();
+    }
+    public static float sumMax(IEnumerable<Stat> stats)
     {
         return stats.Select(s => itemStatMax[s]).Sum();
     }
 
-    public static float itemHitStatPool()
-    {
-        return sumMax(Stat.Length, Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger) / 2;
-    }
 
     public static Dictionary<Stat, float> itemMaxDict(params Stat[] stats)
+    {
+        return stats.ToDictionary(s => s, s => itemStatMax[s]);
+    }
+    public static Dictionary<Stat, float> itemMaxDict(IEnumerable<Stat> stats)
     {
         return stats.ToDictionary(s => s, s => itemStatMax[s]);
     }

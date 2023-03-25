@@ -9,11 +9,11 @@ public static class GenerateValues
     {
         Dictionary<T, Value> storedValues;
 
-        public ValueGenerator(IDictionary<T, float> equivDict, float balance = 2)
+        public ValueGenerator(IDictionary<T, float> equivDict, float balance = 2, float fillPercent = 0.5f)
         {
             T[] keys = equivDict.Keys.ToArray();
             float[] equivs = keys.Select(k => equivDict[k]).ToArray();
-            Value[] vals = generateRandomValues(equivs, balance);
+            Value[] vals = generateRandomValues(equivs, balance, fillPercent);
             storedValues = new Dictionary<T, Value>();
             for (int i = 0; i < keys.Length; i++)
             {
@@ -54,7 +54,7 @@ public static class GenerateValues
     }
 
 
-    public static Value[] generateRandomValues(float[] worths, float balance = 2)
+    public static Value[] generateRandomValues(float[] worths, float balance = 2, float fillPercent = 0.5f)
     {
         int valueCount = worths.Length;
         Value[] values = new Value[valueCount];
@@ -62,7 +62,7 @@ public static class GenerateValues
         {
             values[i] = new Value
             {
-                val = 0.5f,
+                val = fillPercent,
                 equivalence = worths[i],
             };
         }
@@ -78,7 +78,7 @@ public static class GenerateValues
         while (unassinged.Count > 0)
         {
             int element = selectValueIndex(unassinged, values);
-            bool elementBoosted = Random.value > 0.5f;
+            bool elementBoosted = Random.value > fillPercent;
             unassinged.Remove(element);
 
             List<int> candidates = new List<int>(unassinged);

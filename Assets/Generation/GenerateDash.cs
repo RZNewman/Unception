@@ -29,7 +29,7 @@ public static class GenerateDash
         public float distance;
         public DashControl control;
 
-        public override InstanceData populate(float power, float strength, float baseStatAmount = 0)
+        public override InstanceData populate(float power, float strength)
         {
             strength *= this.strengthFactor;
             float scale = Power.scalePhysical(power);

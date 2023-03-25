@@ -45,7 +45,7 @@ public static class GenerateHit
         public float multipleArc;
 
 
-        public override InstanceData populate(float power, float strength, float baseStatAmount = 0)
+        public override InstanceData populate(float power, float strength)
         {
             strength *= this.strengthFactor;
             float scaleNum = Power.scaleNumerical(power);
@@ -55,8 +55,6 @@ public static class GenerateHit
             {
                 stats[s] = statValues[s].asRange(0, itemMax(s));
             }
-            float leftoverStatScale = baseStatAmount / itemHitStatPool();
-            stats = stats.scale(leftoverStatScale);
             stats = stats.sum(itemStatBase);
             stats = stats.scale(scaleNum);
 
@@ -181,9 +179,12 @@ public static class GenerateHit
         }
     }
 
-    public static HitGenerationData createHit()
+    public static HitGenerationData createHit(float remainingBaseStats)
     {
-        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(Stat.Length, Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger));
+        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger };
+        float fillPercent = remainingBaseStats / sumMax(generateStats);
+
+        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1.7f, fillPercent);
 
         if (Random.value < 0.2f)
         {

@@ -5,7 +5,8 @@ using UnityEngine;
 
 public static class RewardManager
 {
-    public readonly static float itemQualityPercent = 1.3f;
+    //This also increases the XP rate propotionally, bc it increases the falloff rate
+    public readonly static float itemQualityPercent = 1.5f;
     public readonly static float bonusRewardPerDifficulty = 0.3f;
 
     [Serializable]

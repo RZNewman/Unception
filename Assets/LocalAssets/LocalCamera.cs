@@ -10,6 +10,7 @@ public class LocalCamera : MonoBehaviour
     readonly float transitionTime = 1f;
     float currentTransition = 1f;
     Camera cam;
+    Keybinds keys;
 
     public Vector3 lockedOffset = new Vector3(0, 20, -7);
     public Vector3 turnOffset = new Vector3(0, 12, -7);
@@ -39,6 +40,7 @@ public class LocalCamera : MonoBehaviour
     {
         localClip = cam.nearClipPlane;
         oldPowerMag = transform.localPosition.magnitude;
+        keys = FindObjectOfType<Keybinds>(true);
         GetComponentInParent<Power>().subscribePower(scaleCameraSize);
         pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
         if (mode == CameraMode.Turn)
@@ -112,12 +114,12 @@ public class LocalCamera : MonoBehaviour
             transform.localPosition = cameraOffset().normalized * targetMag;
         }
 
-
+        Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         if (mode == CameraMode.Turn)
         {
 
             //Vector2 mouseDelta = Input.mousePosition - lastMousePosition;
-            Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+
 
             currentLookAngle += mouseDelta.x * turnXSens;
             currentLookAngle = normalizeAngle(currentLookAngle);
@@ -129,8 +131,17 @@ public class LocalCamera : MonoBehaviour
 
             //lastMousePosition = Input.mousePosition;
         }
+        else if (mode == CameraMode.Locked)
+        {
+            if (Input.GetKey(keys.binding(Keybinds.KeyName.CameraRotate)))
+            {
+                currentLookAngle += mouseDelta.x * turnXSens * 5;
+                currentLookAngle = normalizeAngle(currentLookAngle);
+                rootRotation.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
 
+            }
 
+        }
 
     }
     public void pause(bool paused)

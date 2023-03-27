@@ -20,6 +20,7 @@ public class Keybinds : MonoBehaviour
         Attack2,
         Attack3,
         Attack4,
+        CameraRotate,
     }
 
     Dictionary<KeyName, KeyCode> binds = new Dictionary<KeyName, KeyCode>();
@@ -115,6 +116,8 @@ public class Keybinds : MonoBehaviour
                 return KeyCode.LeftShift;
             case KeyName.Cancel:
                 return KeyCode.LeftControl;
+            case KeyName.CameraRotate:
+                return KeyCode.Mouse2;
             case KeyName.Attack1:
                 return KeyCode.Mouse0;
             case KeyName.Attack2:

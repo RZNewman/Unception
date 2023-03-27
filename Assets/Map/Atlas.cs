@@ -15,8 +15,7 @@ public class Atlas : NetworkBehaviour
 {
     static readonly int avgPacksPerfloor = 20;
     public static readonly float packVariance = 0.3f;
-    public static readonly int chestPerFloor = 1;
-    public static readonly int potPerFloor = 3;
+    public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 2f;
     public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
 

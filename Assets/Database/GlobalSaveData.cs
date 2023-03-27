@@ -44,7 +44,7 @@ public class GlobalSaveData : MonoBehaviour
         {
             items = db.Child("Characters").Child(playerName).Child("items").GetValueAsync(),
             power = db.Child("Characters").Child(playerName).Child("power").GetValueAsync(),
-            pity = db.Child("Characters").Child(playerName).Child("pityQuality").GetValueAsync(),
+            pity = db.Child("Characters").Child(playerName).Child("pity").GetValueAsync(),
             quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
         };
     }
@@ -82,14 +82,21 @@ public class GlobalSaveData : MonoBehaviour
     public struct PlayerSaveData
     {
         public float power;
-        public Dictionary<string, float> pity;
+        public PitySaveData pitySave;
         public WorldProgress worldProgress;
+    }
+
+    public struct PitySaveData
+    {
+        public Dictionary<string, float> quality;
+        public Dictionary<string, float> breakables;
+        public Dictionary<string, float> modCount;
     }
 
     public void savePlayerData(string playerName, PlayerSaveData data)
     {
         db.Child("Characters").Child(playerName).Child("power").SetValueAsync(data.power);
-        db.Child("Characters").Child(playerName).Child("pityQuality").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.pity));
+        db.Child("Characters").Child(playerName).Child("pity").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.pitySave));
         db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
     }
 

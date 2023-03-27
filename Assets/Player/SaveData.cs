@@ -18,6 +18,7 @@ public class SaveData : NetworkBehaviour
     Auth auth;
     Inventory inv;
     PlayerGhost player;
+    PlayerPity pity;
     GlobalSaveData globalSave;
     // Start is called before the first frame update
 
@@ -30,6 +31,7 @@ public class SaveData : NetworkBehaviour
         questDisplay = FindObjectOfType<UIQuestDisplay>(true);
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
+        pity = GetComponent<PlayerPity>();
         player = GetComponent<PlayerGhost>();
 
 
@@ -78,7 +80,7 @@ public class SaveData : NetworkBehaviour
         PlayerLoadTasks tasks = globalSave.getLoadTasks(auth.user);
         Task<DataSnapshot> items = tasks.items;
         Task<DataSnapshot> power = tasks.power;
-        Task<DataSnapshot> pity = tasks.pity;
+        Task<DataSnapshot> pityData = tasks.pity;
         Task<DataSnapshot> quests = tasks.quests;
 
         while (!quests.IsFaulted && !quests.IsCompleted && !quests.IsCanceled)
@@ -127,26 +129,26 @@ public class SaveData : NetworkBehaviour
 
         }
 
-        while (!pity.IsFaulted && !pity.IsCompleted && !pity.IsCanceled)
+        while (!pityData.IsFaulted && !pityData.IsCompleted && !pityData.IsCanceled)
         {
             yield return null;
         }
 
 
-        if (pity.IsFaulted)
+        if (pityData.IsFaulted)
         {
             Debug.LogError("Error loading pity");
         }
-        else if (pity.IsCompleted)
+        else if (pityData.IsCompleted)
         {
-            DataSnapshot snapshot = pity.Result;
+            DataSnapshot snapshot = pityData.Result;
             if (snapshot.Exists)
             {
-                inv.loadPity(JsonConvert.DeserializeObject<Dictionary<string, float>>(snapshot.GetRawJsonValue()));
+                pity.load(JsonConvert.DeserializeObject<PitySaveData>(snapshot.GetRawJsonValue()));
             }
             else
             {
-                inv.createBasePity();
+                pity.create();
             }
 
         }
@@ -186,7 +188,7 @@ public class SaveData : NetworkBehaviour
         {
             FindObjectOfType<Atlas>(true).makeMaps();
         }
-        inv.createBasePity();
+        pity.create();
         inv.genRandomItems();
     }
     private void OnDestroy()
@@ -196,7 +198,7 @@ public class SaveData : NetworkBehaviour
             globalSave.savePlayerData(auth.user, new PlayerSaveData
             {
                 power = player.power,
-                pity = inv.savePity(),
+                pitySave = pity.save(),
                 worldProgress = worldProgress,
             });
             saveItems();

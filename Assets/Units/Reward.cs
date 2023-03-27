@@ -78,7 +78,7 @@ public class Reward : MonoBehaviour
             while (gatheredPower > powerPerItem * other.qualityMultiplier)
             {
                 gatheredPower -= powerPerItem * other.qualityMultiplier;
-                Quality q = inventory.rollQuality(other.qualityMultiplier);
+                Quality q = inventory.pity.rollQuality(other.qualityMultiplier);
                 inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, false, q), other.transform.position);
             }
         }

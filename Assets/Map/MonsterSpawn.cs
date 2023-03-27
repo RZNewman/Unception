@@ -6,6 +6,7 @@ using UnityEngine;
 using static GenerateValues;
 using static Atlas;
 using static Utils;
+using static Breakable;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -35,8 +36,11 @@ public class MonsterSpawn : NetworkBehaviour
 
     //float difficultyMultiplier = 1f;
 
+    GlobalPlayer gp;
+
     private void Start()
     {
+        gp = FindObjectOfType<GlobalPlayer>();
         if (isServer)
         {
             StartCoroutine(FindObjectOfType<GlobalSaveData>().championItems(assignItems));
@@ -179,15 +183,13 @@ public class MonsterSpawn : NetworkBehaviour
         }
 
         int zoneCount = locations.Count;
-        for (int i = 0; i < zoneCount && i < (chestPerFloor + potPerFloor); i++)
+        for (int i = 0; i < zoneCount && i < (breakablesPerFloor); i++)
         {
-            //TODO pity chests + normalize Pot spawn
             int z = locations.RandomIndex();
             SpawnTransform t = locations[z];
             locations.RemoveAt(z);
-            bool isChest = i < chestPerFloor;
-
-            spawnBreakables(t, isChest, baseDiff.total);
+            BreakableType bType = gp.serverPlayer.pityTimers.rollBreakable(1);
+            spawnBreakables(t, bType, baseDiff.total);
             yield return null;
         }
     }
@@ -230,24 +232,22 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, percentOfBasePack, 2);
     }
 
-    void spawnBreakables(SpawnTransform spawn, bool isChest, float totalDifficulty)
+    void spawnBreakables(SpawnTransform spawn, BreakableType type, float totalDifficulty)
     {
         float diffMult = totalDifficulty + 1;
-        int numberBreakables = isChest ? 1 : Random.Range(3, 6);
-        float packPercentTotal = (isChest ? 5 : 0.5f) * diffMult;
-        float packPercent = packPercentTotal / numberBreakables;
-        for (int j = 0; j < numberBreakables; j++)
+        int numBreakables = numberBreakables(type);
+        float packPercentTotal = packpercent(type) * diffMult;
+        float packPercent = packPercentTotal / numBreakables;
+        for (int j = 0; j < numBreakables; j++)
         {
 
-            GameObject o = Instantiate(UrnPre, isChest ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
+            GameObject o = Instantiate(UrnPre, numBreakables <= 1 ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
             o.transform.localScale = Vector3.one * Power.scalePhysical(spawnPower);
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
             o.GetComponent<Gravity>().gravity *= Power.scaleSpeed(spawnPower);
-            o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, isChest ? 2 : 1);
-            if (isChest)
-            {
-                o.GetComponent<Breakable>().type = Breakable.BreakableType.Chest;
-            }
+            o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, qualityMult(type));
+            o.GetComponent<Breakable>().type = type;
+
             NetworkServer.Spawn(o);
         }
     }

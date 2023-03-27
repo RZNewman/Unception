@@ -24,10 +24,11 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     MusicBox music;
     SaveData save;
     Inventory inv;
+    PlayerPity pity;
     void Start()
     {
         inv = GetComponent<Inventory>();
-
+        pity = GetComponent<PlayerPity>();
         save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
         listener = music.GetComponent<AudioListener>();
@@ -69,6 +70,13 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         get
         {
             return save.progress;
+        }
+    }
+    public PlayerPity pityTimers
+    {
+        get
+        {
+            return pity;
         }
     }
 

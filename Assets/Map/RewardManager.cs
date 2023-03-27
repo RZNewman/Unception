@@ -18,6 +18,22 @@ public static class RewardManager
         Epic,
         Legendary
     }
+
+    [Serializable]
+    public enum ModCount : byte
+    {
+        Zero = 0,
+        One,
+        Two,
+        Three,
+        Four,
+        Five,
+    }
+
+    public static int count(this ModCount mc)
+    {
+        return (int)mc;
+    }
     public static string qualitySymbol(Quality q)
     {
         switch (q)
@@ -78,5 +94,10 @@ public static class RewardManager
 
     public static readonly float uncommonChance = 4f / (itemsPerPack * Atlas.avgPacksPerMap * clearPercent);
     public static readonly float qualityRarityFactor = 0.25f;
+
+    public static readonly float chestChance = 0.125f;
+
+    public static readonly float oneModChance = uncommonChance;
+    public static readonly float modCountRarityFactor = 0.25f;
 
 }

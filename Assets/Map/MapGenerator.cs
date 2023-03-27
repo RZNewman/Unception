@@ -208,7 +208,7 @@ public class MapGenerator : NetworkBehaviour
         delta.skipZones = true;
         processDelta(delta);
         //int tileCount = currentMap.floors[currentFloorIndex].tiles - 1;
-        int packCount = currentMap.floors[currentFloorIndex].packs + currentMap.floors[currentFloorIndex].encounters.Length + chestPerFloor + potPerFloor;
+        int packCount = currentMap.floors[currentFloorIndex].packs + currentMap.floors[currentFloorIndex].encounters.Length + breakablesPerFloor;
         //increase packs to make sure not every location is populated
         packCount = Mathf.FloorToInt(packCount * currentMap.floors[currentFloorIndex].sparseness);
         bool ending = false;

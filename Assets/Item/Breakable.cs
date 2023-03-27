@@ -17,8 +17,43 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         Urn,
         Chest
     }
+    public static int numberBreakables(BreakableType type)
+    {
+        switch (type)
+        {
+            case BreakableType.Urn:
+                return Random.Range(3, 6);
+            default:
+                return 1;
+        }
+    }
+    public static float packpercent(BreakableType type)
+    {
+        switch (type)
+        {
+            case BreakableType.Urn:
+                return 0.5f;
+            case BreakableType.Chest:
+                return 5f;
+            default:
+                return 0.5f;
+        }
+    }
+    public static float qualityMult(BreakableType type)
+    {
+        switch (type)
+        {
+            case BreakableType.Urn:
+                return 1;
+            case BreakableType.Chest:
+                return 2;
+            default:
+                return 1;
+        }
+    }
     [SyncVar]
     public BreakableType type;
+
 
 
     void instanceBody()

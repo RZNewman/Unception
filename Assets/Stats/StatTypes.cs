@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static GenerateHit;
+using static GenerateAttack;
 
 public static class StatTypes
 {
@@ -109,6 +110,22 @@ public static class StatTypes
         {Stat.Charges,65},
     };
     public static readonly float itemStatSpread = 175;
+    public static readonly float statsPerModMax = 60;
+    public static readonly float modBonusPercent = 0.07f;
+    public static Dictionary<Stat, float> statDict(this Mod[] mods)
+    {
+        if (mods == null || mods.Length == 0) { return new Dictionary<Stat, float>(); }
+        return mods.ToDictionary(m => m.stat, m => m.statBaseValue());
+    }
+    public static float statBaseValue(this Mod mod)
+    {
+        return mod.rolledPercent * statsPerModMax * (1 + modBonusPercent * (int)mod.bonus);
+    }
+
+    public static float powerPercentValue(this Mod mod)
+    {
+        return mod.statBaseValue() / (itemStatBaseTotal + itemStatSpread);
+    }
 
     public static float sumMax(params Stat[] stats)
     {
@@ -140,6 +157,16 @@ public static class StatTypes
         {Stat.Width,9},
         {Stat.DamageMult,230},
     };
+
+    public static float itemStatBaseTotal
+    {
+        get
+        {
+            return itemStatBase.Values.Sum();
+        }
+    }
+
+
 
 
 }

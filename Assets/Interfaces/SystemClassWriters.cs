@@ -46,6 +46,10 @@ public static class SystemClassWriters
         }
 
     }
+    public static void WriteModBonus(this NetworkWriter writer, RewardManager.ModBonus key)
+    {
+        writer.WriteByte((byte)key);
+    }
 
 
     public enum GenerationDataClass : byte

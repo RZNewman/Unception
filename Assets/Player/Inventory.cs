@@ -104,7 +104,7 @@ public class Inventory : NetworkBehaviour
     {
         for (int i = equipped.Count; i < inventorySlots; i++)
         {
-            AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
+            AttackBlock item = GenerateAttack.generate(player.power, i == 0);
             equipped.Add((AttackKey)i, item);
         }
     }
@@ -114,12 +114,12 @@ public class Inventory : NetworkBehaviour
     {
         for (int i = equipped.Count; i < inventorySlots; i++)
         {
-            AttackBlock item = GenerateAttack.generate(player.power, i == 0, Quality.Common);
+            AttackBlock item = GenerateAttack.generate(player.power, i == 0);
             equipped.Add((AttackKey)i, item);
         }
         for (int i = 0; i < 5; i++)
         {
-            AttackBlock item = GenerateAttack.generate(player.power, false, Quality.Common);
+            AttackBlock item = GenerateAttack.generate(player.power, false);
             storage.Add(item);
         }
         RpcInvChange();

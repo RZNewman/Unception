@@ -5,53 +5,40 @@ using UnityEngine;
 using static RewardManager;
 using static Breakable;
 using static GlobalSaveData;
+using System.Linq;
 
 public class PlayerPity : NetworkBehaviour
 {
     PityTimer<Quality> pityQuality;
     PityTimer<BreakableType> pityBreakable;
     PityTimer<ModCount> pityModCount;
+    PityTimer<ModBonus> pityModBonus;
 
 
 
     [Server]
     public void create()
     {
-        pityQuality = new PityTimer<Quality>(Quality.Common, 0.25f);
-        pityQuality.addCategory(Quality.Uncommon, uncommonChance);
-        pityQuality.addCategory(Quality.Rare, uncommonChance * Mathf.Pow(qualityRarityFactor, 1));
-        pityQuality.addCategory(Quality.Epic, uncommonChance * Mathf.Pow(qualityRarityFactor, 2));
-        pityQuality.addCategory(Quality.Legendary, uncommonChance * Mathf.Pow(qualityRarityFactor, 3));
+        pityQuality = new PityTimer<Quality>(0.25f, uncommonChance, qualityRarityFactor);
 
         pityBreakable = new PityTimer<BreakableType>(BreakableType.Urn, 0.25f);
         pityBreakable.addCategory(BreakableType.Chest, chestChance);
 
-        pityModCount = new PityTimer<ModCount>(ModCount.Zero, 0.1f);
-        pityModCount.addCategory(ModCount.One, oneModChance);
-        pityModCount.addCategory(ModCount.Two, oneModChance * Mathf.Pow(modCountRarityFactor, 1));
-        pityModCount.addCategory(ModCount.Three, oneModChance * Mathf.Pow(modCountRarityFactor, 2));
-        pityModCount.addCategory(ModCount.Four, oneModChance * Mathf.Pow(modCountRarityFactor, 3));
-        pityModCount.addCategory(ModCount.Five, oneModChance * Mathf.Pow(modCountRarityFactor, 4));
+        pityModCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor);
+        pityModBonus = new PityTimer<ModBonus>(0.02f, modBonusChance, modBonusRarityFactor);
     }
 
     [Server]
     public void load(PitySaveData data)
     {
-        pityQuality = new PityTimer<Quality>(Quality.Common, 0.25f);
-        pityQuality.addCategory(Quality.Uncommon, uncommonChance, data.quality[Quality.Uncommon.ToString()]);
-        pityQuality.addCategory(Quality.Rare, uncommonChance * Mathf.Pow(qualityRarityFactor, 1), data.quality[Quality.Rare.ToString()]);
-        pityQuality.addCategory(Quality.Epic, uncommonChance * Mathf.Pow(qualityRarityFactor, 2), data.quality[Quality.Epic.ToString()]);
-        pityQuality.addCategory(Quality.Legendary, uncommonChance * Mathf.Pow(qualityRarityFactor, 3), data.quality[Quality.Legendary.ToString()]);
+        pityQuality = new PityTimer<Quality>(0.25f, uncommonChance, qualityRarityFactor, data.quality.asEnum<Quality>());
+        //pityQuality.debug();
 
         pityBreakable = new PityTimer<BreakableType>(BreakableType.Urn, 0.25f);
         pityBreakable.addCategory(BreakableType.Chest, chestChance, data.breakables[BreakableType.Chest.ToString()]);
 
-        pityModCount = new PityTimer<ModCount>(ModCount.Zero, 0.1f);
-        pityModCount.addCategory(ModCount.One, oneModChance, data.modCount[ModCount.One.ToString()]);
-        pityModCount.addCategory(ModCount.Two, oneModChance * Mathf.Pow(modCountRarityFactor, 1), data.modCount[ModCount.Two.ToString()]);
-        pityModCount.addCategory(ModCount.Three, oneModChance * Mathf.Pow(modCountRarityFactor, 2), data.modCount[ModCount.Three.ToString()]);
-        pityModCount.addCategory(ModCount.Four, oneModChance * Mathf.Pow(modCountRarityFactor, 3), data.modCount[ModCount.Four.ToString()]);
-        pityModCount.addCategory(ModCount.Five, oneModChance * Mathf.Pow(modCountRarityFactor, 4), data.modCount[ModCount.Five.ToString()]);
+        pityModCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor, data.modCount.asEnum<ModCount>());
+        pityModBonus = new PityTimer<ModBonus>(0.02f, modBonusChance, modBonusRarityFactor, data.modBonus.asEnum<ModBonus>());
     }
 
     public PitySaveData save()
@@ -78,9 +65,14 @@ public class PlayerPity : NetworkBehaviour
         return pityBreakable.roll(qualityMultiplier);
     }
     [Server]
-    public ModCount rollModCount(float qualityMultiplier)
+    public int rollModCount(float qualityMultiplier)
     {
-        return pityModCount.roll(qualityMultiplier);
+        return (int)pityModCount.roll(qualityMultiplier);
+    }
+    [Server]
+    public ModBonus rollModBonus(float qualityMultiplier)
+    {
+        return pityModBonus.roll(qualityMultiplier);
     }
     // Start is called before the first frame update
     void Start()

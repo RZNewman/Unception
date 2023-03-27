@@ -57,6 +57,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         identifier.color = partialColor;
         identifier.text = flair.identifier;
         background.sprite = bgFromQuality(filled.instance.quality);
+        GetComponentInChildren<StarCounter>().setStars(filled.instance.mods != null ? filled.instance.mods.Length : 0);
     }
 
     public void setDetails(UiAbilityDetails details)

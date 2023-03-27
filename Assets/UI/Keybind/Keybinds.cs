@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Utils;
 
 public class Keybinds : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class Keybinds : MonoBehaviour
 
     private void Start()
     {
-        foreach (KeyName name in Enum.GetValues(typeof(KeyName)))
+        foreach (KeyName name in EnumValues<KeyName>())
         {
             GameObject o = Instantiate(keyPre, keyPanel.transform);
 

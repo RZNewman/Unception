@@ -76,6 +76,7 @@ public class UiAbilityDetails : MonoBehaviour
         segmentPanel.addLabel("Length", instance.hit.length);
         segmentPanel.addLabel("Width", instance.hit.width);
         segmentPanel.addLabel("Knockback", instance.hit.knockback);
+        segmentPanel.addLabel("Knockup", instance.hit.knockup);
         segmentPanel.addLabel("KB Dir", instance.hit.knockBackDirection.ToString());
         segmentPanel.addLabel("Stagger", instance.hit.stagger);
 

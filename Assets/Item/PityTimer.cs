@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static RewardManager;
+using static Utils;
 
-public class PityTimer<T>
+public class PityTimer<T> where T : struct, System.IConvertible
 {
     struct PityWeight
     {
@@ -26,10 +29,33 @@ public class PityTimer<T>
     float chanceMulitplier;
     T defaultCategory;
 
-    public PityTimer(T defaultCat, float chance = 1f)
+    public PityTimer(T defaultCat, float mult = 1f)
     {
         defaultCategory = defaultCat;
-        chanceMulitplier = chance;
+        chanceMulitplier = mult;
+    }
+    public PityTimer(float mult, float rarityChance, float rarityPowerFactor, IDictionary<T, float> startingValues = null)
+    {
+        chanceMulitplier = mult;
+        T[] values = EnumValues<T>().ToArray();
+        for (int i = 0; i < values.Length; i++)
+        {
+            T value = values[i];
+            float initial = 0;
+
+            if (i == 0)
+            {
+                defaultCategory = value;
+            }
+            else
+            {
+                if (startingValues != null)
+                {
+                    startingValues.TryGetValue(value, out initial);
+                }
+                addCategory(value, rarityChance * Mathf.Pow(rarityPowerFactor, i - 1), initial);
+            }
+        }
     }
 
     public T roll(float rarityFactor = 1f)
@@ -60,11 +86,18 @@ public class PityTimer<T>
     public Dictionary<string, float> export()
     {
         Dictionary<string, float> dict = new Dictionary<string, float>();
-        foreach(PityWeight p in weightList)
+        foreach (PityWeight p in weightList)
         {
             dict.Add(p.category.ToString(), p.chance);
         }
         return dict;
+    }
+    public void debug()
+    {
+        foreach (PityWeight w in weightList)
+        {
+            Debug.Log(w.category + " - " + w.chance + " / " + w.baseChance);
+        }
     }
 
 }

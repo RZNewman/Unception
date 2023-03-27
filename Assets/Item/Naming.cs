@@ -97,6 +97,23 @@ public static class Naming
 "Cursed",
 "Flash",
 "Power",
+"Endless",
+"Pinnacle",
+"Destroyer",
+"Swift",
+"Drunken",
+"Blade",
+"Edge",
+"Needle",
+"Billowing",
+"Impossible",
+"Erupting",
+"Charged",
+"Hammer",
+"Brick",
+"Sick",
+
+
     };
     static string[] suffixes = new string[] {
 "Slash",
@@ -125,5 +142,10 @@ public static class Naming
 "Swing",
 "Shot",
 "Punch",
+"Kick",
+"Obliterate",
+"Twist",
+"Impale",
+
     };
 }

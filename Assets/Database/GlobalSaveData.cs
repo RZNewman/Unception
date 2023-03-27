@@ -91,6 +91,7 @@ public class GlobalSaveData : MonoBehaviour
         public Dictionary<string, float> quality;
         public Dictionary<string, float> breakables;
         public Dictionary<string, float> modCount;
+        public Dictionary<string, float> modBonus;
     }
 
     public void savePlayerData(string playerName, PlayerSaveData data)

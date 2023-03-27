@@ -29,6 +29,21 @@ public static class RewardManager
         Four,
         Five,
     }
+    [Serializable]
+    public enum ModBonus : byte
+    {
+        Zero = 0,
+        One,
+        Two,
+        Three,
+        Four,
+        Five,
+        Six,
+        Seven,
+        Eight,
+        Nine,
+        Ten
+    }
 
     public static int count(this ModCount mc)
     {
@@ -99,5 +114,10 @@ public static class RewardManager
 
     public static readonly float oneModChance = uncommonChance;
     public static readonly float modCountRarityFactor = 0.25f;
+
+    public static readonly float modBonusChance = 0.03f;
+    public static readonly float modBonusRarityFactor = 0.25f;
+
+
 
 }

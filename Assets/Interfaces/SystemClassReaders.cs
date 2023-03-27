@@ -53,6 +53,11 @@ public static class SystemClassReaders
         return dict;
     }
 
+    public static RewardManager.ModBonus ReadModBonus(this NetworkReader reader)
+    {
+        return (RewardManager.ModBonus)reader.ReadByte();
+    }
+
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
         float strengthFactor = reader.ReadFloat();

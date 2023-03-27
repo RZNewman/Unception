@@ -146,10 +146,19 @@ public static class GenerateAttack
         public Color color;
         public int symbol;
     }
+
+    [System.Serializable]
+    public struct Mod
+    {
+        public Stat stat;
+        public float rolledPercent;
+        public ModBonus bonus;
+    }
     [System.Serializable]
     public struct AttackGenerationData
     {
         public GenerationData[] stages;
+        public Mod[] mods;
         public float cooldown;
         public float charges;
         public Quality quality;
@@ -157,6 +166,7 @@ public static class GenerateAttack
     public struct AttackInstanceData
     {
         public SegmentInstanceData[] segments;
+        public Mod[] mods;
         public float cooldown;
         public Dictionary<Stat, float> _baseStats;
         public Dictionary<Stat, float> stats
@@ -181,12 +191,19 @@ public static class GenerateAttack
                 return 0;
             }
         }
+        float modPercentValue
+        {
+            get
+            {
+                return mods == null ? 1 : 1 + mods.Select(m => m.powerPercentValue()).Sum();
+            }
+        }
 
         public float actingPower
         {
             get
             {
-                return power * qualityPercent(quality);
+                return power * modPercentValue * qualityPercent(quality);
             }
         }
         public float castTimeDisplay(float power)
@@ -229,6 +246,7 @@ public static class GenerateAttack
         cooldownTime /= Power.scaleTime(power);
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
+        stats = stats.sum(atk.mods.statDict());
         stats = stats.scale(scaleNum);
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
@@ -293,6 +311,7 @@ public static class GenerateAttack
             _baseStats = stats,
             segments = segmentsInst,
             quality = atk.quality,
+            mods = atk.mods,
             power = power,
 
         };
@@ -367,10 +386,37 @@ public static class GenerateAttack
         return segments;
     }
 
-
-
-    public static AttackBlock generate(float power, bool noCooldown, Quality quality = Quality.Common)
+    static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
+        List<Stat> possible = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges };
+        List<Mod> mods = new List<Mod>();
+        for (int i = 0; i < count; i++)
+        {
+            Stat s = possible.RandomItem();
+            mods.Add(new Mod
+            {
+                stat = s,
+                rolledPercent = Random.value,
+                bonus = pity.rollModBonus(qualityMultiplier)
+            });
+            possible.Remove(s);
+        }
+        return mods.ToArray();
+    }
+
+
+    public static AttackBlock generate(float power, bool noCooldown, float qualityMultiplier = 1, PlayerPity pity = null)
+    {
+        Quality quality = Quality.Common;
+        Mod[] mods = new Mod[0];
+        if (pity)
+        {
+            quality = pity.rollQuality(qualityMultiplier);
+            int modCount = pity.rollModCount(qualityMultiplier);
+            mods = rollMods(pity, modCount, qualityMultiplier);
+        }
+
+
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
         float windMax = 1f;
@@ -411,6 +457,7 @@ public static class GenerateAttack
             cooldown = noCooldown ? -1 : GaussRandomDecline(4),
             charges = charges,
             quality = quality,
+            mods = mods,
 
         };
         block.source = atk;

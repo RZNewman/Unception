@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 using static MapGenerator;
+using static RewardManager;
 
 public static class Utils
 {
     public static IEnumerable<T> EnumValues<T>()
     {
         return System.Enum.GetValues(typeof(T)).Cast<T>();
+    }
+
+    public static Dictionary<T, float> asEnum<T>(this Dictionary<string, float> export)
+    {
+        if (export == null) { return new Dictionary<T, float>(); }
+        return export.ToDictionary(p => (T)System.Enum.Parse(typeof(T), p.Key), p => p.Value);
     }
     public static Vector3 input2vec(Vector2 inp)
     {

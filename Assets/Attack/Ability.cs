@@ -67,7 +67,7 @@ public class Ability : NetworkBehaviour
     {
         if (charges < chargeMax && cooldownTicking)
         {
-            charges += Time.fixedDeltaTime / cooldownPerCharge;
+            charges += Time.fixedDeltaTime * attackFilled.getCooldownMult() / cooldownPerCharge;
         }
         if (charges >= chargeMax)
         {

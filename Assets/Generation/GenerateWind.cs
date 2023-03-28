@@ -4,6 +4,7 @@ using UnityEngine;
 using static Cast;
 using static GenerateAttack;
 using static GenerateHit;
+using static StatTypes;
 using static Utils;
 using static WindState;
 
@@ -47,6 +48,14 @@ public static class GenerateWind
         public float durationDisplay(float power)
         {
             return duration * Power.scaleTime(power);
+        }
+
+        public float haste
+        {
+            get
+            {
+                return parentData.getStat(Stat.Haste);
+            }
         }
     }
     public static WindGenerationData createWind(float durrationLimit = 1.0f)

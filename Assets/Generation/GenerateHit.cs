@@ -94,7 +94,7 @@ public static class GenerateHit
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
-        public AttackInstanceData parentData;
+        
 
         Dictionary<Stat, float> stats
         {

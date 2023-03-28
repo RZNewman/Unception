@@ -27,14 +27,14 @@ public abstract class State
     {
         get
         {
-            return duration;
+            return duration * tickSpeedMult();
         }
     }
     protected float maxDuration
     {
         get
         {
-            return startingDuration;
+            return startingDuration * tickSpeedMult();
         }
     }
 
@@ -54,8 +54,13 @@ public abstract class State
     {
         if (durationType == DurrationType.Timed)
         {
-            duration -= Time.fixedDeltaTime;
+            duration -= Time.fixedDeltaTime * tickSpeedMult();
         }
+    }
+    
+    protected virtual float tickSpeedMult()
+    {
+        return 1;
     }
     protected bool expired
     {

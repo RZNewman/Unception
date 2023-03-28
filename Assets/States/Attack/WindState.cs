@@ -12,6 +12,7 @@ using static FloorNormal;
 public class WindState : AttackStageState, BarValue
 {
     bool isWinddown;
+    WindInstanceData windData;
     GameObject groundTarget;
     GroundSearchParams groundSearch;
 
@@ -24,8 +25,7 @@ public class WindState : AttackStageState, BarValue
     public WindState(UnitMovement m, WindInstanceData d, bool winddown = false) : base(m, d.duration)
     {
         isWinddown = winddown;
-        moveMultiplier = d.moveMult;
-        lookMultiplier = d.turnMult;
+        windData = d;
     }
 
     public override void enter()
@@ -42,10 +42,10 @@ public class WindState : AttackStageState, BarValue
         if (groundTarget)
         {
             groundTarget.GetComponent<FloorNormal>().setGround(groundSearch);
-            groundTarget.GetComponent<GroundTarget>().setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * lookMultiplier);
+            groundTarget.GetComponent<GroundTarget>().setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * windData.turnMult);
         }
-        mover.rotate(inp, false, lookMultiplier);
-        mover.move(inp, moveMultiplier);
+        mover.rotate(inp, false, windData.turnMult);
+        mover.move(inp, windData.moveMult);
 
 
     }
@@ -61,7 +61,7 @@ public class WindState : AttackStageState, BarValue
         return new Cast.IndicatorOffsets
         {
             distance = Vector3.zero,
-            time = currentDurration,
+            time = currentDurration ,
         };
     }
     public float remainingDuration
@@ -85,5 +85,10 @@ public class WindState : AttackStageState, BarValue
     {
         groundTarget = t;
         groundSearch = s;
+    }
+
+    protected override float tickSpeedMult()
+    {
+        return 1 + windData.haste;
     }
 }

@@ -24,6 +24,7 @@ public static class GenerateAttack
     }
     public abstract class InstanceData
     {
+        public AttackInstanceData parentData;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
             return new EffectiveDistance()
@@ -251,13 +252,15 @@ public static class GenerateAttack
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
-        List<HitInstanceData> hitsToParent = new List<HitInstanceData>();
+        List<InstanceData> stagesToParent = new List<InstanceData>();
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {
             SegmentGenerationData segment = segmentsGen[i];
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
+            stagesToParent.Add(up);
+            stagesToParent.Add(down);
             List<WindInstanceData> windList = new List<WindInstanceData> { up, down };
             WindInstanceData windRepeat = null;
             RepeatingInstanceData repeat = null;
@@ -266,6 +269,7 @@ public static class GenerateAttack
             {
                 repeat = (RepeatingInstanceData)segment.repeat.populate(power, 1.0f);
                 windRepeat = (WindInstanceData)segment.windRepeat.populate(power, 1.0f);
+                stagesToParent.Add(windRepeat);
                 repeatCount = repeat.repeatCount;
                 for (int j = 0; j < segment.repeat.repeatCount; j++)
                 {
@@ -287,7 +291,7 @@ public static class GenerateAttack
             float repeatStrength = strength / repeatCount;
 
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
-            hitsToParent.Add(hit);
+            stagesToParent.Add(hit);
 
             segmentsInst[i] = new SegmentInstanceData
             {
@@ -316,9 +320,9 @@ public static class GenerateAttack
 
         };
 
-        foreach (HitInstanceData hit in hitsToParent)
+        foreach (InstanceData stage in stagesToParent)
         {
-            hit.parentData = atkIn;
+            stage.parentData = atkIn;
         }
         return atkIn;
 
@@ -388,7 +392,10 @@ public static class GenerateAttack
 
     static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
-        List<Stat> possible = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges };
+        List<Stat> possible = new List<Stat>() { 
+            Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges, 
+            Stat.Haste, Stat.Cooldown,
+        };
         List<Mod> mods = new List<Mod>();
         for (int i = 0; i < count; i++)
         {

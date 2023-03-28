@@ -95,11 +95,13 @@ public class ActionState : AttackStageState
     public override void tick()
     {
         base.tick();
-        UnitInput inp = mover.input;
+
+        Debug.LogError("Unreachable - Should transition");
+        //UnitInput inp = mover.input;
 
 
-        mover.rotate(inp, false, lookMultiplier);
-        mover.move(inp, moveMultiplier);
+        //mover.rotate(inp, false, lookMultiplier);
+        //mover.move(inp, moveMultiplier);
 
 
     }

@@ -35,8 +35,10 @@ public static class StatTypes
         {Stat.Knockback,17},
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},
-        {Stat.Knockup,20},
-        {Stat.Charges,3.0f }
+        {Stat.Knockup,15},
+        {Stat.Charges,3.0f },
+        {Stat.Haste, 0.8f },
+        {Stat.Cooldown, 1.0f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);
 
     static Dictionary<HitType, Dictionary<Stat, float>> hitStatModifiers = new Dictionary<HitType, Dictionary<Stat, float>>()

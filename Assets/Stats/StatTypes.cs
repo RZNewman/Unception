@@ -111,7 +111,8 @@ public static class StatTypes
     };
     public static readonly float itemStatSpread = 175;
     public static readonly float statsPerModMax = 60;
-    public static readonly float modBonusPercent = 0.07f;
+    public static readonly float statModBasePercent = 0.5f;
+    public static readonly float modBonusPercent = 0.025f;
     public static Dictionary<Stat, float> statDict(this Mod[] mods)
     {
         if (mods == null || mods.Length == 0) { return new Dictionary<Stat, float>(); }
@@ -119,7 +120,7 @@ public static class StatTypes
     }
     public static float statBaseValue(this Mod mod)
     {
-        return mod.rolledPercent * statsPerModMax * (1 + modBonusPercent * (int)mod.bonus);
+        return statsPerModMax * (statModBasePercent + (1 - statModBasePercent) * mod.rolledPercent + modBonusPercent * (int)mod.bonus);
     }
 
     public static float powerPercentValue(this Mod mod)

@@ -37,7 +37,7 @@ public static class StatTypes
         {Stat.Stagger,200},
         {Stat.Knockup,15},
         {Stat.Charges,3.0f },
-        {Stat.Haste, 0.8f },
+        {Stat.Haste, 0.5f },
         {Stat.Cooldown, 1.0f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);
 

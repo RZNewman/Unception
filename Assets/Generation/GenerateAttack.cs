@@ -102,7 +102,14 @@ public static class GenerateAttack
         public float castTimeDisplay(float power)
         {
 
-            return windStages.Sum(w => w.duration) * Power.scaleTime(power);
+            return castTime() * Power.scaleTime(power);
+
+        }
+
+        public float castTime()
+        {
+
+            return windStages.Sum(w => w.durationHastened);
 
         }
         public float effectPower
@@ -130,11 +137,11 @@ public static class GenerateAttack
         }
         public float avgMove(float power)
         {
-            return windStages.Sum(x => x.moveMult * x.duration) / castTimeDisplay(power);
+            return windStages.Sum(x => x.moveMult * x.durationHastened) / castTime();
         }
         public float avgTurn(float power)
         {
-            return windStages.Sum(x => x.turnMult * x.duration) / castTimeDisplay(power);
+            return windStages.Sum(x => x.turnMult * x.durationHastened) / castTime();
         }
 
 
@@ -392,8 +399,8 @@ public static class GenerateAttack
 
     static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
-        List<Stat> possible = new List<Stat>() { 
-            Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges, 
+        List<Stat> possible = new List<Stat>() {
+            Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges,
             Stat.Haste, Stat.Cooldown,
         };
         List<Mod> mods = new List<Mod>();

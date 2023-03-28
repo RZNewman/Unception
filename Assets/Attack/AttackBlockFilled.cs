@@ -85,9 +85,13 @@ public class AttackBlockFilled : ScriptableObject
     {
         return instance.cooldown;
     }
+    public float getCooldownDisplay(float power)
+    {
+        return instance.cooldownDisplay(power) / getCooldownMult();
+    }
     public float getCooldownMult()
     {
-        return instance.getStat(Stat.Cooldown) +1;
+        return instance.getStat(Stat.Cooldown) + 1;
     }
     public float getCharges()
     {

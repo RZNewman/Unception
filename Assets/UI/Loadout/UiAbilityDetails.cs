@@ -38,7 +38,7 @@ public class UiAbilityDetails : MonoBehaviour
         quality.color = colorQuality(filled.instance.quality);
         powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
         castTime.text = Power.displayPower(filled.instance.castTimeDisplay(player.power));
-        cooldown.text = Power.displayPower(filled.getCooldown());
+        cooldown.text = Power.displayPower(filled.getCooldownDisplay(player.power));
         charges.text = Power.displayPower(filled.getCharges());
 
         damage.text = Power.displayPower(filled.instance.damage(player.power));

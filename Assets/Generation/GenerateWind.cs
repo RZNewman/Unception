@@ -47,7 +47,23 @@ public static class GenerateWind
 
         public float durationDisplay(float power)
         {
-            return duration * Power.scaleTime(power);
+            return durationHastened * Power.scaleTime(power);
+        }
+
+        public float durationHastened
+        {
+            get
+            {
+                return duration / castSpeedMultiplier;
+            }
+        }
+
+        public float castSpeedMultiplier
+        {
+            get
+            {
+                return 1 + haste;
+            }
         }
 
         public float haste

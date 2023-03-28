@@ -61,7 +61,7 @@ public class WindState : AttackStageState, BarValue
         return new Cast.IndicatorOffsets
         {
             distance = Vector3.zero,
-            time = currentDurration ,
+            time = currentDurration,
         };
     }
     public float remainingDuration
@@ -89,6 +89,6 @@ public class WindState : AttackStageState, BarValue
 
     protected override float tickSpeedMult()
     {
-        return 1 + windData.haste;
+        return windData.castSpeedMultiplier;
     }
 }

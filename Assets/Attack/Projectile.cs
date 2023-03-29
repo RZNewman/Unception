@@ -14,12 +14,11 @@ public class Projectile : NetworkBehaviour
     public GameObject terrainHit;
     public GameObject visualScale;
 
-    public float speed;
-
     public static readonly float BaseProjectileLifetime = 1.5f;
 
     float lifetime;
     float birth;
+    bool hasHit = false;
 
     UnitMovement mover;
     HitInstanceData hitData;
@@ -39,7 +38,7 @@ public class Projectile : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        if (Time.time > birth + lifetime)
+        if (isServer && Time.time > birth + lifetime)
         {
             Destroy(gameObject);
         }
@@ -50,6 +49,7 @@ public class Projectile : NetworkBehaviour
         public float hitboxRadius;
         public float halfHeight;
         public float length;
+        public float range;
         public uint team;
         public float power;
         public float powerByStrength;
@@ -72,12 +72,15 @@ public class Projectile : NetworkBehaviour
             team = mover.GetComponent<TeamOwnership>().getTeam(),
             power = p.power,
             length = hitData.length,
+            range = hitData.range,
             powerByStrength = hitData.powerByStrength,
             visualIndex = hitData.flair.visualIndex,
             dists = dists,
             lifetime = BaseProjectileLifetime / p.scaleTime(),
         };
         setup(data);
+        lifetime = data.lifetime;
+        setSpeed(data.range / lifetime);
     }
 
     void setup(ProjectileData data)
@@ -86,10 +89,6 @@ public class Projectile : NetworkBehaviour
         float hitR = data.hitboxRadius;
         terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
         playerHit.transform.localScale = new Vector3(hitR, attackHitboxHalfHeight(HitType.Projectile, data.halfHeight, hitR) / 2, hitR) * 2;
-        lifetime = data.lifetime;
-        float speed = data.length / BaseProjectileLifetime;
-        GetComponent<Rigidbody>().velocity = transform.forward * speed;
-
         setAudioDistances(Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.visualIndex], visualScale.transform), data.dists);
         setThreatColor();
     }
@@ -101,17 +100,35 @@ public class Projectile : NetworkBehaviour
 
     }
 
+    [Server]
+    void setSpeed(float speed)
+    {
+        GetComponent<Rigidbody>().velocity = transform.forward * speed;
+    }
+
     public void onPlayerCollide(Collider other)
     {
         if (isServer && !collided.Contains(other))
         {
-            hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward });
+
             collided.Add(other);
+            if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward })
+                && !hasHit)
+            {
+                hasHit = true;
+                birth = Time.time;
+                lifetime = data.lifetime / 3f;
+                setSpeed(data.length / lifetime);
+            }
         }
 
     }
     public void onTerrainCollide(Collider other)
     {
-        Destroy(gameObject);
+        if (isServer)
+        {
+            Destroy(gameObject);
+        }
+
     }
 }

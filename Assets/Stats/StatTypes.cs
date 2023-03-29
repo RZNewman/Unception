@@ -20,7 +20,7 @@ public static class StatTypes
         Haste,
         TurnspeedCast,
         MovespeedCast,
-        //Range,
+        Range,
     }
     public struct SyncStat
     {
@@ -30,7 +30,7 @@ public static class StatTypes
 
     static Dictionary<Stat, float> statValues = new Dictionary<Stat, float>()
     {
-        {Stat.Length,5.5f},
+        {Stat.Length,3.5f},
         {Stat.Width,3.75f},
         {Stat.Knockback,17},
         {Stat.DamageMult,0.14f},
@@ -41,18 +41,21 @@ public static class StatTypes
         {Stat.Cooldown, 1.0f },
         {Stat.TurnspeedCast, 90f },
         {Stat.MovespeedCast, 2.0f },
+        {Stat.Range, 6f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);
 
     static Dictionary<HitType, Dictionary<Stat, float>> hitStatModifiers = new Dictionary<HitType, Dictionary<Stat, float>>()
     {
         {HitType.Projectile, new Dictionary<Stat, float>(){
-            {Stat.Length, 4 },
+            {Stat.Length, 1.4f },
+            {Stat.Range, 4 },
             {Stat.Width, 0.4f },
-            {Stat.DamageMult, 0.8f },
+            {Stat.DamageMult, 1.0f },
             }
         },
         {HitType.Ground, new Dictionary<Stat, float>(){
             {Stat.Length, 2 },
+            {Stat.Range, 2 },
             {Stat.Width, 1.3f },
             {Stat.DamageMult, 0.9f },
             }
@@ -80,6 +83,7 @@ public static class StatTypes
         {
             case Stat.Length:
             case Stat.Width:
+            case Stat.Range:
             case Stat.MovespeedCast:
             //Turnspeed is in degrees, which would be a constant, but instead we divide by
             //the world scale here and the player scale later, acting like a length
@@ -116,9 +120,10 @@ public static class StatTypes
         {Stat.Stagger,48},
         {Stat.Knockup,32},
         {Stat.Charges,65},
+        {Stat.Range,65},
     };
     public static readonly float itemStatSpread = 175;
-    public static readonly float statsPerModMax = 60;
+    public static readonly float statsPerModMax = 45;
     public static readonly float statModBasePercent = 0.5f;
     public static readonly float modBonusPercent = 0.025f;
     public static Dictionary<Stat, float> statDict(this Mod[] mods)
@@ -162,6 +167,7 @@ public static class StatTypes
 
     public readonly static Dictionary<Stat, float> itemStatBase = new Dictionary<Stat, float>()
     {
+        {Stat.Range,1},
         {Stat.Length,6},
         {Stat.Width,9},
         {Stat.DamageMult,230},

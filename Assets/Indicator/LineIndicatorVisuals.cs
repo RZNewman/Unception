@@ -14,6 +14,7 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     float length;
     float width;
+    float range;
     // Start is called before the first frame update
 
     public void setSource(ActionState s)
@@ -27,21 +28,23 @@ public class LineIndicatorVisuals : IndicatorInstance
 
         length = hit.length;
         width = hit.width;
+        range = hit.range;
 
         square.transform.localScale = new Vector3(width, length);
-        square.transform.localPosition = new Vector3(0, length / 2);
+        square.transform.localPosition = new Vector3(0, range + length / 2);
 
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
         float sphereScale = maxDistance * 2;
 
         circle.transform.localScale = new Vector3(sphereScale, sphereScale);
-        circle.transform.localPosition = Vector3.zero;
+        circle.transform.localPosition = new Vector3(0, range);
 
         mask.transform.localScale = new Vector3(sphereScale, sphereScale);
-        mask.transform.localPosition = new Vector3(0, length - maxDistance);
+        mask.transform.localPosition = new Vector3(0, range + length - maxDistance);
 
         progress.transform.localScale = new Vector3(width, 0);
+        progress.transform.localPosition = new Vector3(0, range);
 
     }
 
@@ -58,7 +61,7 @@ public class LineIndicatorVisuals : IndicatorInstance
     {
         float length_percent = length * percent;
         progress.transform.localScale = new Vector3(progress.transform.localScale.x, length_percent);
-        progress.transform.localPosition = new Vector3(0, length_percent / 2);
+        progress.transform.localPosition = new Vector3(0, range + length_percent / 2);
     }
 
     protected override float getThreat()
@@ -68,6 +71,6 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     protected override bool willStagger()
     {
-        return state.getSource().stagger>=  FindObjectOfType<GlobalPlayer>().localStunThreat;
+        return state.getSource().stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

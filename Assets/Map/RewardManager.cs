@@ -115,8 +115,8 @@ public static class RewardManager
     public static readonly float oneModChance = uncommonChance;
     public static readonly float modCountRarityFactor = 0.25f;
 
-    public static readonly float modBonusChance = 0.03f;
-    public static readonly float modBonusRarityFactor = 0.25f;
+    public static readonly float modBonusChance = 0.05f;
+    public static readonly float modBonusRarityFactor = 0.5f;
 
 
 

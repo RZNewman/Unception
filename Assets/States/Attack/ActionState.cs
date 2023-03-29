@@ -25,7 +25,7 @@ public class ActionState : AttackStageState
         switch (attackData.type)
         {
             case HitType.Line:
-                LineInfo info = LineCalculations(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.length, attackData.width);
+                LineInfo info = LineCalculations(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.range, attackData.length, attackData.width);
                 LineParticle(info, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {

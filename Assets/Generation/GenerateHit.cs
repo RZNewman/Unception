@@ -94,7 +94,7 @@ public static class GenerateHit
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
-        
+
 
         Dictionary<Stat, float> stats
         {
@@ -109,6 +109,13 @@ public static class GenerateHit
             get
             {
                 return getStat(Stat.Length);
+            }
+        }
+        public float range
+        {
+            get
+            {
+                return getStat(Stat.Range);
             }
         }
         public float width
@@ -181,15 +188,6 @@ public static class GenerateHit
 
     public static HitGenerationData createHit(float remainingBaseStats)
     {
-        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger };
-        float fillPercent = remainingBaseStats / sumMax(generateStats);
-
-        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1.7f, fillPercent);
-
-        if (Random.value < 0.2f)
-        {
-            vg.augmentInner(itemMaxDict(Stat.Knockup));
-        }
         HitType t;
         float r = Random.value;
         if (r < 0.5f)
@@ -204,6 +202,39 @@ public static class GenerateHit
         {
             t = HitType.Ground;
         }
+
+        List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger };
+        if (t == HitType.Projectile)
+        {
+            generateStats.Add(Stat.Range);
+        }
+        else
+        {
+            generateStats.Add(Stat.Length);
+        }
+
+        float fillPercent = remainingBaseStats / sumMax(generateStats);
+
+        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1.7f, fillPercent);
+
+
+        if (Random.value < 0.3f)
+        {
+            if (t == HitType.Projectile)
+            {
+                vg.augmentInner(itemMaxDict(Stat.Length));
+            }
+            else
+            {
+                vg.augmentInner(itemMaxDict(Stat.Range));
+            }
+        }
+        if (Random.value < 0.2f)
+        {
+            vg.augmentInner(itemMaxDict(Stat.Knockup));
+        }
+
+
 
         KnockBackType kbType;
         r = Random.value;

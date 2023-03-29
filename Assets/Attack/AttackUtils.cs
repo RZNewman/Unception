@@ -17,7 +17,7 @@ public static class AttackUtils
         public Vector3 center;
         public Vector3 direction;
     }
-    public static void hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData)
+    public static bool hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData)
     {
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team)
         {
@@ -71,8 +71,9 @@ public static class AttackUtils
                 otherMover.applyForce(hitData.knockup * Vector3.up);
             }
 
-
+            return true;
         }
+        return false;
     }
     public struct AttackSegment
     {
@@ -139,7 +140,7 @@ public static class AttackUtils
                             GameObject body = mover.getSpawnBody();
                             Size s = body.GetComponentInChildren<Size>();
                             //TODO Two ground target options, how to sync up?
-                            groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.length, mover.isServer);
+                            groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.range, source.length, mover.isServer);
                             groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                             ((WindState)currentState).setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {
@@ -182,7 +183,7 @@ public static class AttackUtils
     }
 
 
-    static GameObject SpawnGroundTarget(Transform body, float radius, float height, Vector3 target, float length, bool isServer)
+    static GameObject SpawnGroundTarget(Transform body, float radius, float height, Vector3 target, float range, float length, bool isServer)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
         Vector3 bodyFocus = body.position + body.forward * radius;
@@ -191,7 +192,7 @@ public static class AttackUtils
 
         Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
         forwardDiff.y = diff.y;
-        Vector3 limitedDiff = forwardDiff.normalized * Mathf.Min(length, forwardDiff.magnitude);
+        Vector3 limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, range, range + length);
 
         //float angleOff = Vector3.SignedAngle(body.forward, planarDiff, Vector3.up);
         //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
@@ -241,12 +242,12 @@ public static class AttackUtils
         public Vector3 boxHalfs;
         public Vector3 capsuleStart;
         public Vector3 capsuleEnd;
-        public Vector3 lineFocus;
+        public Vector3 occlusionOrigin;
         public Quaternion aim;
         public float maxDistance;
         public Vector3 bodyForward;
     }
-    public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float length, float width)
+    public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float range, float length, float width)
     {
 
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
@@ -254,14 +255,15 @@ public static class AttackUtils
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
         Quaternion aim = floor.getAimRotation(body.forward);
-        Vector3 boxCenter = bodyFocus + maxDistance * 0.5f * (aim * Vector3.forward);
+        Vector3 attackFocus = bodyFocus + aim * Vector3.forward * range;
+        Vector3 boxCenter = attackFocus + maxDistance * 0.5f * (aim * Vector3.forward);
         float boxHeight = attackHitboxHalfHeight(HitType.Line, halfHeight, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
         Vector3 capsuleHeightDiff = floor.normal * capsuleHeightFactor;
-        Vector3 capsuleStart = bodyFocus + capsuleHeightDiff;
-        Vector3 capsuleEnd = bodyFocus - capsuleHeightDiff;
+        Vector3 capsuleStart = attackFocus + capsuleHeightDiff;
+        Vector3 capsuleEnd = attackFocus - capsuleHeightDiff;
         return new LineInfo
         {
             boxCenter = boxCenter,
@@ -271,7 +273,7 @@ public static class AttackUtils
             aim = aim,
             maxDistance = maxDistance,
             bodyForward = body.forward,
-            lineFocus = bodyFocus,
+            occlusionOrigin = bodyFocus,
         };
     }
 
@@ -301,9 +303,9 @@ public static class AttackUtils
         foreach (RaycastHit hit in capsuleHits)
         {
             GameObject obj = hit.collider.gameObject;
-            Vector3 lineDiff = hit.collider.bounds.center - info.lineFocus;
+            Vector3 lineDiff = hit.collider.bounds.center - info.occlusionOrigin;
             if (tempHits.Contains(obj)
-                && !Physics.Raycast(info.lineFocus, lineDiff, lineDiff.magnitude, LayerMask.GetMask("Terrain")))
+                && !Physics.Raycast(info.occlusionOrigin, lineDiff, lineDiff.magnitude, LayerMask.GetMask("Terrain")))
             {
 
                 hits.Add(obj);

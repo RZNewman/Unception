@@ -236,7 +236,7 @@ public class Inventory : NetworkBehaviour
                 tempDrops.Remove(nowEquipped);
                 if (unequipped)
                 {
-                    tempDrops.Add(unequipped);
+                    storage.Add(unequipped);
                 }
             }
             else
@@ -247,7 +247,7 @@ public class Inventory : NetworkBehaviour
                 storage.Remove(nowEquipped);
                 if (unequipped)
                 {
-                    storage.Add(unequipped); ;
+                    storage.Add(unequipped);
                 }
                 RpcInvChange();
             }

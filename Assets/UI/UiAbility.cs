@@ -42,10 +42,10 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void setTarget(Ability ability)
     {
         target = ability;
-        setFill(ability.source());
+        setFill(ability.source(), true);
     }
 
-    public void setFill(AttackBlockFilled a)
+    public void setFill(AttackBlockFilled a, bool inGame = false)
     {
         filled = a;
         AttackFlair flair = filled.flair;
@@ -57,7 +57,11 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         identifier.color = partialColor;
         identifier.text = flair.identifier;
         background.sprite = bgFromQuality(filled.instance.quality);
-        GetComponentInChildren<StarCounter>().setStars(filled.instance.mods != null ? filled.instance.mods.Length : 0);
+        if (!inGame)
+        {
+            GetComponentInChildren<StarCounter>().setStars(filled.instance.mods != null ? filled.instance.mods.Length : 0);
+        }
+
     }
 
     public void setDetails(UiAbilityDetails details)

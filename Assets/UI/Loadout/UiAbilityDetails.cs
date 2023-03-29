@@ -67,7 +67,6 @@ public class UiAbilityDetails : MonoBehaviour
         segmentPanel.addLabel("Damage", instance.damage(power));
         segmentPanel.addLabel("DPS", instance.dps(power));
 
-        //TODO display actual duration here
         segmentPanel.addLabel("Windup", instance.windup.durationDisplay(power));
         segmentPanel.addLabel("Winddown", instance.winddown.durationDisplay(power));
         segmentPanel.addLabel("Move", instance.avgMove(power));

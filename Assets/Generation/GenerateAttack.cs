@@ -401,7 +401,7 @@ public static class GenerateAttack
     {
         List<Stat> possible = new List<Stat>() {
             Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges,
-            Stat.Haste, Stat.Cooldown,
+            Stat.Haste, Stat.Cooldown, Stat.TurnspeedCast, Stat.MovespeedCast,
         };
         List<Mod> mods = new List<Mod>();
         for (int i = 0; i < count; i++)

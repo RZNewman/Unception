@@ -39,6 +39,8 @@ public static class StatTypes
         {Stat.Charges,3.0f },
         {Stat.Haste, 0.5f },
         {Stat.Cooldown, 1.0f },
+        {Stat.TurnspeedCast, 90f },
+        {Stat.MovespeedCast, 2.0f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);
 
     static Dictionary<HitType, Dictionary<Stat, float>> hitStatModifiers = new Dictionary<HitType, Dictionary<Stat, float>>()
@@ -78,6 +80,10 @@ public static class StatTypes
         {
             case Stat.Length:
             case Stat.Width:
+            case Stat.MovespeedCast:
+            //Turnspeed is in degrees, which would be a constant, but instead we divide by
+            //the world scale here and the player scale later, acting like a length
+            case Stat.TurnspeedCast:
                 value /= Power.worldScale;
                 break;
             case Stat.Knockback:

@@ -208,7 +208,7 @@ public class UnitMovement : NetworkBehaviour
         rb.AddForce(force, ForceMode.Impulse);
     }
 
-    public void move(UnitInput inp, float speedMultiplier = 1.0f)
+    public void move(UnitInput inp, float speedMultiplier = 1.0f, float additionalMovement = 0)
     {
         float scaleSpeed = power.scaleSpeed();
 
@@ -237,7 +237,7 @@ public class UnitMovement : NetworkBehaviour
 
 
         Vector3 planarVelocity = planarVelocityCalculated;
-        float potentialSpeed = props.maxSpeed * speedMultiplier * scaleSpeed;
+        float potentialSpeed = (props.maxSpeed + additionalMovement) * speedMultiplier * scaleSpeed;
         float desiredSpeed;
         if (grounded)
         {
@@ -374,14 +374,16 @@ public class UnitMovement : NetworkBehaviour
             return Mathf.Lerp(1.0f, props.sidewaysMoveMultiplier, angleDiff / 90);
         }
     }
-    public void rotate(UnitInput inp, bool canSnap = true, float speedMultiplier = 1.0f)
+    public void rotate(UnitInput inp, bool canSnap = true, float speedMultiplier = 1.0f, float additionalRotationDegrees = 0)
     {
         if (inp.look == Vector2.zero)
         {
             return;
         }
+        //degrees in proportial to the world right now, but if the player is bigger, we need to reduce it
+        additionalRotationDegrees /= power.scalePhysical();
         canSnap &= props.isPlayer;
-        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : props.lookSpeedDegrees;
+        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : props.lookSpeedDegrees + additionalRotationDegrees;
 
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;

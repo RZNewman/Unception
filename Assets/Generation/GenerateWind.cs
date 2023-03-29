@@ -66,11 +66,25 @@ public static class GenerateWind
             }
         }
 
-        public float haste
+        float haste
         {
             get
             {
                 return parentData.getStat(Stat.Haste);
+            }
+        }
+        public float turnspeedCast
+        {
+            get
+            {
+                return parentData.getStat(Stat.TurnspeedCast);
+            }
+        }
+        public float movespeedCast
+        {
+            get
+            {
+                return parentData.getStat(Stat.MovespeedCast);
             }
         }
     }

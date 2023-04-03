@@ -104,6 +104,37 @@ public static class Utils
         return newDict;
     }
 
+    public static Dictionary<T, int> invert<T>(this IDictionary<T, int> dict)
+    {
+        Dictionary<T, int> newDict = new Dictionary<T, int>();
+        foreach (T key in dict.Keys)
+        {
+            newDict[key] = -dict[key];
+        }
+        return newDict;
+    }
+    public static Dictionary<T, int> sum<T>(this IDictionary<T, int> dict1, IDictionary<T, int> dict2)
+    {
+        Dictionary<T, int> newDict = new Dictionary<T, int>();
+        foreach (T key in dict1.Keys)
+        {
+            newDict[key] = dict1[key];
+        }
+        foreach (T key in dict2.Keys)
+        {
+            if (newDict.ContainsKey(key))
+            {
+                newDict[key] += dict2[key];
+            }
+            else
+            {
+                newDict[key] = dict2[key];
+            }
+
+        }
+        return newDict;
+    }
+
     public static Dictionary<T, float> scale<T>(this IDictionary<T, float> dict, float scale, params T[] exclusions)
     {
         Dictionary<T, float> newDict = new Dictionary<T, float>();

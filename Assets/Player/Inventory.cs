@@ -175,7 +175,7 @@ public class Inventory : NetworkBehaviour
     public AttackBlockFilled fillBlock(AttackBlock block)
     {
 
-        return GenerateAttack.fillBlock(block, player.power);
+        return GenerateAttack.fillBlock(block, null, player.power);
     }
     [Client]
     public void syncInventory()

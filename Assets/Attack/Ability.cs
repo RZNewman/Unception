@@ -8,6 +8,7 @@ using static UnitControl;
 
 public class Ability : NetworkBehaviour
 {
+    StatHandler statHandler;
 
     [SyncVar]
     AttackBlock attackFormat;
@@ -43,6 +44,10 @@ public class Ability : NetworkBehaviour
             fillFormat();
             GetComponentInParent<AbiltyList>().registerAbility(clientSyncKey, this);
         }
+        if (isServer)
+        {
+            StatHandler.linkStreams(GetComponentInParent<StatHandler>(), GetComponent<StatHandler>());
+        }
 
     }
     private void OnDestroy()
@@ -51,8 +56,24 @@ public class Ability : NetworkBehaviour
         {
             Destroy(icon);
         }
+        if (isServer)
+        {
+            StatHandler.unlinkStreams(GetComponentInParent<StatHandler>(), GetComponent<StatHandler>());
+        }
     }
 
+    public IDictionary<Stat, float> stats
+    {
+        get
+        {
+            if (!statHandler)
+            {
+                statHandler = GetComponent<StatHandler>();
+            }
+
+            return statHandler.stats;
+        }
+    }
     void bufferClientCast(float old, float newcharge)
     {
         //Debug.Log(newCD + " - " + old + ",   " + cooldownMax);
@@ -140,12 +161,12 @@ public class Ability : NetworkBehaviour
     }
     void fillFormat()
     {
-        attackFilled = GenerateAttack.fillBlock(attackFormat);
+        attackFilled = GenerateAttack.fillBlock(attackFormat, this);
 
     }
     void scaleAbility(Power p)
     {
-        attackFilled = GenerateAttack.fillBlock(attackFormat, p.power);
+        attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power);
     }
 
 

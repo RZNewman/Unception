@@ -177,11 +177,12 @@ public static class GenerateAttack
         public Mod[] mods;
         public float cooldown;
         public Dictionary<Stat, float> _baseStats;
+        public Ability parentAbility;
         public Dictionary<Stat, float> stats
         {
             get
             {
-                return _baseStats;
+                return parentAbility ? _baseStats.sum(parentAbility.stats) : _baseStats;
             }
         }
         public Quality quality;
@@ -244,7 +245,7 @@ public static class GenerateAttack
         }
     }
 
-    static AttackInstanceData populateAttack(AttackGenerationData atk, float power)
+    static AttackInstanceData populateAttack(AttackGenerationData atk, float power, Ability abil)
     {
         float scaleNum = Power.scaleNumerical(power);
 
@@ -511,7 +512,7 @@ public static class GenerateAttack
             //dash effect
             d = createDash();
 
-            float hitValue = Random.value.asRange(0.3f, 0.8f);
+            float hitValue = Random.value.asRange(0.6f, 0.8f);
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
         }
@@ -585,7 +586,7 @@ public static class GenerateAttack
         return effects;
     }
 
-    public static AttackBlockFilled fillBlock(AttackBlock block, float power = -1)
+    public static AttackBlockFilled fillBlock(AttackBlock block, Ability abil = null, float power = -1)
     {
         if (power < 0)
         {
@@ -594,7 +595,7 @@ public static class GenerateAttack
         power = block.scales ? power : block.powerAtGeneration;
         AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;
-        filled.instance = populateAttack(atk, power);
+        filled.instance = populateAttack(atk, power, abil);
         filled.flair = block.flair;
         //Debug.Log(atk);
         //Debug.Log(block.instance);

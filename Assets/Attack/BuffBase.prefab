@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7908831412400356544}
-  - component: {fileID: 5435795176544243449}
   - component: {fileID: -8531309415781236864}
   - component: {fileID: 5441752977852070671}
-  - component: {fileID: 7240237655005852003}
+  - component: {fileID: 2231654834111411854}
+  - component: {fileID: 5194269047639420110}
   m_Layer: 0
-  m_Name: AbilityBase
+  m_Name: BuffBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,24 +35,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5435795176544243449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2310417036322928248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 224367a908520d44794a14eafb9cfd35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientSyncKey: 0
-  abilityIconPrefab: {fileID: 7976420225584091790, guid: 8c1e5a10627054e4db75c73e7b7d16e0, type: 3}
-  charges: 1
-  cooldownTicking: 0
 --- !u!114 &-8531309415781236864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,9 +66,21 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   visible: 0
-  m_AssetId: 98dd5d7b8f8218b438aa0253262a98fd
+  m_AssetId: 3653dcf77054d8e49bcb00c0efa1fce4
   hasSpawned: 0
---- !u!114 &7240237655005852003
+--- !u!114 &2231654834111411854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2310417036322928248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea733ef3d961a474ba122e3f91a8d1a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5194269047639420110
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -91,7 +91,8 @@ public class Cast : MonoBehaviour, BarValue
             switch (stage)
             {
                 case ActionState attackData:
-                    switch (attackData.getSource().type)
+                    HitInstanceData data = attackData.getSource();
+                    switch (data.type)
                     {
                         case HitType.Line:
                             indicator = Object.Instantiate(

@@ -14,7 +14,7 @@ public class StatHandler : NetworkBehaviour
         get { return expressedStats; }
     }
 
-    
+
 
     private void Start()
     {
@@ -44,6 +44,10 @@ public class StatHandler : NetworkBehaviour
     List<StatHandler> Downstream = new List<StatHandler>();
     public static void linkStreams(StatHandler up, StatHandler down)
     {
+        if (up == down)
+        {
+            throw new System.Exception("Same stat handler link");
+        }
         down._addUpstream(up);
         up._addDownstream(down);
 
@@ -85,7 +89,7 @@ public class StatHandler : NetworkBehaviour
         }
         foreach (StatHandler down in clean)
         {
-            unlinkStreams(this,down);
+            unlinkStreams(this, down);
         }
 
         clean = new List<StatHandler>();
@@ -102,7 +106,7 @@ public class StatHandler : NetworkBehaviour
 
     }
     [Server]
-    void updateExpression(IDictionary<Stat, float> delta) 
+    void updateExpression(IDictionary<Stat, float> delta)
     {
         foreach (Stat key in delta.Keys)
         {

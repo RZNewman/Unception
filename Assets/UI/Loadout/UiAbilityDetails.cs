@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using static GenerateAttack;
@@ -91,6 +92,13 @@ public class UiAbilityDetails : MonoBehaviour
             segmentPanel.addLabel("Repeats", instance.repeat.repeatCount);
             segmentPanel.addLabel("Repeat delay", instance.windRepeat.durationDisplay(power));
         }
+        if (instance.buff != null)
+        {
+            segmentPanel.addLabel("Buff Dur.", instance.buff.durationDisplay(power));
+            segmentPanel.addLabel("Buff ", instance.buff.stats.First().Key.ToString());
+            segmentPanel.addLabel("Buff Value", instance.buff.stats.First().Value);
+        }
+
     }
 
 

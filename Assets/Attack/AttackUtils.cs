@@ -9,6 +9,8 @@ using static GenerateHit;
 using static UnitControl;
 using static UnitSound;
 using static Utils;
+using static GenerateBuff;
+using Unity.Burst.Intrinsics;
 
 public static class AttackUtils
 {
@@ -234,6 +236,16 @@ public static class AttackUtils
         float hitRadius = hitData.width / 2;
         float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
         p.init(terrainRadius, hitRadius, halfHeight, mover, hitData, dists);
+        NetworkServer.Spawn(instance);
+    }
+
+    public static void SpawnBuff(BuffInstanceData buff, Transform target)
+    {
+        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
+        GameObject instance = GameObject.Instantiate(prefab, target);
+        instance.GetComponent<ClientAdoption>().parent = target.gameObject;
+        instance.GetComponent<Buff>().setDuration(buff.durration);
+        instance.GetComponent<StatHandler>().setStats(buff.stats);
         NetworkServer.Spawn(instance);
     }
     public struct LineInfo

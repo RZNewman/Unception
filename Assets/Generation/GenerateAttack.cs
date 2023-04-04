@@ -14,6 +14,7 @@ using static GenerateRepeating;
 using static StatTypes;
 using UnityEditor;
 using System.Runtime.InteropServices;
+using static GenerateBuff;
 
 public static class GenerateAttack
 {
@@ -65,6 +66,7 @@ public static class GenerateAttack
         public DashGenerationData dash;
         public RepeatingGenerationData repeat;
         public WindGenerationData windRepeat;
+        public BuffGenerationData buff;
         public bool dashAfter;
         public bool dashInside;
 
@@ -78,6 +80,7 @@ public static class GenerateAttack
         public DashInstanceData dash;
         public RepeatingInstanceData repeat;
         public WindInstanceData windRepeat;
+        public BuffInstanceData buff;
         public bool dashAfter;
         public bool dashInside;
 
@@ -307,6 +310,7 @@ public static class GenerateAttack
                 winddown = down,
                 hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
+                buff = segment.buff == null ? null : (BuffInstanceData)segment.buff.populate(power, repeatStrength),
                 repeat = repeat,
                 windRepeat = windRepeat,
                 dashAfter = segment.dashAfter,
@@ -388,6 +392,9 @@ public static class GenerateAttack
                     case RepeatingGenerationData repeat:
                         segment.repeat = repeat;
                         repeatOpen = true;
+                        break;
+                    case BuffGenerationData buff:
+                        segment.buff = buff;
                         break;
                 }
             }
@@ -497,7 +504,10 @@ public static class GenerateAttack
         DashGenerationData d = null;
         RepeatingGenerationData r = null;
         WindGenerationData rWind = null;
+        BuffGenerationData b = null;
         HitGenerationData h = createHit(remainingBaseStats);
+
+        bool dashInside = false;
 
         if (gen < 0.3f)
         {
@@ -515,72 +525,60 @@ public static class GenerateAttack
             float hitValue = Random.value.asRange(0.6f, 0.8f);
             h.strengthFactor = hitValue;
             d.strengthFactor = 1 - hitValue;
-        }
 
-        if (r != null && d != null)
-        {
             gen = Random.value;
-
-            if (gen < 0.1f)
+            if (gen < 0.1f && r != null)
             {
-                //dash in the repeat
-                if (d.control == DashControl.Backward)
-                {
-                    effects.Add(r);
-                    effects.Add(h);
-                    effects.Add(d);
-                    effects.Add(rWind);
-
-                }
-                else
-                {
-                    effects.Add(r);
-                    effects.Add(d);
-                    effects.Add(h);
-                    effects.Add(rWind);
-                }
-            }
-            else
-            {
-                if (d.control == DashControl.Backward)
-                {
-                    effects.Add(r);
-                    effects.Add(h);
-                    effects.Add(rWind);
-                    effects.Add(d);
-                }
-                else
-                {
-                    effects.Add(d);
-                    effects.Add(r);
-                    effects.Add(h);
-                    effects.Add(rWind);
-                }
+                dashInside = true;
             }
         }
-        else if (r != null)
+
+        gen = Random.value;
+        if (gen < 0.6f && r == null && d == null)
         {
-            effects.Add(r);
-            effects.Add(h);
+            //buff effect
+            b = createBuff();
+
+            float hitValue = Random.value.asRange(0.5f, 0.75f);
+            h.strengthFactor = hitValue;
+            b.strengthFactor = 1 - hitValue;
+        }
+
+        effects.Add(h);
+
+
+        if (r != null)
+        {
+            if (dashInside)
+            {
+                if (d.control == DashControl.Backward)
+                {
+                    effects.Add(d);
+                }
+                else
+                {
+                    effects.Insert(0, d);
+                }
+            }
+            effects.Insert(0, r);
             effects.Add(rWind);
         }
-        else if (d != null)
+        if (d != null && !dashInside)
         {
             if (d.control == DashControl.Backward)
             {
-                effects.Add(h);
                 effects.Add(d);
             }
             else
             {
-                effects.Add(d);
-                effects.Add(h);
+                effects.Insert(0, d);
             }
         }
-        else
+        if (b != null)
         {
-            effects.Add(h);
+            effects.Add(b);
         }
+
 
 
         return effects;

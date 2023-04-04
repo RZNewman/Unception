@@ -32,7 +32,7 @@ public class AttackBlockFilled : ScriptableObject
                 List<AttackStageState> repeatStates = new List<AttackStageState>();
                 for (int j = 0; j < seg.repeat.repeatCount; j++)
                 {
-                    repeatStates.Add(new ActionState(controller, seg.hit));
+                    repeatStates.Add(new ActionState(controller, seg.hit, seg.buff));
                     if (seg.dash != null && seg.dashInside)
                     {
                         if (seg.dashAfter)
@@ -54,7 +54,7 @@ public class AttackBlockFilled : ScriptableObject
             }
             else
             {
-                effectStates.Add(new ActionState(controller, seg.hit));
+                effectStates.Add(new ActionState(controller, seg.hit, seg.buff));
             }
 
             if (seg.dash != null && !seg.dashInside)

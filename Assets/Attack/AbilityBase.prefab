@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -8531309415781236864}
   - component: {fileID: 5441752977852070671}
   - component: {fileID: 7240237655005852003}
+  - component: {fileID: 1092046840554521857}
   m_Layer: 0
   m_Name: AbilityBase
   m_TagString: Untagged
@@ -100,3 +101,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &1092046840554521857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2310417036322928248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b033ebd8b1769e14c9f1297595969a64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

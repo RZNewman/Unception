@@ -4,20 +4,36 @@ using static GenerateAttack;
 using static GenerateHit;
 using static UnitControl;
 using static AttackUtils;
+using static GenerateBuff;
 
 public class ActionState : AttackStageState
 {
-    HitInstanceData attackData;
+    HitInstanceData actionData;
+
+    BuffInstanceData buffData;
 
     GameObject groundTarget;
     public ActionState(UnitMovement m, HitInstanceData data) : base(m)
     {
-        attackData = data;
+        actionData = data;
+    }
+
+    public ActionState(UnitMovement m, HitInstanceData data, BuffInstanceData dataB) : base(m)
+    {
+        actionData = data;
+        buffData = dataB;
     }
     public override void enter()
     {
         mover.GetComponent<AnimationController>().setAttack();
 
+        handleAttack(actionData);
+
+
+    }
+
+    void handleAttack(HitInstanceData attackData)
+    {
         GameObject body = mover.getSpawnBody();
         FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
         Size s = body.GetComponentInChildren<Size>();
@@ -77,6 +93,10 @@ public class ActionState : AttackStageState
 
         }
 
+        if (buffData != null)
+        {
+            SpawnBuff(buffData, mover.transform);
+        }
     }
 
     public override Cast.IndicatorOffsets GetIndicatorOffsets()
@@ -90,7 +110,7 @@ public class ActionState : AttackStageState
 
     public HitInstanceData getSource()
     {
-        return attackData;
+        return actionData;
     }
     public override void tick()
     {

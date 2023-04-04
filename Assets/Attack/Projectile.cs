@@ -33,7 +33,7 @@ public class Projectile : NetworkBehaviour
         birth = Time.time;
         if (isClientOnly)
         {
-            setup(data);
+            setup();
         }
     }
     private void FixedUpdate()
@@ -78,12 +78,12 @@ public class Projectile : NetworkBehaviour
             dists = dists,
             lifetime = BaseProjectileLifetime / p.scaleTime(),
         };
-        setup(data);
+        setup();
         lifetime = data.lifetime;
         setSpeed(data.range / lifetime);
     }
 
-    void setup(ProjectileData data)
+    void setup()
     {
         float terrainR = data.terrainRadius;
         float hitR = data.hitboxRadius;

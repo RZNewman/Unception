@@ -77,6 +77,7 @@ public static class GenerateHit
 
     }
 
+
     public class HitInstanceData : InstanceData
     {
         public float strength;

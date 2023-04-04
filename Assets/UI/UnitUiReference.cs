@@ -9,6 +9,7 @@ public class UnitUiReference : MonoBehaviour
     public UiBar staminaBar;
     public UiBar packHealBar;
     public UiText powerDisplay;
+    public UiBuffBar buffBar;
     public GameObject unitTarget;
 
     private void Start()
@@ -35,6 +36,10 @@ public class UnitUiReference : MonoBehaviour
         if (packHealBar)
         {
             packHealBar.source = unitTarget.GetComponentInParent<PackHeal>();
+        }
+        if (buffBar)
+        {
+            unitTarget.GetComponentInParent<BuffManager>().subscribe(buffBar.displayBuffs);
         }
     }
     public void setTarget(GameObject t)

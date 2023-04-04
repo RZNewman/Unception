@@ -46,7 +46,7 @@ public class Ability : NetworkBehaviour
         }
         if (isServer)
         {
-            StatHandler.linkStreams(GetComponentInParent<StatHandler>(), GetComponent<StatHandler>());
+            StatHandler.linkStreams(transform.parent.GetComponent<StatHandler>(), GetComponent<StatHandler>());
         }
 
     }
@@ -58,7 +58,7 @@ public class Ability : NetworkBehaviour
         }
         if (isServer)
         {
-            StatHandler.unlinkStreams(GetComponentInParent<StatHandler>(), GetComponent<StatHandler>());
+            StatHandler.unlinkStreams(transform.parent.GetComponent<StatHandler>(), GetComponent<StatHandler>());
         }
     }
 

@@ -238,6 +238,7 @@ public class Inventory : NetworkBehaviour
                 {
                     storage.Add(unequipped);
                 }
+                RpcInvChange();
             }
             else
             {

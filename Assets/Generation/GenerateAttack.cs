@@ -304,13 +304,20 @@ public static class GenerateAttack
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
             stagesToParent.Add(hit);
 
+            BuffInstanceData buff = null;
+            if (segment.buff != null)
+            {
+                buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength);
+                //stagesToParent.Add(buff);
+            }
+
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
                 winddown = down,
                 hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
-                buff = segment.buff == null ? null : (BuffInstanceData)segment.buff.populate(power, repeatStrength),
+                buff = buff,
                 repeat = repeat,
                 windRepeat = windRepeat,
                 dashAfter = segment.dashAfter,
@@ -329,6 +336,7 @@ public static class GenerateAttack
             quality = atk.quality,
             mods = atk.mods,
             power = power,
+            parentAbility = abil,
 
         };
 
@@ -534,7 +542,7 @@ public static class GenerateAttack
         }
 
         gen = Random.value;
-        if (gen < 0.6f && r == null && d == null)
+        if (gen < 0.2f && r == null && d == null)
         {
             //buff effect
             b = createBuff();

@@ -9,6 +9,8 @@ public class Buff : NetworkBehaviour
     [SyncVar]
     float duration;
 
+    float timeScale;
+
     StatHandler sth;
     public IDictionary<Stat, float> stats
     {
@@ -17,27 +19,27 @@ public class Buff : NetworkBehaviour
             return sth.stats;
         }
     }
+
+    public float relativeScale(float targetTimeScale)
+    {
+        return timeScale / targetTimeScale;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        GetComponent<ClientAdoption>().trySetAdopted();
         sth = GetComponent<StatHandler>();
-        if (isServer)
-        {
-            StatHandler.linkStreams(GetComponent<StatHandler>(), transform.parent.GetComponent<StatHandler>());
-        }
+
         transform.parent.GetComponent<BuffManager>().addBuff(this);
     }
     private void OnDestroy()
     {
-        if (isServer)
-        {
-            StatHandler.unlinkStreams(GetComponent<StatHandler>(), transform.parent.GetComponent<StatHandler>());
-        }
-        transform.parent.GetComponent<BuffManager>().removeBuff(this);
+
     }
-    public void setDuration(float d)
+    public void setup(float durr, float timeS)
     {
-        duration = d;
+        duration = durr;
+        timeScale = timeS;
     }
 
     // Update is called once per frame
@@ -46,6 +48,7 @@ public class Buff : NetworkBehaviour
         duration -= Time.fixedDeltaTime;
         if (isServer && duration <= 0)
         {
+            transform.parent.GetComponent<BuffManager>().removeBuff(this);
             Destroy(gameObject);
         }
     }

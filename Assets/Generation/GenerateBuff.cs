@@ -38,6 +38,7 @@ public static class GenerateBuff
             {
                 durration = duration,
                 _baseStats = stats,
+                powerAtGen = power,
             };
             return baseData;
 
@@ -49,6 +50,7 @@ public static class GenerateBuff
     {
         public float durration;
         public Dictionary<Stat, float> _baseStats;
+        public float powerAtGen;
 
 
         public float durationDisplay(float power)
@@ -59,7 +61,7 @@ public static class GenerateBuff
         {
             get
             {
-                return _baseStats.sum(parentData.stats);
+                return _baseStats;
             }
         }
 

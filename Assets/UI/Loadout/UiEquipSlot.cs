@@ -65,7 +65,10 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             case SlotMode.Equipment:
                 if (unslot)
                 {
-                    itemTray.grabAbility(uiAbility);
+                    if (invMode == InventoryMode.Storage)
+                    {
+                        itemTray.grabAbility(uiAbility);
+                    }
                     string newIndex = newUI.inventoryIndex;
                     gp.player.GetComponent<Inventory>().CmdEquipAbility(attackKey, newIndex, invMode == InventoryMode.Drops);
                     FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);

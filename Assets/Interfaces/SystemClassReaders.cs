@@ -6,6 +6,7 @@ using static GenerateWind;
 using static GenerateDash;
 using static GenerateRepeating;
 using System.Collections.Generic;
+using static GenerateBuff;
 
 public static class SystemClassReaders
 {
@@ -97,6 +98,11 @@ public static class SystemClassReaders
                 RepeatingGenerationData repeat = ScriptableObject.CreateInstance<RepeatingGenerationData>();
                 repeat.repeatCount = reader.ReadInt();
                 return repeat;
+            case GenerationDataClass.Buff:
+                BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
+                buff.duration = reader.ReadFloat();
+                buff.statValues = reader.ReadStatDict();
+                return buff;
             default:
                 return null;
         }

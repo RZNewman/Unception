@@ -42,14 +42,15 @@ public class StatHandler : NetworkBehaviour
     #region streams
     List<StatHandler> Upstream = new List<StatHandler>();
     List<StatHandler> Downstream = new List<StatHandler>();
-    public static void linkStreams(StatHandler up, StatHandler down)
+    Dictionary<StatHandler, float> downstreamMultiplers = new Dictionary<StatHandler, float>();
+    public static void linkStreams(StatHandler up, StatHandler down, float effectMult = 1)
     {
         if (up == down)
         {
             throw new System.Exception("Same stat handler link");
         }
         down._addUpstream(up);
-        up._addDownstream(down);
+        up._addDownstream(down, effectMult);
 
     }
 
@@ -66,15 +67,17 @@ public class StatHandler : NetworkBehaviour
     {
         Upstream.Remove(up);
     }
-    void _addDownstream(StatHandler down)
+    void _addDownstream(StatHandler down, float effectMult)
     {
         Downstream.Add(down);
-        down.updateExpression(expressedStats);
+        downstreamMultiplers.Add(down, effectMult);
+        down.updateExpression(expressedStats.scale(effectMult));
     }
     void _removeDownstream(StatHandler down)
     {
         Downstream.Remove(down);
-        down.updateExpression(expressedStats.invert());
+        down.updateExpression(expressedStats.scale(downstreamMultiplers[down]).invert());
+        downstreamMultiplers.Remove(down);
     }
 
     [Server]

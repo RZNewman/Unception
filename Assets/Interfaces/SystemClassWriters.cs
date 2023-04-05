@@ -58,6 +58,7 @@ public static class SystemClassWriters
         Hit,
         Dash,
         Repeat,
+        Buff
     }
 
     public static void WriteGenerationData(this NetworkWriter writer, GenerateAttack.GenerationData data)
@@ -91,6 +92,11 @@ public static class SystemClassWriters
             case GenerateRepeating.RepeatingGenerationData r:
                 writer.WriteByte((byte)GenerationDataClass.Repeat);
                 writer.WriteInt(r.repeatCount);
+                break;
+            case GenerateBuff.BuffGenerationData b:
+                writer.WriteByte((byte)GenerationDataClass.Buff);
+                writer.WriteFloat(b.duration);
+                writer.WriteStatDict(b.statValues);
                 break;
 
         }

@@ -15,7 +15,7 @@ public static class GenerateBuff
         public float duration;
         public Dictionary<Stat, float> statValues;
 
-        public static float buffStatsBase = 100;
+        public static float buffStatsBase = 60;
 
         public override InstanceData populate(float power, float strength)
         {

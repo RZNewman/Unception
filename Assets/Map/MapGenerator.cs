@@ -538,7 +538,7 @@ public class MapGenerator : NetworkBehaviour
                     {
                         prefab = gen.m_FallLinkPrefab;
                     }
-                    var t = PrefabUtility.InstantiatePrefab(prefab, parent.gameObject.scene) as Transform;
+                    var t = Instantiate(prefab).transform;
                     Debug.Assert(t != null, $"Failed to instantiate {prefab}");
                     t.SetParent(parent);
                     t.SetPositionAndRotation(mid, edge.m_Away);
@@ -552,7 +552,7 @@ public class MapGenerator : NetworkBehaviour
                     link.width = edge.m_Length;
                     link.UpdateLink();
                     //Debug.Log("Created NavLink");
-                    Undo.RegisterCompleteObjectUndo(link.gameObject, "Create NavMeshLink");
+                    //Undo.RegisterCompleteObjectUndo(link.gameObject, "Create NavMeshLink");
 
 
                     // Attach a component that has the information we

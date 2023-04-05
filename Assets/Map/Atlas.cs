@@ -9,7 +9,6 @@ using static Utils;
 using static RewardManager;
 using static Power;
 using static Atlas;
-using Castle.Core.Internal;
 
 public class Atlas : NetworkBehaviour
 {
@@ -538,7 +537,7 @@ public class Atlas : NetworkBehaviour
         Map m;
         if (index >= 0)
         {
-            m = list.maps.Find(m => m.index == index);
+            m = list.maps.Where(m => m.index == index).First();
         }
         else
         {

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static LifeManager;
-using static NSubstitute.Arg;
 
 public class PackHeal : NetworkBehaviour, BarValue
 {

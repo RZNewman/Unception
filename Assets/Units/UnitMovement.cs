@@ -398,6 +398,17 @@ public class UnitMovement : NetworkBehaviour
             currentLookAngle += frameMagnitude * Mathf.Sign(diff);
         }
     }
+    public void maybeSnapRotation(UnitInput inp)
+    {
+        if (inp.look == Vector2.zero || !props.isPlayer)
+        {
+            return;
+        }
+        float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
+        currentLookAngle = desiredAngle;
+        GetComponentInChildren<UnitRotation>().updateRotation();
+
+    }
     void setGround()
     {
         FloorNormal.GroundSearchParams paras;

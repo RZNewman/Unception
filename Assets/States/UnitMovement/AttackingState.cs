@@ -78,6 +78,7 @@ public class AttackingState : PlayerMovementState
         AttackStageState s = null;
         System.Action nextSegment = () =>
         {
+            mover.maybeSnapRotation(mover.input);
             currentSegment = segments[0];
             s = currentSegment.enterSegment(mover, c);
         };

@@ -13,8 +13,13 @@ public class UnitRotation : MonoBehaviour
     void FixedUpdate()
     {
 
-        transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
+        updateRotation();
 
+    }
+
+    public void updateRotation()
+    {
+        transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
     }
 
 }

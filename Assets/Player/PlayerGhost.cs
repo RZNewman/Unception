@@ -157,6 +157,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         if (isLocalPlayer)
         {
             listener.enabled = audio;
+            if (audio)
+            {
+                listener.gameObject.transform.position = transform.position;
+            }
         }
     }
 

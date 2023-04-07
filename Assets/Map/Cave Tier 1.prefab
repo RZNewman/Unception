@@ -845,6 +845,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64193200294081836, guid: a04e9c8c8fee88848911601032604b55, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a04e9c8c8fee88848911601032604b55, type: 3}
 --- !u!4 &6429365522228007110 stripped
@@ -923,6 +927,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64783297623765350, guid: bfee7f51af0b8d54aa0728f21d1147bb, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfee7f51af0b8d54aa0728f21d1147bb, type: 3}
 --- !u!4 &6685448914972299568 stripped
@@ -1001,6 +1009,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64510119477387612, guid: b7131fd20b519e24980ce9178a77d63c, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: fe6c33085c7f446409591df1484936f5, type: 3}
+    - target: {fileID: 64510119477387612, guid: b7131fd20b519e24980ce9178a77d63c, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7131fd20b519e24980ce9178a77d63c, type: 3}
 --- !u!4 &7076589739858998753 stripped
@@ -1079,6 +1095,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64193200294081836, guid: a04e9c8c8fee88848911601032604b55, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a04e9c8c8fee88848911601032604b55, type: 3}
 --- !u!4 &8050852754016188995 stripped
@@ -1161,6 +1181,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: a2c56d03187b05947ae448fae042bc18, type: 3}
+    - target: {fileID: 64296674650864242, guid: 447936a1f1a90cd4186467e33c751882, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
     - target: {fileID: 64296674650864242, guid: 447936a1f1a90cd4186467e33c751882, type: 3}
       propertyPath: m_CookingOptions
       value: -1

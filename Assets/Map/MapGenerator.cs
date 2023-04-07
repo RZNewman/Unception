@@ -532,7 +532,12 @@ public class MapGenerator : NetworkBehaviour
                         // Agent can't jump through here.
                         continue;
                     }
-                    var height_delta = nav_hit.position.y - mid.y;
+                    var height_delta = mid.y - nav_hit.position.y;
+                    if (height_delta < gen.m_AgentHeight * 0.5f)
+                    {
+                        //ignore small drops
+                        continue;
+                    }
                     var prefab = gen.m_JumpLinkPrefab;
                     if (height_delta > gen.m_MaxVerticalJump)
                     {

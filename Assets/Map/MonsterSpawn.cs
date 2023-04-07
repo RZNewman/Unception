@@ -119,6 +119,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public SpawnTransform spawnTransform;
         public Difficulty difficulty;
+        public bool ignoreWakeup;
     }
 
     struct SpawnUnit
@@ -164,6 +165,7 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 spawnTransform = t,
                 difficulty = packDifficulty,
+                ignoreWakeup = false,
             };
 
             spawnCreatures(packData);
@@ -219,6 +221,7 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 spawnTransform = spawn,
                 difficulty = encounterData.difficulty,
+                ignoreWakeup = true,
             };
             packOption = spawnCreatures(packData);
             if (packOption.HasValue)
@@ -464,8 +467,11 @@ public class MonsterSpawn : NetworkBehaviour
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.powerPoolPack = powerPoolPack;
         p.scale = Power.scalePhysical(spawnPower);
-        NetworkServer.Spawn(p.gameObject);
-
+        p.transform.position = spawnData.spawnTransform.position;
+        if (spawnData.ignoreWakeup)
+        {
+            p.GetComponent<Collider>().enabled = false;
+        }
 
 
         for (int j = 0; j < unitsToSpawn.Count; j++)
@@ -476,6 +482,9 @@ public class MonsterSpawn : NetworkBehaviour
 
             InstanceCreature(spawnData, data, p);
         }
+
+
+        NetworkServer.Spawn(p.gameObject);
         return new Optional<Pack>(p);
     }
     float weightedPool()

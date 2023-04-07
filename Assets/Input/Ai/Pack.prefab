@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 263667542291775750}
   - component: {fileID: -7652604340195042918}
   - component: {fileID: 6037732328346485963}
-  m_Layer: 0
+  - component: {fileID: 3119872686040649259}
+  m_Layer: 10
   m_Name: Pack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +50,7 @@ MonoBehaviour:
   syncInterval: 0.1
   spawnWarning: {fileID: 493794054391715329, guid: 0fc2dca83a6d75e4b8170856d29d514c, type: 3}
   powerPoolPack: 0
+  scale: 0
 --- !u!114 &6037732328346485963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,3 +68,16 @@ MonoBehaviour:
   visible: 0
   m_AssetId: e356917f25b672a4bbea9b4dcadc3e56
   hasSpawned: 0
+--- !u!135 &3119872686040649259
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3694861992469580249}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 50
+  m_Center: {x: 0, y: 0, z: 0}

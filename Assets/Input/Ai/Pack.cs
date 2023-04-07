@@ -17,10 +17,48 @@ public class Pack : NetworkBehaviour
 
     SoundManager sound;
 
+    //Server
+    bool aggroed = false;
+    bool enabled = false;
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
+        disableUnits();
     }
+
+    List<GameObject> players = new List<GameObject>();
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isServer)
+        {
+            if (other.GetComponentInParent<TeamOwnership>().getTeam() == TeamOwnership.PLAYER_TEAM)
+            {
+                players.Add(other.gameObject);
+                if (!enabled)
+                {
+                    enabled = true;
+                    enableUnits();
+                }
+
+            }
+
+        }
+
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (isServer && !aggroed)
+        {
+            players.Remove(other.gameObject);
+            if (players.Count == 0)
+            {
+                disableUnits();
+                enabled = false;
+            }
+        }
+
+    }
+
 
 
     public void addToPack(GameObject u)
@@ -128,6 +166,7 @@ public class Pack : NetworkBehaviour
 
     public void packAggro(GameObject target)
     {
+        aggroed = true;
         target.GetComponentInParent<PackHeal>().addPack(powerPoolPack);
         foreach (GameObject a in pack)
         {

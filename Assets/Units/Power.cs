@@ -1,6 +1,8 @@
 using Mirror;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static GlobalCache;
 
 public class Power : NetworkBehaviour, TextValue
 {
@@ -125,22 +127,38 @@ public class Power : NetworkBehaviour, TextValue
     }
     public float scaleNumerical()
     {
-        return scaleNumerical(currentPower);
+        return cachedNumerical.get(currentPower);
     }
 
     public float scaleSpeed()
     {
-        return scaleSpeed(currentPower);
+        return cachedSpeed.get(currentPower);
     }
     public float scalePhysical()
     {
-        return scalePhysical(currentPower);
+        return cachedPhysical.get(currentPower);
     }
 
     public float scaleTime()
     {
-        return scaleTime(currentPower);
+        return cachedTime.get(currentPower);
     }
+
+    CacheValue<float, float> cachedNumerical;
+    CacheValue<float, float> cachedSpeed;
+    CacheValue<float, float> cachedPhysical;
+    CacheValue<float, float> cachedTime;
+    private void Awake()
+    {
+        cachedNumerical = new CacheValue<float, float>(scaleNumerical, currentPower);
+        cachedSpeed = new CacheValue<float, float>(scaleSpeed, currentPower);
+        cachedPhysical = new CacheValue<float, float>(scalePhysical, currentPower);
+        cachedTime = new CacheValue<float, float>(scaleTime, currentPower);
+    }
+
+
+
+
 
     public static float scaleSpeed(float power)
     {

@@ -15,9 +15,15 @@ public class FloorNormal : MonoBehaviour
         public float radius;
         public float distance;
     }
+
+    Vector3 cachedPosition = Vector3.zero;
     public void setGround(GroundSearchParams paras)
     {
-
+        Vector3 diff = transform.position - cachedPosition;
+        if (diff.magnitude < paras.radius * 0.2f)
+        {
+            return;
+        }
         RaycastHit rout;
 
         bool terrain = Physics.SphereCast(transform.position + transform.up * paras.distance, paras.radius, -transform.up, out rout, paras.distance * 2.01f, LayerMask.GetMask("Terrain"));
@@ -39,8 +45,8 @@ public class FloorNormal : MonoBehaviour
         {
             navPosition = hit.position;
         }
-        
 
+        cachedPosition = transform.position;
     }
     public Vector3 normal
     {

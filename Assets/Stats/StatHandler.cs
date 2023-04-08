@@ -6,19 +6,95 @@ using Mirror;
 
 public class StatHandler : NetworkBehaviour
 {
-    Dictionary<Stat, float> objectStats = new Dictionary<Stat, float>();
+    StatStream stream = new StatStream();
     readonly SyncDictionary<Stat, float> expressedStats = new SyncDictionary<Stat, float>();
 
     public IDictionary<Stat, float> stats
     {
-        get { return expressedStats; }
+        get
+        {
+            return expressedStats;
+        }
+    }
+
+    void mirrorStream(IDictionary<Stat, float> delta)
+    {
+
+        foreach (Stat key in delta.Keys)
+        {
+            if (expressedStats.ContainsKey(key))
+            {
+                expressedStats[key] += delta[key];
+            }
+            else
+            {
+                expressedStats[key] = delta[key];
+            }
+        }
+    }
+    bool subscribed = false;
+    private void Start()
+    {
+        if (isServer)
+        {
+            subscribe();
+        }
+
+    }
+
+    public void subscribe()
+    {
+        if (!subscribed)
+        {
+            stream.subscribe(mirrorStream);
+            subscribed = true;
+        }
+    }
+
+    public void link(StatHandler downstream, float effectMult = 1)
+    {
+        StatStream.linkStreams(stream, downstream.stream, effectMult);
+    }
+
+    public void link(StatStream downstream, float effectMult = 1)
+    {
+        StatStream.linkStreams(stream, downstream, effectMult);
+    }
+
+    private void OnDestroy()
+    {
+        if (isServer)
+        {
+            stream.terminateStreams();
+        }
+    }
+
+    public void setStats(Dictionary<Stat, float> newStats)
+    {
+        stream.setStats(newStats);
+    }
+
+    public void addStats(Dictionary<Stat, float> delta)
+    {
+        stream.addStats(delta);
+    }
+    public float get(Stat stat)
+    {
+        float value;
+        return expressedStats.TryGetValue(stat, out value) ? value : 0;
     }
 
 
+}
 
-    private void Start()
+public class StatStream
+{
+    Dictionary<Stat, float> objectStats = new Dictionary<Stat, float>();
+    Dictionary<Stat, float> expressedStats = new Dictionary<Stat, float>();
+
+    public IDictionary<Stat, float> stats
     {
-        updateExpression(objectStats);
+        get { return expressedStats; }
     }
 
     public void setStats(Dictionary<Stat, float> newStats)
@@ -40,10 +116,19 @@ public class StatHandler : NetworkBehaviour
     }
 
     #region streams
-    List<StatHandler> Upstream = new List<StatHandler>();
-    List<StatHandler> Downstream = new List<StatHandler>();
-    Dictionary<StatHandler, float> downstreamMultiplers = new Dictionary<StatHandler, float>();
-    public static void linkStreams(StatHandler up, StatHandler down, float effectMult = 1)
+    List<StatStream> Upstream = new List<StatStream>();
+    List<StatStream> Downstream = new List<StatStream>();
+    Dictionary<StatStream, float> downstreamMultiplers = new Dictionary<StatStream, float>();
+    public delegate void DeltaCallback(IDictionary<Stat, float> delta);
+    List<DeltaCallback> callbacks = new List<DeltaCallback>();
+
+    public void subscribe(DeltaCallback callback)
+    {
+        callbacks.Add(callback);
+        callback(expressedStats);
+    }
+
+    public static void linkStreams(StatStream up, StatStream down, float effectMult = 1)
     {
         if (up == down)
         {
@@ -54,61 +139,61 @@ public class StatHandler : NetworkBehaviour
 
     }
 
-    public static void unlinkStreams(StatHandler up, StatHandler down)
+    public static void unlinkStreams(StatStream up, StatStream down)
     {
         down._removeUpstream(up);
         up._removeDownstream(down);
     }
-    void _addUpstream(StatHandler up)
+    void _addUpstream(StatStream up)
     {
         Upstream.Add(up);
     }
-    void _removeUpstream(StatHandler up)
+    void _removeUpstream(StatStream up)
     {
         Upstream.Remove(up);
     }
-    void _addDownstream(StatHandler down, float effectMult)
+    void _addDownstream(StatStream down, float effectMult)
     {
         Downstream.Add(down);
         downstreamMultiplers.Add(down, effectMult);
         down.updateExpression(expressedStats.scale(effectMult));
     }
-    void _removeDownstream(StatHandler down)
+    void _removeDownstream(StatStream down)
     {
         Downstream.Remove(down);
         down.updateExpression(expressedStats.scale(downstreamMultiplers[down]).invert());
         downstreamMultiplers.Remove(down);
     }
 
-    [Server]
-    void terminateStreams()
+
+    public void terminateStreams()
     {
 
-        List<StatHandler> clean = new List<StatHandler>();
-        foreach (StatHandler h in Downstream)
+        List<StatStream> clean = new List<StatStream>();
+        foreach (StatStream h in Downstream)
         {
             clean.Add(h);
 
         }
-        foreach (StatHandler down in clean)
+        foreach (StatStream down in clean)
         {
             unlinkStreams(this, down);
         }
 
-        clean = new List<StatHandler>();
+        clean = new List<StatStream>();
 
-        foreach (StatHandler h in Upstream)
+        foreach (StatStream h in Upstream)
         {
             clean.Add(h);
 
         }
-        foreach (StatHandler up in clean)
+        foreach (StatStream up in clean)
         {
             unlinkStreams(up, this);
         }
 
     }
-    [Server]
+
     void updateExpression(IDictionary<Stat, float> delta)
     {
         foreach (Stat key in delta.Keys)
@@ -122,7 +207,11 @@ public class StatHandler : NetworkBehaviour
                 expressedStats[key] = delta[key];
             }
         }
-        foreach (StatHandler s in Downstream)
+        foreach (DeltaCallback d in callbacks)
+        {
+            d(delta);
+        }
+        foreach (StatStream s in Downstream)
         {
             s.updateExpression(delta);
         }

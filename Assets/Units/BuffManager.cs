@@ -25,17 +25,13 @@ public class BuffManager : NetworkBehaviour
         buffs.Add(b);
         if (isServer)
         {
-            StatHandler.linkStreams(b.GetComponent<StatHandler>(), GetComponent<StatHandler>(), b.relativeScale(power.scaleTime()));
+            b.GetComponent<StatHandler>().link(GetComponent<StatHandler>(), b.relativeScale(power.scaleTime()));
         }
         callback();
     }
     public void removeBuff(Buff b)
     {
         buffs.Remove(b);
-        if (isServer)
-        {
-            StatHandler.unlinkStreams(b.GetComponent<StatHandler>(), GetComponent<StatHandler>());
-        }
         callback();
     }
 

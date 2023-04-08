@@ -33,6 +33,8 @@ public static class GenerateWind
                 moveMult = moveMult,
                 turnMult = turnMult,
                 baseDuration = baseDuration,
+                stream = new StatStream(),
+                powerAtGen = power,
             };
         }
 
@@ -65,26 +67,45 @@ public static class GenerateWind
                 return 1 + haste;
             }
         }
+        IDictionary<Stat, float> stats
+        {
+            get
+            {
+                return stream.stats;
 
+            }
+        }
+        float getStat(Stat stat)
+        {
+            if (stats.ContainsKey(stat))
+            {
+                return statToValue(stat, stats[stat], Power.scaleNumerical(powerAtGen));
+            }
+            else
+            {
+                return 0;
+            }
+
+        }
         float haste
         {
             get
             {
-                return parentData.getStat(Stat.Haste);
+                return getStat(Stat.Haste);
             }
         }
         public float turnspeedCast
         {
             get
             {
-                return parentData.getStat(Stat.TurnspeedCast);
+                return getStat(Stat.TurnspeedCast);
             }
         }
         public float movespeedCast
         {
             get
             {
-                return parentData.getStat(Stat.MovespeedCast);
+                return getStat(Stat.MovespeedCast);
             }
         }
     }

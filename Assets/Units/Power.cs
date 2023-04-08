@@ -111,13 +111,8 @@ public class Power : NetworkBehaviour, TextValue
     }
 
 
-    public static float baseDownscale
-    {
-        get
-        {
-            return downscalePower(basePower);
-        }
-    }
+    public static readonly float baseDownscale = downscalePower(basePower);
+
     public float downscaled
     {
         get

@@ -29,7 +29,7 @@ public class Buff : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         sth = GetComponent<StatHandler>();
-
+        sth.subscribe();
         transform.parent.GetComponent<BuffManager>().addBuff(this);
     }
     private void OnDestroy()

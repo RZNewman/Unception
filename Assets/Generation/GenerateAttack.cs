@@ -25,7 +25,8 @@ public static class GenerateAttack
     }
     public abstract class InstanceData
     {
-        public AttackInstanceData parentData;
+        public StatStream stream;
+        public float powerAtGen;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
             return new EffectiveDistance()
@@ -179,13 +180,12 @@ public static class GenerateAttack
         public SegmentInstanceData[] segments;
         public Mod[] mods;
         public float cooldown;
-        public Dictionary<Stat, float> _baseStats;
-        public Ability parentAbility;
-        public Dictionary<Stat, float> stats
+        public StatStream stream;
+        public IDictionary<Stat, float> stats
         {
             get
             {
-                return parentAbility ? _baseStats.sum(parentAbility.stats) : _baseStats;
+                return stream.stats;
             }
         }
         public Quality quality;
@@ -327,22 +327,28 @@ public static class GenerateAttack
 
         }
 
+        StatStream stream = new StatStream();
+        stream.setStats(stats);
+        if (abil != null)
+        {
+            abil.GetComponent<StatHandler>().link(stream);
+        }
+
         AttackInstanceData atkIn = new AttackInstanceData
         {
 
             cooldown = cooldownTime,
-            _baseStats = stats,
+            stream = stream,
             segments = segmentsInst,
             quality = atk.quality,
             mods = atk.mods,
             power = power,
-            parentAbility = abil,
 
         };
 
         foreach (InstanceData stage in stagesToParent)
         {
-            stage.parentData = atkIn;
+            StatStream.linkStreams(stream, stage.stream);
         }
         return atkIn;
 

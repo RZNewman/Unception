@@ -19,7 +19,7 @@ public class Pack : NetworkBehaviour
 
     //Server
     bool aggroed = false;
-    bool enabled = false;
+    bool enabledUnits = false;
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
@@ -34,9 +34,9 @@ public class Pack : NetworkBehaviour
             if (other.GetComponentInParent<TeamOwnership>().getTeam() == TeamOwnership.PLAYER_TEAM)
             {
                 players.Add(other.gameObject);
-                if (!enabled)
+                if (!enabledUnits)
                 {
-                    enabled = true;
+                    enabledUnits = true;
                     enableUnits();
                 }
 
@@ -53,7 +53,7 @@ public class Pack : NetworkBehaviour
             if (players.Count == 0)
             {
                 disableUnits();
-                enabled = false;
+                enabledUnits = false;
             }
         }
 

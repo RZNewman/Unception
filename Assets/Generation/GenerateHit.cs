@@ -58,6 +58,9 @@ public static class GenerateHit
             stats = stats.sum(itemStatBase);
             stats = stats.scale(scaleNum);
 
+            StatStream stream = new StatStream();
+            stream.setStats(stats);
+
             HitInstanceData baseData = new HitInstanceData
             {
                 strength = strength,
@@ -65,7 +68,7 @@ public static class GenerateHit
 
                 flair = flair,
 
-                _baseStats = stats,
+                stream = stream,
                 knockBackType = this.knockBackType,
                 knockBackDirection = this.knockBackDirection,
                 type = this.type,
@@ -81,7 +84,7 @@ public static class GenerateHit
     public class HitInstanceData : InstanceData
     {
         public float strength;
-        public float powerAtGen;
+
         public float powerByStrength
         {
             get
@@ -91,17 +94,16 @@ public static class GenerateHit
         }
 
         public HitType type;
-        public Dictionary<Stat, float> _baseStats;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
 
 
-        Dictionary<Stat, float> stats
+        IDictionary<Stat, float> stats
         {
             get
             {
-                return _baseStats.sum(parentData.stats);
+                return stream.stats;
             }
         }
         #region getStats
@@ -153,7 +155,7 @@ public static class GenerateHit
         {
             if (stats.ContainsKey(stat))
             {
-                return statToValue(stat, stats[stat], Power.scaleNumerical(parentData.power), type) * strength;
+                return statToValue(stat, stats[stat], Power.scaleNumerical(powerAtGen), type) * strength;
             }
             else
             {

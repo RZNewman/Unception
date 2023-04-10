@@ -26,7 +26,7 @@ public static class GenerateWind
             bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
 
-            float baseDuration = this.duration.asRange(0.15f, 3f);
+            float baseDuration = this.duration.asRange(0.25f, 3f);
             return new WindInstanceData
             {
                 duration = baseDuration / Power.scaleTime(power),

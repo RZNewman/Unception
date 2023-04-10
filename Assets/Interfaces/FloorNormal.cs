@@ -10,6 +10,8 @@ public class FloorNormal : MonoBehaviour
     Vector3 groundNormal = Vector3.up;
     Vector3 navPosition = Vector3.zero;
 
+    public static readonly float floorDegrees = 45;
+
     public struct GroundSearchParams
     {
         public float radius;
@@ -29,7 +31,7 @@ public class FloorNormal : MonoBehaviour
         bool terrain = Physics.SphereCast(transform.position + transform.up * paras.distance, paras.radius, -transform.up, out rout, paras.distance * 2.01f, LayerMask.GetMask("Terrain"));
         float angle = Vector3.Angle(Vector3.up, rout.normal);
 
-        ground = terrain && angle < 45;
+        ground = terrain && angle < floorDegrees;
 
         if (ground)
         {

@@ -36,7 +36,7 @@ public static class StatTypes
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},
         {Stat.Knockup,15},
-        {Stat.Charges,3.0f },
+        {Stat.Charges,1.1f },
         {Stat.Haste, 0.5f },
         {Stat.Cooldown, 1.0f },
         {Stat.TurnspeedCast, 90f },
@@ -119,7 +119,7 @@ public static class StatTypes
         {Stat.DamageMult,92},
         {Stat.Stagger,48},
         {Stat.Knockup,32},
-        {Stat.Charges,65},
+        {Stat.Charges,70},
         {Stat.Range,65},
     };
     public static readonly float itemStatSpread = 175;

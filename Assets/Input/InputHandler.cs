@@ -1,8 +1,12 @@
+using NSubstitute.Routing;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using static Keybinds;
 using static UnitControl;
 using static Utils;
+using static FloorNormal;
+
 public class InputHandler : MonoBehaviour, UnitControl
 {
 
@@ -111,25 +115,34 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         r = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        RaycastHit info;
-        Vector3 dir;
-        if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("Terrain")))
-        {
 
-            dir = info.point - transform.position;
+        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, LayerMask.GetMask("Terrain"));
+
+        for (int i = 0; i <= info.Length; i++)
+        {
+            if (i == info.Length)
+            {
+                RaycastHit clickHit;
+                if (Physics.Raycast(r, out clickHit, cameraRayMax, LayerMask.GetMask("ClickPlane")))
+                {
+                    currentInput.lookOffset = clickHit.point - transform.position;
+                    break;
+                }
+                else
+                {
+                    //throw new System.Exception("no local click target");
+                    return;
+                }
+
+            }
+            if (Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees)
+            {
+                currentInput.lookOffset = info[i].point - transform.position;
+                break;
+            }
 
         }
-        else if (Physics.Raycast(r, out info, cameraRayMax, LayerMask.GetMask("ClickPlane")))
-        {
-            dir = info.point - transform.position;
 
-        }
-        else
-        {
-            //throw new System.Exception("no local click target");
-            return;
-        }
-        currentInput.lookOffset = dir;
 
     }
 

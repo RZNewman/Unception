@@ -17,7 +17,7 @@ public class ItemList : MonoBehaviour
 
     private void Start()
     {
-        gp = FindObjectOfType<GlobalPlayer>();
+        gp = FindObjectOfType<GlobalPlayer>(true);
     }
     public enum InventoryMode
     {

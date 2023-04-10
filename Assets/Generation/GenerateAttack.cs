@@ -254,7 +254,7 @@ public static class GenerateAttack
 
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
-        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 30 + 1), 1.5f);
+        float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 5 + 1), 2f);
         cooldownTime /= Power.scaleTime(power);
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
@@ -290,14 +290,14 @@ public static class GenerateAttack
 
             float strength = getWindValue(windList.ToArray());
             float addedCDStrength = cooldownStrength * (1 - 0.03f * (repeatCount - 1));
-            if (strength * (1 + addedCDStrength) > strength + addedCDStrength)
-            {
-                strength *= 1 + addedCDStrength;
-            }
-            else
-            {
-                strength += addedCDStrength;
-            }
+            //if (strength * (1 + addedCDStrength) > strength + addedCDStrength)
+            //{
+            //    strength *= 1 + addedCDStrength;
+            //}
+            //else
+            //{
+            strength += addedCDStrength;
+            //}
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
 

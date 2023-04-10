@@ -21,11 +21,8 @@ public static class StatTypes
         TurnspeedCast,
         MovespeedCast,
         Range,
-    }
-    public struct SyncStat
-    {
-        public Stat Stat;
-        public float value;
+        Turnspeed,
+        Movespeed,
     }
 
     static Dictionary<Stat, float> statValues = new Dictionary<Stat, float>()
@@ -42,6 +39,8 @@ public static class StatTypes
         {Stat.TurnspeedCast, 90f },
         {Stat.MovespeedCast, 2.0f },
         {Stat.Range, 6f },
+        {Stat.Turnspeed, 80f },
+        {Stat.Movespeed, 1.8f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);
 
     static Dictionary<HitType, Dictionary<Stat, float>> hitStatModifiers = new Dictionary<HitType, Dictionary<Stat, float>>()
@@ -84,14 +83,16 @@ public static class StatTypes
             case Stat.Length:
             case Stat.Width:
             case Stat.Range:
-            case Stat.MovespeedCast:
-            //Turnspeed is in degrees, which would be a constant, but instead we divide by
-            //the world scale here and the player scale later, acting like a length
-            case Stat.TurnspeedCast:
                 value /= Power.worldScale;
                 break;
             case Stat.Knockback:
             case Stat.Knockup:
+            case Stat.MovespeedCast:
+            case Stat.Movespeed:
+            //Turnspeed is in degrees, which would be a constant, but instead we divide by
+            //the world scale here and the player scale later, acting like a length
+            case Stat.TurnspeedCast:
+            case Stat.Turnspeed:
                 //speed stats need to be scale-squared to scale on both dimentions
                 value *= scale;
                 value /= Power.worldScale;

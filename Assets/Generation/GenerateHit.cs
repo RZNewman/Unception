@@ -65,6 +65,7 @@ public static class GenerateHit
             {
                 strength = strength,
                 powerAtGen = power,
+                scaleAtGen = Power.scaleNumerical(power),
 
                 flair = flair,
 
@@ -99,13 +100,6 @@ public static class GenerateHit
         public HitFlair flair;
 
 
-        IDictionary<Stat, float> stats
-        {
-            get
-            {
-                return stream.stats;
-            }
-        }
         #region getStats
         public float length
         {
@@ -153,14 +147,7 @@ public static class GenerateHit
 
         float getStat(Stat stat)
         {
-            if (stats.ContainsKey(stat))
-            {
-                return statToValue(stat, stats[stat], Power.scaleNumerical(powerAtGen), type) * strength;
-            }
-            else
-            {
-                return 0;
-            }
+            return stream.getValue(stat, scaleAtGen, type) * strength;
 
         }
 

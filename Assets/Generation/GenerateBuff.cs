@@ -68,7 +68,7 @@ public static class GenerateBuff
     public static BuffGenerationData createBuff()
     {
         Value[] typeValues = generateRandomValues(new float[] { 1f, 1f });
-        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.TurnspeedCast, Stat.MovespeedCast };
+        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
         Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();
 
         BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();

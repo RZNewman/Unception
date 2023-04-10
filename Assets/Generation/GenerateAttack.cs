@@ -27,6 +27,7 @@ public static class GenerateAttack
     {
         public StatStream stream;
         public float powerAtGen;
+        public float scaleAtGen;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
             return new EffectiveDistance()
@@ -128,7 +129,17 @@ public static class GenerateAttack
         {
             get
             {
-                return hit.powerByStrength + (dash != null ? dash.powerByStrength : 0);
+                float power = hit.powerByStrength;
+                if (dashInside)
+                {
+                    power += (dash != null ? dash.powerByStrength : 0);
+                }
+                power *= (repeat == null ? 1 : repeat.repeatCount);
+                if (!dashInside)
+                {
+                    power += (dash != null ? dash.powerByStrength : 0);
+                }
+                return power;
             }
         }
         public float eps(float power)
@@ -189,27 +200,13 @@ public static class GenerateAttack
         public Mod[] mods;
         public float cooldown;
         public StatStream stream;
-        public IDictionary<Stat, float> stats
-        {
-            get
-            {
-                return stream.stats;
-            }
-        }
         public Quality quality;
         public float power;
-
+        public float scale;
 
         public float getStat(Stat stat)
         {
-            if (stats.ContainsKey(stat))
-            {
-                return statToValue(stat, stats[stat], Power.scaleNumerical(power));
-            }
-            else
-            {
-                return 0;
-            }
+            return stream.getValue(stat, scale);
         }
         float modPercentValue
         {
@@ -351,7 +348,7 @@ public static class GenerateAttack
             quality = atk.quality,
             mods = atk.mods,
             power = power,
-
+            scale = Power.scaleNumerical(power),
         };
 
         foreach (InstanceData stage in stagesToParent)

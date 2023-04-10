@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static StatTypes;
 using Mirror;
+using static GenerateHit;
 
 public class StatHandler : NetworkBehaviour
 {
@@ -32,6 +33,12 @@ public class StatHandler : NetworkBehaviour
             }
         }
     }
+
+    public float getValue(Stat stat, float scale)
+    {
+        return stream.getValue(stat, scale);
+    }
+
     bool subscribed = false;
     private void Start()
     {
@@ -118,10 +125,15 @@ public class StatStream
         objectStats = objectStats.sum(delta);
         updateExpression(delta);
     }
-    public float get(Stat stat)
+    public float getValue(Stat stat, float scale, HitType hitType)
     {
         float value;
-        return expressedStats.TryGetValue(stat, out value) ? value : 0;
+        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scale, hitType) : 0;
+    }
+    public float getValue(Stat stat, float scale)
+    {
+        float value;
+        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scale) : 0;
     }
 
     #region streams

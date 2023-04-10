@@ -58,7 +58,7 @@ public class UiBuffBar : MonoBehaviour
                 return width;
             case Stat.Range:
                 return range;
-            case Stat.TurnspeedCast:
+            case Stat.Turnspeed:
                 return turn;
             case Stat.Cooldown:
                 return cooldown;
@@ -74,7 +74,7 @@ public class UiBuffBar : MonoBehaviour
             case Stat.Stagger:
                 return stagger;
             //persist
-            case Stat.MovespeedCast:
+            case Stat.Movespeed:
                 return move;
 
                 //chain

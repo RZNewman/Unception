@@ -58,18 +58,6 @@ public class Ability : NetworkBehaviour
         }
     }
 
-    public IDictionary<Stat, float> stats
-    {
-        get
-        {
-            if (!statHandler)
-            {
-                statHandler = GetComponent<StatHandler>();
-            }
-
-            return statHandler.stats;
-        }
-    }
     void bufferClientCast(float old, float newcharge)
     {
         //Debug.Log(newCD + " - " + old + ",   " + cooldownMax);

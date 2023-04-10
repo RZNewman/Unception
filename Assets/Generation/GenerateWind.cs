@@ -35,6 +35,7 @@ public static class GenerateWind
                 baseDuration = baseDuration,
                 stream = new StatStream(),
                 powerAtGen = power,
+                scaleAtGen = Power.scaleNumerical(power),
             };
         }
 
@@ -67,24 +68,9 @@ public static class GenerateWind
                 return 1 + haste;
             }
         }
-        IDictionary<Stat, float> stats
-        {
-            get
-            {
-                return stream.stats;
-
-            }
-        }
         float getStat(Stat stat)
         {
-            if (stats.ContainsKey(stat))
-            {
-                return statToValue(stat, stats[stat], Power.scaleNumerical(powerAtGen));
-            }
-            else
-            {
-                return 0;
-            }
+            return stream.getValue(stat, scaleAtGen);
 
         }
         float haste

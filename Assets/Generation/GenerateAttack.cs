@@ -38,21 +38,29 @@ public static class GenerateAttack
     }
 
     //value added for 100% reduced effect (50% speed)
-    static readonly float moveValue = 0.07f;
-    static readonly float turnValue = 0.025f;
+    static readonly float moveValuePositive = 0.07f;
+    static readonly float turnValuePositive = 0.025f;
+
+    static readonly float moveValueNegative = 0.4f;
+    static readonly float turnValueNegative = 0.1f;
     static public float getWindValue(WindInstanceData[] winds)
     {
-        float totalTime = winds.Sum(x => x.baseDuration);
-        float avgMove = winds.Sum(x => x.moveMult * x.baseDuration) / totalTime;
-        float avgTurn = winds.Sum(x => x.turnMult * x.baseDuration) / totalTime;
-
+        return winds.Sum(getWindValue);
+    }
+    static public float getWindValue(WindInstanceData wind)
+    {
+        float totalTime = wind.baseDuration;
+        float avgMove = wind.moveMult;
+        float avgTurn = wind.turnMult;
 
         float moveMagnitude = Mathf.Max(avgMove, 1 / avgMove) - 1;
         float moveDirection = avgMove > 1 ? -1 : 1;
+        float moveValue = avgMove > 1 ? moveValueNegative : moveValuePositive;
         float moveMult = moveMagnitude * moveValue * moveDirection + 1;
 
         float turnMagnitude = Mathf.Max(avgTurn, 1 / avgTurn) - 1;
         float turnDirection = avgTurn > 1 ? -1 : 1;
+        float turnValue = avgTurn > 1 ? turnValueNegative : turnValuePositive;
         float turnMult = turnMagnitude * turnValue * turnDirection + 1;
 
         return totalTime * moveMult * turnMult;

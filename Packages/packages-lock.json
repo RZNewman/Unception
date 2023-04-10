@@ -7,6 +7,12 @@
       "dependencies": {},
       "hash": "ac8e7e4aaea273ab6fb35f152e1b8f6cf3a50465"
     },
+    "com.shadercrew.seethroughshader.core": {
+      "version": "file:com.shadercrew.seethroughshader.core",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.7.3",
       "depth": 1,

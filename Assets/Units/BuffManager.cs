@@ -16,6 +16,11 @@ public class BuffManager : NetworkBehaviour
         power = GetComponent<Power>();
     }
 
+    void debugStats(List<Buff> b)
+    {
+        handler.debugStats();
+    }
+
 
     List<Buff> buffs = new List<Buff>();
     List<BuffRefresh> subs = new List<BuffRefresh>();
@@ -25,7 +30,7 @@ public class BuffManager : NetworkBehaviour
         buffs.Add(b);
         if (isServer)
         {
-            b.GetComponent<StatHandler>().link(GetComponent<StatHandler>(), b.relativeScale(power.scaleTime()));
+            b.GetComponent<StatHandler>().link(handler, b.relativeScale(power.scaleTime()));
         }
         callback();
     }

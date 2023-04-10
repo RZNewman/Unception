@@ -256,7 +256,7 @@ public class Atlas : NetworkBehaviour
         {
             int i when i < 2 => 0,
             int i when i < 6 => 1,
-            int i => 0.1f + 0.2f * tier,
+            int i => 0.65f * Mathf.Pow(1.1f, tier),
         };
     }
 

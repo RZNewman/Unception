@@ -14,8 +14,8 @@ public class Size : MonoBehaviour, IndicatorHolder
         Physics.IgnoreCollision(col, stopper);
         stopper.transform.parent = transform;
         stopper.transform.localScale = Vector3.one;
-        stopper.radius = colliderWidth + 0.1f;
-        stopper.height = colliderHalfHeight * 2 + 0.1f;
+        stopper.radius = colliderWidth + 0.01f;
+        stopper.height = colliderHalfHeight * 2 + 0.01f;
         GetComponentInParent<Power>().subscribePower(updateSize);
     }
 

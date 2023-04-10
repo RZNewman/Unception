@@ -84,6 +84,15 @@ public class StatHandler : NetworkBehaviour
         return expressedStats.TryGetValue(stat, out value) ? value : 0;
     }
 
+    public void debugStats()
+    {
+        string statString = "";
+        foreach (Stat key in expressedStats.Keys)
+        {
+            statString += key + ": " + expressedStats[key] + "\n";
+        }
+        Debug.Log(statString);
+    }
 
 }
 

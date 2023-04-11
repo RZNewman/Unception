@@ -58,6 +58,10 @@ public static class SystemClassReaders
     {
         return (RewardManager.ModBonus)reader.ReadByte();
     }
+    public static GenerateBuff.BuffType ReadBuffType(this NetworkReader reader)
+    {
+        return (BuffType)reader.ReadByte();
+    }
 
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
@@ -102,6 +106,7 @@ public static class SystemClassReaders
                 BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
                 buff.duration = reader.ReadFloat();
                 buff.statValues = reader.ReadStatDict();
+                buff.type = reader.ReadBuffType();
                 return buff;
             default:
                 return null;

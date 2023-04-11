@@ -95,7 +95,8 @@ public class UiAbilityDetails : MonoBehaviour
         if (instance.buff != null)
         {
             segmentPanel.addLabel("Buff Dur.", instance.buff.durationDisplay(power));
-            segmentPanel.addLabel("Buff ", instance.buff.stats.First().Key.ToString());
+            string label = instance.buff.type == GenerateBuff.BuffType.Buff ? "Buff " : "Debuff ";
+            segmentPanel.addLabel(label, instance.buff.stats.First().Key.ToString());
             segmentPanel.addLabel("Buff Value", instance.buff.stats.First().Value);
         }
 

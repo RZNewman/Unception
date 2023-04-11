@@ -7,6 +7,7 @@ using Mirror;
 using static IndicatorInstance;
 using UnityEngine.VFX;
 using static UnitSound;
+using static GenerateBuff;
 
 public class Projectile : NetworkBehaviour
 {
@@ -22,6 +23,7 @@ public class Projectile : NetworkBehaviour
 
     UnitMovement mover;
     HitInstanceData hitData;
+    BuffInstanceData buffData;
 
     [SyncVar]
     ProjectileData data;
@@ -59,11 +61,12 @@ public class Projectile : NetworkBehaviour
 
     }
     [Server]
-    public void init(float terrainRadius, float hitboxRadius, float halfHeight, UnitMovement m, HitInstanceData hitD, AudioDistances dists)
+    public void init(float terrainRadius, float hitboxRadius, float halfHeight, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, AudioDistances dists)
     {
         mover = m;
         Power p = mover.GetComponent<Power>();
         hitData = hitD;
+        buffData = buffD;
         data = new ProjectileData
         {
             terrainRadius = terrainRadius,
@@ -112,13 +115,20 @@ public class Projectile : NetworkBehaviour
         {
 
             collided.Add(other);
-            if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward })
-                && !hasHit)
+            if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward }))
             {
-                hasHit = true;
-                birth = Time.time;
-                lifetime = data.lifetime / 3f;
-                setSpeed(data.length / lifetime);
+                if (buffData != null && buffData.type == BuffType.Debuff)
+                {
+                    SpawnBuff(buffData, other.GetComponentInParent<BuffManager>().transform);
+                }
+                if (!hasHit)
+                {
+                    hasHit = true;
+                    birth = Time.time;
+                    lifetime = data.lifetime / 3f;
+                    setSpeed(data.length / lifetime);
+                }
+
             }
         }
 

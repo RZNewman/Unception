@@ -51,6 +51,11 @@ public static class SystemClassWriters
         writer.WriteByte((byte)key);
     }
 
+    public static void WriteBuffType(this NetworkWriter writer, GenerateBuff.BuffType key)
+    {
+        writer.WriteByte((byte)key);
+    }
+
 
     public enum GenerationDataClass : byte
     {
@@ -97,6 +102,7 @@ public static class SystemClassWriters
                 writer.WriteByte((byte)GenerationDataClass.Buff);
                 writer.WriteFloat(b.duration);
                 writer.WriteStatDict(b.statValues);
+                writer.WriteBuffType(b.type);
                 break;
 
         }

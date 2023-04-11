@@ -37,7 +37,7 @@ public class ActionState : AttackStageState
         GameObject body = mover.getSpawnBody();
         FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
         Size s = body.GetComponentInChildren<Size>();
-        List<GameObject> hits;
+        List<GameObject> hits = new List<GameObject>();
         switch (attackData.type)
         {
             case HitType.Line:
@@ -66,7 +66,7 @@ public class ActionState : AttackStageState
                 {
                     return;
                 }
-                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData, mover.sound.dists);
+                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData, buffData, mover.sound.dists);
                 break;
             case HitType.Ground:
                 float radius = attackData.width / 2;
@@ -95,7 +95,19 @@ public class ActionState : AttackStageState
 
         if (buffData != null)
         {
-            SpawnBuff(buffData, mover.transform);
+            if (buffData.type == BuffType.Buff)
+            {
+                SpawnBuff(buffData, mover.transform);
+            }
+            else
+            {
+                foreach (GameObject h in hits)
+                {
+                    SpawnBuff(buffData, h.GetComponentInParent<BuffManager>().transform);
+
+                }
+            }
+
         }
     }
 

@@ -33,18 +33,15 @@ public class UiBuffBar : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        HashSet<Stat> stats = new HashSet<Stat>();
+        Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         foreach (Buff buff in buffs)
         {
-            foreach (Stat stat in buff.stats.Keys)
-            {
-                stats.Add(stat);
-            }
+            stats = stats.sum(buff.stats);
         }
-        foreach (Stat stat in stats)
+        foreach (Stat stat in stats.Keys)
         {
             GameObject instance = Instantiate(BuffIconPre, transform);
-            instance.GetComponent<UiBuffIcon>().setImage(fromStat(stat));
+            instance.GetComponent<UiBuffIcon>().setImage(fromStat(stat), stats[stat] >= 0 ? Color.green : Color.red);
         }
     }
 

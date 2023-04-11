@@ -105,7 +105,34 @@ public static class StatTypes
                 //these values are of a constant scale; since the stat is already scaled, we need to unscale the value here
                 value /= scale;
                 break;
-
+        }
+        switch (stat)
+        {
+            case Stat.Length:
+            case Stat.Width:
+            case Stat.Range:
+                switch (value)
+                {
+                    case float f when f <= 0:
+                        value = 0.00001f;
+                        break;
+                }
+                break;
+            case Stat.Knockup:
+            case Stat.Knockback:
+            case Stat.Charges:
+            case Stat.Cooldown:
+            case Stat.Haste:
+            case Stat.Stagger:
+                switch (value)
+                {
+                    case float f when f < 0:
+                        value = 0;
+                        break;
+                }
+                break;
+                //Movespeed and turnspeed 0s are handled in movement
+                //this is bc they need to be added first
         }
 
 

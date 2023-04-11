@@ -7,8 +7,9 @@ public class UiBuffIcon : MonoBehaviour
 {
     public Image icon;
 
-    public void setImage(Sprite sprite)
+    public void setImage(Sprite sprite, Color c)
     {
         icon.sprite = sprite;
+        icon.color = c;
     }
 }

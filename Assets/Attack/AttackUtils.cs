@@ -225,7 +225,7 @@ public static class AttackUtils
         }
     }
 
-    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData, AudioDistances dists)
+    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, AudioDistances dists)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
         Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
@@ -235,7 +235,7 @@ public static class AttackUtils
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
         float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
-        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData, dists);
+        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData, buffData, dists);
         NetworkServer.Spawn(instance);
     }
 

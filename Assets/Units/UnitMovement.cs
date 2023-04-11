@@ -240,7 +240,7 @@ public class UnitMovement : NetworkBehaviour
 
 
         Vector3 planarVelocity = planarVelocityCalculated;
-        float potentialSpeed = (props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical())) * speedMultiplier * scaleSpeed;
+        float potentialSpeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0) * speedMultiplier * scaleSpeed;
         float desiredSpeed;
         if (grounded)
         {
@@ -341,10 +341,11 @@ public class UnitMovement : NetworkBehaviour
             airMultiplier = 0.6f;
         };
 
-        float potentialSpeed = props.maxSpeed * lookMultiplier * airMultiplier * combatMultiplier * power.scaleSpeed();
+        float potentialSpeed = Mathf.Max(props.maxSpeed + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0) * lookMultiplier * airMultiplier * combatMultiplier * power.scaleSpeed();
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }
+
     public void stop(bool alsoGravity = false)
     {
         if (alsoGravity)
@@ -386,7 +387,7 @@ public class UnitMovement : NetworkBehaviour
         //degrees in proportial to the world right now, but if the player is bigger, we need to reduce it
         additionalRotationDegrees /= power.scalePhysical();
         canSnap &= props.isPlayer;
-        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : props.lookSpeedDegrees + additionalRotationDegrees + statHandler.getValue(Stat.Turnspeed, power.scaleNumerical());
+        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : Mathf.Max(props.lookSpeedDegrees + additionalRotationDegrees + statHandler.getValue(Stat.Turnspeed, power.scaleNumerical()), 0);
 
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;

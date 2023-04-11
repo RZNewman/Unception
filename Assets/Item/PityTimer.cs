@@ -104,90 +104,130 @@ public class PityTimer<T> where T : struct, System.IConvertible
 
 public class PityTimerContinuous
 {
+
     List<PityRecord> records;
+    System.Random rng;
     struct PityRecord
     {
-        public float selfCount;
-        public int allCount;
-        public float value;
+        public int count;
+        public double value;
+        public double chance
+        {
+            get
+            {
+                return 1 - value;
+            }
+        }
+        public double cost
+        {
+            get
+            {
+                return -1 / (chance);
+            }
+        }
     }
     public PityTimerContinuous()
     {
         records = new List<PityRecord>();
+        records.Add(new PityRecord()
+        {
+            count = 0,
+            value = 0.5f,
+        });
+        rng = new System.Random();
     }
 
-    public float roll(int rarityFactor = 1, float fedValue = -1)
+    public double roll(int rarityFactor = 1, double fedValue = -1)
     {
-        float n = fedValue;
+        double n = fedValue;
         if (n < 0)
         {
-            n = Random.value;
+            n = rng.NextDouble();
         }
-        float cap = 1;
-        float cost = 0;
+        double cap = 1;
         PityRecord newRecord;
-        if (records.Count > 0)
+        //if (records.Count > 0)
+        //{
+        int j;
+        int sum = 1 * rarityFactor;
+        for (j = 0; j < records.Count; j++)
         {
-            int sum = records.Select(r => r.allCount).Sum() + 1 * rarityFactor;
-            int i;
-            float hit = -1;
-            for (i = records.Count - 1; i >= 0; i--)
+            PityRecord record = records[j];
+            int tempsum = sum + record.count;
+            if (tempsum + record.cost < 0)
+            {
+                cap = record.value;
+                break;
+            }
+            sum += record.count;
+        }
+        //Debug.Log("Records: " + records.Count + ", Sum: " + sum);
+        int i = -1;
+        n = n.asRange(0, cap);
+        double hit = -1;
+        if (j > 0)
+        {
+            for (i = j - 1; i >= 0; i--)
             {
                 PityRecord r = records[i];
-                float chance = 1 - r.value;
-
-
-                //float weight = -1 / chance + sum;
-                //float weightedChance = (weight < 1 ? 1 / (1 - weight) : weight) * chance;
-                //if (n <= weightedChance)
-                //{
-                //    hit = n.asRange(r.value, cap);
-                //    break;
-                //}
-                //else
-                //{
-                //    cap = r.value;
-                //}
-
-                float chanceCost = -1 / (chance);
-                float weight = chanceCost + sum - r.allCount + r.selfCount;
-                float nChance = 1 - n;
-                float weightedChance = chance * weight;
-                if (weight <= 0)
+                double weight = r.cost + sum;
+                double weightedChance = weight * r.chance;
+                double nChance = 1 - n;
+                if (nChance <= weightedChance)
                 {
-                    cap = r.value;
-                }
-                else if (nChance <= weightedChance)
-                {
-                    float percentOfRange = 1 - nChance / weightedChance;
+                    double percentOfRange = 1 - nChance / weightedChance;
                     hit = percentOfRange.asRange(r.value, cap);
-                    cost = chanceCost;
                     break;
                 }
 
-                sum -= r.allCount;
+                sum -= r.count;
+
+                //float chanceCost = -1 / (chance);
+                //float weight = chanceCost + sum - r.allCount + r.selfCount;
+                //float nChance = 1 - n;
+                //float weightedChance = chance * weight;
+                //if (weight <= 0)
+                //{
+                //    cap = r.value;
+                //}
+                //else if (nChance <= weightedChance)
+                //{
+                //    float percentOfRange = 1 - nChance / weightedChance;
+                //    hit = percentOfRange.asRange(r.value, cap);
+                //    cost = chanceCost;
+                //    break;
+                //}
+
+
 
             }
-            if (hit < 0)
-            {
-                hit = n.asRange(0, cap);
-            }
-            if (i >= 0)
-            {
-                records.RemoveRange(0, i + 1);
-            }
-
-            newRecord.value = hit;
-            newRecord.allCount = sum;
-            newRecord.selfCount = sum + cost;
-
         }
-        else
+
+        if (hit < 0)
         {
-            newRecord.value = n;
-            newRecord.allCount = 1;
-            newRecord.selfCount = 0;
+            //hit = n.asRange(0, cap);
+            hit = n;
         }
+        if (i >= 0)
+        {
+            records.RemoveRange(0, i + 1);
+        }
+
+        newRecord.value = hit;
+        newRecord.count = sum;
+
+        //if (newRecord.value < 0.5f)
+        //{
+        //    newRecord.value = records[0].value;
+        //    newRecord.count += records[0].count;
+        //    records[0] = newRecord;
+        //}
+        //else
+        //{
+
+        //    records.Add(newRecord);
+        //    records.Sort((r1, r2) => r1.value.CompareTo(r2.value));
+        //}
 
         records.Add(newRecord);
         records.Sort((r1, r2) => r1.value.CompareTo(r2.value));
@@ -196,13 +236,15 @@ public class PityTimerContinuous
         return newRecord.value;
 
     }
-    public Dictionary<float, int> export()
+    public Dictionary<double, int> export()
     {
-        Dictionary<float, int> dict = new Dictionary<float, int>();
+        Dictionary<double, int> dict = new Dictionary<double, int>();
         foreach (PityRecord p in records)
         {
-            dict.Add(p.value, p.allCount);
+            //Debug.Log(p.value + ":" + p.count);
+            dict.Add(p.value, p.count);
         }
         return dict;
     }
+
 }

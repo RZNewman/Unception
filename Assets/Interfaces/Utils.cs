@@ -1,5 +1,6 @@
 
 using Firebase.Database;
+using Mirror;
 using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ public static class Utils
     public static float asRange(this float value, float min, float max)
     {
         value = Mathf.Clamp01(value);
+        return min + (max - min) * value;
+    }
+    public static double asRange(this double value, double min, double max)
+    {
+        value = Mathd.Clamp01(value);
         return min + (max - min) * value;
     }
     public static string asPercent(this float value)

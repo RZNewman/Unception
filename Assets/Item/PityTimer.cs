@@ -122,7 +122,7 @@ public class PityTimerContinuous
         {
             get
             {
-                return -1 / (chance);
+                return -1 / (chance * 1.3d);
             }
         }
     }
@@ -148,39 +148,43 @@ public class PityTimerContinuous
         PityRecord newRecord;
         //if (records.Count > 0)
         //{
+        int bonus = 1 * rarityFactor;
+        for (int k = 0; k < records.Count; k++)
+        {
+            PityRecord record = records[k];
+            record.count += bonus;
+            records[k] = record;
+        }
         int j;
-        int sum = 1 * rarityFactor;
         for (j = 0; j < records.Count; j++)
         {
             PityRecord record = records[j];
-            int tempsum = sum + record.count;
-            if (tempsum + record.cost < 0)
+            if (record.count + record.cost < 0)
             {
                 cap = record.value;
                 break;
             }
-            sum += record.count;
         }
         //Debug.Log("Records: " + records.Count + ", Sum: " + sum);
         int i = -1;
-        n = n.asRange(0, cap);
+        //n = n.asRange(0, cap);
         double hit = -1;
+        int count = bonus;
         if (j > 0)
         {
             for (i = j - 1; i >= 0; i--)
             {
                 PityRecord r = records[i];
-                double weight = r.cost + sum;
+                double weight = r.cost + r.count;
                 double weightedChance = weight * r.chance;
                 double nChance = 1 - n;
                 if (nChance <= weightedChance)
                 {
                     double percentOfRange = 1 - nChance / weightedChance;
                     hit = percentOfRange.asRange(r.value, cap);
+                    count = (int)(weight);
                     break;
                 }
-
-                sum -= r.count;
 
                 //float chanceCost = -1 / (chance);
                 //float weight = chanceCost + sum - r.allCount + r.selfCount;
@@ -205,8 +209,8 @@ public class PityTimerContinuous
 
         if (hit < 0)
         {
-            //hit = n.asRange(0, cap);
-            hit = n;
+            hit = n.asRange(0, cap);
+            //hit = n;
         }
         if (i >= 0)
         {
@@ -214,7 +218,7 @@ public class PityTimerContinuous
         }
 
         newRecord.value = hit;
-        newRecord.count = sum;
+        newRecord.count = count;
 
         //if (newRecord.value < 0.5f)
         //{

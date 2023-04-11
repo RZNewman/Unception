@@ -126,7 +126,6 @@ public class Atlas : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         serverMap.gameObject.SetActive(isServer);
-
     }
     void makeWorld()
     {

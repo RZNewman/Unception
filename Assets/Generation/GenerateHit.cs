@@ -47,7 +47,7 @@ public static class GenerateHit
 
         public override InstanceData populate(float power, float strength)
         {
-            strength *= this.strengthFactor;
+            strength *= this.percentOfEffect;
             float scaleNum = Power.scaleNumerical(power);
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
@@ -66,6 +66,7 @@ public static class GenerateHit
                 strength = strength,
                 powerAtGen = power,
                 scaleAtGen = Power.scaleNumerical(power),
+                percentOfEffect = percentOfEffect,
 
                 flair = flair,
 

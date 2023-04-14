@@ -34,8 +34,10 @@ public static class GenerateWind
                 turnMult = turnMult,
                 baseDuration = baseDuration,
                 stream = new StatStream(),
+
                 powerAtGen = power,
                 scaleAtGen = Power.scaleNumerical(power),
+                percentOfEffect = percentOfEffect,
             };
         }
 

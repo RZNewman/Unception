@@ -71,7 +71,7 @@ public static class SystemClassReaders
         {
             case GenerationDataClass.Hit:
                 HitGenerationData hit = ScriptableObject.CreateInstance<HitGenerationData>();
-                hit.strengthFactor = strengthFactor;
+                hit.percentOfEffect = strengthFactor;
                 hit.type = reader.ReadHitType();
                 hit.statValues = reader.ReadStatDict();
                 hit.knockBackType = reader.ReadKnockBackType();
@@ -86,14 +86,14 @@ public static class SystemClassReaders
                 return hit;
             case GenerationDataClass.Wind:
                 WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
-                wind.strengthFactor = strengthFactor;
+                wind.percentOfEffect = strengthFactor;
                 wind.duration = reader.ReadFloat();
                 wind.moveMult = reader.ReadFloat();
                 wind.turnMult = reader.ReadFloat();
                 return wind;
             case GenerationDataClass.Dash:
                 DashGenerationData dash = ScriptableObject.CreateInstance<DashGenerationData>();
-                dash.strengthFactor = strengthFactor;
+                dash.percentOfEffect = strengthFactor;
                 dash.speed = reader.ReadFloat();
                 dash.distance = reader.ReadFloat();
                 dash.control = reader.ReadDashControl();
@@ -104,6 +104,7 @@ public static class SystemClassReaders
                 return repeat;
             case GenerationDataClass.Buff:
                 BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
+                buff.percentOfEffect = strengthFactor;
                 buff.duration = reader.ReadFloat();
                 buff.statValues = reader.ReadStatDict();
                 buff.type = reader.ReadBuffType();

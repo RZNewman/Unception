@@ -68,7 +68,7 @@ public static class SystemClassWriters
 
     public static void WriteGenerationData(this NetworkWriter writer, GenerateAttack.GenerationData data)
     {
-        writer.WriteFloat(data.strengthFactor);
+        writer.WriteFloat(data.percentOfEffect);
         switch (data)
         {
             case GenerateWind.WindGenerationData w:

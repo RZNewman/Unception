@@ -26,7 +26,7 @@ public static class GenerateBuff
 
         public override InstanceData populate(float power, float strength)
         {
-            strength *= this.strengthFactor;
+            strength *= this.percentOfEffect;
             float scaleNum = Power.scaleNumerical(power);
             float scaleTime = Power.scaleTime(power);
 

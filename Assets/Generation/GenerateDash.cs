@@ -31,7 +31,7 @@ public static class GenerateDash
 
         public override InstanceData populate(float power, float strength)
         {
-            strength *= this.strengthFactor;
+            strength *= this.percentOfEffect;
             float scale = Power.scalePhysical(power);
             float scaleSpeed = Power.scaleSpeed(power);
 

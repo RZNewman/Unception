@@ -20,7 +20,7 @@ public static class GenerateAttack
 {
     public abstract class GenerationData : ScriptableObject
     {
-        public float strengthFactor = 1;
+        public float percentOfEffect = 1;
         public abstract InstanceData populate(float power, float strength);
     }
     public abstract class InstanceData
@@ -28,6 +28,7 @@ public static class GenerateAttack
         public StatStream stream;
         public float powerAtGen;
         public float scaleAtGen;
+        public float percentOfEffect;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
             return new EffectiveDistance()
@@ -253,6 +254,11 @@ public static class GenerateAttack
         }
     }
 
+    struct InstanceStreamInfo
+    {
+        public InstanceData data;
+        public float mult;
+    }
     static AttackInstanceData populateAttack(AttackGenerationData atk, float power, Ability abil)
     {
         float scaleNum = Power.scaleNumerical(power);
@@ -268,15 +274,22 @@ public static class GenerateAttack
 
         List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
-        List<InstanceData> stagesToParent = new List<InstanceData>();
+        List<InstanceStreamInfo> stagesToParent = new List<InstanceStreamInfo>();
+        System.Action<InstanceData> parent = (InstanceData data) =>
+        {
+            //Hits benefit more from stats when they share their effect with a buff or dash
+            //This is because thier strength is already reduced, and the buff/dash dont benefit from the stats
+            stagesToParent.Add(new InstanceStreamInfo { data = data, mult = 1 / data.percentOfEffect });
+        };
+
 
         for (int i = 0; i < segmentsGen.Count; i++)
         {
             SegmentGenerationData segment = segmentsGen[i];
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
-            stagesToParent.Add(up);
-            stagesToParent.Add(down);
+            parent(up);
+            parent(down);
             List<WindInstanceData> windList = new List<WindInstanceData> { up, down };
             WindInstanceData windRepeat = null;
             RepeatingInstanceData repeat = null;
@@ -285,7 +298,7 @@ public static class GenerateAttack
             {
                 repeat = (RepeatingInstanceData)segment.repeat.populate(power, 1.0f);
                 windRepeat = (WindInstanceData)segment.windRepeat.populate(power, 1.0f);
-                stagesToParent.Add(windRepeat);
+                parent(windRepeat);
                 repeatCount = repeat.repeatCount;
                 for (int j = 0; j < segment.repeat.repeatCount; j++)
                 {
@@ -307,13 +320,12 @@ public static class GenerateAttack
             float repeatStrength = strength / repeatCount;
 
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
-            stagesToParent.Add(hit);
+            parent(hit);
 
             BuffInstanceData buff = null;
             if (segment.buff != null)
             {
                 buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength);
-                //stagesToParent.Add(buff);
             }
 
             segmentsInst[i] = new SegmentInstanceData
@@ -351,9 +363,9 @@ public static class GenerateAttack
             scale = Power.scaleNumerical(power),
         };
 
-        foreach (InstanceData stage in stagesToParent)
+        foreach (InstanceStreamInfo info in stagesToParent)
         {
-            StatStream.linkStreams(stream, stage.stream);
+            StatStream.linkStreams(stream, info.data.stream, info.mult);
         }
         return atkIn;
 
@@ -542,8 +554,8 @@ public static class GenerateAttack
             d = createDash();
 
             float hitValue = Random.value.asRange(0.6f, 0.8f);
-            h.strengthFactor = hitValue;
-            d.strengthFactor = 1 - hitValue;
+            h.percentOfEffect = hitValue;
+            d.percentOfEffect = 1 - hitValue;
 
             gen = Random.value;
             if (gen < 0.1f && r != null)
@@ -559,8 +571,8 @@ public static class GenerateAttack
             b = createBuff();
 
             float hitValue = Random.value.asRange(0.5f, 0.75f);
-            h.strengthFactor = hitValue;
-            b.strengthFactor = 1 - hitValue;
+            h.percentOfEffect = hitValue;
+            b.percentOfEffect = 1 - hitValue;
         }
 
         effects.Add(h);

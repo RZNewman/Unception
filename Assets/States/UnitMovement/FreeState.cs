@@ -35,7 +35,7 @@ public class FreeState : PlayerMovementState
 
         while (key.HasValue)
         {
-            Ability? a = mover.GetComponent<AbiltyList>().getAbility(key.Value);
+            Ability a = mover.GetComponent<AbiltyList>().getAbility(key.Value);
             //Debug.Log(key);
             //Debug.Log(a.ready);
             if (a != null && a.ready)

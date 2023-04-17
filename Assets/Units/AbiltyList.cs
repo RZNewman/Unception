@@ -83,7 +83,7 @@ public class AbiltyList : NetworkBehaviour
 
     }
 
-    public Ability? getAbility(ItemSlot key)
+    public Ability getAbility(ItemSlot key)
     {
         return instancedAbilitites.ContainsKey(key) ? instancedAbilitites[key] : null;
     }

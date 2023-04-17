@@ -6,6 +6,7 @@ using static UnitControl;
 using static Utils;
 using static FloorNormal;
 using static GenerateAttack;
+using System.Linq;
 
 public class InputHandler : MonoBehaviour, UnitControl
 {
@@ -76,7 +77,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
 
         HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
-        int attackCount = 6;
+        int attackCount = EnumValues<ItemSlot>().Count();
         for (int i = 0; i < attackCount; i++)
         {
             KeyName key = (KeyName)((int)KeyName.Attack1 + i);

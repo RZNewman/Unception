@@ -18,11 +18,11 @@ public static class GenerateWind
 
         public override InstanceData populate(float power, float strength)
         {
-            float moveMag = this.moveMult.asRange(-3.0f, 0.3f);
+            float moveMag = this.moveMult.asRange(-5.0f, 0.3f);
             bool moveDir = moveMag >= 0;
             float moveMult = moveDir ? 1 + moveMag : 1 / (1 - moveMag);
 
-            float turnMag = this.turnMult.asRange(-3.0f, 0.3f);
+            float turnMag = this.turnMult.asRange(-5.0f, 0.3f);
             bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
 
@@ -97,10 +97,10 @@ public static class GenerateWind
             }
         }
     }
-    public static WindGenerationData createWind(float durrationLimit = 1.0f)
+    public static WindGenerationData createWind(float durrationMinPercent, float durrationMaxPercent)
     {
         WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
-        wind.duration = GaussRandomDecline(5) * durrationLimit;
+        wind.duration = GaussRandomDecline(5).asRange(durrationMinPercent, durrationMaxPercent);
         wind.moveMult = GaussRandomDecline(1.2f);
         wind.turnMult = GaussRandomDecline(1.2f);
         return wind;

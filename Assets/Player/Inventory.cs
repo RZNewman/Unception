@@ -8,17 +8,17 @@ using static Power;
 using static UnitControl;
 using static Keybinds;
 using static Utils;
+using static GenerateAttack;
 
 public class Inventory : NetworkBehaviour
 {
-    public static readonly int inventorySlots = 4;
     int inventoryLimit = 10;
 
     List<AttackBlock> tempDrops = new List<AttackBlock>();
 
     List<AttackBlock> storage = new List<AttackBlock>();
 
-    Dictionary<AttackKey, AttackBlock> equipped = new Dictionary<AttackKey, AttackBlock>();
+    Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
     AttackBlock deleteStaged;
 
     PlayerGhost player;
@@ -66,64 +66,60 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return EnumValues<AttackKey>().Select(key => equipped[key]).ToArray();
+            return equipped.Values.ToArray();
         }
         set
         {
-            equipped = new Dictionary<AttackKey, AttackBlock>();
+            equipped = new Dictionary<ItemSlot, AttackBlock>();
             int index = 0;
             foreach (AttackBlock block in value)
             {
-                equipped.Add((AttackKey)index, block);
+                if (block != null && block.slot != null)
+                {
+                    equipped.Add(block.slot.Value, block);
+                }
                 index++;
+
             }
         }
 
     }
 
     [Server]
-    public void reloadItems(AttackBlock[] items)
+    public void reloadItems(AttackBlock[] storageItems, AttackBlock[] equippedItems)
     {
-        if (items.Length > 0)
-        {
-            AttackBlock[] equippedArray = items.Take(inventorySlots).ToArray();
-            equipArray = equippedArray;
-            storage = items.Skip(inventorySlots).ToList();
-        }
-        else
-        {
-            genMinItems();
-        }
+        equipArray = equippedItems;
+        storage = storageItems.ToList();
 
 
-        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray());
+        TargetSyncInventory(connectionToClient, equipArray, storageItems);
         RpcInvChange();
     }
     [Server]
     public void genMinItems()
     {
-        for (int i = equipped.Count; i < inventorySlots; i++)
-        {
-            AttackBlock item = GenerateAttack.generate(player.power, i == 0);
-            equipped.Add((AttackKey)i, item);
-        }
+
+        AttackBlock item = generate(player.power, AttackGenerationType.IntroMain);
+        equipped.Add(ItemSlot.Main, item);
+        item = generate(player.power, AttackGenerationType.IntroOff);
+        equipped.Add(ItemSlot.OffHand, item);
     }
 
-    [Server]
-    public void genRandomItems()
-    {
-        for (int i = equipped.Count; i < inventorySlots; i++)
-        {
-            AttackBlock item = GenerateAttack.generate(player.power, i == 0);
-            equipped.Add((AttackKey)i, item);
-        }
-        for (int i = 0; i < 5; i++)
-        {
-            AttackBlock item = GenerateAttack.generate(player.power, false);
-            storage.Add(item);
-        }
-        RpcInvChange();
-    }
+    //[Server]
+    //public void genRandomItems()
+    //{
+    //    for (int i = equipped.Count; i < inventorySlots; i++)
+    //    {
+    //        AttackBlock item = GenerateAttack.generate(player.power, i == 0);
+    //        equipped.Add((AttackKey)i, item);
+    //    }
+    //    for (int i = 0; i < 5; i++)
+    //    {
+    //        AttackBlock item = GenerateAttack.generate(player.power, false);
+    //        storage.Add(item);
+    //    }
+    //    RpcInvChange();
+    //}
 
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)
@@ -133,15 +129,19 @@ public class Inventory : NetworkBehaviour
     }
 
     //server
-    public AttackBlock[] exportItems()
+    public AttackBlock[] exportEquipped()
     {
-        return equipArray.Concat(storage).ToArray();
+        return equipArray;
+    }
+    public AttackBlock[] exportStorage()
+    {
+        return storage.ToArray();
     }
 
 
 
     //Server
-    public Dictionary<AttackKey, AttackBlock> equippedAbilities
+    public Dictionary<ItemSlot, AttackBlock> equippedAbilities
     {
         get
         {
@@ -214,7 +214,7 @@ public class Inventory : NetworkBehaviour
     }
 
     [Command]
-    public void CmdEquipAbility(AttackKey key, string newId, bool fromDrops)
+    public void CmdEquipAbility(ItemSlot slot, string newId, bool fromDrops)
     {
         int newIndex;
         if (fromDrops)
@@ -230,9 +230,9 @@ public class Inventory : NetworkBehaviour
         {
             if (fromDrops)
             {
-                AttackBlock unequipped = equipped[key];
+                AttackBlock unequipped = equipped[slot];
                 AttackBlock nowEquipped = tempDrops[newIndex];
-                equipped[key] = nowEquipped;
+                equipped[slot] = nowEquipped;
                 tempDrops.Remove(nowEquipped);
                 if (unequipped)
                 {
@@ -242,9 +242,9 @@ public class Inventory : NetworkBehaviour
             }
             else
             {
-                AttackBlock unequipped = equipped[key];
+                AttackBlock unequipped = equipped[slot];
                 AttackBlock nowEquipped = storage[newIndex];
-                equipped[key] = nowEquipped;
+                equipped[slot] = nowEquipped;
                 storage.Remove(nowEquipped);
                 if (unequipped)
                 {

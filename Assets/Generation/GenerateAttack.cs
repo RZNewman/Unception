@@ -40,7 +40,7 @@ public static class GenerateAttack
     }
 
     //value added for 100% reduced effect (50% speed)
-    static readonly float moveValuePositive = 0.07f;
+    static readonly float moveValuePositive = 0.04f;
     static readonly float turnValuePositive = 0.025f;
 
     static readonly float moveValueNegative = 0.4f;
@@ -457,8 +457,26 @@ public static class GenerateAttack
         return mods.ToArray();
     }
 
+    public enum AttackGenerationType
+    {
+        Player,
+        Monster,
+        IntroMain,
+        IntroOff,
+    }
+    [System.Serializable]
+    public enum ItemSlot : byte
+    {
+        Main = 0,
+        OffHand,
+        Gloves,
+        Chest,
+        Boots,
+        Helm,
+        //Back
+    }
 
-    public static AttackBlock generate(float power, bool noCooldown, float qualityMultiplier = 1, PlayerPity pity = null)
+    public static AttackBlock generate(float power, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null)
     {
         Quality quality = Quality.Common;
         Mod[] mods = new Mod[0];
@@ -468,12 +486,28 @@ public static class GenerateAttack
             int modCount = pity.rollModCount(qualityMultiplier);
             mods = rollMods(pity, modCount, qualityMultiplier);
         }
+        ItemSlot? slot = null;
+        switch (type)
+        {
+            case AttackGenerationType.Player:
+                slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+                break;
+            case AttackGenerationType.IntroMain:
+                slot = ItemSlot.Main;
+                break;
+            case AttackGenerationType.IntroOff:
+                slot = ItemSlot.OffHand;
+                break;
+        }
 
 
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
         float windMax = 1f;
+        float windMin = 0f;
 
+
+        bool noCooldown = type == AttackGenerationType.IntroMain || type == AttackGenerationType.Monster;
         float cd = Random.value;
         if (cd < 0.01f)
         {
@@ -484,19 +518,29 @@ public static class GenerateAttack
 
         int segmentCount = 1;
         float r = Random.value;
-        if (r < 0.1)
+        if (type != AttackGenerationType.IntroMain
+            && r < 0.1)
         {
             segmentCount = 2;
             windMax = 0.6f;
         }
 
+        if (type == AttackGenerationType.Monster)
+        {
+            windMin = 0.25f;
+        }
+        if (type == AttackGenerationType.IntroMain)
+        {
+            windMax = 0.5f;
+        }
+
         for (int i = 0; i < segmentCount; i++)
         {
 
-            WindGenerationData windup = createWind(windMax);
+            WindGenerationData windup = createWind(windMin, windMax);
             stages.Add(windup);
-            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats));
-            stages.Add(createWind(Mathf.Clamp01(windup.duration * 2)));
+            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot));
+            stages.Add(createWind(0, Mathf.Clamp01(windup.duration * 2)));
 
         }
 
@@ -507,13 +551,14 @@ public static class GenerateAttack
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages.ToArray(),
-            cooldown = noCooldown ? -1 : GaussRandomDecline(4),
+            cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(slot == ItemSlot.Chest ? 0.4f : 0, 1),
             charges = charges,
             quality = quality,
             mods = mods,
 
         };
         block.source = atk;
+        block.slot = slot;
         block.powerAtGeneration = power;
         block.flair = new AttackFlair
         {
@@ -527,7 +572,7 @@ public static class GenerateAttack
 
     }
 
-    static List<GenerationData> getEffect(float remainingBaseStats)
+    static List<GenerationData> getEffect(float remainingBaseStats, ItemSlot? slot)
     {
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
@@ -540,15 +585,18 @@ public static class GenerateAttack
 
         bool dashInside = false;
 
-        if (gen < 0.3f)
+        if (slot != ItemSlot.Main
+            && gen < 0.3f)
         {
             //repeat effect
             r = createRepeating();
-            rWind = createWind(0.4f);
+            rWind = createWind(0, 0.4f);
         }
 
         gen = Random.value;
-        if (gen < 0.2f && h.type != HitType.Ground)
+        if (slot != ItemSlot.Main
+            && (slot == ItemSlot.Boots || gen < 0.2f)
+            && h.type != HitType.Ground)
         {
             //dash effect
             d = createDash();
@@ -565,7 +613,9 @@ public static class GenerateAttack
         }
 
         gen = Random.value;
-        if (gen < 0.2f && r == null && d == null)
+        if (slot != ItemSlot.Main
+            && (slot == ItemSlot.Helm || gen < 0.2f)
+            && r == null && d == null)
         {
             //buff effect
             b = createBuff();
@@ -626,6 +676,7 @@ public static class GenerateAttack
         AttackGenerationData atk = block.source;
         filled.instance = populateAttack(atk, power, abil);
         filled.flair = block.flair;
+        filled.slot = block.slot;
         //Debug.Log(atk);
         //Debug.Log(block.instance);
         return filled;

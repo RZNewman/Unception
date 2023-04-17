@@ -1,27 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static ItemList;
 using static UnitControl;
+using static Utils;
 
 public class UiSlotList : MonoBehaviour
 {
     public GameObject slotPre;
 
     List<UiEquipSlot> slots = new List<UiEquipSlot>();
-    public void fillSlots(Dictionary<AttackKey, GameObject> icons, UiEquipmentDragger dragger, ItemList list, InventoryMode mode)
+    public void fillSlots(Dictionary<ItemSlot, GameObject> icons, UiEquipmentDragger dragger, ItemList list, InventoryMode mode)
     {
         slots.ForEach(slot => Destroy(slot.gameObject));
         slots.Clear();
-        foreach ((AttackKey key, GameObject icon) in icons)
+        foreach (ItemSlot slot in EnumValues<ItemSlot>())
         {
-            GameObject slot = Instantiate(slotPre, transform);
-            UiEquipSlot uiSlot = slot.GetComponent<UiEquipSlot>();
+            GameObject slotInstance = Instantiate(slotPre, transform);
+            UiEquipSlot uiSlot = slotInstance.GetComponent<UiEquipSlot>();
             uiSlot.dragger = dragger;
             uiSlot.itemTray = list;
             uiSlot.invMode = mode;
-            uiSlot.setAttackKey(key);
-            uiSlot.slotObject(icon, false);
+            uiSlot.setItemSlot(slot);
+            if (icons.ContainsKey(slot))
+            {
+                uiSlot.slotObject(icons[slot], false);
+            }
             slots.Add(uiSlot);
         };
     }

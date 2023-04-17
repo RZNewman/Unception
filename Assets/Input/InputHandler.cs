@@ -5,6 +5,7 @@ using static Keybinds;
 using static UnitControl;
 using static Utils;
 using static FloorNormal;
+using static GenerateAttack;
 
 public class InputHandler : MonoBehaviour, UnitControl
 {
@@ -74,24 +75,17 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
 
-        HashSet<AttackKey> atks = new HashSet<AttackKey>();
-        if (Input.GetKey(keys.binding(KeyName.Attack1)))
+        HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
+        int attackCount = 6;
+        for (int i = 0; i < attackCount; i++)
         {
-            atks.Add(AttackKey.One);
+            KeyName key = (KeyName)((int)KeyName.Attack1 + i);
+            if (Input.GetKey(keys.binding(key)))
+            {
+                atks.Add(fromKeyName(key));
+            }
         }
-        if (Input.GetKey(keys.binding(KeyName.Attack2)))
-        {
-            atks.Add(AttackKey.Two);
-        }
-        if (Input.GetKey(keys.binding(KeyName.Attack3)))
-        {
-            atks.Add(AttackKey.Three);
-        }
-        if (Input.GetKey(keys.binding(KeyName.Attack4)))
-        {
-            atks.Add(AttackKey.Four);
-        }
-        currentInput.attacks = new AttackKey[atks.Count];
+        currentInput.attacks = new ItemSlot[atks.Count];
         atks.CopyTo(currentInput.attacks);
 
         setLocalLook();

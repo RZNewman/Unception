@@ -11,6 +11,7 @@ using static StatTypes;
 public class AttackBlockFilled : ScriptableObject
 {
     public AttackInstanceData instance;
+    public ItemSlot? slot;
     public AttackFlair flair;
     public List<AttackSegment> buildStates(UnitMovement controller)
     {

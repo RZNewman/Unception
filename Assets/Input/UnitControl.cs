@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static Keybinds;
 using static Utils;
 
@@ -14,7 +15,7 @@ public interface UnitControl
         public bool jump;
         public bool dash;
         public bool cancel;
-        public AttackKey[] attacks;
+        public ItemSlot[] attacks;
 
 
         public void reset()
@@ -24,24 +25,24 @@ public interface UnitControl
             jump = false;
             dash = false;
             cancel = false;
-            attacks = new AttackKey[0];
+            attacks = new ItemSlot[0];
         }
         public void cleanButtons()
         {
             jump = false;
             dash = false;
             cancel = false;
-            attacks = new AttackKey[0];
+            attacks = new ItemSlot[0];
         }
-        public Optional<AttackKey> popKey()
+        public Optional<ItemSlot> popKey()
         {
             if (attacks.Length == 0)
             {
-                return new Optional<AttackKey>();
+                return new Optional<ItemSlot>();
             }
-            AttackKey key = attacks[0];
+            ItemSlot key = attacks[0];
 
-            AttackKey[] nextArray = new AttackKey[attacks.Length - 1];
+            ItemSlot[] nextArray = new ItemSlot[attacks.Length - 1];
             for (int i = 1; i < attacks.Length; i++)
             {
                 nextArray[i - 1] = attacks[i];
@@ -49,7 +50,7 @@ public interface UnitControl
             attacks = nextArray;
 
 
-            return new Optional<AttackKey>(key);
+            return new Optional<ItemSlot>(key);
         }
         public static UnitInput zero()
         {
@@ -60,21 +61,21 @@ public interface UnitControl
                 jump = false,
                 dash = false,
                 cancel = false,
-                attacks = new AttackKey[0],
+                attacks = new ItemSlot[0],
             };
         }
         public UnitInput merge(UnitInput newer)
         {
-            HashSet<AttackKey> atks = new HashSet<AttackKey>();
-            foreach (AttackKey k in attacks)
+            HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
+            foreach (ItemSlot k in attacks)
             {
                 atks.Add(k);
             }
-            foreach (AttackKey k in newer.attacks)
+            foreach (ItemSlot k in newer.attacks)
             {
                 atks.Add(k);
             }
-            AttackKey[] aArray = new AttackKey[atks.Count];
+            ItemSlot[] aArray = new ItemSlot[atks.Count];
             atks.CopyTo(aArray);
             return new UnitInput
             {
@@ -97,29 +98,45 @@ public interface UnitControl
             }
         }
     }
-    [Serializable]
-    public enum AttackKey : byte
-    {
-        One = 0,
-        Two,
-        Three,
-        Four,
-    }
 
-    public static KeyName toKeyName(AttackKey key)
+    public static KeyName toKeyName(ItemSlot slot)
+    {
+        switch (slot)
+        {
+            case ItemSlot.Main:
+                return KeyName.Attack1;
+            case ItemSlot.OffHand:
+                return KeyName.Attack2;
+            case ItemSlot.Gloves:
+                return KeyName.Attack3;
+            case ItemSlot.Boots:
+                return KeyName.Attack4;
+            case ItemSlot.Chest:
+                return KeyName.Attack5;
+            case ItemSlot.Helm:
+                return KeyName.Attack6;
+            default:
+                return KeyName.Attack1;
+        }
+    }
+    public static ItemSlot fromKeyName(KeyName key)
     {
         switch (key)
         {
-            case AttackKey.One:
-                return KeyName.Attack1;
-            case AttackKey.Two:
-                return KeyName.Attack2;
-            case AttackKey.Three:
-                return KeyName.Attack3;
-            case AttackKey.Four:
-                return KeyName.Attack4;
+            case KeyName.Attack1:
+                return ItemSlot.Main;
+            case KeyName.Attack2:
+                return ItemSlot.OffHand;
+            case KeyName.Attack3:
+                return ItemSlot.Gloves;
+            case KeyName.Attack4:
+                return ItemSlot.Boots;
+            case KeyName.Attack5:
+                return ItemSlot.Chest;
+            case KeyName.Attack6:
+                return ItemSlot.Helm;
             default:
-                return KeyName.Attack1;
+                return ItemSlot.Main;
         }
     }
     public UnitInput getUnitInuput();

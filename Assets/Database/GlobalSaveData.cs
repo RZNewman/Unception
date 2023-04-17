@@ -6,6 +6,7 @@ using Firebase.Database;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Linq;
+using static UnityEditor.Progress;
 
 public class GlobalSaveData : MonoBehaviour
 {
@@ -33,7 +34,8 @@ public class GlobalSaveData : MonoBehaviour
     }
     public struct PlayerLoadTasks
     {
-        public Task<DataSnapshot> items;
+        public Task<DataSnapshot> storageItems;
+        public Task<DataSnapshot> equippedItems;
         public Task<DataSnapshot> power;
         public Task<DataSnapshot> pity;
         public Task<DataSnapshot> quests;
@@ -42,7 +44,8 @@ public class GlobalSaveData : MonoBehaviour
     {
         return new PlayerLoadTasks
         {
-            items = db.Child("Characters").Child(playerName).Child("items").GetValueAsync(),
+            storageItems = db.Child("Characters").Child(playerName).Child("items").GetValueAsync(),
+            equippedItems = db.Child("Characters").Child(playerName).Child("equipped").GetValueAsync(),
             power = db.Child("Characters").Child(playerName).Child("power").GetValueAsync(),
             pity = db.Child("Characters").Child(playerName).Child("pity").GetValueAsync(),
             quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
@@ -101,10 +104,12 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
     }
 
-    public void savePlayerItems(string playerName, AttackBlock[] items)
+    public void savePlayerItems(string playerName, AttackBlock[] equipped, AttackBlock[] storage)
     {
-        string json = santitizeJson(JsonConvert.SerializeObject(items, Formatting.None, JSONsettings));
+        string json = santitizeJson(JsonConvert.SerializeObject(storage, Formatting.None, JSONsettings));
         db.Child("Characters").Child(playerName).Child("items").SetRawJsonValueAsync(json);
+        json = santitizeJson(JsonConvert.SerializeObject(equipped, Formatting.None, JSONsettings));
+        db.Child("Characters").Child(playerName).Child("equipped").SetRawJsonValueAsync(json);
     }
 
     public struct WorldProgress

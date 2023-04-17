@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static AbiltyList;
+using static GenerateAttack;
 using static UnitControl;
 using static Utils;
 
@@ -148,7 +149,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     float fullRange = eff.maximums.z + mySize.scaledRadius + thierSize.scaledRadius;
                     if (aimedDiff.z > 0 && aimedDiff.z <= fullRange && Mathf.Abs(aimedDiff.x) < eff.maximums.x && Mathf.Abs(aimedDiff.y) < eff.maximums.y)
                     {
-                        currentInput.attacks = new AttackKey[] { pair.key };
+                        currentInput.attacks = new ItemSlot[] { pair.key };
                         if (aimedDiff.z <= fullRange * 0.8f)
                         {
                             currentInput.move = Vector2.zero;
@@ -156,7 +157,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     }
                     else
                     {
-                        currentInput.attacks = new AttackKey[0];
+                        currentInput.attacks = new ItemSlot[0];
                     }
                 }
 

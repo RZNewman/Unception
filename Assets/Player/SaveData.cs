@@ -78,7 +78,8 @@ public class SaveData : NetworkBehaviour
     {
 
         PlayerLoadTasks tasks = globalSave.getLoadTasks(auth.user);
-        Task<DataSnapshot> items = tasks.items;
+        Task<DataSnapshot> storage = tasks.storageItems;
+        Task<DataSnapshot> equipped = tasks.equippedItems;
         Task<DataSnapshot> power = tasks.power;
         Task<DataSnapshot> pityData = tasks.pity;
         Task<DataSnapshot> quests = tasks.quests;
@@ -153,26 +154,33 @@ public class SaveData : NetworkBehaviour
 
         }
 
-        while (!items.IsFaulted && !items.IsCompleted && !items.IsCanceled)
+        while ((!storage.IsFaulted && !storage.IsCompleted && !storage.IsCanceled)
+            || (!equipped.IsFaulted && !equipped.IsCompleted && !equipped.IsCanceled))
         {
             yield return null;
         }
 
-        if (items.IsFaulted)
+        if (storage.IsFaulted || equipped.IsFaulted)
         {
             Debug.LogError("Error loading inv");
         }
-        else if (items.IsCompleted)
+        else if (storage.IsCompleted && equipped.IsCompleted)
         {
-            DataSnapshot snapshot = items.Result;
-            if (snapshot.Exists)
+            DataSnapshot snapshotStorage = storage.Result;
+            DataSnapshot snapshotEquipped = equipped.Result;
+            if (snapshotEquipped.Exists)
             {
-                AttackBlock[] itemData = globalSave.itemsFromSnapshot(snapshot);
-                inv.reloadItems(itemData);
+                AttackBlock[] storageData = new AttackBlock[0];
+                if (snapshotStorage.Exists)
+                {
+                    storageData = globalSave.itemsFromSnapshot(snapshotStorage);
+                }
+                AttackBlock[] equippedData = globalSave.itemsFromSnapshot(snapshotEquipped);
+                inv.reloadItems(storageData, equippedData);
             }
             else
             {
-                inv.reloadItems(new AttackBlock[0]);
+                inv.genMinItems();
 
             }
         }
@@ -182,15 +190,15 @@ public class SaveData : NetworkBehaviour
 
     }
 
-    void loadDataOffline()
-    {
-        if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
-        {
-            FindObjectOfType<Atlas>(true).makeMaps();
-        }
-        pity.create();
-        inv.genRandomItems();
-    }
+    //void loadDataOffline()
+    //{
+    //    if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
+    //    {
+    //        FindObjectOfType<Atlas>(true).makeMaps();
+    //    }
+    //    pity.create();
+    //    inv.genRandomItems();
+    //}
     private void OnDestroy()
     {
         if (isServer)
@@ -210,6 +218,6 @@ public class SaveData : NetworkBehaviour
     public void saveItems()
     {
         inv.clearDelete();
-        globalSave.savePlayerItems(auth.user, inv.exportItems());
+        globalSave.savePlayerItems(auth.user, inv.exportEquipped(), inv.exportStorage());
     }
 }

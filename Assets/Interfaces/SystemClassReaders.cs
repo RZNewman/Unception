@@ -10,9 +10,17 @@ using static GenerateBuff;
 
 public static class SystemClassReaders
 {
-    public static UnitControl.AttackKey ReadAttackKey(this NetworkReader reader)
+    public static GenerateAttack.ItemSlot ReadItemSlot(this NetworkReader reader)
     {
-        return (UnitControl.AttackKey)reader.ReadByte();
+        return (GenerateAttack.ItemSlot)reader.ReadByte();
+    }
+    public static GenerateAttack.ItemSlot? ReadNullSlot(this NetworkReader reader)
+    {
+        if (reader.ReadBool())
+        {
+            return reader.ReadItemSlot();
+        }
+        return null;
     }
     public static GenerateHit.KnockBackType ReadKnockBackType(this NetworkReader reader)
     {

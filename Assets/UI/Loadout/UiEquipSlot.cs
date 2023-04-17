@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static GenerateAttack;
 using static ItemList;
 using static UnitControl;
 
@@ -16,7 +17,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public ItemList itemTray;
     public InventoryMode invMode;
 
-    AttackKey attackKey;
+    ItemSlot slotType;
 
     GameObject uiAbility;
 
@@ -46,13 +47,13 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         dragger.unsetSlot(this);
     }
 
-    public void setAttackKey(AttackKey key)
+    public void setItemSlot(ItemSlot slot)
     {
         keys = FindObjectOfType<Keybinds>(true);
-        string keybind = keys.binding(toKeyName(key)).ToString();
-        label.text = "A " + key.ToString() + ": " + keybind;
+        string keybind = keys.binding(toKeyName(slot)).ToString();
+        label.text = slot.ToString() + ": " + keybind;
         label.gameObject.SetActive(true);
-        attackKey = key;
+        slotType = slot;
 
     }
 
@@ -70,7 +71,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                         itemTray.grabAbility(uiAbility);
                     }
                     string newIndex = newUI.inventoryIndex;
-                    gp.player.GetComponent<Inventory>().CmdEquipAbility(attackKey, newIndex, invMode == InventoryMode.Drops);
+                    gp.player.GetComponent<Inventory>().CmdEquipAbility(slotType, newIndex, invMode == InventoryMode.Drops);
                     FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
                 }
                 uiAbility = uiAbil;

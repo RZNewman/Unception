@@ -3,9 +3,19 @@ using System.Collections.Generic;
 
 public static class SystemClassWriters
 {
-    public static void WriteAttackKey(this NetworkWriter writer, UnitControl.AttackKey key)
+    public static void WriteItemSlot(this NetworkWriter writer, GenerateAttack.ItemSlot slot)
     {
-        writer.WriteByte((byte)key);
+        writer.WriteByte((byte)slot);
+    }
+    public static void WriteNullSlot(this NetworkWriter writer, GenerateAttack.ItemSlot? slot)
+    {
+        bool value = slot != null;
+        writer.WriteBool(value);
+        if (value)
+        {
+            writer.WriteItemSlot(slot.Value);
+        }
+
     }
     public static void WriteKnockBackType(this NetworkWriter writer, GenerateHit.KnockBackType key)
     {

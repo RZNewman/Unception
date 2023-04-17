@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
 using static AttackUtils;
+using static GenerateAttack;
 using static StatTypes;
 using static UnitControl;
 
@@ -14,7 +15,7 @@ public class Ability : NetworkBehaviour
     AttackBlock attackFormat;
 
     [SyncVar]
-    public AttackKey clientSyncKey;
+    public ItemSlot clientSyncKey;
 
     AttackBlockFilled attackFilled;
 

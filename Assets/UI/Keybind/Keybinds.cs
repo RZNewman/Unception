@@ -21,6 +21,9 @@ public class Keybinds : MonoBehaviour
         Attack2,
         Attack3,
         Attack4,
+        Attack5,
+        Attack6,
+        //Attack7,
         CameraRotate,
     }
 
@@ -127,6 +130,10 @@ public class Keybinds : MonoBehaviour
                 return KeyCode.Q;
             case KeyName.Attack4:
                 return KeyCode.E;
+            case KeyName.Attack5:
+                return KeyCode.R;
+            case KeyName.Attack6:
+                return KeyCode.T;
             default:
                 return KeyCode.None;
         }

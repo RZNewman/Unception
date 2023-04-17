@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnitControl;
 using System.Linq;
+using static GenerateAttack;
 
 public class AbiltyList : NetworkBehaviour
 {
 
 
-    Dictionary<AttackKey, AttackBlock> abilitiesToCreate = new Dictionary<AttackKey, AttackBlock>();
-    Dictionary<AttackKey, Ability> instancedAbilitites = new Dictionary<AttackKey, Ability>();
+    Dictionary<ItemSlot, AttackBlock> abilitiesToCreate = new Dictionary<ItemSlot, AttackBlock>();
+    Dictionary<ItemSlot, Ability> instancedAbilitites = new Dictionary<ItemSlot, Ability>();
 
     bool started = false;
     private void Start()
@@ -23,12 +24,12 @@ public class AbiltyList : NetworkBehaviour
     }
     void createAbilities()
     {
-        foreach ((AttackKey key, AttackBlock block) in abilitiesToCreate)
+        foreach ((ItemSlot key, AttackBlock block) in abilitiesToCreate)
         {
             instanceAbility(key, block);
         }
     }
-    void instanceAbility(AttackKey key, AttackBlock block)
+    void instanceAbility(ItemSlot key, AttackBlock block)
     {
         GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
@@ -39,25 +40,25 @@ public class AbiltyList : NetworkBehaviour
         NetworkServer.Spawn(o);
     }
     [Client]
-    public void registerAbility(AttackKey k, Ability a)
+    public void registerAbility(ItemSlot k, Ability a)
     {
         instancedAbilitites.Add(k, a);
     }
-    public void addAbility(Dictionary<AttackKey, AttackBlock> blocks)
+    public void addAbility(Dictionary<ItemSlot, AttackBlock> blocks)
     {
         if (started)
         {
-            foreach ((AttackKey key, AttackBlock block) in blocks)
+            foreach ((ItemSlot slot, AttackBlock block) in blocks)
             {
-                instanceAbility(key, block);
+                instanceAbility(slot, block);
             }
 
         }
         else
         {
-            foreach ((AttackKey key, AttackBlock block) in blocks)
+            foreach ((ItemSlot slot, AttackBlock block) in blocks)
             {
-                abilitiesToCreate.Add(key, block);
+                abilitiesToCreate.Add(slot, block);
             }
 
         }
@@ -67,29 +68,29 @@ public class AbiltyList : NetworkBehaviour
     {
         for (int i = 0; i < blocks.Count; i++)
         {
-            AttackKey key = (AttackKey)i;
+            ItemSlot slotFake = (ItemSlot)i;
             AttackBlock block = blocks[i];
             if (started)
             {
-                instanceAbility(key, block);
+                instanceAbility(slotFake, block);
             }
             else
             {
-                abilitiesToCreate.Add(key, block);
+                abilitiesToCreate.Add(slotFake, block);
             }
         }
 
 
     }
 
-    public Ability getAbility(AttackKey key)
+    public Ability? getAbility(ItemSlot key)
     {
-        return instancedAbilitites[key];
+        return instancedAbilitites.ContainsKey(key) ? instancedAbilitites[key] : null;
     }
 
     public struct AbilityPair
     {
-        public AttackKey key;
+        public ItemSlot key;
         public Ability ability;
     }
     public AbilityPair getBestAbility()

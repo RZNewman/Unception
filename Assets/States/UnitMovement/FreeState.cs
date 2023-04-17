@@ -1,5 +1,6 @@
 using UnityEngine;
 using static DashState;
+using static GenerateAttack;
 using static GenerateDash;
 using static UnitControl;
 using static Utils;
@@ -29,15 +30,15 @@ public class FreeState : PlayerMovementState
         }
         UnitInput inp = mover.input;
 
-        Optional<AttackKey> key = inp.popKey();
+        Optional<ItemSlot> key = inp.popKey();
 
 
         while (key.HasValue)
         {
-            Ability a = mover.GetComponent<AbiltyList>().getAbility(key.Value);
+            Ability? a = mover.GetComponent<AbiltyList>().getAbility(key.Value);
             //Debug.Log(key);
             //Debug.Log(a.ready);
-            if (a.ready)
+            if (a != null && a.ready)
             {
                 return new StateTransition(new AttackingState(mover, a), true);
             }

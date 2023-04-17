@@ -622,7 +622,7 @@ public class MonsterSpawn : NetworkBehaviour
         u.power = power;
         u.props = GenerateUnit.generate(power, UnitPre.GetComponentInChildren<PartAssignment>().getVisuals());
         u.abilitites = new List<AttackBlock>();
-        AttackBlock a = GenerateAttack.generate(power, true);
+        AttackBlock a = GenerateAttack.generate(power, GenerateAttack.AttackGenerationType.Monster);
         a.scales = true;
         u.abilitites.Add(a);
         return u;

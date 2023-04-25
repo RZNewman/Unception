@@ -10,23 +10,23 @@ public class UiEquipmentDragger : MonoBehaviour
 
 
     GameObject drag;
-    UiEquipSlot slot;
+    UiDraggerTarget target;
 
     UILoadoutMenu loadoutMenu;
     public UiAbilityDetails deets;
 
 
 
-    public void setSlot(UiEquipSlot s)
+    public void setTarget(UiDraggerTarget t)
     {
-        slot = s;
+        target = t;
     }
 
-    public void unsetSlot(UiEquipSlot s)
+    public void unsetTarget(UiDraggerTarget t)
     {
-        if (slot == s)
+        if (target == t)
         {
-            slot = null;
+            target = null;
         }
     }
 
@@ -69,16 +69,15 @@ public class UiEquipmentDragger : MonoBehaviour
                 drag = hover.gameObject;
                 drag.transform.SetParent(transform);
                 drag.GetComponent<Image>().raycastTarget = false;
-                hover.takeFromSlot();
             }
         }
         if (!Input.GetMouseButton(0))
         {
             if (drag)
             {
-                if (slot)
+                if (target != null)
                 {
-                    slot.slotObject(drag);
+                    target.slotObject(drag);
                 }
                 else
                 {
@@ -86,6 +85,13 @@ public class UiEquipmentDragger : MonoBehaviour
                 }
                 drag.GetComponent<Image>().raycastTarget = true;
                 drag = null;
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (hover && !drag)
+            {
+                loadoutMenu.slotList.slotOfType(hover.blockFilled.slot.Value).slotObject(hover.gameObject);
             }
         }
         if (drag)

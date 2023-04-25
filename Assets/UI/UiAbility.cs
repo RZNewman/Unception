@@ -32,8 +32,6 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     //menu only
     UiEquipmentDragger dragger;
-    UiEquipSlot slot;
-    public string inventoryIndex;
 
     private void Update()
     {
@@ -46,6 +44,11 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             chargeCount.text = charges > 1 ? Mathf.Floor(charges).ToString() : "";
         }
 
+    }
+
+    public void setUpgrade(bool upgrade)
+    {
+        background.color = upgrade ? Color.white : new Color(0.5f, 0.5f, 0.5f);
     }
     public void setTarget(Ability ability)
     {
@@ -99,18 +102,6 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         dragger = drag;
     }
 
-    public void setSlot(UiEquipSlot s)
-    {
-        slot = s;
-    }
-
-    public void takeFromSlot()
-    {
-        if (slot)
-        {
-            slot.unslot();
-        }
-    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

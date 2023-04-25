@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static GenerateAttack;
 using static ItemList;
@@ -10,10 +11,10 @@ public class UiSlotList : MonoBehaviour
 {
     public GameObject slotPre;
 
-    List<UiEquipSlot> slots = new List<UiEquipSlot>();
-    public void fillSlots(Dictionary<ItemSlot, GameObject> icons, UiEquipmentDragger dragger, ItemList list, InventoryMode mode)
+    Dictionary<ItemSlot, UiEquipSlot> slots = new Dictionary<ItemSlot, UiEquipSlot>();
+    public void fillSlots(Dictionary<ItemSlot, GameObject> icons, UiEquipmentDragger dragger)
     {
-        slots.ForEach(slot => Destroy(slot.gameObject));
+        slots.Values.ToList().ForEach(slot => Destroy(slot.gameObject));
         slots.Clear();
         foreach (ItemSlot slot in EnumValues<ItemSlot>())
         {
@@ -23,15 +24,20 @@ public class UiSlotList : MonoBehaviour
             uiSlot.setItemSlot(slot);
             if (icons.ContainsKey(slot))
             {
-                uiSlot.slotObject(icons[slot], false);
+                uiSlot.populateObject(icons[slot]);
             }
-            slots.Add(uiSlot);
+            slots.Add(slot, uiSlot);
         };
+    }
+
+    public UiEquipSlot slotOfType(ItemSlot slot)
+    {
+        return slots.ContainsKey(slot) ? slots[slot] : null;
     }
 
     public void clear()
     {
-        foreach (UiEquipSlot slot in slots)
+        foreach (UiEquipSlot slot in slots.Values)
         {
             slot.clear();
         }

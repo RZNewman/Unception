@@ -677,6 +677,7 @@ public static class GenerateAttack
         filled.instance = populateAttack(atk, power, abil);
         filled.flair = block.flair;
         filled.slot = block.slot;
+        filled.id = block.id;
         //Debug.Log(atk);
         //Debug.Log(block.instance);
         return filled;

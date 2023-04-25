@@ -9,12 +9,13 @@ using static GenerateAttack;
 using static ItemList;
 using static UnitControl;
 
-public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, UiDraggerTarget
 {
     public TextMeshProUGUI label;
-
+    public Image slotImage;
     public UiEquipmentDragger dragger;
 
+    float slotPower = 0;
     ItemSlot slotType;
 
     GameObject uiaCurrent;
@@ -27,27 +28,46 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         gp = FindObjectOfType<GlobalPlayer>(true);
 
     }
+    public float actingPower
+    {
+        get
+        {
+            return slotPower;
+        }
+    }
+
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        dragger.setSlot(this);
+        dragger.setTarget(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        dragger.unsetSlot(this);
+        dragger.unsetTarget(this);
     }
+
 
     public void setItemSlot(ItemSlot slot)
     {
         keys = FindObjectOfType<Keybinds>(true);
         string keybind = keys.binding(toKeyName(slot)).ToString();
-        label.text = slot.ToString() + ": " + keybind;
+        label.text = keybind;
         label.gameObject.SetActive(true);
+        slotImage.sprite = FindObjectOfType<Symbol>().fromSlot(slot);
         slotType = slot;
 
     }
 
-    public void slotObject(GameObject uiAbil, bool unslot = true)
+    public void populateObject(GameObject uiAbil)
+    {
+        uiaCurrent = uiAbil;
+        uiaCurrent.transform.SetParent(transform);
+        uiaCurrent.transform.localPosition = Vector3.zero;
+        slotPower = uiaCurrent.GetComponent<UiAbility>().blockFilled.instance.actingPower;
+    }
+
+    public void slotObject(GameObject uiAbil)
     {
         UiAbility newUI = uiAbil.GetComponent<UiAbility>();
         if (newUI.blockFilled.slot != slotType)
@@ -56,56 +76,26 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             return;
         }
 
-        newUI.setSlot(this);
-        if (unslot)
+        if (uiaCurrent)
         {
-            if (uiaCurrent)
+            if (uiaCurrent == uiAbil)
             {
-                dragger.storageGrab(uiaCurrent);
+                return;
             }
-            string newIndex = newUI.inventoryIndex;
-            gp.player.GetComponent<Inventory>().CmdEquipAbility(newIndex);
-            FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
+            dragger.storageGrab(uiaCurrent);
         }
+        gp.player.GetComponent<Inventory>().CmdEquipAbility(newUI.blockFilled.id);
+        FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
+
         uiaCurrent = uiAbil;
         uiaCurrent.transform.SetParent(transform);
-        uiaCurrent.GetComponent<UiAbility>().setDragger(null);
         uiaCurrent.transform.localPosition = Vector3.zero;
-        //switch (mode)
-        //{
-        //    case SlotMode.Equipment:
-
-        //        break;
-        //    case SlotMode.Trash:
-        //        if (uiAbility)
-        //        {
-        //            Destroy(uiAbility);
-        //        }
-        //        string index = uiAbil.GetComponent<UiAbility>().inventoryIndex;
-        //        gp.player.GetComponent<Inventory>().CmdStageDelete(index);
-        //        uiAbility = uiAbil;
-        //        uiAbility.transform.SetParent(transform);
-        //        uiAbility.transform.localPosition = Vector3.zero;
-        //        break;
-        //    case SlotMode.Store:
-
-        //        string storeID = uiAbil.GetComponent<UiAbility>().inventoryIndex;
-        //        gp.player.GetComponent<Inventory>().CmdSendStorage(storeID);
-        //        Destroy(uiAbil);
-        //        break;
-        //}
-
+        slotPower = newUI.blockFilled.instance.actingPower;
+        newUI.setUpgrade(true);
+        dragger.GetComponent<UILoadoutMenu>().displayUpgrades();
     }
-    public void unslot()
-    {
-        //switch (mode)
-        //{
-        //    case SlotMode.Trash:
-        //        gp.player.GetComponent<Inventory>().CmdUnstageDelete();
-        //        uiAbility = null;
-        //        break;
-        //}
-    }
+
+
 
     public void clear()
     {

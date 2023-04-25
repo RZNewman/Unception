@@ -224,7 +224,11 @@ public class Inventory : NetworkBehaviour
             fromDrops = true;
             source = tempDrops;
         }
-        newIndex = storage.FindIndex(item => item.id == newId);
+        else
+        {
+            newIndex = storage.FindIndex(item => item.id == newId);
+        }
+
 
         if (newIndex >= 0)
         {
@@ -261,13 +265,21 @@ public class Inventory : NetworkBehaviour
     public void CmdSendStorage(string id)
     {
         int index = tempDrops.FindIndex(item => item.id == id);
+        AttackBlock moved;
         if (index >= 0)
         {
-            AttackBlock moved = tempDrops[index];
+            moved = tempDrops[index];
             tempDrops.RemoveAt(index);
             storage.Add(moved);
             RpcInvChange();
+            return;
         }
+        KeyValuePair<ItemSlot, AttackBlock> pair = equipped.First(pair => pair.Value.id == id);
+        moved = equipped[pair.Key];
+        equipped.Remove(pair.Key);
+        storage.Add(moved);
+        RpcInvChange();
+
 
 
     }
@@ -275,14 +287,19 @@ public class Inventory : NetworkBehaviour
     public void CmdSendTrash(string id)
     {
         int index = storage.FindIndex(item => item.id == id);
+        AttackBlock moved;
         if (index >= 0)
         {
-            AttackBlock moved = storage[index];
+            moved = storage[index];
             storage.RemoveAt(index);
             tempDrops.Add(moved);
             RpcInvChange();
+            return;
         }
-
+        KeyValuePair<ItemSlot, AttackBlock> pair = equipped.First(pair => pair.Value.id == id);
+        moved = equipped[pair.Key];
+        equipped.Remove(pair.Key);
+        tempDrops.Add(moved);
 
     }
     public void clearDrops()

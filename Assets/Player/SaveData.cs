@@ -217,7 +217,6 @@ public class SaveData : NetworkBehaviour
     //server
     public void saveItems()
     {
-        inv.clearDelete();
         globalSave.savePlayerItems(auth.user, inv.exportEquipped(), inv.exportStorage());
     }
 }

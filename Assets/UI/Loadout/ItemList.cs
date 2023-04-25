@@ -62,7 +62,6 @@ public class ItemList : MonoBehaviour
         GameObject icon = Instantiate(abilityIconPre, transform);
         UiAbility uia = icon.GetComponent<UiAbility>();
         uia.setFill(inv.fillBlock(ability));
-        uia.setDetails(deets);
         uia.setDragger(drag);
         uia.inventoryIndex = ability.id;
         return icon;

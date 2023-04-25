@@ -6,6 +6,7 @@ using static AttackUtils;
 using static GenerateAttack;
 using static StatTypes;
 using static UnitControl;
+using static Utils;
 
 public class Ability : NetworkBehaviour
 {
@@ -39,6 +40,7 @@ public class Ability : NetworkBehaviour
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
             icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
+            bar.transform.SortChildren(c => c.GetComponent<UiAbility>().blockFilled.slot);
         }
         if (isClientOnly)
         {

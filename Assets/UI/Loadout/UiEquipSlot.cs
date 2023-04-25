@@ -14,22 +14,12 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public TextMeshProUGUI label;
 
     public UiEquipmentDragger dragger;
-    public ItemList itemTray;
-    public InventoryMode invMode;
 
     ItemSlot slotType;
 
-    GameObject uiAbility;
+    GameObject uiaCurrent;
 
     Keybinds keys;
-
-    public enum SlotMode
-    {
-        Equipment,
-        Trash,
-        Store,
-    }
-    public SlotMode mode = SlotMode.Equipment;
 
     GlobalPlayer gp;
     private void Start()
@@ -60,61 +50,68 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void slotObject(GameObject uiAbil, bool unslot = true)
     {
         UiAbility newUI = uiAbil.GetComponent<UiAbility>();
-        newUI.setSlot(this);
-        switch (mode)
+        if (newUI.blockFilled.slot != slotType)
         {
-            case SlotMode.Equipment:
-                if (unslot)
-                {
-                    if (invMode == InventoryMode.Storage)
-                    {
-                        itemTray.grabAbility(uiAbility);
-                    }
-                    string newIndex = newUI.inventoryIndex;
-                    gp.player.GetComponent<Inventory>().CmdEquipAbility(slotType, newIndex, invMode == InventoryMode.Drops);
-                    FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
-                }
-                uiAbility = uiAbil;
-                uiAbility.transform.SetParent(transform);
-                uiAbility.GetComponent<UiAbility>().setDragger(null);
-                uiAbility.transform.localPosition = Vector3.zero;
-                break;
-            case SlotMode.Trash:
-                if (uiAbility)
-                {
-                    Destroy(uiAbility);
-                }
-                string index = uiAbil.GetComponent<UiAbility>().inventoryIndex;
-                gp.player.GetComponent<Inventory>().CmdStageDelete(index);
-                uiAbility = uiAbil;
-                uiAbility.transform.SetParent(transform);
-                uiAbility.transform.localPosition = Vector3.zero;
-                break;
-            case SlotMode.Store:
-
-                string storeID = uiAbil.GetComponent<UiAbility>().inventoryIndex;
-                gp.player.GetComponent<Inventory>().CmdSendStorage(storeID);
-                Destroy(uiAbil);
-                break;
+            dragger.storageGrab(uiAbil);
+            return;
         }
+
+        newUI.setSlot(this);
+        if (unslot)
+        {
+            if (uiaCurrent)
+            {
+                dragger.storageGrab(uiaCurrent);
+            }
+            string newIndex = newUI.inventoryIndex;
+            gp.player.GetComponent<Inventory>().CmdEquipAbility(newIndex);
+            FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
+        }
+        uiaCurrent = uiAbil;
+        uiaCurrent.transform.SetParent(transform);
+        uiaCurrent.GetComponent<UiAbility>().setDragger(null);
+        uiaCurrent.transform.localPosition = Vector3.zero;
+        //switch (mode)
+        //{
+        //    case SlotMode.Equipment:
+
+        //        break;
+        //    case SlotMode.Trash:
+        //        if (uiAbility)
+        //        {
+        //            Destroy(uiAbility);
+        //        }
+        //        string index = uiAbil.GetComponent<UiAbility>().inventoryIndex;
+        //        gp.player.GetComponent<Inventory>().CmdStageDelete(index);
+        //        uiAbility = uiAbil;
+        //        uiAbility.transform.SetParent(transform);
+        //        uiAbility.transform.localPosition = Vector3.zero;
+        //        break;
+        //    case SlotMode.Store:
+
+        //        string storeID = uiAbil.GetComponent<UiAbility>().inventoryIndex;
+        //        gp.player.GetComponent<Inventory>().CmdSendStorage(storeID);
+        //        Destroy(uiAbil);
+        //        break;
+        //}
 
     }
     public void unslot()
     {
-        switch (mode)
-        {
-            case SlotMode.Trash:
-                gp.player.GetComponent<Inventory>().CmdUnstageDelete();
-                uiAbility = null;
-                break;
-        }
+        //switch (mode)
+        //{
+        //    case SlotMode.Trash:
+        //        gp.player.GetComponent<Inventory>().CmdUnstageDelete();
+        //        uiAbility = null;
+        //        break;
+        //}
     }
 
     public void clear()
     {
-        if (uiAbility)
+        if (uiaCurrent)
         {
-            Destroy(uiAbility);
+            Destroy(uiaCurrent);
         }
 
     }

@@ -143,7 +143,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     public void TargetMainMenu(NetworkConnection conn)
     {
         music.Menu();
-        FindObjectOfType<MenuHandler>().dropsMenu();
+        FindObjectOfType<MenuHandler>().loadoutMenu();
     }
 
 

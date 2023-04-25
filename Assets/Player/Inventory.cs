@@ -19,7 +19,6 @@ public class Inventory : NetworkBehaviour
     List<AttackBlock> storage = new List<AttackBlock>();
 
     Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
-    AttackBlock deleteStaged;
 
     PlayerGhost player;
     public PlayerPity pity;
@@ -214,27 +213,29 @@ public class Inventory : NetworkBehaviour
     }
 
     [Command]
-    public void CmdEquipAbility(ItemSlot slot, string newId, bool fromDrops)
+    public void CmdEquipAbility(string newId)
     {
-        int newIndex;
-        if (fromDrops)
+        int newIndex = -1;
+        List<AttackBlock> source = storage;
+        bool fromDrops = false;
+        newIndex = tempDrops.FindIndex(item => item.id == newId);
+        if (newIndex >= 0)
         {
-            newIndex = tempDrops.FindIndex(item => item.id == newId);
+            fromDrops = true;
+            source = tempDrops;
         }
-        else
-        {
-            newIndex = storage.FindIndex(item => item.id == newId);
-        }
+        newIndex = storage.FindIndex(item => item.id == newId);
 
         if (newIndex >= 0)
         {
             if (fromDrops)
             {
-                AttackBlock unequipped = equipped[slot];
+
                 AttackBlock nowEquipped = tempDrops[newIndex];
-                equipped[slot] = nowEquipped;
+                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out AttackBlock unequipped);
+                equipped[nowEquipped.slot.Value] = nowEquipped;
                 tempDrops.Remove(nowEquipped);
-                if (unequipped)
+                if (previous)
                 {
                     storage.Add(unequipped);
                 }
@@ -242,11 +243,11 @@ public class Inventory : NetworkBehaviour
             }
             else
             {
-                AttackBlock unequipped = equipped[slot];
                 AttackBlock nowEquipped = storage[newIndex];
-                equipped[slot] = nowEquipped;
+                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out AttackBlock unequipped);
+                equipped[nowEquipped.slot.Value] = nowEquipped;
                 storage.Remove(nowEquipped);
-                if (unequipped)
+                if (previous)
                 {
                     storage.Add(unequipped);
                 }
@@ -256,31 +257,6 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    [Command]
-    public void CmdStageDelete(string id)
-    {
-        int index = storage.FindIndex(item => item.id == id);
-        if (index >= 0)
-        {
-            deleteStaged = storage[index];
-            storage.RemoveAt(index);
-
-            RpcInvChange();
-        }
-
-    }
-    [Command]
-    public void CmdUnstageDelete()
-    {
-        if (deleteStaged)
-        {
-            storage.Add(deleteStaged);
-            deleteStaged = null;
-            RpcInvChange();
-        }
-
-
-    }
     [Command]
     public void CmdSendStorage(string id)
     {
@@ -295,10 +271,18 @@ public class Inventory : NetworkBehaviour
 
 
     }
-    //server
-    public void clearDelete()
+    [Command]
+    public void CmdSendTrash(string id)
     {
-        deleteStaged = null;
+        int index = storage.FindIndex(item => item.id == id);
+        if (index >= 0)
+        {
+            AttackBlock moved = storage[index];
+            storage.RemoveAt(index);
+            tempDrops.Add(moved);
+            RpcInvChange();
+        }
+
 
     }
     public void clearDrops()

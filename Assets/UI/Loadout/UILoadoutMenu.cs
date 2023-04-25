@@ -5,23 +5,15 @@ using static ItemList;
 
 public class UILoadoutMenu : MonoBehaviour
 {
-    public List<GameObject> storageOnly;
-    public List<GameObject> dropsOnly;
+    public ItemList storageList;
+    public ItemList dropsList;
 
-    public void loadInvMode(InventoryMode mode)
+    public void loadInvMode()
     {
-        FindObjectOfType<ItemList>(true).fillAbilities(FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>(), mode);
+        Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
+        storageList.fillAbilities(inv, InventoryMode.Storage);
+        dropsList.fillAbilities(inv, InventoryMode.Drops);
 
-        switch (mode)
-        {
-            case InventoryMode.Drops:
-                dropsOnly.ForEach(o => o.SetActive(true));
-                storageOnly.ForEach(o => o.SetActive(false));
-                break;
-            case InventoryMode.Storage:
-                dropsOnly.ForEach(o => o.SetActive(false));
-                storageOnly.ForEach(o => o.SetActive(true));
-                break;
-        }
+
     }
 }

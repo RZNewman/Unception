@@ -20,8 +20,6 @@ public class UiSlotList : MonoBehaviour
             GameObject slotInstance = Instantiate(slotPre, transform);
             UiEquipSlot uiSlot = slotInstance.GetComponent<UiEquipSlot>();
             uiSlot.dragger = dragger;
-            uiSlot.itemTray = list;
-            uiSlot.invMode = mode;
             uiSlot.setItemSlot(slot);
             if (icons.ContainsKey(slot))
             {

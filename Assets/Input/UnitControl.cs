@@ -101,43 +101,11 @@ public interface UnitControl
 
     public static KeyName toKeyName(ItemSlot slot)
     {
-        switch (slot)
-        {
-            case ItemSlot.Main:
-                return KeyName.Attack1;
-            case ItemSlot.OffHand:
-                return KeyName.Attack2;
-            case ItemSlot.Gloves:
-                return KeyName.Attack3;
-            case ItemSlot.Boots:
-                return KeyName.Attack4;
-            case ItemSlot.Chest:
-                return KeyName.Attack5;
-            case ItemSlot.Helm:
-                return KeyName.Attack6;
-            default:
-                return KeyName.Attack1;
-        }
+        return (KeyName)((int)slot + (int)KeyName.Attack1);
     }
     public static ItemSlot fromKeyName(KeyName key)
     {
-        switch (key)
-        {
-            case KeyName.Attack1:
-                return ItemSlot.Main;
-            case KeyName.Attack2:
-                return ItemSlot.OffHand;
-            case KeyName.Attack3:
-                return ItemSlot.Gloves;
-            case KeyName.Attack4:
-                return ItemSlot.Boots;
-            case KeyName.Attack5:
-                return ItemSlot.Chest;
-            case KeyName.Attack6:
-                return ItemSlot.Helm;
-            default:
-                return ItemSlot.Main;
-        }
+        return (ItemSlot)((int)key - (int)KeyName.Attack1);
     }
     public UnitInput getUnitInuput();
 

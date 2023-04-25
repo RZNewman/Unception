@@ -7,8 +7,17 @@ using static RewardManager;
 public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
-    public Text identifier;
-    public Image symbol;
+
+    public GameObject gameplayView;
+    public GameObject invView;
+
+    public Text identifierGamplay;
+    public Image symbolGameplay;
+    public Text identifierInv;
+    public Image symbolInv;
+    public Image slotInv;
+
+
     public Image foreground;
     public Text chargeCount;
 
@@ -22,7 +31,6 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     AttackBlockFilled filled;
 
     //menu only
-    UiAbilityDetails deets;
     UiEquipmentDragger dragger;
     UiEquipSlot slot;
     public string inventoryIndex;
@@ -44,31 +52,48 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         target = ability;
         setFill(ability.source(), true);
     }
+    public AttackBlockFilled blockFilled
+    {
+        get
+        {
+            return filled;
+        }
+    }
 
     public void setFill(AttackBlockFilled a, bool inGame = false)
     {
         filled = a;
         AttackFlair flair = filled.flair;
-        Texture2D texture = FindObjectOfType<Symbol>().symbols[flair.symbol];
-        symbol.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-        symbol.color = flair.color;
+        background.sprite = bgFromQuality(filled.instance.quality);
+        Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = flair.color;
         partialColor.a = 0.4f;
-        identifier.color = partialColor;
-        identifier.text = flair.identifier;
-        background.sprite = bgFromQuality(filled.instance.quality);
-        if (!inGame)
+        if (inGame)
         {
+            gameplayView.SetActive(true);
+            invView.SetActive(false);
+            symbolGameplay.sprite = symbolSource.symbols[flair.symbol];
+            symbolGameplay.color = flair.color;
+            identifierGamplay.color = partialColor;
+            identifierGamplay.text = flair.identifier;
+        }
+        else
+        {
+            gameplayView.SetActive(false);
+            invView.SetActive(true);
             GetComponentInChildren<StarCounter>().setStars(filled.instance.mods != null ? filled.instance.mods.Length : 0);
+            symbolInv.sprite = symbolSource.symbols[flair.symbol];
+            symbolInv.color = flair.color;
+            identifierInv.color = partialColor;
+            identifierInv.text = flair.identifier;
+            slotInv.sprite = symbolSource.fromSlot(filled.slot ?? ItemSlot.Main);
         }
 
-    }
 
-    public void setDetails(UiAbilityDetails details)
-    {
-        deets = details;
+
 
     }
+
     public void setDragger(UiEquipmentDragger drag)
     {
         dragger = drag;
@@ -89,10 +114,6 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (deets)
-        {
-            deets.setDetails(filled);
-        }
         if (dragger)
         {
             dragger.setHover(this);

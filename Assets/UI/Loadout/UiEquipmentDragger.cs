@@ -8,11 +8,12 @@ public class UiEquipmentDragger : MonoBehaviour
 
     UiAbility hover;
 
+
     GameObject drag;
     UiEquipSlot slot;
 
-    public ItemList itemTray;
-
+    UILoadoutMenu loadoutMenu;
+    public UiAbilityDetails deets;
 
 
 
@@ -34,6 +35,8 @@ public class UiEquipmentDragger : MonoBehaviour
         if (!drag)
         {
             hover = u;
+            deets.setDetails(u.blockFilled);
+            deets.gameObject.SetActive(true);
         }
 
     }
@@ -43,7 +46,19 @@ public class UiEquipmentDragger : MonoBehaviour
         if (hover == u)
         {
             hover = null;
+            deets.gameObject.SetActive(false);
         }
+    }
+
+    private void Start()
+    {
+        loadoutMenu = GetComponent<UILoadoutMenu>();
+        deets.gameObject.SetActive(false);
+    }
+
+    public void storageGrab(GameObject icon)
+    {
+        loadoutMenu.storageList.grabAbility(icon);
     }
     private void Update()
     {
@@ -67,7 +82,7 @@ public class UiEquipmentDragger : MonoBehaviour
                 }
                 else
                 {
-                    itemTray.grabAbility(drag);
+                    loadoutMenu.storageList.grabAbility(drag);
                 }
                 drag.GetComponent<Image>().raycastTarget = true;
                 drag = null;

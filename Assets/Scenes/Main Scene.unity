@@ -8702,6 +8702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   storageList: {fileID: 1326356413}
   dropsList: {fileID: 837502309}
+  slotList: {fileID: 552569906}
 --- !u!28 &1343866928
 Texture2D:
   m_ObjectHideFlags: 0

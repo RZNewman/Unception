@@ -513,6 +513,16 @@ public static class GenerateAttack
         {
             noCooldown = true;
         }
+        float cooldownMin = 0;
+        float cooldownMax = 1;
+        if (slot == ItemSlot.Chest)
+        {
+            cooldownMin = 0.4f;
+        }
+        if (slot == ItemSlot.Main)
+        {
+            cooldownMax = 0.3f;
+        }
         float charges = noCooldown ? 0 : GaussRandomDecline(4);
         float chargeBaseStats = charges.asRange(0, itemMax(Stat.Charges));
 
@@ -530,6 +540,10 @@ public static class GenerateAttack
             windMin = 0.25f;
         }
         if (type == AttackGenerationType.IntroMain)
+        {
+            windMax = 0.3f;
+        }
+        else if (slot == ItemSlot.Main)
         {
             windMax = 0.5f;
         }
@@ -551,7 +565,7 @@ public static class GenerateAttack
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages.ToArray(),
-            cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(slot == ItemSlot.Chest ? 0.4f : 0, 1),
+            cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(cooldownMin, cooldownMax),
             charges = charges,
             quality = quality,
             mods = mods,
@@ -586,6 +600,7 @@ public static class GenerateAttack
         bool dashInside = false;
 
         if (slot != ItemSlot.Main
+            && slot != ItemSlot.Helm
             && gen < 0.3f)
         {
             //repeat effect
@@ -595,6 +610,7 @@ public static class GenerateAttack
 
         gen = Random.value;
         if (slot != ItemSlot.Main
+            && slot != ItemSlot.Helm
             && (slot == ItemSlot.Boots || gen < 0.2f)
             && h.type != HitType.Ground)
         {

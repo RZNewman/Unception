@@ -159,11 +159,11 @@ public static class GenerateAttack
             return damage(power) / castTimeDisplay(power);
 
         }
-        public float avgMove(float power)
+        public float avgMove()
         {
             return windStages.Sum(x => x.moveMult * x.durationHastened) / castTime();
         }
-        public float avgTurn(float power)
+        public float avgTurn()
         {
             return windStages.Sum(x => x.turnMult * x.durationHastened) / castTime();
         }
@@ -209,6 +209,7 @@ public static class GenerateAttack
         {
             return stream.getValue(stat, scale);
         }
+        #region display
         float modPercentValue
         {
             get
@@ -227,6 +228,51 @@ public static class GenerateAttack
         public float castTimeDisplay(float power)
         {
             return segments.Sum(s => s.castTimeDisplay(power));
+        }
+
+        public float avgMove()
+        {
+            return segmentAvg(s => s.avgTurn());
+        }
+
+        public float avgTurn()
+        {
+            return segmentAvg(s => s.avgTurn());
+        }
+        public float avgLength()
+        {
+            return segmentAvg(s => s.hit.length);
+        }
+        public float avgWidth()
+        {
+            return segmentAvg(s => s.hit.width);
+        }
+        public float avgRange()
+        {
+            return segmentAvg(s => s.hit.range);
+        }
+        public float avgKup()
+        {
+            return segmentAvg(s => s.hit.knockup);
+        }
+        public float avgKback()
+        {
+            return segmentAvg(s => s.hit.knockback);
+        }
+        public float avgStagger()
+        {
+            return segmentAvg(s => s.hit.stagger);
+        }
+
+
+        float segmentAvg(System.Func<SegmentInstanceData, float> prop)
+        {
+            return segments.Sum(s => prop(s) * s.castTime()) / castTime();
+        }
+
+        public float castTime()
+        {
+            return segments.Sum(s => s.castTime());
         }
         public float cooldownDisplay(float power)
         {
@@ -252,6 +298,7 @@ public static class GenerateAttack
         {
             return damage(power) / castTimeDisplay(power);
         }
+        #endregion
     }
 
     struct InstanceStreamInfo
@@ -694,6 +741,7 @@ public static class GenerateAttack
         filled.flair = block.flair;
         filled.slot = block.slot;
         filled.id = block.id;
+        filled.generationData = block;
         //Debug.Log(atk);
         //Debug.Log(block.instance);
         return filled;

@@ -69,7 +69,8 @@ public class Power : NetworkBehaviour, TextValue
     }
     static float exaggeratedPower(float power)
     {
-        return Mathf.Pow(power / 100, 2f);
+        //return Mathf.Pow(power / 100, 2f);
+        return power;
     }
     public static string displayExaggertatedPower(float power)
     {
@@ -88,7 +89,7 @@ public class Power : NetworkBehaviour, TextValue
         float roundedPower = Mathf.Round(power / Mathf.Pow(10, decimalRounding));
         float truncatedPower = roundedPower / Mathf.Pow(10, decimalDiff);
         string symbol = metricSymbol(currentMetricScale);
-        return truncatedPower + " " + symbol;
+        return truncatedPower + symbol;
     }
 
     public void setPower(float power)

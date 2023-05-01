@@ -10,6 +10,7 @@ using static StatTypes;
 
 public class AttackBlockFilled : ScriptableObject
 {
+    public AttackBlock generationData;
     public AttackInstanceData instance;
     public ItemSlot? slot;
     public AttackFlair flair;
@@ -100,6 +101,8 @@ public class AttackBlockFilled : ScriptableObject
 
         return instance.getStat(Stat.Charges) + 1;
     }
+
+    
 
     public AiHandler.EffectiveDistance GetEffectiveDistance(float halfHeight)
     {

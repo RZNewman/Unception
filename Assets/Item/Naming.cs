@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 
 public static class Naming
 {
@@ -11,6 +12,20 @@ public static class Naming
     public static string identifier()
     {
         return greekUpper.RandomItem() + greekLower.RandomItem();
+    }
+
+    public static string slotPhysical(ItemSlot? slot)
+    {
+        return slot switch
+        {
+            ItemSlot.Main => "Sword",
+            ItemSlot.OffHand => "Mace",
+            ItemSlot.Gloves => "Gloves",
+            ItemSlot.Chest => "Chestplate",
+            ItemSlot.Boots => "Boots",
+            ItemSlot.Helm => "Helm",
+            _ => "Amulet",
+        };
     }
 
     static string[] greekLower = new string[] {

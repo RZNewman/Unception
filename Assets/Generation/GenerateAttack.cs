@@ -15,6 +15,7 @@ using static StatTypes;
 using UnityEditor;
 using System.Runtime.InteropServices;
 using static GenerateBuff;
+using static UnityEngine.Rendering.HableCurve;
 
 public static class GenerateAttack
 {
@@ -118,6 +119,28 @@ public static class GenerateAttack
 
             return castTime() * Power.scaleTime(power);
 
+        }
+        public string shapeDisplay()
+        {
+            string shape = hit.type.ToString();
+            float percent;
+            if (dash != null)
+            {
+                percent = Mathf.Round(dash.percentOfEffect * 100);
+                shape += " Dash " + dash.control.ToString() + " " + percent + "%";
+            }
+            if (buff != null)
+            {
+                percent = Mathf.Round(buff.percentOfEffect * 100);
+                string label = buff.type == GenerateBuff.BuffType.Buff ? "Buff " : "Debuff ";
+                shape += " " + label + " " + buff.stats.First().Key.ToString() + " " + percent + "%";
+            }
+            if (repeat != null)
+            {
+
+                shape += " X" + repeat.repeatCount.ToString();
+            }
+            return shape;
         }
 
         public float castTime()
@@ -224,6 +247,10 @@ public static class GenerateAttack
             {
                 return power * modPercentValue * qualityPercent(quality);
             }
+        }
+        public string shapeDisplay()
+        {
+            return System.String.Join(", ", segments.Select(s => s.shapeDisplay()));
         }
         public float castTimeDisplay(float power)
         {
@@ -486,7 +513,7 @@ public static class GenerateAttack
     static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
         List<Stat> possible = new List<Stat>() {
-            Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges,
+            Stat.Length, Stat.Width, Stat.Range, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges,
             Stat.Haste, Stat.Cooldown, Stat.TurnspeedCast, Stat.MovespeedCast,
         };
         List<Mod> mods = new List<Mod>();

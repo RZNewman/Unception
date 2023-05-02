@@ -67,6 +67,15 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         slotPower = uiaCurrent.GetComponent<UiAbility>().blockFilled.instance.actingPower;
     }
 
+    public AttackBlockFilled slottedBlock()
+    {
+        if (uiaCurrent != null)
+        {
+            return uiaCurrent.GetComponent<UiAbility>().blockFilled;
+        }
+        return null;
+    }
+
     public void slotObject(GameObject uiAbil)
     {
         UiAbility newUI = uiAbil.GetComponent<UiAbility>();

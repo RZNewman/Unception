@@ -41,6 +41,7 @@ public static class GenerateDash
             return new DashInstanceData
             {
                 powerByStrength = power * strength,
+                percentOfEffect = percentOfEffect,
 
                 speed = speed,
                 distance = distance,

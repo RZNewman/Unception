@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using static GenerateAttack;
 using static RewardManager;
 using static Naming;
+using TMPro;
 
 public class UiAbilityDetails : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class UiAbilityDetails : MonoBehaviour
     public Text titleSlot;
     public Text powerTotal;
     public Text power;
+
+    public TMP_Text shape;
     public Image slotIcon;
     public Image qualityBG;
 
@@ -21,7 +24,7 @@ public class UiAbilityDetails : MonoBehaviour
 
     PlayerGhost player;
 
-    public void setDetails(AttackBlockFilled filled)
+    public void setDetails(AttackBlockFilled filled, AttackBlockFilled compare)
     {
         if (!player)
         {
@@ -29,39 +32,19 @@ public class UiAbilityDetails : MonoBehaviour
         }
 
         title.text = filled.flair.name;
-        titleSlot.text = slotPhysical(filled.slot)+" of";
+        titleSlot.text = slotPhysical(filled.slot) + " of";
         power.text = Power.displayExaggertatedPower(filled.instance.power);
         powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
+        shape.text = filled.instance.shapeDisplay();
         slotIcon.sprite = FindObjectOfType<Symbol>().fromSlot(filled.slot ?? ItemSlot.Main);
         qualityBG.color = colorQuality(filled.instance.quality);
-        statPanel.fill(filled, player.power);
+
+        statPanel.fill(filled, player.power, compare);
 
     }
 
-    void buildSegment(SegmentInstanceData instance, float power)
-    {
 
 
-        //if (instance.dash != null)
-        //{
-        //    segmentPanel.addLabel("Dash Len", instance.dash.distance);
-        //    segmentPanel.addLabel("Dash Speed", instance.dash.speed);
-        //    segmentPanel.addLabel("Dash Dir", instance.dash.control.ToString());
-        //}
-        //if (instance.repeat != null)
-        //{
-        //    segmentPanel.addLabel("Repeats", instance.repeat.repeatCount);
-        //    segmentPanel.addLabel("Repeat delay", instance.windRepeat.durationDisplay(power));
-        //}
-        //if (instance.buff != null)
-        //{
-        //    segmentPanel.addLabel("Buff Dur.", instance.buff.durationDisplay(power));
-        //    string label = instance.buff.type == GenerateBuff.BuffType.Buff ? "Buff " : "Debuff ";
-        //    segmentPanel.addLabel(label, instance.buff.stats.First().Key.ToString());
-        //    segmentPanel.addLabel("Buff Value", instance.buff.stats.First().Value);
-        //}
-
-    }
 
 
 

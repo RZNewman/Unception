@@ -35,7 +35,7 @@ public class UiEquipmentDragger : MonoBehaviour
         if (!drag)
         {
             hover = u;
-            deets.setDetails(u.blockFilled);
+            deets.setDetails(u.blockFilled, loadoutMenu.slotList.slotOfType(hover.blockFilled.slot.Value).slottedBlock());
             deets.gameObject.SetActive(true);
         }
 

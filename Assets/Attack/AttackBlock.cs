@@ -20,10 +20,10 @@ public class AttackBlock : ScriptableObject
     {
         float maxStat;
         float maxRoll = statsPerModMax * 3;
-        float percentRoll =0;
-        float moddedStat =0;
+        float percentRoll = 0;
+        float moddedStat = 0;
         float modPercent = 0;
-        Color fill = Color.green;
+        Color fill = Color.cyan;
         switch (stat)
         {
             case Stat.Length:
@@ -65,7 +65,7 @@ public class AttackBlock : ScriptableObject
         }
         foreach (Mod mod in source.mods ?? new Mod[0])
         {
-            if(mod.stat == stat)
+            if (mod.stat == stat)
             {
                 modPercent = mod.rolledPercent;
                 moddedStat = mod.statBaseValue();
@@ -87,7 +87,7 @@ public class AttackBlock : ScriptableObject
         float total = 0;
         foreach (GenerationData stage in stages)
         {
-            if(stage is HitGenerationData)
+            if (stage is HitGenerationData)
             {
                 HitGenerationData hit = (HitGenerationData)stage;
                 total += hit.statValues.ContainsKey(stat) ? hit.statValues[stat] : 0;
@@ -113,7 +113,7 @@ public class AttackBlock : ScriptableObject
             if (stage is WindGenerationData)
             {
                 WindGenerationData wind = (WindGenerationData)stage;
-                for(int i =0; i< repeats; i++)
+                for (int i = 0; i < repeats; i++)
                 {
                     switch (mode)
                     {
@@ -130,10 +130,10 @@ public class AttackBlock : ScriptableObject
                             count += wind.duration;
                             break;
                     }
-                }      
+                }
                 repeats = 1;
             }
-            if(stage is RepeatingGenerationData)
+            if (stage is RepeatingGenerationData)
             {
                 repeats = ((RepeatingGenerationData)stage).repeatCount;
             }

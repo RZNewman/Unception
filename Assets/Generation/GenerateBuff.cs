@@ -47,6 +47,7 @@ public static class GenerateBuff
 
             BuffInstanceData baseData = new BuffInstanceData
             {
+                percentOfEffect = percentOfEffect,
                 durration = duration,
                 _baseStats = stats,
                 type = type,

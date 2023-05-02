@@ -28,7 +28,7 @@ public class StatModLabel : MonoBehaviour
         public Color fill;
     }
 
-    public void populate(string title, string value, StatInfo i, string secondary = "")
+    public StatModLabel populate(string title, string value, StatInfo i, string secondary)
     {
         Label.text = title;
         Value.text = value;
@@ -42,10 +42,19 @@ public class StatModLabel : MonoBehaviour
         RollBar.GetComponent<Image>().color = i.fill;
         ModBar.sizeDelta = new Vector2(i.moddedStat / i.maxStat * width, ModBar.sizeDelta.y);
 
-        if(i.moddedStat <= 0)
+        if (i.moddedStat <= 0)
         {
             ModdedVisual.SetActive(false);
         }
+        return this;
+    }
+
+
+    public void setColor(Color a, Color b)
+    {
+        Label.color = a;
+        Value.color = a;
+        Secondary.color = b;
     }
 
 }

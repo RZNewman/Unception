@@ -92,19 +92,29 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
     }
     void sort()
     {
-        transform.SortChildren(sortFunction(), true);
+        transform.SortChildren(sortFunction(), !reverse);
     }
     public enum SortMode
     {
         ActingPower,
         Cooldown,
         CastTime,
+        DPS,
     }
     public SortMode sortMode = SortMode.ActingPower;
-
+    bool reverse = false;
     public void setSortMode(SortModeID id)
     {
+        if (sortMode == id.mode)
+        {
+            reverse = !reverse;
+        }
+        else
+        {
+            reverse = false;
+        }
         sortMode = id.mode;
+
         sort();
     }
 
@@ -112,6 +122,8 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
     {
         switch (sortMode)
         {
+            case SortMode.DPS:
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.dps(gp.player.power);
             case SortMode.Cooldown:
                 return (t1) => t1.GetComponent<UiAbility>().ability.getCooldownDisplay(gp.player.power);
             case SortMode.CastTime:

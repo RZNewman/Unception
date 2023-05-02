@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using static StatModPanel;
 
 public class StatModLabel : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class StatModLabel : MonoBehaviour
     public TMP_Text Value;
     public TMP_Text Secondary;
     public TMP_Text ModCount;
+
+    public Image CompareArrow;
 
     public struct StatInfo
     {
@@ -46,15 +49,32 @@ public class StatModLabel : MonoBehaviour
         {
             ModdedVisual.SetActive(false);
         }
+
+        CompareArrow.gameObject.SetActive(false);
         return this;
     }
 
 
-    public void setColor(Color a, Color b)
+    public void setColor(Color a, Color b, Compare compare)
     {
-        Label.color = a;
         Value.color = a;
         Secondary.color = b;
+        CompareArrow.color = a;
+        if (compare != Compare.Neutral)
+        {
+            CompareArrow.gameObject.SetActive(true);
+            float value = ((int)compare) - ((int)Compare.Neutral);
+            value /= 2.0f;
+            bool downgrade = value < 0;
+            value = Mathf.Abs(value);
+            CompareArrow.rectTransform.sizeDelta *= new Vector2(value, value);
+            if (downgrade)
+            {
+                CompareArrow.rectTransform.rotation *= Quaternion.Euler(0, 0, 180);
+            }
+
+        }
+
     }
 
 }

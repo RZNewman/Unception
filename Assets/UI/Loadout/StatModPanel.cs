@@ -1,7 +1,9 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static StatModLabel;
 using static StatTypes;
 
 public class StatModPanel : MonoBehaviour
@@ -37,37 +39,52 @@ public class StatModPanel : MonoBehaviour
         float? value2 = info.secondaryGetter(block);
         string label2 = "";
         Color color2 = defaultColor;
+        Compare comp = Compare.Neutral;
 
         if (compare != null)
         {
-            color1 = colorCompare(value1, info.valueGetter(compare), stat);
+            comp = compareStat(value1, info.valueGetter(compare), stat);
+            color1 = fromCompare(comp);
         }
         if (value2.HasValue)
         {
             label2 = info.LabelSecond + " " + value2.Value;
             if (compare != null)
             {
-                color2 = colorCompare(value2.Value, info.secondaryGetter(compare).Value, stat);
+                Compare comp2 = compareStat(value2.Value, info.secondaryGetter(compare).Value, stat);
+                color2 = fromCompare(comp2);
             }
         }
 
         create()
             .populate(label1, Power.displayPower(value1), block.generationData.getInfo(stat), label2)
-            .setColor(color1, color2);
+            .setColor(color1, color2, comp);
 
+    }
+
+    public enum Compare
+    {
+        DowngradeLarge,
+        DowngradeMid,
+        DowngradeSmall,
+        Neutral,
+        UpgradeSmall,
+        UpgradeMid,
+        UpgradeLarge,
     }
     public static readonly Color defaultColor = new Color(0.96f, 0.97f, 0.86f);
     public static readonly Color upgradeColor = Color.green;
     public static readonly Color downgradeColor = Color.red;
 
     float[] thresholds = new float[] { 0.015f, 0.5f, 1.5f };
-    float[] colorLerps = new float[] { 0.15f, 0.5f, 1.0f };
+    float[] colorLerps = new float[] { 0, 0.15f, 0.5f, 1.0f };
 
     enum ColorCompareFlags
     {
         Reverse,
     }
-    Color colorCompare(float a, float b, Stat stat)
+
+    Compare compareStat(float a, float b, Stat stat)
     {
         HashSet<ColorCompareFlags> flags = new HashSet<ColorCompareFlags>();
         switch (stat)
@@ -77,10 +94,10 @@ public class StatModPanel : MonoBehaviour
                 flags.Add(ColorCompareFlags.Reverse);
                 break;
         }
-        return colorCompare(a, b, flags);
+        return compareStat(a, b, flags);
     }
 
-    Color colorCompare(float a, float b, HashSet<ColorCompareFlags> flags)
+    Compare compareStat(float a, float b, HashSet<ColorCompareFlags> flags)
     {
         if (flags.Contains(ColorCompareFlags.Reverse))
         {
@@ -106,16 +123,23 @@ public class StatModPanel : MonoBehaviour
             proportion = (numer / denom) - 1;
 
         }
-        float colorLerp = 0;
+        int mod = 0;
         for (int i = 0; i < thresholds.Length; i++)
         {
             if (proportion > thresholds[i])
             {
-                colorLerp = colorLerps[i];
+                mod++;
             }
         }
-        return Color.Lerp(defaultColor, downgrade ? downgradeColor : upgradeColor, colorLerp);
+        return (Compare)((downgrade ? -1 : 1) * mod + (int)(Compare.Neutral));
 
+    }
+    Color fromCompare(Compare comp)
+    {
+        int value = ((int)comp) - ((int)Compare.Neutral);
+        int mag = Mathf.Abs(value);
+        bool downgrade = value < 0;
+        return Color.Lerp(defaultColor, downgrade ? downgradeColor : upgradeColor, colorLerps[mag]);
     }
 
     struct StatLabelInfo

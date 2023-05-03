@@ -101,6 +101,14 @@ public class UnitMovement : NetworkBehaviour
     {
         return movement.state();
     }
+    public string currentAbilityName()
+    {
+        if (currentState() is AttackingState)
+        {
+            return ((AttackingState)currentState()).abilityName;
+        }
+        return "";
+    }
 
     public Posture posture
     {

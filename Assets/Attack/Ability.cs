@@ -60,6 +60,13 @@ public class Ability : NetworkBehaviour
             Destroy(icon);
         }
     }
+    public string abilityName
+    {
+        get
+        {
+            return attackFilled.flair.name;
+        }
+    }
 
     void bufferClientCast(float old, float newcharge)
     {

@@ -43,9 +43,11 @@ public class StunnedState : PlayerMovementState, BarValue
 
     public BarValue.BarData getBarFill()
     {
+        Color c = GameColors.Stunned;
+        c.a = 0.6f;
         return new BarValue.BarData
         {
-            color = GameColors.Stunned,
+            color = c,
             fillPercent = Mathf.Clamp01(currentDurration / maxDuration),
             active = true,
         };

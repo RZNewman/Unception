@@ -74,11 +74,14 @@ public class WindState : AttackStageState, BarValue
 
     public BarValue.BarData getBarFill()
     {
+        Color c = !isWinddown ? Color.cyan : new Color(0, 0.6f, 1);
+        c.a = 0.6f;
         return new BarValue.BarData
         {
-            color = !isWinddown ? Color.cyan : new Color(0, 0.6f, 1),
+            color = c,
             fillPercent = Mathf.Clamp01(!isWinddown ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
             active = true,
+            text = mover.currentAbilityName(),
         };
     }
     public void setGroundTarget(GameObject t, GroundSearchParams s)

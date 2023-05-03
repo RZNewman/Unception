@@ -18,6 +18,14 @@ public class AttackingState : PlayerMovementState
         castingAbility = atk;
     }
 
+    public string abilityName
+    {
+        get
+        {
+            return castingAbility.abilityName;
+        }
+    }
+
     bool init = false;
     public override void enter()
     {

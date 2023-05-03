@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MenuHandler : MonoBehaviour
@@ -42,6 +43,7 @@ public class MenuHandler : MonoBehaviour
     public void gameplayMenu()
     {
         switchMenu(gameplay);
+        FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
     }
 
     public void stageMenu()

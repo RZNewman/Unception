@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.github.idbrii.unity-navgen": "https://github.com/idbrii/unity-navgen.git#latest-release",
+    "com.unity.2d.animation": "5.1.1",
+    "com.unity.2d.pixel-perfect": "4.0.1",
+    "com.unity.2d.psdimporter": "4.2.0",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.spriteshape": "5.2.0",
+    "com.unity.2d.tilemap": "1.0.0",
     "com.unity.collab-proxy": "1.17.2",
     "com.unity.ide.rider": "3.0.15",
     "com.unity.ide.visualstudio": "2.0.16",
@@ -11,7 +18,6 @@
     "com.unity.ugui": "1.0.0",
     "com.unity.visualeffectgraph": "12.1.7",
     "jillejr.newtonsoft.json-for-unity.converters": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.Converters.git#1.5.0",
-    "com.github.idbrii.unity-navgen": "https://github.com/idbrii/unity-navgen.git#latest-release",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

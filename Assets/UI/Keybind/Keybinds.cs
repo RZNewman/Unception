@@ -8,6 +8,10 @@ public class Keybinds : MonoBehaviour
 {
     public GameObject keyPre;
     public GameObject keyPanel;
+
+    public Sprite[] Keys;
+    Dictionary<KeyCode, Sprite> keyLookup = new Dictionary<KeyCode, Sprite>();
+
     public enum KeyName
     {
         Forward,
@@ -35,8 +39,17 @@ public class Keybinds : MonoBehaviour
         return binds[name];
     }
 
+    public Sprite keyImage(KeyCode key)
+    {
+        return keyLookup.ContainsKey(key) ? keyLookup[key] : keyLookup[KeyCode.Escape];
+    }
+
     private void Start()
     {
+        foreach (Sprite sprite in Keys)
+        {
+            keyLookup.Add(Enum.Parse<KeyCode>(sprite.name), sprite);
+        }
         foreach (KeyName name in EnumValues<KeyName>())
         {
             GameObject o = Instantiate(keyPre, keyPanel.transform);
@@ -46,7 +59,7 @@ public class Keybinds : MonoBehaviour
 
 
             setter.setBinder(this);
-            setter.setLabel(name, code.ToString());
+            setter.setLabel(name, code, this);
             setters.Add(name, setter);
             binds.Add(name, code);
         }
@@ -79,7 +92,7 @@ public class Keybinds : MonoBehaviour
             }
             if (e.keyCode != KeyCode.Escape)
             {
-                setters[bindKey].setLabel(bindKey, e.keyCode.ToString());
+                setters[bindKey].setLabel(bindKey, e.keyCode, this);
                 binds[bindKey] = e.keyCode;
                 PlayerPrefs.SetInt("Key" + bindKey.ToString(), (int)e.keyCode);
             }

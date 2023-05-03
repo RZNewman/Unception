@@ -45,7 +45,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
 
     public void fillAbilities()
     {
-
+        dragger = FindObjectOfType<UiEquipmentDragger>(true);
 
 
 
@@ -78,11 +78,18 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         foreach (Transform icon in transform)
         {
             UiAbility uia = icon.GetComponent<UiAbility>();
-            uia.setUpgrade(dragger.GetComponent<UILoadoutMenu>().slotList.slotOfType(uia.blockFilled.slot.Value).actingPower < uia.blockFilled.instance.actingPower);
+            UiSlotList slotList = dragger.GetComponent<UILoadoutMenu>().slotList;
+            float slotPower = slotList.slotOfType(uia.blockFilled.slot.Value).actingPower;
+            float abPower = uia.blockFilled.instance.actingPower;
+            uia.setUpgrade(slotPower < abPower);
         }
     }
     public GameObject createIcon(AttackBlock ability)
     {
+        if (!dragger)
+        {
+            dragger = FindObjectOfType<UiEquipmentDragger>(true);
+        }
         GameObject icon = Instantiate(abilityIconPre, transform);
         icon.transform.localScale = Vector3.one * 0.6f;
         UiAbility uia = icon.GetComponent<UiAbility>();

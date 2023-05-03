@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GenerateAttack;
 using static RewardManager;
+using static UnitControl;
 
 public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -16,6 +17,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Text identifierInv;
     public Image symbolInv;
     public Image slotInv;
+    public Image keybindGamplay;
 
 
     public Image foreground;
@@ -73,12 +75,15 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         partialColor.a = 0.4f;
         if (inGame)
         {
+            Keybinds keys = FindObjectOfType<Keybinds>(true);
             gameplayView.SetActive(true);
             invView.SetActive(false);
             symbolGameplay.sprite = symbolSource.symbols[flair.symbol];
             symbolGameplay.color = flair.color;
             identifierGamplay.color = partialColor;
             identifierGamplay.text = flair.identifier;
+            keybindGamplay.sprite = keys.keyImage(keys.binding(toKeyName(a.slot.Value)));
+            keybindGamplay.scaleToFit();
         }
         else
         {

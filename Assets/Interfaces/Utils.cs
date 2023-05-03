@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using static MapGenerator;
 using static RewardManager;
 
@@ -78,6 +79,13 @@ public static class Utils
     public static string asPercent(this float value)
     {
         return Mathf.Round(value * 1000) / 10 + "%";
+    }
+
+    public static void scaleToFit(this Image image)
+    {
+        Sprite s = image.sprite;
+        float ratio = s.bounds.size.x / s.bounds.size.y;
+        image.rectTransform.sizeDelta = new Vector2(image.rectTransform.sizeDelta.y * ratio, image.rectTransform.sizeDelta.y);
     }
     public static Dictionary<T, float> invert<T>(this IDictionary<T, float> dict)
     {

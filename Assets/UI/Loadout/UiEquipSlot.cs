@@ -11,7 +11,7 @@ using static UnitControl;
 
 public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, UiDraggerTarget
 {
-    public TextMeshProUGUI label;
+    public Image label;
     public Image slotImage;
     public UiEquipmentDragger dragger;
 
@@ -23,7 +23,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     Keybinds keys;
 
     GlobalPlayer gp;
-    private void Start()
+    private void Awake()
     {
         gp = FindObjectOfType<GlobalPlayer>(true);
 
@@ -51,9 +51,9 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void setItemSlot(ItemSlot slot)
     {
         keys = FindObjectOfType<Keybinds>(true);
-        string keybind = keys.binding(toKeyName(slot)).ToString();
-        label.text = keybind;
-        label.gameObject.SetActive(true);
+        KeyCode keybind = keys.binding(toKeyName(slot));
+        label.sprite = keys.keyImage(keybind);
+        label.scaleToFit();
         slotImage.sprite = FindObjectOfType<Symbol>().fromSlot(slot);
         slotType = slot;
 

@@ -8,15 +8,17 @@ public class KeySetter : MonoBehaviour
 {
     public Text label;
     public Button button;
-    public Text key;
+    public Image key;
 
     KeyName keyname;
 
-    public void setLabel(KeyName n, string k)
+    public void setLabel(KeyName n, KeyCode k, Keybinds bind)
     {
         keyname = n;
         label.text = n.ToString();
-        key.text = k;
+        Sprite s = bind.keyImage(k);
+        key.sprite = s;
+        key.scaleToFit();
     }
 
     public void enableButton(bool e)

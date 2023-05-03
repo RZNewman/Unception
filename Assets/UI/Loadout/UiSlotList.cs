@@ -32,7 +32,7 @@ public class UiSlotList : MonoBehaviour
 
     public UiEquipSlot slotOfType(ItemSlot slot)
     {
-        return slots.ContainsKey(slot) ? slots[slot] : null;
+        return slots.ContainsKey(slot) ? slots[slot] : throw new System.Exception("Slot not in list");
     }
 
     public void clear()

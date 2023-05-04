@@ -755,13 +755,13 @@ public static class GenerateAttack
         return effects;
     }
 
-    public static AttackBlockFilled fillBlock(AttackBlock block, Ability abil = null, float power = -1)
+    public static AttackBlockFilled fillBlock(AttackBlock block, Ability abil = null, float power = -1, bool forceScaling = false)
     {
         if (power < 0)
         {
             power = block.powerAtGeneration;
         }
-        power = block.scales ? power : block.powerAtGeneration;
+        power = forceScaling || block.scales ? power : block.powerAtGeneration;
         AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
         AttackGenerationData atk = block.source;
         filled.instance = populateAttack(atk, power, abil);

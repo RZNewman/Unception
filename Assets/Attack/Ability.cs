@@ -161,8 +161,7 @@ public class Ability : NetworkBehaviour
 
     public void demoForceScale()
     {
-        attackFormat.scales = true;
-        subscribeScale();
+        GetComponentInParent<Power>().subscribePower(p=> { attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power, true); });
     }
     void subscribeScale()
     {

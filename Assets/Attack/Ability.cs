@@ -150,13 +150,23 @@ public class Ability : NetworkBehaviour
         charges = chargeMax;
         if (attackFormat.scales)
         {
-            GetComponentInParent<Power>().subscribePower(scaleAbility);
+            subscribeScale();
         }
     }
     void fillFormat()
     {
         attackFilled = GenerateAttack.fillBlock(attackFormat, this);
 
+    }
+
+    public void demoForceScale()
+    {
+        attackFormat.scales = true;
+        subscribeScale();
+    }
+    void subscribeScale()
+    {
+        GetComponentInParent<Power>().subscribePower(scaleAbility);
     }
     void scaleAbility(Power p)
     {

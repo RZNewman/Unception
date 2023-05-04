@@ -87,6 +87,10 @@ public class AbiltyList : NetworkBehaviour
     {
         return instancedAbilitites.ContainsKey(key) ? instancedAbilitites[key] : null;
     }
+    public List<Ability> allAbilities()
+    {
+        return instancedAbilitites.Values.ToList();
+    }
 
     public struct AbilityPair
     {

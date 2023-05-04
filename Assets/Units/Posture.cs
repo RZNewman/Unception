@@ -25,6 +25,7 @@ public class Posture : NetworkBehaviour, BarValue
 
     UnitProperties props;
     Power power;
+    Combat combat;
     public bool isStunned
     {
         get
@@ -46,6 +47,7 @@ public class Posture : NetworkBehaviour, BarValue
     {
         props = GetComponent<UnitPropsHolder>().props;
         power = GetComponent<Power>();
+        combat = GetComponent<Combat>();
 
         currentPosture = 0;
         maxPosture = props.maxPosture;
@@ -92,6 +94,10 @@ public class Posture : NetworkBehaviour, BarValue
     public void OrderedUpdate()
     {
         float scaleTime = power.scaleTime();
+        if (!combat.inCombat)
+        {
+            currentPosture = 0;
+        }
         if (!stunned && currentPosture > maxPosture)
         {
             stunned = true;

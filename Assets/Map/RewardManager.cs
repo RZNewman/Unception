@@ -92,7 +92,7 @@ public static class RewardManager
 
     public readonly static float itemsPerPack = 2f;
 
-    readonly static float mapsPerFalloff = 16;
+    readonly static float mapsPerFalloff = 3.5f;
 
     readonly static float clearPercent = 0.65f;
 

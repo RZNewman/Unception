@@ -25,7 +25,8 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -116,7 +117,7 @@ Material:
     - _CircleStrength: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ConeObstructionDestroyRadius: 8
+    - _ConeObstructionDestroyRadius: 17
     - _ConeStrength: 1
     - _Cull: 2
     - _CurveObstructionDestroyRadius: 10
@@ -130,7 +131,7 @@ Material:
     - _DissolveColorSaturation: 1
     - _DissolveEmission: 1
     - _DissolveEmissionBooster: 1
-    - _DissolveFallOff: 0
+    - _DissolveFallOff: 0.205
     - _DissolveMaskEnabled: 0
     - _DstBlend: 0
     - _EnvironmentReflections: 1
@@ -151,7 +152,7 @@ Material:
     - _IsometricExclusionGradientLength: 0.1
     - _Metallic: 0.443
     - _Mode: 0
-    - _Obstruction: 4
+    - _Obstruction: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.0597
     - _PlayerPosYOffset: 0

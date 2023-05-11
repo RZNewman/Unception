@@ -124,8 +124,6 @@ public static class AttackUtils
 
             if (currentState is WindState && states.Count > 1)
             {
-                cleanInstances();
-
                 List<AttackStageState> indicatorBuild = new List<AttackStageState>();
                 indicatorBuild.Add(states[0]);
                 int i = 1;
@@ -141,8 +139,12 @@ public static class AttackUtils
                         {
                             GameObject body = mover.getSpawnBody();
                             Size s = body.GetComponentInChildren<Size>();
-                            //TODO Two ground target options, how to sync up?
-                            groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.range, source.length, mover.isServer);
+                            if (groundTargetInstance == null)
+                            { 
+                                //TODO Two ground target options, how to sync up?
+                                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.range, source.length, mover.isServer);
+                            }
+                            
                             groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                             ((WindState)currentState).setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {

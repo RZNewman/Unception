@@ -141,14 +141,14 @@ public static class StatTypes
 
     static Dictionary<Stat, float> itemStatMax = new Dictionary<Stat, float>()
     {
-        {Stat.Length,60},
-        {Stat.Width,52},
-        {Stat.Knockback,38},
-        {Stat.DamageMult,92},
-        {Stat.Stagger,48},
-        {Stat.Knockup,32},
-        {Stat.Charges,70},
-        {Stat.Range,65},
+        {Stat.Length,69},
+        {Stat.Width,60},
+        {Stat.Knockback,44},
+        {Stat.DamageMult,106},
+        {Stat.Stagger,55},
+        {Stat.Knockup,37},
+        {Stat.Charges,81},
+        {Stat.Range,75},
     };
     public static readonly float itemStatSpread = 175;
     public static readonly float statsPerModMax = 45;

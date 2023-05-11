@@ -15,7 +15,7 @@ MonoBehaviour:
   isPlayer: 1
   maxSpeed: 9
   acceleration: 40
-  decceleration: 40
+  decceleration: 60
   jumpForce: 20
   jumpsquatTime: 0.2
   lookSpeedDegrees: 180
@@ -26,7 +26,7 @@ MonoBehaviour:
   maxHealthMult: 10
   maxPosture: 350
   passivePostureRecover: 35
-  stunnedPostureRecover: 350
+  stunnedPostureRecover: 200
   maxStamina: 65
   staminaRecover: 8
   visuals:

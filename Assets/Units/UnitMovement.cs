@@ -237,7 +237,7 @@ public class UnitMovement : NetworkBehaviour
         }
         if (posture.isStunned)
         {
-            stunnedMultiplier = 0.6f;
+            stunnedMultiplier = 0.5f;
         }
 
 
@@ -280,7 +280,7 @@ public class UnitMovement : NetworkBehaviour
 
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = speedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
+        float addingMult = stunnedMultiplier * speedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
         float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * scaleSpeed;
 
         if (diff.magnitude <= addingFrameMag)

@@ -107,12 +107,12 @@ public class Posture : NetworkBehaviour, BarValue
         if (stunned)
         {
             currentPostureRecover = stunnedPostureRecover * (1 + (recentlyStunnedTime / scaleTime) / 2);
-            recentlyStunnedTime += Time.fixedDeltaTime;
+            recentlyStunnedTime += Time.fixedDeltaTime * scaleTime;
         }
         else
         {
             currentPostureRecover = passivePostureRecover;
-            recentlyStunnedTime -= Time.fixedDeltaTime * (0.2f);
+            recentlyStunnedTime -= Time.fixedDeltaTime * (0.2f) * scaleTime;
             recentlyStunnedTime = Mathf.Max(recentlyStunnedTime, 0);
         }
 

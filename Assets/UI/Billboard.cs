@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitCanvas : MonoBehaviour
+public class Billboard : MonoBehaviour
 {
 
     void Update()

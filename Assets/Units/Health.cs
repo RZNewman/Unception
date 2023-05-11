@@ -1,4 +1,5 @@
 using Mirror;
+using TMPro;
 using UnityEngine;
 
 public class Health : NetworkBehaviour, BarValue
@@ -10,11 +11,15 @@ public class Health : NetworkBehaviour, BarValue
     float currentHealth;
 
     Combat combat;
+    GameObject damageDisplayPre;
+    GlobalPlayer gp;
     // Start is called before the first frame update
     void Start()
     {
 
         combat = GetComponent<Combat>();
+        damageDisplayPre = FindObjectOfType<GlobalPrefab>().DamageNumberPre;
+        gp = FindObjectOfType<GlobalPlayer>();
         if (isServer)
         {
             maxHealth = 1;
@@ -32,13 +37,23 @@ public class Health : NetworkBehaviour, BarValue
         currentHealth = maxHealth * currentPercent;
     }
 
+    [Server]
     public void takeDamage(float damage)
     {
         currentHealth -= damage;
+        RpcDisplayDamage(damage);
     }
     public void takePercentDamage(float percent)
     {
         currentHealth -= maxHealth * percent;
+    }
+
+    [ClientRpc]
+    void RpcDisplayDamage(float damage)
+    {
+        GameObject o = Instantiate(damageDisplayPre, transform.position, Quaternion.identity);
+        o.transform.localScale *= 4 * (damage/(gp.player.power * 0.4f))*1.2f;
+        o.GetComponentInChildren<TMP_Text>().text = Power.displayPower(damage);
     }
 
     // Update is called once per frame

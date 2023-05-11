@@ -8827,6 +8827,7 @@ MonoBehaviour:
   GroundTargetPre: {fileID: 5435974136974231416, guid: 983af49075a0f364caac8a874861db88, type: 3}
   ItemDropPre: {fileID: 3656744891628785326, guid: e6c13ce112411a449af8f76fe059ff63, type: 3}
   ParticlePre: {fileID: 2703094286176652806, guid: 435365d551f173142a59c131d0b8729b, type: 3}
+  DamageNumberPre: {fileID: 6045702686884786576, guid: ed6341cfe07284a4c97d3bd105b3d6bd, type: 3}
   LineIndPre: {fileID: 8249178311684600747, guid: 05e06d80a90a323489ea3df1356e6821, type: 3}
   GroundIndPre: {fileID: 8249178311684600747, guid: 759948cdacef6af4c871955bad7c495f, type: 3}
   ProjIndPre: {fileID: 8249178311684600747, guid: b6ca85c5a6d7a6f4695dbc5cb233d419, type: 3}

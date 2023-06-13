@@ -101,6 +101,11 @@ public class UnitMovement : NetworkBehaviour
     {
         return movement.state();
     }
+
+    public bool canFall()
+    {
+        return !(currentState() is AttackingState || currentState() is StunnedState);
+    }
     public string currentAbilityName()
     {
         if (currentState() is AttackingState)
@@ -392,6 +397,11 @@ public class UnitMovement : NetworkBehaviour
         {
             return;
         }
+        float airMultiplier = 1.0f;
+        if (!grounded)
+        {
+            airMultiplier = 0.6f;
+        }
         //degrees in proportial to the world right now, but if the player is bigger, we need to reduce it
         additionalRotationDegrees /= power.scalePhysical();
         canSnap &= props.isPlayer;
@@ -399,7 +409,7 @@ public class UnitMovement : NetworkBehaviour
 
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;
-        float frameMagnitude = turnSpeed * speedMultiplier * Time.fixedDeltaTime;
+        float frameMagnitude = turnSpeed * speedMultiplier * airMultiplier * Time.fixedDeltaTime;
         diff = normalizeAngle(diff);
         if (Mathf.Abs(diff) <= frameMagnitude)
         {

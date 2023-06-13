@@ -103,7 +103,12 @@ public class ActionState : AttackStageState
             {
                 foreach (GameObject h in hits)
                 {
-                    SpawnBuff(buffData, h.GetComponentInParent<BuffManager>().transform);
+                    BuffManager bm = h.GetComponentInParent<BuffManager>();
+                    if (bm)
+                    {
+                        SpawnBuff(buffData, bm.transform);
+                    }
+
 
                 }
             }

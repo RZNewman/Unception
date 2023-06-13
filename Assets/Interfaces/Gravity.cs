@@ -25,7 +25,24 @@ public class Gravity : MonoBehaviour
             //is unit
             if (!movement.grounded && !lifeManager.IsDead)
             {
-                rb.velocity += new Vector3(0, gravity, 0) * Time.fixedDeltaTime * power.scaleSpeed();
+                float frameGrav = gravity * Time.fixedDeltaTime * power.scaleSpeed();
+                if (!movement.canFall())
+                {
+                    if (rb.velocity.y > 0)
+                    {
+                        if (rb.velocity.y + frameGrav < 0)
+                        {
+                            frameGrav = -rb.velocity.y;
+                        }
+                    }
+                    else
+                    {
+                        frameGrav = 0;
+                    }
+
+                }
+                rb.velocity += new Vector3(0, frameGrav, 0);
+
             }
         }
         else

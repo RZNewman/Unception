@@ -17,6 +17,11 @@ public class FreeState : PlayerMovementState
         base.tick();
         UnitInput inp = mover.input;
 
+        if (inp.jump && mover.grounded)
+        {
+            mover.jump();
+        }
+
         mover.rotate(inp);
         mover.move(inp);
 
@@ -53,10 +58,7 @@ public class FreeState : PlayerMovementState
             DashInstanceData o = mover.baseDash();
             return new StateTransition(new DashState(mover, o), true);
         }
-        if (inp.jump && mover.grounded)
-        {
-            return new StateTransition(new JumpsquatState(mover, mover.props.jumpsquatTime), true);
-        }
+
         return base.transition();
     }
 

@@ -9,6 +9,7 @@ using static Utils;
 using static RewardManager;
 using static Power;
 using static Atlas;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Atlas : NetworkBehaviour
 {
@@ -53,7 +54,7 @@ public class Atlas : NetworkBehaviour
         {
             get
             {
-                return verticals.Length == 0 ? overrideTier : verticals.Min(v => v.quests[0].tier);
+                return verticals.Length == 0 ? overrideTier : verticals.Min(v => v.unlockTier);
             }
         }
     }
@@ -61,6 +62,14 @@ public class Atlas : NetworkBehaviour
     {
         public string id;
         public Quest[] quests;
+
+        public int unlockTier
+        {
+            get
+            {
+                return quests[0].tier;
+            }
+        }
 
         public bool nextQuest(int tierComplete, out Quest q)
         {
@@ -325,7 +334,10 @@ public class Atlas : NetworkBehaviour
             Quest q;
             foreach (QuestVertical vertical in location.verticals)
             {
-
+                if (vertical.unlockTier > playerTier + 1)
+                {
+                    continue;
+                }
                 if (vertical.nextQuest(gp.player.progress.questTier(location.id, vertical.id), out q))
                 {
                     questsAtLocation.Add((q, vertical.id));

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static AttackUtils;
+using static UnitControl;
 
 public class AttackingState : PlayerMovementState
 {
@@ -44,6 +45,12 @@ public class AttackingState : PlayerMovementState
     public override void tick()
     {
         base.tick();
+        UnitInput inp = mover.input;
+
+        if (inp.jump && mover.grounded)
+        {
+            mover.jump();
+        }
 
         attackMachine.tick();
 

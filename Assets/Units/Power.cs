@@ -9,7 +9,8 @@ public class Power : NetworkBehaviour, TextValue
     [SyncVar(hook = nameof(callbackPower))]
     float currentPower = 100;
 
-
+    float softcap = 0;
+    public readonly static float softcapDiminishPercent = 0.1f;
 
     public readonly static float exponentDownscale = 1.5f;
     public readonly static float basePower = 100;
@@ -39,6 +40,12 @@ public class Power : NetworkBehaviour, TextValue
 
     public void addPower(float power)
     {
+        if(softcap > 0 && currentPower > softcap)
+        {
+            float percentOver = currentPower / softcap * 100;
+            float diminish = Mathf.Pow(softcapDiminishPercent, percentOver);
+            power *= diminish;
+        }
         currentPower += power;
         powerUpdates();
 
@@ -92,9 +99,10 @@ public class Power : NetworkBehaviour, TextValue
         return truncatedPower + symbol;
     }
 
-    public void setPower(float power)
+    public void setPower(float power, float cap = 0)
     {
         currentPower = power;
+        softcap = cap;
     }
 
     public static float damageFalloff(float powerOfAbility, float powerOfUnit)

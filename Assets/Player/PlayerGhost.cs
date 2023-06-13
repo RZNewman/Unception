@@ -123,7 +123,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
         GameObject u = Instantiate(unitPre);
         Power p = u.GetComponent<Power>();
-        p.setPower(playerPower);
+        p.setPower(playerPower, Atlas.softcap);
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
         u.GetComponent<AbiltyList>().addAbility(inv.equippedAbilities);

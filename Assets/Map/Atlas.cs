@@ -17,6 +17,7 @@ public class Atlas : NetworkBehaviour
     public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 2f;
     public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
+    public readonly static float softcap = 15_000f;
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;
@@ -238,12 +239,13 @@ public class Atlas : NetworkBehaviour
 
     float powerAtTier(int tier)
     {
-        return tier switch
+        float power = tier switch
         {
             int i when i == 0 => playerStartingPower * 0.8f,
             int i when i == 1 => playerStartingPower,
             int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
         };
+        return Mathf.Min(power, softcap);
     }
     float mapClearsToTier(int tier)
     {

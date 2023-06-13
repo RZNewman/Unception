@@ -557,7 +557,7 @@ public static class GenerateAttack
         if (pity)
         {
             quality = pity.rollQuality(qualityMultiplier);
-            int modCount = pity.rollModCount(qualityMultiplier);
+            int modCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
             mods = rollMods(pity, modCount, qualityMultiplier);
         }
         ItemSlot? slot = null;
@@ -577,8 +577,10 @@ public static class GenerateAttack
 
         AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
-        float windMax = 1f;
-        float windMin = 0f;
+        float windUpMax = 1f;
+        float windUpMin = 0f;
+        float windDownMax = 0.7f;
+        float windDownMin = 0f;
 
 
         bool noCooldown = type == AttackGenerationType.IntroMain || type == AttackGenerationType.Monster;
@@ -606,29 +608,49 @@ public static class GenerateAttack
             && r < 0.1)
         {
             segmentCount = 2;
-            windMax = 0.6f;
+            windUpMax = 0.6f;
         }
 
         if (type == AttackGenerationType.Monster)
         {
-            windMin = 0.25f;
+            windUpMin = 0.25f;
+            windDownMin = 0.45f;
         }
-        if (type == AttackGenerationType.IntroMain)
+        else if (type == AttackGenerationType.IntroMain)
         {
-            windMax = 0.3f;
+            windUpMax = 0.3f;
+            windDownMax = 0.3f;
         }
-        else if (slot == ItemSlot.Main)
-        {
-            windMax = 0.5f;
+        else {
+            if (slot == ItemSlot.Main)
+            {
+                windUpMax = 0.4f;
+                windDownMax = 0.3f;
+            }
+            else
+            {
+                if(Random.value < 0.65f)
+                {
+                    //fast hit
+                    windUpMax *= 0.35f;
+                }
+                else
+                {
+                    //fast end
+                    windDownMax = 0.2f;
+                }
+            }
         }
+
+
 
         for (int i = 0; i < segmentCount; i++)
         {
 
-            WindGenerationData windup = createWind(windMin, windMax);
+            WindGenerationData windup = createWind(windUpMin, windUpMax);
             stages.Add(windup);
             stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot));
-            stages.Add(createWind(0, Mathf.Clamp01(windup.duration * 2)));
+            stages.Add(createWind(windDownMin, windDownMax));
 
         }
 

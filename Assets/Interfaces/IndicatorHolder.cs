@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IndicatorHolder
 {
+    public static readonly float IndicatorHeightOffset = 0.05f;
     public struct IndicatorLocalLook
     {
         public bool shouldOverride;

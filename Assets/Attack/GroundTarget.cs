@@ -22,7 +22,7 @@ public class GroundTarget : NetworkBehaviour, IndicatorHolder
     }
     public Vector3 indicatorPosition(Vector3 forward)
     {
-        return Vector3.up * 0.01f;
+        return Vector3.up * IndicatorHeightOffset;
     }
     public float offsetMultiplier()
     {

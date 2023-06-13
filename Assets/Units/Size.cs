@@ -97,7 +97,7 @@ public class Size : MonoBehaviour, IndicatorHolder
     {
         get
         {
-            return scaledHalfHeight * 0.99f;
+            return scaledHalfHeight - IndicatorHeightOffset;
         }
     }
 

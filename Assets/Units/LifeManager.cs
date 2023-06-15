@@ -4,22 +4,10 @@ using UnityEngine;
 
 public class LifeManager : NetworkBehaviour
 {
-    GameObject unitBody
-    {
-        get
-        {
-            return GetComponentInChildren<Size>().gameObject;
-        }
-    }
-
-    public delegate void OnDeath(bool natural);
-    public delegate void OnHit(GameObject other);
-
-    List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
-    List<OnHit> OnHitCallbacks = new List<OnHit>();
-
+    EventManager events;
     private void Start()
     {
+        events = GetComponent<EventManager>();
     }
 
     bool isDead = false;
@@ -29,31 +17,12 @@ public class LifeManager : NetworkBehaviour
         get { return isDead; }
     }
 
-    public void suscribeDeath(OnDeath d)
-    {
-        OnDeathCallbacks.Add(d);
-    }
 
-    public void suscribeHit(OnHit h)
-    {
-        OnHitCallbacks.Add(h);
-    }
-
-    public void getHit(GameObject other)
-    {
-        foreach (OnHit c in OnHitCallbacks)
-        {
-            c(other);
-        }
-    }
 
     public void die()
     {
         isDead = true;
-        foreach (OnDeath c in OnDeathCallbacks)
-        {
-            c(true);
-        }
+        events.fireDeath(true);
 
         Destroy(gameObject);
 
@@ -63,10 +32,7 @@ public class LifeManager : NetworkBehaviour
     {
         if (!isDead)
         {
-            foreach (OnDeath c in OnDeathCallbacks)
-            {
-                c(false);
-            }
+            events.fireDeath(false);
         }
 
     }

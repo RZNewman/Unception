@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
-using static AbiltyList;
+using static AbiltyManager;
 using static GenerateAttack;
 using static UnitControl;
 using static Utils;
@@ -141,7 +141,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     Vector3 rawDiffAttack = attackTarget - transform.position;
                     currentInput.lookOffset = rawDiffAttack;
 
-                    AbilityPair pair = GetComponentInParent<AbiltyList>().getBestAbility();
+                    AbilityPair pair = GetComponentInParent<AbiltyManager>().getBestAbility();
                     EffectiveDistance eff = pair.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
 
                     Quaternion aim = ground.getAimRotation(rotatingBody.transform.forward);

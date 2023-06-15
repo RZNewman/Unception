@@ -20,7 +20,7 @@ public class AggroHandler : MonoBehaviour
         setCombat();
         pack = transform.parent.GetComponent<UnitPropsHolder>().pack;
         GetComponentInParent<Power>().subscribePower(setRadius);
-        transform.parent.GetComponent<LifeManager>().suscribeHit(aggroUnitParent);
+        transform.parent.GetComponent<EventManager>().suscribeHit(aggroUnitParent);
         started = true;
     }
     void setCombat()

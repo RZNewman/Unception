@@ -595,6 +595,10 @@ public static class GenerateAttack
         {
             cooldownMin = 0.4f;
         }
+        if (slot == ItemSlot.Boots)
+        {
+            cooldownMin = 0.25f;
+        }
         if (slot == ItemSlot.Main)
         {
             cooldownMax = 0.3f;
@@ -621,7 +625,8 @@ public static class GenerateAttack
             windUpMax = 0.3f;
             windDownMax = 0.3f;
         }
-        else {
+        else
+        {
             if (slot == ItemSlot.Main)
             {
                 windUpMax = 0.4f;
@@ -629,7 +634,7 @@ public static class GenerateAttack
             }
             else
             {
-                if(Random.value < 0.65f)
+                if (Random.value < 0.65f)
                 {
                     //fast hit
                     windUpMax *= 0.35f;

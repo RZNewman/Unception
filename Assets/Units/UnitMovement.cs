@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using static AnimationController;
 using static DashState;
@@ -13,6 +14,7 @@ public class UnitMovement : NetworkBehaviour
     Rigidbody rb;
     ControlManager controller;
     LifeManager lifeManager;
+    EventManager events;
     StateMachine<PlayerMovementState> movement;
     Size size;
     Power power;
@@ -37,6 +39,7 @@ public class UnitMovement : NetworkBehaviour
         controller = GetComponent<ControlManager>();
         movement = new StateMachine<PlayerMovementState>(() => new FreeState(this));
         lifeManager = GetComponent<LifeManager>();
+        events = GetComponent<EventManager>();
         propHolder = GetComponent<UnitPropsHolder>();
         ground = GetComponent<FloorNormal>();
         size = GetComponentInChildren<Size>();
@@ -45,7 +48,7 @@ public class UnitMovement : NetworkBehaviour
         _posture = GetComponent<Posture>();
         localPlayer = GetComponent<LocalPlayer>();
         statHandler = GetComponent<StatHandler>();
-        lifeManager.suscribeDeath(cleanup);
+        events.suscribeDeath(cleanup);
     }
 
     void syncLookAngle(float oldAngle, float newAngle)

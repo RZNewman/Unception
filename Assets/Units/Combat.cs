@@ -13,9 +13,9 @@ public class Combat : NetworkBehaviour
     {
         if (isServer)
         {
-            LifeManager life = GetComponent<LifeManager>();
-            life.suscribeDeath(onDeath);
-            life.suscribeHit(onHit);
+            EventManager events = GetComponent<EventManager>();
+            events.suscribeDeath(onDeath);
+            events.suscribeHit(onHit);
         }
 
     }
@@ -57,7 +57,7 @@ public class Combat : NetworkBehaviour
             {
                 lastUnitHitBy.GetComponent<PackHeal>().rewardKill(heal.packPool);
             }
-            
+
         }
     }
     void clearFighting()

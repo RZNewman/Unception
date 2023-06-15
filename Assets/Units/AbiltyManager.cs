@@ -5,7 +5,7 @@ using static UnitControl;
 using System.Linq;
 using static GenerateAttack;
 
-public class AbiltyList : NetworkBehaviour
+public class AbiltyManager : NetworkBehaviour
 {
 
 

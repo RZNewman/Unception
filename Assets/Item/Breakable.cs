@@ -9,6 +9,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
     public GameObject ChestPre;
     Reward r;
     LifeManager life;
+    EventManager events;
     SoundManager sound;
 
 
@@ -84,12 +85,13 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         r = GetComponent<Reward>();
         life = GetComponent<LifeManager>();
         sound = FindObjectOfType<SoundManager>();
+        events = GetComponent<EventManager>();
         instanceBody();
         if (isServer)
         {
 
-            life.suscribeHit(onHit);
-            life.suscribeDeath(onDeath);
+            events.suscribeHit(onHit);
+            events.suscribeDeath(onDeath);
         }
     }
 

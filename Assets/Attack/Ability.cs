@@ -45,7 +45,7 @@ public class Ability : NetworkBehaviour
         if (isClientOnly)
         {
             fillFormat();
-            GetComponentInParent<AbiltyList>().registerAbility(clientSyncKey, this);
+            GetComponentInParent<AbiltyManager>().registerAbility(clientSyncKey, this);
         }
         if (isServer)
         {
@@ -161,7 +161,7 @@ public class Ability : NetworkBehaviour
 
     public void demoForceScale()
     {
-        GetComponentInParent<Power>().subscribePower(p=> { attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power, true); });
+        GetComponentInParent<Power>().subscribePower(p => { attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power, true); });
     }
     void subscribeScale()
     {

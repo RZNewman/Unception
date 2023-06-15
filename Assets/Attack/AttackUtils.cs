@@ -26,7 +26,7 @@ public static class AttackUtils
 
             if (mover)
             {
-                other.GetComponentInParent<LifeManager>().getHit(mover.gameObject);
+                other.GetComponentInParent<EventManager>().fireHit(mover.gameObject);
             }
             Health h = other.GetComponentInParent<Health>();
             Posture p = other.GetComponentInParent<Posture>();
@@ -140,11 +140,11 @@ public static class AttackUtils
                             GameObject body = mover.getSpawnBody();
                             Size s = body.GetComponentInChildren<Size>();
                             if (groundTargetInstance == null)
-                            { 
+                            {
                                 //TODO Two ground target options, how to sync up?
                                 groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.range, source.length, mover.isServer);
                             }
-                            
+
                             groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
                             ((WindState)currentState).setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
                             {

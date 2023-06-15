@@ -11,7 +11,7 @@ public class UnitPropsHolder : NetworkBehaviour
 
     private void Start()
     {
-        GetComponent<LifeManager>().suscribeDeath(onDeath);
+        GetComponent<EventManager>().suscribeDeath(onDeath);
     }
 
     void onDeath(bool natural)

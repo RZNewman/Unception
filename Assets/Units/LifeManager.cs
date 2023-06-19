@@ -28,13 +28,6 @@ public class LifeManager : NetworkBehaviour
 
 
     }
-    private void OnDestroy()
-    {
-        if (!isDead)
-        {
-            events.fireDeath(false);
-        }
 
-    }
 
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
@@ -9,6 +10,8 @@ public class EventManager : MonoBehaviour
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
     List<OnHit> OnHitCallbacks = new List<OnHit>();
+
+    bool deathFired = false;
 
     public void suscribeDeath(OnDeath d)
     {
@@ -20,6 +23,16 @@ public class EventManager : MonoBehaviour
         {
             d(natural);
         }
+        deathFired = true;
+    }
+
+    private void OnDestroy()
+    {
+        if (!deathFired)
+        {
+            fireDeath(false);
+        }
+
     }
 
     public void suscribeHit(OnHit h)

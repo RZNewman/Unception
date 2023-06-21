@@ -1,5 +1,6 @@
 using UnityEngine;
 using static GenerateDash;
+using static SpellSource;
 using static UnitControl;
 using static UnitMovement;
 using static Utils;
@@ -69,9 +70,9 @@ public class DashState : AttackStageState
         mover.dash(inpSnapshot, opts.speed, opts.control);
 
     }
-    public override Cast.IndicatorOffsets GetIndicatorOffsets()
+    public override IndicatorOffsets GetIndicatorOffsets()
     {
-        return new Cast.IndicatorOffsets
+        return new IndicatorOffsets
         {
             distance = Vector3.forward * opts.distance * (opts.control == DashControl.Backward ? -1 : 1) * currentDurration / (opts.distance / opts.speed),
             time = currentDurration,

@@ -2,15 +2,93 @@ using ShaderCrew.SeeThroughShader;
 using UnityEngine;
 using static IndicatorHolder;
 
-public class Size : MonoBehaviour, IndicatorHolder
+public class Size : MonoBehaviour
 {
     CapsuleCollider col;
     Vector3 baseSize = Vector3.one;
     CapsuleCollider stopper;
     // Start is called before the first frame update
-    void Start()
+
+    private void Awake()
     {
         col = GetComponent<CapsuleCollider>();
+    }
+
+    public struct CapsuleSize
+    {
+        public float radius;
+        public float distance;
+        public float indicatorHeight
+        {
+            get
+            {
+                return distance - IndicatorHeightOffset;
+            }
+        }
+        public Vector3 indicatorPosition(Vector3 worldForward)
+        {
+            float worldAngle = Vector2.SignedAngle(Vector2.up, new Vector2(worldForward.x, worldForward.z));
+            Quaternion worldToLocal = Quaternion.AngleAxis(worldAngle, Vector3.up);
+            return indicatorHeight * Vector3.down
+                  + radius * (worldToLocal * worldForward);
+        }
+        public IndicatorLocalLook pointOverride(Transform body, Vector3 fowardPlanar, Vector3 groundNormal)
+        {
+            Vector3 bodyFocus = body.position + radius * body.forward;
+            Vector3 farDiff = radius * 5f * fowardPlanar;
+            Vector3 heightDiff = groundNormal * indicatorHeight * 2;
+
+            Vector3 indicatorLocalPos = indicatorPosition(fowardPlanar);
+            Vector3 indicatorWorldPos = body.position + indicatorLocalPos;
+
+            Vector3 indicatorPoint = indicatorWorldPos + farDiff;
+            Vector3 castPoint = indicatorPoint + heightDiff;
+
+            Vector3 lookDiff = indicatorPoint - bodyFocus;
+            if (Physics.Raycast(bodyFocus, lookDiff, (lookDiff).magnitude, LayerMask.GetMask("Terrain")))
+            {
+                RaycastHit info;
+                Vector3 localPoint;
+                if (Physics.Raycast(castPoint, -groundNormal, out info, heightDiff.magnitude, LayerMask.GetMask("Terrain")))
+                {
+                    localPoint = info.point;
+                }
+                else
+                {
+                    localPoint = castPoint;
+                }
+                return new IndicatorLocalLook
+                {
+                    shouldOverride = true,
+                    newForward = localPoint - body.position - indicatorLocalPos,
+                };
+            }
+            else
+            {
+                return new IndicatorLocalLook
+                {
+                    shouldOverride = false,
+                };
+            }
+
+        }
+    }
+
+    public CapsuleSize sizeC
+    {
+        get
+        {
+            return new CapsuleSize
+            {
+                distance = scaledHalfHeight,
+                radius = scaledRadius,
+            };
+        }
+
+    }
+
+    void Start()
+    {
         stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<CapsuleCollider>();
         Physics.IgnoreCollision(col, stopper);
         stopper.transform.parent = transform;
@@ -36,70 +114,9 @@ public class Size : MonoBehaviour, IndicatorHolder
         baseSize = size;
     }
 
-    public Vector3 indicatorPosition(Vector3 worldForward)
-    {
-        float worldAngle = Vector2.SignedAngle(Vector2.up, new Vector2(worldForward.x, worldForward.z));
-        Quaternion worldToLocal = Quaternion.AngleAxis(worldAngle, Vector3.up);
-        return indicatorHeight * Vector3.down
-              + scaledRadius * (worldToLocal * worldForward);
-    }
-    public float offsetMultiplier()
-    {
-        return 1.0f;
-    }
-    public IndicatorLocalLook pointOverride(Vector3 fowardPlanar, Vector3 groundNormal)
-    {
-        Vector3 bodyFocus = transform.position + scaledRadius * transform.forward;
-        Vector3 farDiff = scaledRadius * 5f * fowardPlanar;
-        Vector3 heightDiff = groundNormal * indicatorHeight * 2;
 
-        Vector3 indicatorLocalPos = indicatorPosition(fowardPlanar);
-        Vector3 indicatorWorldPos = transform.position + indicatorLocalPos;
 
-        Vector3 indicatorPoint = indicatorWorldPos + farDiff;
-        Vector3 castPoint = indicatorPoint + heightDiff;
 
-        Vector3 lookDiff = indicatorPoint - bodyFocus;
-        if (Physics.Raycast(bodyFocus, lookDiff, (lookDiff).magnitude, LayerMask.GetMask("Terrain")))
-        {
-            RaycastHit info;
-            Vector3 localPoint;
-            if (Physics.Raycast(castPoint, -groundNormal, out info, heightDiff.magnitude, LayerMask.GetMask("Terrain")))
-            {
-                localPoint = info.point;
-            }
-            else
-            {
-                localPoint = castPoint;
-            }
-            return new IndicatorLocalLook
-            {
-                shouldOverride = true,
-                newForward = localPoint - transform.position - indicatorLocalPos,
-            };
-        }
-        else
-        {
-            return new IndicatorLocalLook
-            {
-                shouldOverride = false,
-            };
-        }
-
-    }
-
-    public Collider colliderRef
-    {
-        get { return col; }
-    }
-
-    public float indicatorHeight
-    {
-        get
-        {
-            return scaledHalfHeight - IndicatorHeightOffset;
-        }
-    }
 
     public float scaledHalfHeight
     {

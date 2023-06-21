@@ -2,9 +2,9 @@ using Mirror;
 using UnityEngine;
 using static GenerateHit;
 
-public class LineIndicatorVisuals : IndicatorInstance
+public class LineIndicatorVisuals : HitIndicatorInstance
 {
-    protected ActionState state;
+
 
 
     public GameObject mask;
@@ -17,18 +17,12 @@ public class LineIndicatorVisuals : IndicatorInstance
     float range;
     // Start is called before the first frame update
 
-    public void setSource(ActionState s)
-    {
-        state = s;
-        setSize();
-    }
     protected override void setSize()
     {
-        HitInstanceData hit = state.getSource();
 
-        length = hit.length;
-        width = hit.width;
-        range = hit.range;
+        length = data.length;
+        width = data.width;
+        range = data.range;
 
         square.transform.localScale = new Vector3(width, length);
         square.transform.localPosition = new Vector3(0, range + length / 2);
@@ -66,11 +60,11 @@ public class LineIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+        return data.powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
     }
 
     protected override bool willStagger()
     {
-        return state.getSource().stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
+        return data.stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

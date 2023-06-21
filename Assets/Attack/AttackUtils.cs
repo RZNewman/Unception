@@ -11,6 +11,10 @@ using static UnitSound;
 using static Utils;
 using static GenerateBuff;
 using Unity.Burst.Intrinsics;
+using static GenerateAttack;
+using System;
+using static SpellSource;
+using UnityEditor.SceneManagement;
 
 public static class AttackUtils
 {
@@ -82,35 +86,67 @@ public static class AttackUtils
         public List<AttackStageState> states;
         public WindState windup;
         public WindState winddown;
-        public GameObject groundTargetInstance;
+        public HitInstanceData hitData;
+        public SpellSource sourcePoint;
 
         bool pastWindup;
         AttackStageState currentState;
+        AttackStageState indStopState;
 
-        public AttackStageState enterSegment(UnitMovement mover, Cast cast)
+
+        public AttackStageState enterSegment(UnitMovement mover)
         {
             pastWindup = false;
-            return nextState(mover, cast);
-        }
-        public void exitSegment()
-        {
-            cleanInstances();
+            if (mover.isServer)
+            {
+
+                sourcePoint = SpawnSource(mover, hitData);
+            }
+            return getNextState();
         }
 
-        void cleanInstances()
+        public void clientSyncSource(SpellSource s)
         {
-            if (groundTargetInstance)
+            sourcePoint = s;
+            constructIndicators();
+        }
+
+        public void IndicatorUpdate()
+        {
+            List<AttackStageState> indStates = new List<AttackStageState>();
+            indStates.Add(currentState);
+            indStates.AddRange(states);
+
+            IndicatorOffsets offsets = new IndicatorOffsets
             {
-                GameObject.Destroy(groundTargetInstance);
+                distance = Vector2.zero,
+                time = 0,
+            };
+            int i = 0;
+            while (i < indStates.Count && indStates[i] != indStopState)
+            {
+
+                AttackStageState state = indStates[i];
+                if (state is ActionState)
+                {
+                    sourcePoint.updateIndicator(IndicatorType.Hit, offsets);
+                }
+                else if (state is DashState)
+                {
+                    sourcePoint.updateIndicator(IndicatorType.Dash, offsets);
+                }
+
+                offsets = offsets.sum(state.GetIndicatorOffsets());
+                i++;
             }
         }
-        public AttackStageState getNextState(UnitMovement mover, Cast cast)
+
+        public void exitSegment()
         {
-            cast.nextStage();
-            return nextState(mover, cast);
+            GameObject.Destroy(sourcePoint.gameObject);
         }
 
-        AttackStageState nextState(UnitMovement mover, Cast cast)
+        public AttackStageState getNextState()
         {
             if (states.Count == 0)
             {
@@ -120,53 +156,68 @@ public static class AttackUtils
             {
                 pastWindup = true;
             }
-            currentState = states[0];
 
-            if (currentState is WindState && states.Count > 1)
+            if (currentState is ActionState)
             {
-                List<AttackStageState> indicatorBuild = new List<AttackStageState>();
-                indicatorBuild.Add(states[0]);
-                int i = 1;
-                while (i < states.Count && !(states[i] is WindState))
-                {
-                    AttackStageState state = states[i];
-                    indicatorBuild.Add(state);
-                    if (state is ActionState)
-                    {
-                        ActionState action = (ActionState)state;
-                        HitInstanceData source = action.getSource();
-                        if (source.type == HitType.Ground)
-                        {
-                            GameObject body = mover.getSpawnBody();
-                            Size s = body.GetComponentInChildren<Size>();
-                            if (groundTargetInstance == null)
-                            {
-                                //TODO Two ground target options, how to sync up?
-                                groundTargetInstance = SpawnGroundTarget(body.transform, s.scaledRadius, s.scaledHalfHeight, mover.lookWorldPos, source.range, source.length, mover.isServer);
-                            }
-
-                            groundTargetInstance.GetComponent<GroundTarget>().height = s.indicatorHeight;
-                            ((WindState)currentState).setGroundTarget(groundTargetInstance, new FloorNormal.GroundSearchParams
-                            {
-                                radius = 0.2f,
-                                distance = s.scaledHalfHeight * 1.1f,
-                            });
-                            action.setGroundTarget(groundTargetInstance);
-                        }
-                    }
-
-                    i++;
-                }
-                cast.buildIndicator(indicatorBuild, this);
+                sourcePoint.killIndicatorType(IndicatorType.Hit);
+            }
+            else if (currentState is DashState)
+            {
+                sourcePoint.killIndicatorType(IndicatorType.Dash);
             }
 
-
-
-
-
-
+            currentState = states[0];
             states.RemoveAt(0);
+            if (currentState is WindState)
+            {
+                if (states.Count > 0 && sourcePoint)
+                {
+                    constructIndicators();
+                }
+
+            }
+
             return currentState;
+        }
+
+        void constructIndicators()
+        {
+            List<AttackStageState> indStates = new List<AttackStageState>();
+            indStates.Add(currentState);
+            indStates.AddRange(states);
+            int windCount = 0;
+            int i = 0;
+            while (i < indStates.Count)
+            {
+                AttackStageState state = indStates[i];
+                if (state is WindState)
+                {
+                    windCount++;
+                    if (windCount > 1)
+                    {
+                        indStopState = state;
+                        break;
+                    }
+                }
+
+                if (state is ActionState)
+                {
+                    ActionState action = (ActionState)state;
+                    HitInstanceData source = action.getSource();
+                    if (source.type == HitType.Ground)
+                    {
+                        ((WindState)currentState).setGroundTarget(sourcePoint);
+                    }
+                    sourcePoint.buildHitIndicator(source);
+                }
+                else if (state is DashState)
+                {
+                    sourcePoint.buildDashIndicator(((DashState)state).getSource());
+                }
+
+
+                i++;
+            }
         }
 
         public float remainingWindDown()
@@ -186,30 +237,148 @@ public static class AttackUtils
         }
     }
 
-
-    static GameObject SpawnGroundTarget(Transform body, float radius, float height, Vector3 target, float range, float length, bool isServer)
+    public static List<AttackSegment> buildStates(AttackInstanceData instance, UnitMovement mover)
     {
+
+
+        List<AttackSegment> segments = new List<AttackSegment>();
+        for (int i = 0; i < instance.segments.Length; i++)
+        {
+            SegmentInstanceData seg = instance.segments[i];
+            AttackSegment finalSeg = new AttackSegment();
+            List<AttackStageState> states = new List<AttackStageState>();
+
+            WindState windup = new WindState(mover, seg.windup, false);
+            WindState winddown = new WindState(mover, seg.winddown, true);
+
+            ActionState hit = new ActionState(mover, seg.hit, seg.buff);
+            finalSeg.hitData = seg.hit;
+
+            states.Add(windup);
+            List<AttackStageState> effectStates = new List<AttackStageState>();
+            if (seg.repeat != null)
+            {
+                List<AttackStageState> repeatStates = new List<AttackStageState>();
+                for (int j = 0; j < seg.repeat.repeatCount; j++)
+                {
+                    repeatStates.Add(hit);
+                    if (seg.dash != null && seg.dashInside)
+                    {
+                        if (seg.dashAfter)
+                        {
+                            repeatStates.Add(new DashState(mover, seg.dash, true));
+                        }
+                        else
+                        {
+                            repeatStates.Insert(0, new DashState(mover, seg.dash, true));
+                        }
+                    }
+                    if (j < seg.repeat.repeatCount - 1)
+                    {
+                        repeatStates.Add(new WindState(mover, seg.windRepeat, false));
+                    }
+                    effectStates.AddRange(repeatStates);
+                    repeatStates.Clear();
+                }
+            }
+            else
+            {
+                effectStates.Add(hit);
+            }
+
+            if (seg.dash != null && !seg.dashInside)
+            {
+                if (seg.dashAfter)
+                {
+                    effectStates.Add(new DashState(mover, seg.dash, true));
+                }
+                else
+                {
+                    effectStates.Insert(0, new DashState(mover, seg.dash, true));
+                }
+            }
+            states.AddRange(effectStates);
+            states.Add(winddown);
+            finalSeg.states = states;
+            finalSeg.windup = windup;
+            finalSeg.winddown = winddown;
+            segments.Add(finalSeg);
+        }
+
+        return segments;
+    }
+
+    enum SourceLocation
+    {
+        World,
+        Body,
+        BodyFixed
+    }
+    static SpellSource SpawnSource(UnitMovement mover, HitInstanceData source)
+    {
+        Size size = mover.GetComponentInChildren<Size>();
+        Vector3 target = mover.lookWorldPos;
+
+        Transform body = mover.getSpawnBody().transform;
+        uint team = mover.GetComponent<TeamOwnership>().getTeam();
+        FloorNormal ground = mover.GetComponent<FloorNormal>();
+
+        float range = source.type == HitType.Projectile ? 0 : source.range;
+        SourceLocation loc = SourceLocation.Body;
+        MoveMode moveType = MoveMode.Parent;
+        if (source.type == HitType.Ground)
+        {
+            loc = SourceLocation.World;
+            moveType = MoveMode.World;
+        }
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
-        Vector3 bodyFocus = body.position + body.forward * radius;
-        Vector3 diff = target - bodyFocus;
+        Vector3 planarForward = ground.forwardPlanarWorld(body.forward);
+        Vector3 bodyFocus = body.position + planarForward * size.scaledRadius;
 
-
-        Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
-        forwardDiff.y = diff.y;
-        Vector3 limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, range, range + length);
 
         //float angleOff = Vector3.SignedAngle(body.forward, planarDiff, Vector3.up);
         //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
         //Vector3 offset = forwardLine.normalized * Mathf.Min(length, Vector3.Dot(diff, forwardLine));
-
-
-        GameObject instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, body.rotation);
-        if (isServer)
+        GameObject instance;
+        switch (loc)
         {
-            NetworkServer.Spawn(instance);
-        }
+            case SourceLocation.World:
 
-        return instance;
+                Vector3 diff = target - bodyFocus;
+                //Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
+                //forwardDiff.y = diff.y;
+                float distance = diff.magnitude;
+                if (source.type == HitType.Line || source.type == HitType.Projectile)
+                {
+                    distance = Mathf.Max(0, distance - source.length / 2);
+                }
+                Vector3 limitedDiff = diff.normalized * Mathf.Clamp(distance, 0, range);
+                //Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, planarForward), 0) * planarForward;
+                //forwardDiff.y = diff.y;
+                //Vector3 limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
+
+                instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, body.rotation);
+                instance.GetComponent<SpellSource>().offsetMult = 0;
+                break;
+            case SourceLocation.Body:
+            case SourceLocation.BodyFixed:
+            default:
+                Transform targetTransform = loc == SourceLocation.Body ? body : mover.transform;
+                instance = GameObject.Instantiate(prefab, bodyFocus, body.rotation, targetTransform);
+                ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
+                adopt.parent = mover.gameObject;
+                adopt.useSubBody = loc == SourceLocation.Body;
+                break;
+
+        }
+        SpellSource instanceSource = instance.GetComponent<SpellSource>();
+
+        instanceSource.init(size.sizeC, mover.gameObject, team, moveType);
+        //TODO Line attack flexible range
+        NetworkServer.Spawn(instance);
+
+
+        return instanceSource;
     }
 
     public static float attackHitboxHalfHeight(HitType type, float halfUnitHeight, float attackDistance)
@@ -227,17 +396,16 @@ public static class AttackUtils
         }
     }
 
-    public static void SpawnProjectile(FloorNormal floor, Transform body, float radius, float halfHeight, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, AudioDistances dists)
+    public static void SpawnProjectile(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, AudioDistances dists)
     {
+        FloorNormal floor = source.GetComponent<FloorNormal>();
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
-        Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
-        Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
-        Quaternion aim = floor.getAimRotation(body.forward);
-        GameObject instance = GameObject.Instantiate(prefab, bodyFocus, aim);
+        Quaternion aim = floor.getAimRotation(source.transform.forward);
+        GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
-        float terrainRadius = Mathf.Min(hitRadius, halfHeight * 0.5f);
-        p.init(terrainRadius, hitRadius, halfHeight, mover, hitData, buffData, dists);
+        float terrainRadius = Mathf.Min(hitRadius, source.sizeCapsule.distance * 0.5f);
+        p.init(terrainRadius, hitRadius, source.sizeCapsule.distance, mover, hitData, buffData, dists);
         NetworkServer.Spawn(instance);
     }
 
@@ -261,17 +429,15 @@ public static class AttackUtils
         public float maxDistance;
         public Vector3 bodyForward;
     }
-    public static LineInfo LineCalculations(FloorNormal floor, Transform body, float radius, float halfHeight, float range, float length, float width)
+    public static LineInfo LineCalculations(SpellSource source, float range, float length, float width)
     {
-
-        Vector3 groundFocus = body.position + body.forward * radius + Vector3.down * halfHeight;
-        Vector3 bodyFocus = groundFocus + floor.normal * halfHeight;
+        FloorNormal floor = source.GetComponent<FloorNormal>();
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
-        Quaternion aim = floor.getAimRotation(body.forward);
-        Vector3 attackFocus = bodyFocus + aim * Vector3.forward * range;
+        Quaternion aim = floor.getAimRotation(source.transform.forward);
+        Vector3 attackFocus = source.transform.position + aim * Vector3.forward * range;
         Vector3 boxCenter = attackFocus + maxDistance * 0.5f * (aim * Vector3.forward);
-        float boxHeight = attackHitboxHalfHeight(HitType.Line, halfHeight, maxDistance);
+        float boxHeight = attackHitboxHalfHeight(HitType.Line, source.sizeCapsule.distance, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
@@ -286,8 +452,8 @@ public static class AttackUtils
             capsuleStart = capsuleStart,
             aim = aim,
             maxDistance = maxDistance,
-            bodyForward = body.forward,
-            occlusionOrigin = bodyFocus,
+            bodyForward = source.transform.forward,
+            occlusionOrigin = source.transform.position,
         };
     }
 

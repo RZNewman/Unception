@@ -15,74 +15,7 @@ public class AttackBlockFilled : ScriptableObject
     public ItemSlot? slot;
     public AttackFlair flair;
     public string id;
-    public List<AttackSegment> buildStates(UnitMovement controller)
-    {
 
-
-        List<AttackSegment> segments = new List<AttackSegment>();
-        for (int i = 0; i < instance.segments.Length; i++)
-        {
-            SegmentInstanceData seg = instance.segments[i];
-            List<AttackStageState> states = new List<AttackStageState>();
-
-            WindState windup = new WindState(controller, seg.windup, false);
-            WindState winddown = new WindState(controller, seg.winddown, true);
-
-            states.Add(windup);
-            List<AttackStageState> effectStates = new List<AttackStageState>();
-            if (seg.repeat != null)
-            {
-                List<AttackStageState> repeatStates = new List<AttackStageState>();
-                for (int j = 0; j < seg.repeat.repeatCount; j++)
-                {
-                    repeatStates.Add(new ActionState(controller, seg.hit, seg.buff));
-                    if (seg.dash != null && seg.dashInside)
-                    {
-                        if (seg.dashAfter)
-                        {
-                            repeatStates.Add(new DashState(controller, seg.dash, true));
-                        }
-                        else
-                        {
-                            repeatStates.Insert(0, new DashState(controller, seg.dash, true));
-                        }
-                    }
-                    if (j < seg.repeat.repeatCount - 1)
-                    {
-                        repeatStates.Add(new WindState(controller, seg.windRepeat, false));
-                    }
-                    effectStates.AddRange(repeatStates);
-                    repeatStates.Clear();
-                }
-            }
-            else
-            {
-                effectStates.Add(new ActionState(controller, seg.hit, seg.buff));
-            }
-
-            if (seg.dash != null && !seg.dashInside)
-            {
-                if (seg.dashAfter)
-                {
-                    effectStates.Add(new DashState(controller, seg.dash, true));
-                }
-                else
-                {
-                    effectStates.Insert(0, new DashState(controller, seg.dash, true));
-                }
-            }
-            states.AddRange(effectStates);
-            states.Add(winddown);
-            segments.Add(new AttackSegment
-            {
-                states = states,
-                winddown = winddown,
-                windup = windup,
-            });
-        }
-
-        return segments;
-    }
 
     public float getCooldown()
     {
@@ -102,7 +35,7 @@ public class AttackBlockFilled : ScriptableObject
         return instance.getStat(Stat.Charges) + 1;
     }
 
-    
+
 
     public AiHandler.EffectiveDistance GetEffectiveDistance(float halfHeight)
     {

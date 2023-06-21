@@ -119,7 +119,8 @@ public class InputHandler : MonoBehaviour, UnitControl
                 RaycastHit clickHit;
                 if (Physics.Raycast(r, out clickHit, cameraRayMax, LayerMask.GetMask("ClickPlane")))
                 {
-                    currentInput.lookOffset = clickHit.point - transform.position;
+                    Vector3 point = clickHit.point + clickHit.normal * 0.75f * power.scalePhysical();
+                    currentInput.lookOffset = point - transform.position;
                     break;
                 }
                 else
@@ -131,7 +132,8 @@ public class InputHandler : MonoBehaviour, UnitControl
             }
             if (Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees)
             {
-                currentInput.lookOffset = info[i].point - transform.position;
+                Vector3 point = info[i].point + info[i].normal * 0.75f * power.scalePhysical();
+                currentInput.lookOffset = point - transform.position;
                 break;
             }
 

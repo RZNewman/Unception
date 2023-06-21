@@ -5,6 +5,7 @@ using static GenerateHit;
 using static UnitControl;
 using static AttackUtils;
 using static GenerateBuff;
+using static SpellSource;
 
 public class ActionState : AttackStageState
 {
@@ -12,7 +13,7 @@ public class ActionState : AttackStageState
 
     BuffInstanceData buffData;
 
-    GameObject groundTarget;
+
     public ActionState(UnitMovement m, HitInstanceData data) : base(m)
     {
         actionData = data;
@@ -29,19 +30,16 @@ public class ActionState : AttackStageState
 
         handleAttack(actionData);
 
-
     }
 
     void handleAttack(HitInstanceData attackData)
     {
-        GameObject body = mover.getSpawnBody();
-        FloorNormal floorNormal = mover.GetComponent<FloorNormal>();
-        Size s = body.GetComponentInChildren<Size>();
+        SpellSource sourcePoint = mover.currentAttackSegment().Value.sourcePoint;
         List<GameObject> hits = new List<GameObject>();
         switch (attackData.type)
         {
             case HitType.Line:
-                LineInfo info = LineCalculations(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, attackData.range, attackData.length, attackData.width);
+                LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
                 LineParticle(info, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
@@ -66,17 +64,17 @@ public class ActionState : AttackStageState
                 {
                     return;
                 }
-                SpawnProjectile(floorNormal, body.transform, s.scaledRadius, s.scaledHalfHeight, mover, attackData, buffData, mover.sound.dists);
+                SpawnProjectile(sourcePoint, mover, attackData, buffData, mover.sound.dists);
                 break;
             case HitType.Ground:
-                float radius = attackData.width / 2;
-                Quaternion aim = Quaternion.LookRotation(groundTarget.transform.forward, groundTarget.GetComponent<FloorNormal>().normal);
-                GroundParticle(groundTarget.transform.position, radius, aim, attackData.flair, mover.sound.dists);
+                float radius = (attackData.width + attackData.length) / 2;
+                Quaternion aim = sourcePoint.GetComponent<FloorNormal>().getAimRotation(sourcePoint.transform.forward);
+                GroundParticle(sourcePoint.transform.position, radius, aim, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
                     return;
                 }
-                hits = GroundAttack(groundTarget.transform.position, radius);
+                hits = GroundAttack(sourcePoint.transform.position, radius);
                 foreach (GameObject o in hits)
                 {
                     hit(o, mover, attackData,
@@ -84,8 +82,8 @@ public class ActionState : AttackStageState
                         mover.GetComponent<Power>().power,
                         new KnockBackVectors
                         {
-                            center = groundTarget.transform.position,
-                            direction = groundTarget.transform.forward
+                            center = sourcePoint.transform.position,
+                            direction = sourcePoint.transform.forward
                         });
 
                 }
@@ -95,6 +93,10 @@ public class ActionState : AttackStageState
 
         if (buffData != null)
         {
+            if (!mover.isServer)
+            {
+                return;
+            }
             if (buffData.type == BuffType.Buff)
             {
                 SpawnBuff(buffData, mover.transform);
@@ -116,9 +118,9 @@ public class ActionState : AttackStageState
         }
     }
 
-    public override Cast.IndicatorOffsets GetIndicatorOffsets()
+    public override IndicatorOffsets GetIndicatorOffsets()
     {
-        return new Cast.IndicatorOffsets
+        return new IndicatorOffsets
         {
             distance = Vector3.zero,
             time = 0,
@@ -149,8 +151,5 @@ public class ActionState : AttackStageState
     }
 
 
-    public void setGroundTarget(GameObject t)
-    {
-        groundTarget = t;
-    }
+
 }

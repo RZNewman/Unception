@@ -5,6 +5,7 @@ using static Cast;
 using static GenerateAttack;
 using static GenerateHit;
 using static IndicatorHolder;
+using static SpellSource;
 
 public abstract class IndicatorInstance : MonoBehaviour
 {
@@ -124,7 +125,7 @@ public abstract class IndicatorInstance : MonoBehaviour
                 color = GameColors.FriendIndicator,
                 stunning = GameColors.FriendIndicator,
             };
-             
+
         }
         else
         {
@@ -132,7 +133,7 @@ public abstract class IndicatorInstance : MonoBehaviour
             return new IndicatorColors
             {
                 color = threatColor,
-                stunning = stunning ? GameColors.EnemyIndicatorStun: threatColor,
+                stunning = stunning ? GameColors.EnemyIndicatorStun : threatColor,
             };
         }
     }

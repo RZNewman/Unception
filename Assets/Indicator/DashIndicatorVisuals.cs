@@ -6,7 +6,7 @@ using static GenerateDash;
 
 public class DashIndicatorVisuals : IndicatorInstance
 {
-    protected DashState state;
+    protected DashInstanceData data;
 
     public GameObject line;
     public GameObject tip;
@@ -21,23 +21,20 @@ public class DashIndicatorVisuals : IndicatorInstance
         progress.GetComponent<SpriteRenderer>().color = color;
     }
 
-    public void setSource(DashState dash, Power p)
+    public void setSource(DashInstanceData d, Power p)
     {
-        state = dash;
+        data = d;
         scale = p.scalePhysical();
         setSize();
     }
 
     protected override void setSize()
     {
-        DashInstanceData dash = state.getSource();
 
-
-
-        length = dash.distance;
+        length = data.distance;
         float width = 0.1f * scale;
         Quaternion rotation = Quaternion.identity;
-        if (dash.control == DashControl.Backward)
+        if (data.control == DashControl.Backward)
         {
             rotation = Quaternion.AngleAxis(180, Vector3.forward);
             length *= -1;

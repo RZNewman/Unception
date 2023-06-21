@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using static UnitControl;
 using static AttackUtils;
 using static FloorNormal;
+using static Size;
+using static SpellSource;
 
 public class WindState : AttackStageState, BarValue
 {
     bool isWinddown;
     WindInstanceData windData;
-    GameObject groundTarget;
-    GroundSearchParams groundSearch;
+    SpellSource groundTarget;
+
 
     public WindState(UnitMovement m) : base(m)
     {
@@ -41,8 +43,7 @@ public class WindState : AttackStageState, BarValue
 
         if (groundTarget)
         {
-            groundTarget.GetComponent<FloorNormal>().setGround(groundSearch);
-            groundTarget.GetComponent<GroundTarget>().setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * windData.turnMult);
+            groundTarget.setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * windData.turnMult);
         }
         mover.rotate(inp, false, windData.turnMult, windData.turnspeedCast);
         mover.move(inp, windData.moveMult, windData.movespeedCast);
@@ -56,9 +57,9 @@ public class WindState : AttackStageState, BarValue
         mover.GetComponent<Cast>().removeTarget(this);
     }
 
-    public override Cast.IndicatorOffsets GetIndicatorOffsets()
+    public override IndicatorOffsets GetIndicatorOffsets()
     {
-        return new Cast.IndicatorOffsets
+        return new IndicatorOffsets
         {
             distance = Vector3.zero,
             time = currentDurration,
@@ -84,10 +85,9 @@ public class WindState : AttackStageState, BarValue
             text = mover.currentAbilityName(),
         };
     }
-    public void setGroundTarget(GameObject t, GroundSearchParams s)
+    public void setGroundTarget(SpellSource t)
     {
         groundTarget = t;
-        groundSearch = s;
     }
 
     protected override float tickSpeedMult()

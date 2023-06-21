@@ -26,6 +26,13 @@ public class AttackingState : PlayerMovementState
             return castingAbility.abilityName;
         }
     }
+    public AttackSegment segment
+    {
+        get
+        {
+            return currentSegment;
+        }
+    }
 
     bool init = false;
     public override void enter()
@@ -40,7 +47,6 @@ public class AttackingState : PlayerMovementState
         castingAbility.startCooldown();
         attackMachine.exit();
         currentSegment.exitSegment();
-        mover.GetComponent<Cast>().killIndicators();
     }
     public override void tick()
     {
@@ -95,7 +101,7 @@ public class AttackingState : PlayerMovementState
         {
             mover.maybeSnapRotation(mover.input);
             currentSegment = segments[0];
-            s = currentSegment.enterSegment(mover, c);
+            s = currentSegment.enterSegment(mover);
         };
         if (!init)
         {
@@ -103,7 +109,7 @@ public class AttackingState : PlayerMovementState
         }
         else
         {
-            s = currentSegment.getNextState(mover, c);
+            s = currentSegment.getNextState();
             if (s == null)
             {
                 segments.RemoveAt(0);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 using UnityEngine.AI;
+using static Size;
 
 public class FloorNormal : MonoBehaviour
 {
@@ -12,23 +13,18 @@ public class FloorNormal : MonoBehaviour
 
     public static readonly float floorDegrees = 45;
 
-    public struct GroundSearchParams
-    {
-        public float radius;
-        public float distance;
-    }
 
     Vector3 cachedPosition = Vector3.zero;
-    public void setGround(GroundSearchParams paras)
+    public void setGround(CapsuleSize sizeC)
     {
         Vector3 diff = transform.position - cachedPosition;
-        if (diff.magnitude < paras.radius * 0.2f)
+        if (diff.magnitude < sizeC.radius * 0.2f)
         {
             return;
         }
         RaycastHit rout;
 
-        bool terrain = Physics.SphereCast(transform.position + transform.up * paras.distance, paras.radius, -transform.up, out rout, paras.distance * 2.01f, LayerMask.GetMask("Terrain"));
+        bool terrain = Physics.SphereCast(transform.position + transform.up * sizeC.distance, sizeC.radius, -transform.up, out rout, sizeC.distance * 2.01f, LayerMask.GetMask("Terrain"));
         float angle = Vector3.Angle(Vector3.up, rout.normal);
 
         ground = terrain && angle < floorDegrees;
@@ -43,7 +39,7 @@ public class FloorNormal : MonoBehaviour
         }
 
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(transform.position, out hit, paras.distance * 10, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 10, NavMesh.AllAreas))
         {
             navPosition = hit.position;
         }

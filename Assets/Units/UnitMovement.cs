@@ -3,6 +3,7 @@ using System;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using static AnimationController;
+using static AttackUtils;
 using static DashState;
 using static GenerateDash;
 using static StatTypes;
@@ -116,6 +117,14 @@ public class UnitMovement : NetworkBehaviour
             return ((AttackingState)currentState()).abilityName;
         }
         return "";
+    }
+    public AttackSegment? currentAttackSegment()
+    {
+        if (currentState() is AttackingState)
+        {
+            return ((AttackingState)currentState()).segment;
+        }
+        return null;
     }
 
     public Posture posture
@@ -436,24 +445,7 @@ public class UnitMovement : NetworkBehaviour
     }
     void setGround()
     {
-        FloorNormal.GroundSearchParams paras;
-        if (size.colliderRef)
-        {
-            paras = new FloorNormal.GroundSearchParams
-            {
-                radius = size.scaledRadius,
-                distance = size.scaledHalfHeight,
-            };
-        }
-        else
-        {
-            paras = new FloorNormal.GroundSearchParams
-            {
-                radius = 0,
-                distance = 0,
-            };
-        }
-        ground.setGround(paras);
+        ground.setGround(size.sizeC);
     }
 
     public bool grounded

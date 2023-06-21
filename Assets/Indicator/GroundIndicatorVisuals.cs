@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GenerateHit;
 
-public class GroundIndicatorVisuals : IndicatorInstance
+public class GroundIndicatorVisuals : HitIndicatorInstance
 {
-    protected ActionState state;
 
 
     public GameObject edge;
@@ -14,16 +13,10 @@ public class GroundIndicatorVisuals : IndicatorInstance
     float width;
     // Start is called before the first frame update
 
-    public void setSource(ActionState s)
-    {
-        state = s;
-        setSize();
-    }
     protected override void setSize()
     {
-        HitInstanceData hit = state.getSource();
 
-        width = hit.width;
+        width = data.width + data.length;
 
         edge.transform.localScale = new Vector3(width, width);
 
@@ -46,11 +39,11 @@ public class GroundIndicatorVisuals : IndicatorInstance
 
     protected override float getThreat()
     {
-        return state.getSource().powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+        return data.powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
     }
 
     protected override bool willStagger()
     {
-        return state.getSource().stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
+        return data.stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
     }
 }

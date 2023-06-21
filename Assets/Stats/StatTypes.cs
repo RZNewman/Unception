@@ -28,7 +28,7 @@ public static class StatTypes
     static Dictionary<Stat, float> statValues = new Dictionary<Stat, float>()
     {
         {Stat.Length,3.5f},
-        {Stat.Width,3.75f},
+        {Stat.Width,3.5f},
         {Stat.Knockback,17},
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},

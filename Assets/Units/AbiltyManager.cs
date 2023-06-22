@@ -8,59 +8,18 @@ using static GenerateAttack;
 public class AbiltyManager : NetworkBehaviour
 {
 
+    Dictionary<int, Ability> instancedAbilitites = new Dictionary<int, Ability>();
+    Dictionary<ItemSlot, int> slotLookups = new Dictionary<ItemSlot, int>();
 
-    Dictionary<ItemSlot, AttackBlock> abilitiesToCreate = new Dictionary<ItemSlot, AttackBlock>();
-    Dictionary<ItemSlot, Ability> instancedAbilitites = new Dictionary<ItemSlot, Ability>();
-
-    bool started = false;
     private void Start()
     {
-        if (isServer)
-        {
-            createAbilities();
-            started = true;
-        }
 
-    }
-    void createAbilities()
-    {
-        foreach ((ItemSlot key, AttackBlock block) in abilitiesToCreate)
-        {
-            instanceAbility(key, block);
-        }
-    }
-    void instanceAbility(ItemSlot key, AttackBlock block)
-    {
-        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
-        Ability a = o.GetComponent<Ability>();
-        a.setFormat(block);
-        instancedAbilitites.Add(key, a);
-        a.clientSyncKey = key;
-        o.GetComponent<ClientAdoption>().parent = gameObject;
-        NetworkServer.Spawn(o);
-    }
-    [Client]
-    public void registerAbility(ItemSlot k, Ability a)
-    {
-        instancedAbilitites.Add(k, a);
     }
     public void addAbility(Dictionary<ItemSlot, AttackBlock> blocks)
     {
-        if (started)
+        foreach ((ItemSlot slot, AttackBlock block) in blocks)
         {
-            foreach ((ItemSlot slot, AttackBlock block) in blocks)
-            {
-                instanceAbility(slot, block);
-            }
-
-        }
-        else
-        {
-            foreach ((ItemSlot slot, AttackBlock block) in blocks)
-            {
-                abilitiesToCreate.Add(slot, block);
-            }
-
+            instanceAbility(slot, block);
         }
 
     }
@@ -70,20 +29,51 @@ public class AbiltyManager : NetworkBehaviour
         {
             ItemSlot slotFake = (ItemSlot)i;
             AttackBlock block = blocks[i];
-            if (started)
-            {
-                instanceAbility(slotFake, block);
-            }
-            else
-            {
-                abilitiesToCreate.Add(slotFake, block);
-            }
+
+            instanceAbility(slotFake, block);
         }
 
 
     }
+    public Ability addAbility(AttackBlock block)
+    {
+        return instanceAbility(block);
+
+    }
+    void instanceAbility(ItemSlot key, AttackBlock block)
+    {
+        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
+        Ability a = o.GetComponent<Ability>();
+        a.setFormat(block);
+        registerAbility(key, a);
+        a.clientSyncKey = key;
+        o.GetComponent<ClientAdoption>().parent = gameObject;
+        NetworkServer.Spawn(o);
+    }
+    Ability instanceAbility(AttackBlock block)
+    {
+        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
+        Ability a = o.GetComponent<Ability>();
+        a.setFormat(block);
+        instancedAbilitites.Add(a.GetInstanceID(), a);
+        o.GetComponent<ClientAdoption>().parent = gameObject;
+        NetworkServer.Spawn(o);
+        return a;
+    }
+
+    public void registerAbility(ItemSlot k, Ability a)
+    {
+        instancedAbilitites.Add(a.GetInstanceID(), a);
+        slotLookups.Add(k, a.GetInstanceID());
+    }
+
 
     public Ability getAbility(ItemSlot key)
+    {
+        return slotLookups.ContainsKey(key) ? instancedAbilitites[slotLookups[key]] : null;
+    }
+
+    public Ability getAbility(int key)
     {
         return instancedAbilitites.ContainsKey(key) ? instancedAbilitites[key] : null;
     }
@@ -99,8 +89,8 @@ public class AbiltyManager : NetworkBehaviour
     }
     public AbilityPair getBestAbility()
     {
-        return instancedAbilitites.Keys
-            .Select(k => new AbilityPair { key = k, ability = instancedAbilitites[k] })
+        return slotLookups.Keys
+            .Select(k => new AbilityPair { key = k, ability = instancedAbilitites[slotLookups[k]] })
             .Where(p => p.ability.ready)
             .OrderBy(p => p.ability.cooldownPerCharge).Reverse()
             .First();

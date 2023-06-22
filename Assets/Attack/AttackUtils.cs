@@ -308,7 +308,7 @@ public static class AttackUtils
         return segments;
     }
 
-    enum SourceLocation
+    public enum SourceLocation : byte
     {
         World,
         Body,

@@ -10,7 +10,7 @@ public class StatModPanel : MonoBehaviour
 {
     public GameObject StatModLabelPre;
 
-    public void fill(AttackBlockFilled block, float playerPower, AttackBlockFilled compare)
+    public void fill(AttackBlockInstance block, float playerPower, AttackBlockInstance compare)
     {
         clearLabels();
 
@@ -30,7 +30,7 @@ public class StatModPanel : MonoBehaviour
     }
 
 
-    void statPopulate(AttackBlockFilled block, Stat stat, float playerPower, AttackBlockFilled compare)
+    void statPopulate(AttackBlockInstance block, Stat stat, float playerPower, AttackBlockInstance compare)
     {
         StatLabelInfo info = labelInfo(stat, playerPower);
         float value1 = info.valueGetter(block);
@@ -145,16 +145,16 @@ public class StatModPanel : MonoBehaviour
     struct StatLabelInfo
     {
         public string Label;
-        public Func<AttackBlockFilled, float> valueGetter;
+        public Func<AttackBlockInstance, float> valueGetter;
         public string LabelSecond;
-        public Func<AttackBlockFilled, float?> secondaryGetter;
+        public Func<AttackBlockInstance, float?> secondaryGetter;
     }
     StatLabelInfo labelInfo(Stat stat, float playerPower)
     {
         string label = "";
         string labelSecond = "";
-        Func<AttackBlockFilled, float> valueGetter = x => 0;
-        Func<AttackBlockFilled, float?> secondaryGetter = x => null;
+        Func<AttackBlockInstance, float> valueGetter = x => 0;
+        Func<AttackBlockInstance, float?> secondaryGetter = x => null;
         switch (stat)
         {
             case Stat.DamageMult:
@@ -165,11 +165,11 @@ public class StatModPanel : MonoBehaviour
                 break;
             case Stat.Cooldown:
                 label = "CD";
-                valueGetter = b => b.getCooldownDisplay(playerPower);
+                valueGetter = b => b.instance.cooldownDisplay(playerPower);
                 break;
             case Stat.Charges:
                 label = "Charges";
-                valueGetter = b => b.getCharges();
+                valueGetter = b => b.instance.getCharges();
                 break;
             case Stat.Haste:
                 label = "Cast";

@@ -592,8 +592,9 @@ public class MonsterSpawn : NetworkBehaviour
         holder.championHealthMultiplier = spawnUnit.championHealthMult;
         AbiltyManager al = o.GetComponent<AbiltyManager>();
         //al.clear();
-        al.addAbility(spawnUnit.abilitites);
         NetworkServer.Spawn(o);
+        al.addAbility(spawnUnit.abilitites);
+
     }
 
     public void setSpawnPower(float power)

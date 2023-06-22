@@ -232,6 +232,45 @@ public static class GenerateAttack
         {
             return stream.getValue(stat, scale);
         }
+
+
+        public float getCooldownMult()
+        {
+            return getStat(Stat.Cooldown) + 1;
+        }
+        public float getCharges()
+        {
+
+            return getStat(Stat.Charges) + 1;
+        }
+
+
+
+        public EffectiveDistance GetEffectiveDistance(float halfHeight)
+        {
+            AiHandler.EffectiveDistance saved = new AiHandler.EffectiveDistance
+            {
+                maximums = Vector3.zero,
+                type = AiHandler.EffectiveDistanceType.None
+            };
+
+            //TODO take highest
+            SegmentInstanceData prime = segments[0];
+            if (prime.dash != null && !prime.dashAfter)
+            {
+                saved = saved.sum(prime.dash.GetEffectiveDistance(halfHeight));
+            }
+            AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance(halfHeight);
+
+            if (saved.type != AiHandler.EffectiveDistanceType.None)
+            {
+                return saved.sum(e);
+            }
+            else
+            {
+                return e;
+            }
+        }
         #region display
         float modPercentValue
         {
@@ -247,6 +286,10 @@ public static class GenerateAttack
             {
                 return power * modPercentValue * qualityPercent(quality);
             }
+        }
+        public float cooldownDisplay(float power)
+        {
+            return cooldown * Power.scaleTime(power) / getCooldownMult();
         }
         public string shapeDisplay()
         {
@@ -301,10 +344,6 @@ public static class GenerateAttack
         {
             return segments.Sum(s => s.castTime());
         }
-        public float cooldownDisplay(float power)
-        {
-            return cooldown * Power.scaleTime(power);
-        }
         public float effect
         {
             get
@@ -333,7 +372,7 @@ public static class GenerateAttack
         public InstanceData data;
         public float mult;
     }
-    static AttackInstanceData populateAttack(AttackGenerationData atk, float power, Ability abil)
+    public static AttackInstanceData populateAttack(AttackGenerationData atk, float power, Ability abil)
     {
         float scaleNum = Power.scaleNumerical(power);
 
@@ -782,22 +821,5 @@ public static class GenerateAttack
         return effects;
     }
 
-    public static AttackBlockFilled fillBlock(AttackBlock block, Ability abil = null, float power = -1, bool forceScaling = false)
-    {
-        if (power < 0)
-        {
-            power = block.powerAtGeneration;
-        }
-        power = forceScaling || block.scales ? power : block.powerAtGeneration;
-        AttackBlockFilled filled = ScriptableObject.CreateInstance<AttackBlockFilled>();
-        AttackGenerationData atk = block.source;
-        filled.instance = populateAttack(atk, power, abil);
-        filled.flair = block.flair;
-        filled.slot = block.slot;
-        filled.id = block.id;
-        filled.generationData = block;
-        //Debug.Log(atk);
-        //Debug.Log(block.instance);
-        return filled;
-    }
+
 }

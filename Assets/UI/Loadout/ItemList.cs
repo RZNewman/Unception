@@ -132,7 +132,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
             case SortMode.DPS:
                 return (t1) => t1.GetComponent<UiAbility>().ability.instance.dps(gp.player.power);
             case SortMode.Cooldown:
-                return (t1) => t1.GetComponent<UiAbility>().ability.getCooldownDisplay(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().ability.instance.cooldownDisplay(gp.player.power);
             case SortMode.CastTime:
                 return (t1) => t1.GetComponent<UiAbility>().ability.instance.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:

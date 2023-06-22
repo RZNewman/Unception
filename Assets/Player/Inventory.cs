@@ -165,16 +165,16 @@ public class Inventory : NetworkBehaviour
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
     {
-        AttackBlockFilled filled = fillBlock(item);
+        AttackBlockInstance filled = fillBlock(item);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
         i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.instance.quality);
 
     }
 
-    public AttackBlockFilled fillBlock(AttackBlock block)
+    public AttackBlockInstance fillBlock(AttackBlock block)
     {
 
-        return GenerateAttack.fillBlock(block, null, player.power);
+        return block.fillBlock(null, player.power);
     }
     [Client]
     public void syncInventory()

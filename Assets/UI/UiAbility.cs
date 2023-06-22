@@ -30,7 +30,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Sprite Legendary;
 
     Ability target;
-    AttackBlockFilled filled;
+    AttackBlockInstance filled;
 
     //menu only
     UiEquipmentDragger dragger;
@@ -57,7 +57,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         target = ability;
         setFill(ability.source(), true);
     }
-    public AttackBlockFilled blockFilled
+    public AttackBlockInstance blockFilled
     {
         get
         {
@@ -65,7 +65,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    public void setFill(AttackBlockFilled a, bool inGame = false)
+    public void setFill(AttackBlockInstance a, bool inGame = false)
     {
         filled = a;
         AttackFlair flair = filled.flair;
@@ -151,7 +151,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return bg;
     }
 
-    public AttackBlockFilled ability
+    public AttackBlockInstance ability
     {
         get
         {

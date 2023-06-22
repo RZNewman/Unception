@@ -24,7 +24,7 @@ public class UiAbilityDetails : MonoBehaviour
 
     PlayerGhost player;
 
-    public void setDetails(AttackBlockFilled filled, AttackBlockFilled compare)
+    public void setDetails(AttackBlockInstance filled, AttackBlockInstance compare)
     {
         if (!player)
         {

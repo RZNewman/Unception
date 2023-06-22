@@ -7,14 +7,35 @@ using static GenerateWind;
 using static StatModLabel;
 using static StatTypes;
 
-public class AttackBlock : ScriptableObject
+public class AttackBlock : IdentifyingBlock
 {
-    public AttackGenerationData source;
-    public ItemSlot? slot;
     public float powerAtGeneration;
     public bool scales;
-    public string id;
-    public AttackFlair flair;
+    public AttackGenerationData source;
+    public ItemSlot? slot;
+
+    public AttackBlockInstance fillBlock(Ability abil = null, float power = -1, bool forceScaling = false)
+    {
+
+        AttackBlockInstance filled = ScriptableObject.CreateInstance<AttackBlockInstance>();
+        populate(filled, abil, power, forceScaling);
+        filled.slot = slot;
+        filled.generationData = this;
+        return filled;
+    }
+    void populate(AttackBlockInstance iBlock, Ability abil = null, float power = -1, bool forceScaling = false)
+    {
+        if (power < 0)
+        {
+            power = powerAtGeneration;
+        }
+        power = forceScaling || scales ? power : powerAtGeneration;
+        AttackBlockInstance filled = ScriptableObject.CreateInstance<AttackBlockInstance>();
+        AttackGenerationData atk = source;
+        iBlock.instance = populateAttack(atk, power, abil);
+        filled.flair = flair;
+        filled.id = id;
+    }
 
     public StatInfo getInfo(Stat stat)
     {

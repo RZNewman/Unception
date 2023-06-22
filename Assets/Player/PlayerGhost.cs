@@ -126,9 +126,9 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         p.setPower(playerPower, Atlas.softcap);
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
-        u.GetComponent<AbiltyManager>().addAbility(inv.equippedAbilities);
         u.GetComponent<EventManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
+        u.GetComponent<AbiltyManager>().addAbility(inv.equippedAbilities);
         currentSelf = u;
         RpcSetAudio(false);
     }

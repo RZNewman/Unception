@@ -16,9 +16,9 @@ public class Ability : NetworkBehaviour
     AttackBlock attackFormat;
 
     [SyncVar]
-    public ItemSlot clientSyncKey;
+    public ItemSlot? clientSyncKey;
 
-    AttackBlockFilled attackFilled;
+    AttackBlockInstance attackFilled;
 
     public GameObject abilityIconPrefab;
     GameObject icon;
@@ -35,18 +35,23 @@ public class Ability : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         LocalPlayer p = GetComponentInParent<LocalPlayer>();
-        if (p.isClient && p.hasAuthority)
+        if (isClientOnly)
+        {
+            fillFormat();
+            if (clientSyncKey.HasValue)
+            {
+                GetComponentInParent<AbiltyManager>().registerAbility(clientSyncKey.Value, this);
+            }
+
+        }
+        if (p.isClient && p.hasAuthority && clientSyncKey.HasValue)
         {
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
             icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
             bar.transform.SortChildren(c => c.GetComponent<UiAbility>().blockFilled.slot);
         }
-        if (isClientOnly)
-        {
-            fillFormat();
-            GetComponentInParent<AbiltyManager>().registerAbility(clientSyncKey, this);
-        }
+
         if (isServer)
         {
             transform.parent.GetComponent<StatHandler>().link(GetComponent<StatHandler>());
@@ -82,7 +87,7 @@ public class Ability : NetworkBehaviour
     {
         if (charges < chargeMax && cooldownTicking)
         {
-            charges += Time.fixedDeltaTime * attackFilled.getCooldownMult() / cooldownPerCharge;
+            charges += Time.fixedDeltaTime * attackFilled.instance.getCooldownMult() / cooldownPerCharge;
         }
         if (charges >= chargeMax)
         {
@@ -95,7 +100,7 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFilled.getCooldown();
+            return attackFilled.instance.cooldown;
         }
     }
 
@@ -103,7 +108,7 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFilled.getCharges();
+            return attackFilled.instance.getCharges();
         }
     }
     public List<AttackSegment> cast(UnitMovement mover)
@@ -155,13 +160,13 @@ public class Ability : NetworkBehaviour
     }
     void fillFormat()
     {
-        attackFilled = GenerateAttack.fillBlock(attackFormat, this);
+        attackFilled = attackFormat.fillBlock(this);
 
     }
 
     public void demoForceScale()
     {
-        GetComponentInParent<Power>().subscribePower(p => { attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power, true); });
+        GetComponentInParent<Power>().subscribePower(p => { attackFilled = attackFormat.fillBlock(this, p.power, true); });
     }
     void subscribeScale()
     {
@@ -169,16 +174,16 @@ public class Ability : NetworkBehaviour
     }
     void scaleAbility(Power p)
     {
-        attackFilled = GenerateAttack.fillBlock(attackFormat, this, p.power);
+        attackFilled = attackFormat.fillBlock(this, p.power);
     }
 
 
     public EffectiveDistance GetEffectiveDistance(float halfHeight)
     {
-        return attackFilled.GetEffectiveDistance(halfHeight);
+        return attackFilled.instance.GetEffectiveDistance(halfHeight);
     }
 
-    public AttackBlockFilled source()
+    public AttackBlockInstance source()
     {
         return attackFilled;
     }

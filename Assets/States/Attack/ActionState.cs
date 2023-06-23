@@ -13,16 +13,13 @@ public class ActionState : AttackStageState
 
     BuffInstanceData buffData;
 
+    AttackSegment segment;
 
-    public ActionState(UnitMovement m, HitInstanceData data) : base(m)
-    {
-        actionData = data;
-    }
-
-    public ActionState(UnitMovement m, HitInstanceData data, BuffInstanceData dataB) : base(m)
+    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB) : base(m)
     {
         actionData = data;
         buffData = dataB;
+        segment = seg;
     }
     public override void enter()
     {
@@ -34,7 +31,7 @@ public class ActionState : AttackStageState
 
     void handleAttack(HitInstanceData attackData)
     {
-        SpellSource sourcePoint = mover.currentAttackSegment().Value.sourcePoint;
+        SpellSource sourcePoint = segment.sourcePoint;
         List<GameObject> hits = new List<GameObject>();
         switch (attackData.type)
         {

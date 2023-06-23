@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AttackSegment;
 using static AttackUtils;
 using static GenerateAttack;
 

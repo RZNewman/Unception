@@ -118,7 +118,7 @@ public class Ability : NetworkBehaviour
             charges -= 1;
             cooldownTicking = false;
         }
-        return buildStates(attackFilled.instance, mover);
+        return AttackSegment.buildStates(attackFilled.instance, mover);
     }
     public void startCooldown()
     {

@@ -8,7 +8,7 @@ using static GenerateAttack;
 
 public class TriggerManager : NetworkBehaviour
 {
-
+    List<AttackMachine> machines = new List<AttackMachine>();
 
     // Start is called before the first frame update
     private void Start()
@@ -49,8 +49,14 @@ public class TriggerManager : NetworkBehaviour
         {
             if (a.ready)
             {
+                UnitMovement mover = GetComponent<UnitMovement>();
+                AttackMachine m = new AttackMachine(a, mover);
+                machines.Add(m);
+                mover.GetComponent<Cast>().addSource(m);
+                //TODO remove machine
+
                 //put states somewhere
-                a.cast(GetComponent<UnitMovement>());
+                //a.cast(GetComponent<UnitMovement>());
             }
         };
     }

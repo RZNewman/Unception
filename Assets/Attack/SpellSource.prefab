@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 7241020738862006196}
   - component: {fileID: 7749858868163909196}
   - component: {fileID: -9050939049981701260}
-  - component: {fileID: 1196165739905184592}
   m_Layer: 0
   m_Name: SpellSource
   m_TagString: Untagged
@@ -173,15 +172,3 @@ MonoBehaviour:
   syncInterval: 0.1
   parent: {fileID: 0}
   useSubBody: 0
---- !u!114 &1196165739905184592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5435974136974231416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bc3293a741bb08479e1f8f21cac99c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

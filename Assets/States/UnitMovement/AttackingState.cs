@@ -7,12 +7,7 @@ public class AttackingState : PlayerMovementState
 {
     Ability castingAbility;
 
-    StateMachine<AttackStageState> attackMachine;
-    bool ended = false;
-
-    List<AttackSegment> segments;
-    AttackSegment currentSegment;
-
+    AttackMachine machine;
 
     public AttackingState(UnitMovement m, Ability atk) : base(m)
     {
@@ -30,23 +25,20 @@ public class AttackingState : PlayerMovementState
     {
         get
         {
-            return currentSegment;
+            return machine.segment;
         }
     }
 
-    bool init = false;
     public override void enter()
     {
-        segments = castingAbility.cast(mover);
-        attackMachine = new StateMachine<AttackStageState>(getNextState);
-        init = true;
+        machine = new AttackMachine(castingAbility, mover);
+        mover.GetComponent<Cast>().addSource(machine, true);
     }
 
     public override void exit(bool expired)
     {
-        castingAbility.startCooldown();
-        attackMachine.exit();
-        currentSegment.exitSegment();
+        machine.exit();
+        mover.GetComponent<Cast>().removeSource(machine);
     }
     public override void tick()
     {
@@ -58,7 +50,7 @@ public class AttackingState : PlayerMovementState
             mover.jump();
         }
 
-        attackMachine.tick();
+        machine.tick();
 
 
 
@@ -67,7 +59,7 @@ public class AttackingState : PlayerMovementState
     {
         if (mover.posture.isStunned)
         {
-            float remaining = currentSegment.remainingWindDown();
+            float remaining = machine.remainingWindDown;
             if (remaining > 0)
             {
                 StunnedState stun = new StunnedState(mover, remaining);
@@ -81,50 +73,18 @@ public class AttackingState : PlayerMovementState
             }
 
         }
-        if (mover.input.cancel && currentSegment.inWindup())
+        if (mover.input.cancel && machine.inWindup)
         {
             return new StateTransition(new FreeState(mover), true);
         }
-        attackMachine.transition();
-        if (ended)
+        machine.transition();
+        if (machine.hasFinished)
         {
             return new StateTransition(new FreeState(mover), true);
         }
         return base.transition();
     }
 
-    AttackStageState getNextState()
-    {
-        Cast c = mover.GetComponent<Cast>();
-        AttackStageState s = null;
-        System.Action nextSegment = () =>
-        {
-            mover.maybeSnapRotation(mover.input);
-            currentSegment = segments[0];
-            s = currentSegment.enterSegment(mover);
-        };
-        if (!init)
-        {
-            nextSegment();
-        }
-        else
-        {
-            s = currentSegment.getNextState();
-            if (s == null)
-            {
-                segments.RemoveAt(0);
-                if (segments.Count == 0)
-                {
-                    ended = true;
-                    return new WindState(mover);
-                }
-                currentSegment.exitSegment();
-                nextSegment();
-            }
-        }
-
-        return s;
-    }
 
 
 }

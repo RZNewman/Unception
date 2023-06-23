@@ -30,11 +30,9 @@ public class AttackBlock : IdentifyingBlock
             power = powerAtGeneration;
         }
         power = forceScaling || scales ? power : powerAtGeneration;
-        AttackBlockInstance filled = ScriptableObject.CreateInstance<AttackBlockInstance>();
-        AttackGenerationData atk = source;
-        iBlock.instance = populateAttack(atk, power, abil);
-        filled.flair = flair;
-        filled.id = id;
+        iBlock.instance = populateAttack(source, power, abil);
+        iBlock.flair = flair;
+        iBlock.id = id;
     }
 
     public StatInfo getInfo(Stat stat)

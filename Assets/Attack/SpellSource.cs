@@ -8,6 +8,7 @@ using static GenerateDash;
 using static GenerateHit;
 using static IndicatorHolder;
 using static Size;
+using static Utils;
 
 public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
 {
@@ -34,6 +35,8 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     [SyncVar]
     MoveMode moveType;
 
+    AttackSegment segment;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,30 +48,20 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         switch (moveType)
         {
             case MoveMode.Parent:
-                //GetComponent<NetworkTransform>().enabled = false;
+                GetComponent<NetworkTransform>().enabled = false;
                 GetComponent<Mirror.Experimental.NetworkRigidbody>().enabled = false;
                 Destroy(rb);
                 break;
         }
-        owner.GetComponent<Cast>().addSource(this);
         if (isClientOnly)
         {
             owner.GetComponent<UnitMovement>().currentAttackSegment().Value.clientSyncSource(this);
         }
     }
-    private void OnDestroy()
-    {
-        owner.GetComponent<Cast>().removeSource(this);
-    }
 
     public void OrderedUpdate()
     {
         ground.setGround(sizeC);
-        AttackSegment? seg = owner.GetComponent<UnitMovement>().currentAttackSegment();
-        if (seg.HasValue)
-        {
-            seg.Value.IndicatorUpdate();
-        }
     }
     public void updateIndicator(IndicatorType type, IndicatorOffsets offsets)
     {

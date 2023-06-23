@@ -55,14 +55,16 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void moveTick()
     {
         move.OrderedUpdate();
+        cast.OrderedUpdate();
     }
     public void moveTransition()
     {
         move.OrderedTransition();
+        cast.OrderedTransition();
     }
     public void IndicatorTick()
     {
-        cast.OrderedUpdate();
+        cast.OrderedIndicator();
     }
     public void AnimationTick()
     {

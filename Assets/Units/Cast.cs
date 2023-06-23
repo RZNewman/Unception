@@ -42,25 +42,47 @@ public class Cast : MonoBehaviour, BarValue
         }
 
     }
+    public void OrderedTransition()
+    {
 
+        //TODO can all ticks be managed here?
+        machines.ForEach(m =>
+        {
+            if (!m.indicatorOnly) { m.machine.transition(); }
+        });
+    }
 
     public void OrderedUpdate()
     {
 
 
-        sources.ForEach(s => s.OrderedUpdate());
+        machines.ForEach(m =>
+        {
+            if (!m.indicatorOnly) { m.machine.tick(); }
+        });
     }
 
-    List<SpellSource> sources = new List<SpellSource>();
-
-    public void addSource(SpellSource s)
+    public void OrderedIndicator()
     {
-        sources.Add(s);
+
+
+        machines.ForEach(m => m.machine.indicatorUpdate());
+    }
+    struct MachineUpdate
+    {
+        public AttackMachine machine;
+        public bool indicatorOnly;
+    }
+    List<MachineUpdate> machines = new List<MachineUpdate>();
+
+    public void addSource(AttackMachine source, bool indOnly = false)
+    {
+        machines.Add(new MachineUpdate { machine = source, indicatorOnly = indOnly });
     }
 
-    public void removeSource(SpellSource s)
+    public void removeSource(AttackMachine source)
     {
-        sources.Remove(s);
+        machines.Remove(machines.Find(m => m.machine == source));
     }
 
 

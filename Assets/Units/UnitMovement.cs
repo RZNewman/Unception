@@ -120,7 +120,6 @@ public class UnitMovement : NetworkBehaviour
     }
     public Optional<AttackSegment> currentAttackSegment()
     {
-        //TODO this is garbage; how can ActionState and SpellSource get the source and states eaiser?
         if (currentState() is AttackingState)
         {
             return ((AttackingState)currentState()).segment;

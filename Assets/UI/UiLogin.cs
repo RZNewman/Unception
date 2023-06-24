@@ -25,4 +25,10 @@ public class UiLogin : MonoBehaviour
         }
 
     }
+    public void loginOffline()
+    {
+      FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signInOffline("local");
+        
+
+    }
 }

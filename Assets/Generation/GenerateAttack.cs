@@ -574,6 +574,7 @@ public static class GenerateAttack
     {
         Player,
         Monster,
+        PlayerTrigger,
         IntroMain,
         IntroOff,
     }
@@ -647,7 +648,7 @@ public static class GenerateAttack
 
         int segmentCount = 1;
         float r = Random.value;
-        if (type != AttackGenerationType.IntroMain
+        if (type != AttackGenerationType.IntroMain && type != AttackGenerationType.PlayerTrigger
             && r < 0.1)
         {
             segmentCount = 2;
@@ -663,6 +664,12 @@ public static class GenerateAttack
         {
             windUpMax = 0.3f;
             windDownMax = 0.3f;
+        }
+        else if (type == AttackGenerationType.PlayerTrigger)
+        {
+            windUpMax = 0.5f;
+            //TODO no winddown
+            windDownMax = 0.1f;
         }
         else
         {

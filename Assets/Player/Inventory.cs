@@ -20,6 +20,8 @@ public class Inventory : NetworkBehaviour
 
     Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
 
+    List<AttackTrigger> blessingsActive = new List<AttackTrigger>();
+
     PlayerGhost player;
     public PlayerPity pity;
 
@@ -112,6 +114,7 @@ public class Inventory : NetworkBehaviour
             AttackBlock item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
             storage.Add(item);
         }
+        blessingsActive.Add(GenerateTrigger.generate(player.power));
         RpcInvChange();
     }
 
@@ -154,6 +157,14 @@ public class Inventory : NetworkBehaviour
         get
         {
             return tempDrops;
+        }
+    }
+
+    public List<AttackTrigger> blessings
+    {
+        get
+        {
+            return blessingsActive;
         }
     }
 

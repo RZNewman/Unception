@@ -104,21 +104,16 @@ public class Inventory : NetworkBehaviour
         equipped.Add(ItemSlot.OffHand, item);
     }
 
-    //[Server]
-    //public void genRandomItems()
-    //{
-    //    for (int i = equipped.Count; i < inventorySlots; i++)
-    //    {
-    //        AttackBlock item = GenerateAttack.generate(player.power, i == 0);
-    //        equipped.Add((AttackKey)i, item);
-    //    }
-    //    for (int i = 0; i < 5; i++)
-    //    {
-    //        AttackBlock item = GenerateAttack.generate(player.power, false);
-    //        storage.Add(item);
-    //    }
-    //    RpcInvChange();
-    //}
+    [Server]
+    public void genRandomItems()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            AttackBlock item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
+            storage.Add(item);
+        }
+        RpcInvChange();
+    }
 
     [Server]
     public void AddItem(AttackBlock item, Vector3 otherPosition)

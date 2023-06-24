@@ -8,6 +8,7 @@ public class AttackMachine
     List<AttackSegment> segments;
     Ability ability;
     UnitMovement mover;
+    bool hardCast;
 
     bool init = false;
     bool ended = false;
@@ -20,11 +21,12 @@ public class AttackMachine
     }
     StateMachine<AttackStageState> attackMachine;
     AttackSegment currentSegment;
-    public AttackMachine(Ability a, UnitMovement m)
+    public AttackMachine(Ability a, UnitMovement m, bool hardCasted)
     {
+        hardCast = hardCasted;
         ability = a;
         mover = m;
-        segments = ability.cast(mover);
+        segments = ability.cast(mover, hardCast);
         attackMachine = new StateMachine<AttackStageState>(getNextState);
         init = true;
 
@@ -75,7 +77,10 @@ public class AttackMachine
         AttackStageState s = null;
         System.Action nextSegment = () =>
         {
-            mover.maybeSnapRotation(mover.input);
+            if (hardCast)
+            {
+                mover.maybeSnapRotation(mover.input);
+            }       
             currentSegment = segments[0];
             s = currentSegment.enterSegment(mover);
         };

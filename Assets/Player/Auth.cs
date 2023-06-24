@@ -25,14 +25,31 @@ public class Auth : NetworkBehaviour
         CmdSetUser(u);
         FindObjectOfType<MenuHandler>().mainMenu();
     }
-
     [Command]
     void CmdSetUser(string u)
     {
         username = u;
         save.loadData();
 
-        
-        
+
+
+    }
+
+    [Client]
+    public void signInOffline(string u)
+    {
+        CmdSetUserOffline(u);
+        FindObjectOfType<MenuHandler>().mainMenu();
+    }
+
+    [Command]
+    void CmdSetUserOffline(string u)
+    {
+        username = u;
+        SaveData.dataSource = SaveData.DataSource.Offline;
+        save.loadData();
+
+
+
     }
 }

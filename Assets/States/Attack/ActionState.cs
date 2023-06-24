@@ -14,16 +14,22 @@ public class ActionState : AttackStageState
     BuffInstanceData buffData;
 
     AttackSegment segment;
+    bool hardCast;
 
-    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB) : base(m)
+    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, bool hardCasted) : base(m)
     {
         actionData = data;
         buffData = dataB;
         segment = seg;
+        hardCast = hardCasted;
     }
     public override void enter()
     {
-        mover.GetComponent<AnimationController>().setAttack();
+        if (hardCast)
+        {
+            mover.GetComponent<AnimationController>().setAttack();
+        }
+        
 
         handleAttack(actionData);
 
@@ -50,8 +56,8 @@ public class ActionState : AttackStageState
                         mover.GetComponent<Power>().power,
                         new KnockBackVectors
                         {
-                            center = mover.transform.position,
-                            direction = mover.getSpawnBody().transform.forward
+                            center = sourcePoint.transform.position,
+                            direction = sourcePoint.transform.forward
                         });
 
                 }
@@ -133,11 +139,6 @@ public class ActionState : AttackStageState
         base.tick();
 
         Debug.LogError("Unreachable - Should transition");
-        //UnitInput inp = mover.input;
-
-
-        //mover.rotate(inp, false, lookMultiplier);
-        //mover.move(inp, moveMultiplier);
 
 
     }

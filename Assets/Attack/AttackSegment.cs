@@ -165,7 +165,7 @@ public class AttackSegment
     {
         return currentState == windup;
     }
-    public static List<AttackSegment> buildStates(AttackInstanceData instance, UnitMovement mover)
+    public static List<AttackSegment> buildStates(AttackInstanceData instance, UnitMovement mover, bool hardCast)
     {
 
 
@@ -176,10 +176,10 @@ public class AttackSegment
             AttackSegment finalSeg = new AttackSegment();
             List<AttackStageState> states = new List<AttackStageState>();
 
-            WindState windup = new WindState(mover, seg.windup, false);
-            WindState winddown = new WindState(mover, seg.winddown, true);
+            WindState windup = new WindState(mover, seg.windup, false, hardCast);
+            WindState winddown = new WindState(mover, seg.winddown, true, hardCast);
 
-            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff);
+            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, hardCast);
             finalSeg.hitData = seg.hit;
 
             states.Add(windup);
@@ -203,7 +203,7 @@ public class AttackSegment
                     }
                     if (j < seg.repeat.repeatCount - 1)
                     {
-                        repeatStates.Add(new WindState(mover, seg.windRepeat, false));
+                        repeatStates.Add(new WindState(mover, seg.windRepeat, false, hardCast));
                     }
                     effectStates.AddRange(repeatStates);
                     repeatStates.Clear();

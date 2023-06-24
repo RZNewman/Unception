@@ -50,13 +50,11 @@ public class TriggerManager : NetworkBehaviour
             if (a.ready)
             {
                 UnitMovement mover = GetComponent<UnitMovement>();
-                AttackMachine m = new AttackMachine(a, mover);
+                AttackMachine m = new AttackMachine(a, mover, false);
                 machines.Add(m);
                 mover.GetComponent<Cast>().addSource(m);
                 //TODO remove machine
 
-                //put states somewhere
-                //a.cast(GetComponent<UnitMovement>());
             }
         };
     }

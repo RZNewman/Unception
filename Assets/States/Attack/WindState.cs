@@ -16,7 +16,7 @@ public class WindState : AttackStageState, BarValue
     bool isWinddown;
     WindInstanceData windData;
     SpellSource groundTarget;
-
+    bool hardCast;
 
     public WindState(UnitMovement m) : base(m)
     {
@@ -24,21 +24,32 @@ public class WindState : AttackStageState, BarValue
         isWinddown = false;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d, bool winddown = false) : base(m, d.duration)
+    public WindState(UnitMovement m, WindInstanceData d, bool winddown, bool hardCasted) : base(m, d.duration)
     {
         isWinddown = winddown;
         windData = d;
+        hardCast = hardCasted;
     }
 
     public override void enter()
     {
-        mover.GetComponent<Cast>().setTarget(this);
+        if (hardCast)
+        {
+            mover.GetComponent<Cast>().setTarget(this);
+        }
+        
 
 
     }
     public override void tick()
     {
         base.tick();
+
+        if (!hardCast)
+        {
+            return;
+        }
+
         UnitInput inp = mover.input;
 
         if (groundTarget)
@@ -54,7 +65,11 @@ public class WindState : AttackStageState, BarValue
 
     public override void exit(bool expired)
     {
-        mover.GetComponent<Cast>().removeTarget(this);
+        if (hardCast)
+        {
+            mover.GetComponent<Cast>().removeTarget(this);
+        }
+        
     }
 
     public override IndicatorOffsets GetIndicatorOffsets()

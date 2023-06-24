@@ -56,7 +56,7 @@ public class FreeState : PlayerMovementState
         {
             s.spendStamina(Stamina.dashCost);
             DashInstanceData o = mover.baseDash();
-            return new StateTransition(new DashState(mover, o), true);
+            return new StateTransition(new DashState(mover, o, false), true);
         }
 
         return base.transition();

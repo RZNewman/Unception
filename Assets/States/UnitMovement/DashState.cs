@@ -12,7 +12,7 @@ public class DashState : AttackStageState
     UnitInput inpSnapshot;
 
 
-    public DashState(UnitMovement m, DashInstanceData o, bool attack = false) : base(m, o.distance / o.speed)
+    public DashState(UnitMovement m, DashInstanceData o, bool attack) : base(m, o.distance / o.speed)
     {
         opts = o;
         isAttack = attack;

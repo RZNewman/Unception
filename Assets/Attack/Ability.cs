@@ -111,14 +111,14 @@ public class Ability : NetworkBehaviour
             return attackFilled.instance.getCharges();
         }
     }
-    public List<AttackSegment> cast(UnitMovement mover)
+    public List<AttackSegment> cast(UnitMovement mover, bool hardCast)
     {
         if (cooldownPerCharge > 0)
         {
             charges -= 1;
             cooldownTicking = false;
         }
-        return AttackSegment.buildStates(attackFilled.instance, mover);
+        return AttackSegment.buildStates(attackFilled.instance, mover, hardCast);
     }
     public void startCooldown()
     {

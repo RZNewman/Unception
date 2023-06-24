@@ -31,7 +31,7 @@ public class AttackingState : PlayerMovementState
 
     public override void enter()
     {
-        machine = new AttackMachine(castingAbility, mover);
+        machine = new AttackMachine(castingAbility, mover, true);
         mover.GetComponent<Cast>().addSource(machine, true);
     }
 

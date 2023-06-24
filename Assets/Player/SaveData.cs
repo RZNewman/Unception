@@ -25,6 +25,12 @@ public class SaveData : NetworkBehaviour
     WorldProgress worldProgress;
     UIQuestDisplay questDisplay;
 
+    public enum DataSource{
+        Online,
+        Offline
+    }
+    public static DataSource dataSource = DataSource.Online;
+
     void Start()
     {
         globalSave = FindObjectOfType<GlobalSaveData>();
@@ -67,9 +73,15 @@ public class SaveData : NetworkBehaviour
     [Server]
     public void loadData()
     {
-        StartCoroutine(loadDataRoutine());
-        //use below for offline dev
-        //loadDataOffline();
+        if(dataSource == DataSource.Online)
+        {
+            StartCoroutine(loadDataRoutine());
+        }
+        else
+        {
+            loadDataOffline();
+        }
+        
     }
 
 
@@ -190,15 +202,16 @@ public class SaveData : NetworkBehaviour
 
     }
 
-    //void loadDataOffline()
-    //{
-    //    if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
-    //    {
-    //        FindObjectOfType<Atlas>(true).makeMaps();
-    //    }
-    //    pity.create();
-    //    inv.genRandomItems();
-    //}
+    void loadDataOffline()
+    {
+        if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)
+        {
+            FindObjectOfType<Atlas>(true).makeMaps();
+        }
+        pity.create();
+        inv.genMinItems();
+        inv.genRandomItems();
+    }
     private void OnDestroy()
     {
         if (isServer)

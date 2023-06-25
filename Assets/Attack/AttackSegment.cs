@@ -177,7 +177,7 @@ public class AttackSegment
             List<AttackStageState> states = new List<AttackStageState>();
 
             WindState windup = new WindState(mover, seg.windup, false, hardCast);
-            WindState winddown = new WindState(mover, seg.winddown, true, hardCast);
+            
 
             ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, hardCast);
             finalSeg.hitData = seg.hit;
@@ -226,10 +226,16 @@ public class AttackSegment
                 }
             }
             states.AddRange(effectStates);
-            states.Add(winddown);
+            if (seg.winddown.HasValue)
+            {
+                WindState winddown = new WindState(mover, seg.winddown.Value, true, hardCast);
+                states.Add(winddown);
+                finalSeg.winddown = winddown;
+            }
+           
             finalSeg.states = states;
             finalSeg.windup = windup;
-            finalSeg.winddown = winddown;
+            
             segments.Add(finalSeg);
         }
 

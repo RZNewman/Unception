@@ -87,7 +87,7 @@ public static class GenerateAttack
     public struct SegmentInstanceData
     {
         public WindInstanceData windup;
-        public WindInstanceData winddown;
+        public Optional<WindInstanceData> winddown;
         public HitInstanceData hit;
         public DashInstanceData dash;
         public RepeatingInstanceData repeat;
@@ -96,11 +96,15 @@ public static class GenerateAttack
         public bool dashAfter;
         public bool dashInside;
 
-        private WindInstanceData[] windStages
+        private List<WindInstanceData> windStages
         {
             get
             {
-                WindInstanceData[] winds = new WindInstanceData[] { windup, winddown };
+                List<WindInstanceData> winds = new List<WindInstanceData> { windup };
+                if (winddown.HasValue)
+                {
+                    winds.Add(winddown.Value);
+                }
                 if (repeat != null)
                 {
                     List<WindInstanceData> windsRepeat = new List<WindInstanceData>();
@@ -108,7 +112,7 @@ public static class GenerateAttack
                     {
                         windsRepeat.Add(windRepeat);
                     }
-                    winds = winds.Concat(windsRepeat).ToArray();
+                    winds.AddRange(windsRepeat);
                 }
                 return winds;
             }
@@ -400,10 +404,19 @@ public static class GenerateAttack
         {
             SegmentGenerationData segment = segmentsGen[i];
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
-            WindInstanceData down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
             parent(up);
-            parent(down);
-            List<WindInstanceData> windList = new List<WindInstanceData> { up, down };
+            List<WindInstanceData> windList = new List<WindInstanceData> { up};
+            Optional<WindInstanceData> down = new Optional<WindInstanceData>();
+            if (segment.winddown)
+            {
+                down =  (WindInstanceData)segment.winddown.populate(power, 1.0f);
+                parent(down.Value);
+                windList.Add(down.Value);
+            }
+            
+            
+            
+            
             WindInstanceData windRepeat = null;
             RepeatingInstanceData repeat = null;
             int repeatCount = 1;
@@ -444,7 +457,7 @@ public static class GenerateAttack
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
-                winddown = down,
+                winddown = down.HasValue ? down.Value : null,
                 hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
                 buff = buff,

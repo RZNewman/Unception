@@ -92,7 +92,7 @@ public class Inventory : NetworkBehaviour
         equipArray = equippedItems;
         storage = storageItems.ToList();
 
-
+        blessingsActive.Add(GenerateTrigger.generate(player.power));
         TargetSyncInventory(connectionToClient, equipArray, storageItems);
         RpcInvChange();
     }
@@ -104,6 +104,7 @@ public class Inventory : NetworkBehaviour
         equipped.Add(ItemSlot.Main, item);
         item = generate(player.power, AttackGenerationType.IntroOff);
         equipped.Add(ItemSlot.OffHand, item);
+
     }
 
     [Server]

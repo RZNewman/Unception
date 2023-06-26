@@ -52,11 +52,15 @@ public class TriggerManager : NetworkBehaviour
                 UnitMovement mover = GetComponent<UnitMovement>();
                 AttackMachine m = new AttackMachine(a, mover, false);
                 machines.Add(m);
-                mover.GetComponent<Cast>().addSource(m);
-                //TODO remove machine
+                mover.GetComponent<Cast>().addSource(m, removeMachine);
 
             }
         };
+    }
+
+    void removeMachine(AttackMachine m)
+    {
+        machines.Remove(m);
     }
 
     OnHit hitCallback(Ability a)

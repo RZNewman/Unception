@@ -73,7 +73,11 @@ public class AttackSegment
 
     public void exitSegment()
     {
-        GameObject.Destroy(sourcePoint.gameObject);
+        if (sourcePoint)
+        {
+            GameObject.Destroy(sourcePoint.gameObject);
+        }
+
     }
 
     public AttackStageState getNextState()
@@ -177,7 +181,7 @@ public class AttackSegment
             List<AttackStageState> states = new List<AttackStageState>();
 
             WindState windup = new WindState(mover, seg.windup, false, hardCast);
-            
+
 
             ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, hardCast);
             finalSeg.hitData = seg.hit;
@@ -232,10 +236,10 @@ public class AttackSegment
                 states.Add(winddown);
                 finalSeg.winddown = winddown;
             }
-           
+
             finalSeg.states = states;
             finalSeg.windup = windup;
-            
+
             segments.Add(finalSeg);
         }
 

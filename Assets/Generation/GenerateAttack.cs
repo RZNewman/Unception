@@ -73,7 +73,7 @@ public static class GenerateAttack
     public struct SegmentGenerationData
     {
         public WindGenerationData windup;
-        public WindGenerationData winddown;
+        public Optional<WindGenerationData> winddown;
         public HitGenerationData hit;
         public DashGenerationData dash;
         public RepeatingGenerationData repeat;
@@ -405,18 +405,22 @@ public static class GenerateAttack
             SegmentGenerationData segment = segmentsGen[i];
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             parent(up);
-            List<WindInstanceData> windList = new List<WindInstanceData> { up};
+            List<WindInstanceData> windList = new List<WindInstanceData> { up };
             Optional<WindInstanceData> down = new Optional<WindInstanceData>();
-            if (segment.winddown)
+            if (segment.winddown.HasValue)
             {
-                down =  (WindInstanceData)segment.winddown.populate(power, 1.0f);
+                down = (WindInstanceData)segment.winddown.Value.populate(power, 1.0f);
                 parent(down.Value);
                 windList.Add(down.Value);
             }
-            
-            
-            
-            
+            else
+            {
+                //Debug.Log("No windown abil");
+            }
+
+
+
+
             WindInstanceData windRepeat = null;
             RepeatingInstanceData repeat = null;
             int repeatCount = 1;
@@ -457,7 +461,7 @@ public static class GenerateAttack
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
-                winddown = down.HasValue ? down.Value : null,
+                winddown = down,
                 hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
                 buff = buff,
@@ -557,6 +561,13 @@ public static class GenerateAttack
             }
 
 
+        }
+
+        if (open)
+        {
+            //no windown attack
+            segment.winddown = new Optional<WindGenerationData>();
+            segments.Add(segment);
         }
         //Debug.Log(System.String.Join("---", segments.Select(s => System.String.Join(" ", s.stages.Select(j => j.ToString()).ToArray())).ToArray()));
         return segments;
@@ -681,8 +692,7 @@ public static class GenerateAttack
         else if (type == AttackGenerationType.PlayerTrigger)
         {
             windUpMax = 0.5f;
-            //TODO no winddown
-            windDownMax = 0.1f;
+            windDownMax = 0f;
         }
         else
         {
@@ -714,7 +724,11 @@ public static class GenerateAttack
             WindGenerationData windup = createWind(windUpMin, windUpMax);
             stages.Add(windup);
             stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot));
-            stages.Add(createWind(windDownMin, windDownMax));
+            if (windDownMax > 0)
+            {
+                stages.Add(createWind(windDownMin, windDownMax));
+            }
+
 
         }
 

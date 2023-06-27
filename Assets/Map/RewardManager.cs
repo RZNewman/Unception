@@ -92,9 +92,9 @@ public static class RewardManager
 
     public readonly static float itemsPerPack = 2f;
 
-    readonly static float mapsPerFalloff = 3.5f;
+    readonly static float mapsPerFalloff = 3.0f;
 
-    readonly static float clearPercent = 0.65f;
+    readonly static float clearPercent = 0.45f;
 
     //the percent increase in power to create a scale change equal to the % increase of the highest quality
     //this controls the falloff speed of items during leveling

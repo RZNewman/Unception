@@ -10,9 +10,18 @@ public static class GenerateTrigger
         TriggerConditions conditions = new TriggerConditions();
 
         float gen;
-        conditions.trigger = Trigger.HitRecieved;
         gen = Random.value;
         if (gen < 0.2f)
+        {
+            conditions.trigger = Trigger.Always;
+        }
+        else
+        {
+            conditions.trigger = Trigger.HitRecieved;
+        }
+
+        gen = Random.value;
+        if (conditions.trigger == Trigger.Always || gen < 0.2f)
         {
             conditions.location = AttackSegment.SourceLocation.Body;
         }

@@ -18,7 +18,7 @@ public class Atlas : NetworkBehaviour
     public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 2f;
     public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
-    public readonly static float softcap = 15_000f;
+    public readonly static float softcap = 12_000f;
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;

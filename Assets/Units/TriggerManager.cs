@@ -47,8 +47,10 @@ public class TriggerManager : NetworkBehaviour
         switch (trig.conditions.trigger)
         {
             case Trigger.HitRecieved:
-
                 events.suscribeHit(hitCallback(a, castData));
+                break;
+            case Trigger.Always:
+                events.subscribeTransition(alwaysCallback(a, castData));
                 break;
         }
     }
@@ -94,6 +96,19 @@ public class TriggerManager : NetworkBehaviour
         {
             location.triggeredPosition = other.transform.position;
             cast(location);
+        };
+    }
+
+    OnTransition alwaysCallback(Ability a, CastingLocationData location)
+    {
+        Action<CastingLocationData> cast = abilityCallback(a);
+        return () =>
+        {
+            if (combat.inCombat)
+            {
+                cast(location);
+            }
+
         };
     }
 

@@ -29,7 +29,7 @@ public class ActionState : AttackStageState
         {
             mover.GetComponent<AnimationController>().setAttack();
         }
-        
+
 
         handleAttack(actionData);
 
@@ -70,7 +70,7 @@ public class ActionState : AttackStageState
                 SpawnProjectile(sourcePoint, mover, attackData, buffData, mover.sound.dists);
                 break;
             case HitType.Ground:
-                float radius = (attackData.width + attackData.length) / 2;
+                float radius = GroundRadius(attackData.length, attackData.width);
                 Quaternion aim = sourcePoint.GetComponent<FloorNormal>().getAimRotation(sourcePoint.transform.forward);
                 GroundParticle(sourcePoint.transform.position, radius, aim, attackData.flair, mover.sound.dists);
                 if (!mover.isServer)

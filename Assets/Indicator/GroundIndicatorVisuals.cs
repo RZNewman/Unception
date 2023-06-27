@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GenerateHit;
+using static AttackUtils;
 
 public class GroundIndicatorVisuals : HitIndicatorInstance
 {
@@ -10,15 +11,15 @@ public class GroundIndicatorVisuals : HitIndicatorInstance
     public GameObject edge;
     public GameObject progress;
 
-    float width;
+    float diameter;
     // Start is called before the first frame update
 
     protected override void setSize()
     {
 
-        width = data.width + data.length;
+        diameter = GroundRadius(data.length, data.width) * 2;
 
-        edge.transform.localScale = new Vector3(width, width);
+        edge.transform.localScale = new Vector3(diameter, diameter);
 
         progress.transform.localScale = new Vector3(0, 0);
 
@@ -33,7 +34,7 @@ public class GroundIndicatorVisuals : HitIndicatorInstance
 
     protected override void setCurrentProgress(float percent)
     {
-        float length_percent = width * percent;
+        float length_percent = diameter * percent;
         progress.transform.localScale = new Vector3(length_percent, length_percent);
     }
 

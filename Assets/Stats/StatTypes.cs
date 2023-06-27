@@ -53,7 +53,7 @@ public static class StatTypes
             }
         },
         {HitType.Ground, new Dictionary<Stat, float>(){
-            {Stat.Length, 2 },
+            {Stat.Length, 1.3f },
             {Stat.Range, 2 },
             {Stat.Width, 1.3f },
             {Stat.DamageMult, 0.9f },

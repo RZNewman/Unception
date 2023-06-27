@@ -207,6 +207,11 @@ public static class AttackUtils
         i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex], dists);
 
     }
+
+    public static float GroundRadius(float length, float width)
+    {
+        return (length + width) / 2;
+    }
     public static List<GameObject> GroundAttack(Vector3 origin, float radius)
     {
         List<GameObject> hits = new List<GameObject>();

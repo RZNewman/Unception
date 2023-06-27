@@ -11,11 +11,12 @@ using static GenerateAttack;
 public class TriggerManager : NetworkBehaviour
 {
     List<AttackMachine> machines = new List<AttackMachine>();
+    Combat combat;
 
     // Start is called before the first frame update
     private void Start()
     {
-
+        combat = GetComponent<Combat>();
 
     }
 

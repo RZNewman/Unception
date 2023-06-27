@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AttackMachine;
+using static AttackSegment;
 using static EventManager;
 using static GenerateAttack;
 
@@ -35,22 +37,29 @@ public class TriggerManager : NetworkBehaviour
         AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
         EventManager events = GetComponent<EventManager>();
         Ability a = abiltyManager.addAbility(trig.block);
+        CastingLocationData castData = new CastingLocationData
+        {
+            hardCast = false,
+            locationOverride = trig.conditions.location,
+        };
         switch (trig.conditions.trigger)
         {
             case Trigger.HitRecieved:
-                events.suscribeHit(hitCallback(a));
+
+                events.suscribeHit(hitCallback(a, castData));
                 break;
         }
     }
 
-    Action abilityCallback(Ability a)
+    Action<CastingLocationData> abilityCallback(Ability a)
     {
-        return () =>
+        return (CastingLocationData castData) =>
         {
             if (a.ready)
             {
                 UnitMovement mover = GetComponent<UnitMovement>();
-                AttackMachine m = new AttackMachine(a, mover, false);
+
+                AttackMachine m = new AttackMachine(a, mover, castData);
                 machines.Add(m);
                 mover.GetComponent<Cast>().addSource(m, removeMachine);
 
@@ -63,12 +72,13 @@ public class TriggerManager : NetworkBehaviour
         machines.Remove(m);
     }
 
-    OnHit hitCallback(Ability a)
+    OnHit hitCallback(Ability a, CastingLocationData location)
     {
-        Action cast = abilityCallback(a);
+        Action<CastingLocationData> cast = abilityCallback(a);
         return (GameObject other) =>
         {
-            cast();
+            location.triggeredPosition = other.transform.position;
+            cast(location);
         };
     }
 

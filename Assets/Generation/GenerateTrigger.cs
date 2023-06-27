@@ -9,11 +9,26 @@ public static class GenerateTrigger
     {
         TriggerConditions conditions = new TriggerConditions();
 
+        float gen;
         conditions.trigger = Trigger.HitRecieved;
-        conditions.location = AttackSegment.SourceLocation.Body;
+        gen = Random.value;
+        if (gen < 0.2f)
+        {
+            conditions.location = AttackSegment.SourceLocation.Body;
+        }
+        else if (gen < 0.5f)
+        {
+            conditions.location = AttackSegment.SourceLocation.BodyFixed;
+        }
+        else
+        {
+            conditions.location = AttackSegment.SourceLocation.World;
+        }
+
+
         conditions.recovery = TriggerRecovery.Cooldown;
 
-        AttackBlock b = GenerateAttack.generate(power, AttackGenerationType.PlayerTrigger);
+        AttackBlock b = GenerateAttack.generate(power, AttackGenerationType.PlayerTrigger, 1, null, conditions);
         AttackTrigger trigger = ScriptableObject.CreateInstance<AttackTrigger>();
 
         trigger.conditions = conditions;

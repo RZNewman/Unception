@@ -614,7 +614,7 @@ public static class GenerateAttack
         //Back
     }
 
-    public static AttackBlock generate(float power, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null)
+    public static AttackBlock generate(float power, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
     {
         Quality quality = Quality.Common;
         Mod[] mods = new Mod[0];
@@ -723,7 +723,7 @@ public static class GenerateAttack
 
             WindGenerationData windup = createWind(windUpMin, windUpMax);
             stages.Add(windup);
-            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot));
+            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot, conditions));
             if (windDownMax > 0)
             {
                 stages.Add(createWind(windDownMin, windDownMax));
@@ -760,7 +760,7 @@ public static class GenerateAttack
 
     }
 
-    static List<GenerationData> getEffect(float remainingBaseStats, ItemSlot? slot)
+    static List<GenerationData> getEffect(float remainingBaseStats, ItemSlot? slot, Optional<TriggerConditions> conditions)
     {
         List<GenerationData> effects = new List<GenerationData>();
         float gen = Random.value;
@@ -769,7 +769,7 @@ public static class GenerateAttack
         RepeatingGenerationData r = null;
         WindGenerationData rWind = null;
         BuffGenerationData b = null;
-        HitGenerationData h = createHit(remainingBaseStats);
+        HitGenerationData h = createHit(remainingBaseStats, conditions);
 
         bool dashInside = false;
 
@@ -785,6 +785,7 @@ public static class GenerateAttack
         gen = Random.value;
         if (slot != ItemSlot.Main
             && slot != ItemSlot.Helm
+            && !conditions.HasValue
             && (slot == ItemSlot.Boots || gen < 0.2f)
             && h.type != HitType.Ground)
         {
@@ -804,6 +805,7 @@ public static class GenerateAttack
 
         gen = Random.value;
         if (slot != ItemSlot.Main
+            && !conditions.HasValue
             && (slot == ItemSlot.Helm || gen < 0.2f)
             && r == null && d == null)
         {

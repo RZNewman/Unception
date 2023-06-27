@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AttackSegment;
 using static AttackUtils;
+using static Utils;
 
 public class AttackMachine
 {
@@ -21,12 +23,18 @@ public class AttackMachine
     }
     StateMachine<AttackStageState> attackMachine;
     AttackSegment currentSegment;
-    public AttackMachine(Ability a, UnitMovement m, bool hardCasted)
+    public struct CastingLocationData
     {
-        hardCast = hardCasted;
+        public bool hardCast;
+        public SourceLocation locationOverride;
+        public Vector3 triggeredPosition;
+    }
+    public AttackMachine(Ability a, UnitMovement m, CastingLocationData castData)
+    {
+        hardCast = castData.hardCast;
         ability = a;
         mover = m;
-        segments = ability.cast(mover, hardCast);
+        segments = ability.cast(mover, castData);
         attackMachine = new StateMachine<AttackStageState>(getNextState);
         init = true;
 
@@ -80,7 +88,7 @@ public class AttackMachine
             if (hardCast)
             {
                 mover.maybeSnapRotation(mover.input);
-            }       
+            }
             currentSegment = segments[0];
             s = currentSegment.enterSegment(mover);
         };

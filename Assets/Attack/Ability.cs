@@ -2,6 +2,8 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using static AiHandler;
+using static AttackMachine;
+using static AttackSegment;
 using static AttackUtils;
 using static GenerateAttack;
 using static StatTypes;
@@ -111,14 +113,14 @@ public class Ability : NetworkBehaviour
             return attackFilled.instance.getCharges();
         }
     }
-    public List<AttackSegment> cast(UnitMovement mover, bool hardCast)
+    public List<AttackSegment> cast(UnitMovement mover, CastingLocationData castData)
     {
         if (cooldownPerCharge > 0)
         {
             charges -= 1;
             cooldownTicking = false;
         }
-        return AttackSegment.buildStates(attackFilled.instance, mover, hardCast);
+        return AttackSegment.buildStates(attackFilled.instance, mover, castData);
     }
     public void startCooldown()
     {

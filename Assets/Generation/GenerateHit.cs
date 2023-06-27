@@ -177,21 +177,28 @@ public static class GenerateHit
         }
     }
 
-    public static HitGenerationData createHit(float remainingBaseStats)
+    public static HitGenerationData createHit(float remainingBaseStats, Optional<TriggerConditions> conditions)
     {
         HitType t;
         float r = Random.value;
-        if (r < 0.5f)
+        if (r < 0.2f
+            && (!conditions.HasValue ||
+                   (
+                   conditions.Value.location != AttackSegment.SourceLocation.Body
+                   && conditions.Value.location != AttackSegment.SourceLocation.BodyFixed
+                   )
+                )
+            )
         {
-            t = HitType.Line;
+            t = HitType.Ground;
         }
-        else if (r < 0.8f)
+        else if (r < 0.5f)
         {
             t = HitType.Projectile;
         }
         else
         {
-            t = HitType.Ground;
+            t = HitType.Line;
         }
 
         List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger };

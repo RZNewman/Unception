@@ -1,10 +1,13 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using static AttackMachine;
 using static GenerateAttack;
 using static GenerateHit;
 using static SpellSource;
+using static Utils;
 
 public class AttackSegment
 {
@@ -13,6 +16,9 @@ public class AttackSegment
     public WindState winddown;
     public HitInstanceData hitData;
     public SpellSource sourcePoint;
+
+    SourceLocation location;
+    Optional<Vector3> targetOverride;
 
     bool pastWindup;
     AttackStageState currentState;
@@ -25,7 +31,7 @@ public class AttackSegment
         if (mover.isServer)
         {
 
-            sourcePoint = SpawnSource(mover, hitData);
+            sourcePoint = SpawnSource(mover, hitData, location, targetOverride);
         }
         return getNextState();
     }
@@ -169,7 +175,7 @@ public class AttackSegment
     {
         return currentState == windup;
     }
-    public static List<AttackSegment> buildStates(AttackInstanceData instance, UnitMovement mover, bool hardCast)
+    public static List<AttackSegment> buildStates(AttackInstanceData instance, UnitMovement mover, CastingLocationData castData)
     {
 
 
@@ -180,10 +186,10 @@ public class AttackSegment
             AttackSegment finalSeg = new AttackSegment();
             List<AttackStageState> states = new List<AttackStageState>();
 
-            WindState windup = new WindState(mover, seg.windup, false, hardCast);
+            WindState windup = new WindState(mover, seg.windup, false, castData.hardCast);
 
 
-            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, hardCast);
+            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, castData.hardCast);
             finalSeg.hitData = seg.hit;
 
             states.Add(windup);
@@ -207,7 +213,7 @@ public class AttackSegment
                     }
                     if (j < seg.repeat.repeatCount - 1)
                     {
-                        repeatStates.Add(new WindState(mover, seg.windRepeat, false, hardCast));
+                        repeatStates.Add(new WindState(mover, seg.windRepeat, false, castData.hardCast));
                     }
                     effectStates.AddRange(repeatStates);
                     repeatStates.Clear();
@@ -232,13 +238,25 @@ public class AttackSegment
             states.AddRange(effectStates);
             if (seg.winddown.HasValue)
             {
-                WindState winddown = new WindState(mover, seg.winddown.Value, true, hardCast);
+                WindState winddown = new WindState(mover, seg.winddown.Value, true, castData.hardCast);
                 states.Add(winddown);
                 finalSeg.winddown = winddown;
             }
 
             finalSeg.states = states;
             finalSeg.windup = windup;
+
+            finalSeg.location = SourceLocation.Body;
+            finalSeg.targetOverride = new Optional<Vector3>();
+            if (!castData.hardCast)
+            {
+                finalSeg.location = castData.locationOverride;
+                finalSeg.targetOverride = new Optional<Vector3>(castData.triggeredPosition);
+            }
+            else if (seg.hit.type == HitType.Ground)
+            {
+                finalSeg.location = SourceLocation.WorldForward;
+            }
 
             segments.Add(finalSeg);
         }
@@ -249,24 +267,24 @@ public class AttackSegment
     public enum SourceLocation : byte
     {
         World,
+        WorldForward,
         Body,
         BodyFixed
     }
-    static SpellSource SpawnSource(UnitMovement mover, HitInstanceData source)
+    static SpellSource SpawnSource(UnitMovement mover, HitInstanceData source, SourceLocation location, Optional<Vector3> targetOverride)
     {
         Size size = mover.GetComponentInChildren<Size>();
-        Vector3 target = mover.lookWorldPos;
+        Vector3 target = targetOverride.HasValue ? targetOverride.Value : mover.lookWorldPos;
 
         Transform body = mover.getSpawnBody().transform;
         uint team = mover.GetComponent<TeamOwnership>().getTeam();
         FloorNormal ground = mover.GetComponent<FloorNormal>();
 
         float range = source.type == HitType.Projectile ? 0 : source.range;
-        SourceLocation loc = SourceLocation.Body;
+
         MoveMode moveType = MoveMode.Parent;
-        if (source.type == HitType.Ground)
+        if (location == SourceLocation.World || location == SourceLocation.World)
         {
-            loc = SourceLocation.World;
             moveType = MoveMode.World;
         }
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
@@ -278,10 +296,10 @@ public class AttackSegment
         //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
         //Vector3 offset = forwardLine.normalized * Mathf.Min(length, Vector3.Dot(diff, forwardLine));
         GameObject instance;
-        switch (loc)
+        switch (location)
         {
             case SourceLocation.World:
-
+            case SourceLocation.WorldForward:
                 Vector3 diff = target - bodyFocus;
                 //Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
                 //forwardDiff.y = diff.y;
@@ -291,9 +309,13 @@ public class AttackSegment
                     distance = Mathf.Max(0, distance - source.length / 2);
                 }
                 Vector3 limitedDiff = diff.normalized * Mathf.Clamp(distance, 0, range);
-                //Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, planarForward), 0) * planarForward;
-                //forwardDiff.y = diff.y;
-                //Vector3 limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
+                if (location == SourceLocation.WorldForward)
+                {
+                    Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, planarForward), 0) * planarForward;
+                    forwardDiff.y = diff.y;
+                    limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
+                }
+
 
                 instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, body.rotation);
                 instance.GetComponent<SpellSource>().offsetMult = 0;
@@ -301,11 +323,11 @@ public class AttackSegment
             case SourceLocation.Body:
             case SourceLocation.BodyFixed:
             default:
-                Transform targetTransform = loc == SourceLocation.Body ? body : mover.transform;
+                Transform targetTransform = location == SourceLocation.Body ? body : mover.transform;
                 instance = GameObject.Instantiate(prefab, bodyFocus, body.rotation, targetTransform);
                 ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
                 adopt.parent = mover.gameObject;
-                adopt.useSubBody = loc == SourceLocation.Body;
+                adopt.useSubBody = location == SourceLocation.Body;
                 break;
 
         }

@@ -92,7 +92,11 @@ public class Inventory : NetworkBehaviour
         equipArray = equippedItems;
         storage = storageItems.ToList();
 
-        blessingsActive.Add(GenerateTrigger.generate(player.power));
+        for (int i = 0; i < 5; i++)
+        {
+            blessingsActive.Add(GenerateTrigger.generate(player.power));
+        }
+
         TargetSyncInventory(connectionToClient, equipArray, storageItems);
         RpcInvChange();
     }

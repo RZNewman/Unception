@@ -7,9 +7,17 @@ public class EventManager : MonoBehaviour
 {
     public delegate void OnDeath(bool natural);
     public delegate void OnHit(GameObject other);
+    public delegate void OnTransition();
+    public delegate void OnTick();
+    public delegate void OnIndicator();
+
+
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
     List<OnHit> OnHitCallbacks = new List<OnHit>();
+    List<OnTransition> OnTransitionCallbacks = new List<OnTransition>();
+    List<OnTick> OnTickCallbacks = new List<OnTick>();
+    List<OnIndicator> OnIndicatorCallbacks = new List<OnIndicator>();
 
     bool deathFired = false;
 
@@ -45,6 +53,57 @@ public class EventManager : MonoBehaviour
         foreach (OnHit c in OnHitCallbacks)
         {
             c(other);
+        }
+    }
+
+    public void subscribeTransition(OnTransition t)
+    {
+        OnTransitionCallbacks.Add(t);
+    }
+    public void unsubscribeTransition(OnTransition t)
+    {
+        OnTransitionCallbacks.Remove(t);
+    }
+
+    public void fireTransition()
+    {
+        List<OnTransition> transitions = new List<OnTransition>(OnTransitionCallbacks);
+        foreach (OnTransition c in transitions)
+        {
+            c();
+        }
+    }
+    public void subscribeTick(OnTick t)
+    {
+        OnTickCallbacks.Add(t);
+    }
+    public void unsubscribeTick(OnTick t)
+    {
+        OnTickCallbacks.Remove(t);
+    }
+
+    public void fireTick()
+    {
+        List<OnTick> ticks = new List<OnTick>(OnTickCallbacks);
+        foreach (OnTick c in ticks)
+        {
+            c();
+        }
+    }
+    public void subscribeIndicator(OnIndicator t)
+    {
+        OnIndicatorCallbacks.Add(t);
+    }
+    public void unsubscribeIndicator(OnIndicator t)
+    {
+        OnIndicatorCallbacks.Remove(t);
+    }
+
+    public void fireIndicator()
+    {
+        foreach (OnIndicator c in OnIndicatorCallbacks)
+        {
+            c();
         }
     }
 }

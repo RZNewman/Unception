@@ -12,12 +12,13 @@ public class TriggerManager : NetworkBehaviour
 {
     List<AttackMachine> machines = new List<AttackMachine>();
     Combat combat;
+    EventManager events;
 
     // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
         combat = GetComponent<Combat>();
-
+        events = GetComponent<EventManager>();
     }
 
 
@@ -36,7 +37,7 @@ public class TriggerManager : NetworkBehaviour
     void instanceTrigger(AttackTrigger trig)
     {
         AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
-        EventManager events = GetComponent<EventManager>();
+
         Ability a = abiltyManager.addAbility(trig.block);
         CastingLocationData castData = new CastingLocationData
         {
@@ -60,9 +61,11 @@ public class TriggerManager : NetworkBehaviour
             {
                 UnitMovement mover = GetComponent<UnitMovement>();
 
-                AttackMachine m = new AttackMachine(a, mover, castData);
+                AttackMachine m = new AttackMachine(a, mover, castData, removeMachine);
                 machines.Add(m);
-                mover.GetComponent<Cast>().addSource(m, removeMachine);
+                events.subscribeIndicator(m.indicatorUpdate);
+                events.subscribeTick(m.tick);
+                events.subscribeTransition(m.transition);
 
             }
         };
@@ -71,6 +74,17 @@ public class TriggerManager : NetworkBehaviour
     void removeMachine(AttackMachine m)
     {
         machines.Remove(m);
+        events.unsubscribeIndicator(m.indicatorUpdate);
+        events.unsubscribeTick(m.tick);
+        events.unsubscribeTransition(m.transition);
+    }
+    private void OnDestroy()
+    {
+        List<AttackMachine> toRemove = new List<AttackMachine>(machines);
+        toRemove.ForEach(m =>
+        {
+            m.exit();
+        });
     }
 
     OnHit hitCallback(Ability a, CastingLocationData location)
@@ -83,6 +97,7 @@ public class TriggerManager : NetworkBehaviour
         };
     }
 
+    //TODO client trigger data
     [ClientRpc]
     void RpcBuildTrigger(TriggerConditions cond, Ability a)
     {

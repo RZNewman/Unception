@@ -14,6 +14,7 @@ public class AttackMachine
 
     bool init = false;
     bool ended = false;
+    bool didExit = false;
     public bool hasFinished
     {
         get
@@ -21,6 +22,7 @@ public class AttackMachine
             return ended;
         }
     }
+
     StateMachine<AttackStageState> attackMachine;
     AttackSegment currentSegment;
     public struct CastingLocationData
@@ -29,7 +31,13 @@ public class AttackMachine
         public SourceLocation locationOverride;
         public Vector3 triggeredPosition;
     }
-    public AttackMachine(Ability a, UnitMovement m, CastingLocationData castData)
+
+    public delegate void MachineEndCallback(AttackMachine m);
+    static readonly MachineEndCallback nothingCallback = (_) => { };
+    MachineEndCallback callback;
+
+
+    public AttackMachine(Ability a, UnitMovement m, CastingLocationData castData, MachineEndCallback cb = null)
     {
         hardCast = castData.hardCast;
         ability = a;
@@ -37,7 +45,7 @@ public class AttackMachine
         segments = ability.cast(mover, castData);
         attackMachine = new StateMachine<AttackStageState>(getNextState);
         init = true;
-
+        callback = cb;
     }
     public void tick()
     {
@@ -45,14 +53,28 @@ public class AttackMachine
     }
     public void transition()
     {
-        attackMachine.transition();
         currentSegment.sourceUpdate();
+        attackMachine.transition();
+        if (ended)
+        {
+            exit();
+        }
+
     }
     public void exit()
     {
-        ability.startCooldown();
-        attackMachine.exit();
-        currentSegment.exitSegment();
+        if (!didExit)
+        {
+            ability.startCooldown();
+            attackMachine.exit();
+            currentSegment.exitSegment();
+            didExit = true;
+            if (callback != null)
+            {
+                callback(this);
+            }
+        }
+
     }
 
     public void indicatorUpdate()

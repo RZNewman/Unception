@@ -50,6 +50,8 @@ public class UnitMovement : NetworkBehaviour
         localPlayer = GetComponent<LocalPlayer>();
         statHandler = GetComponent<StatHandler>();
         events.suscribeDeath(cleanup);
+        events.subscribeTransition(transition);
+        events.subscribeTick(tick);
     }
 
     void syncLookAngle(float oldAngle, float newAngle)
@@ -77,7 +79,7 @@ public class UnitMovement : NetworkBehaviour
         return GetComponentInChildren<UnitRotation>().gameObject;
     }
 
-    public void OrderedUpdate()
+    public void tick()
     {
         if (!lifeManager.IsDead)
         {
@@ -88,7 +90,7 @@ public class UnitMovement : NetworkBehaviour
             planarVelocityCalculated = Vector3.zero;
         }
     }
-    public void OrderedTransition()
+    public void transition()
     {
         if (!lifeManager.IsDead)
         {

@@ -283,7 +283,7 @@ public class AttackSegment
         float range = source.type == HitType.Projectile ? 0 : source.range;
 
         MoveMode moveType = MoveMode.Parent;
-        if (location == SourceLocation.World || location == SourceLocation.World)
+        if (location == SourceLocation.World || location == SourceLocation.WorldForward)
         {
             moveType = MoveMode.World;
         }
@@ -301,23 +301,33 @@ public class AttackSegment
             case SourceLocation.World:
             case SourceLocation.WorldForward:
                 Vector3 diff = target - bodyFocus;
-                //Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, body.forward), 0) * body.forward;
-                //forwardDiff.y = diff.y;
+                Vector3 flatDiff = diff;
+                flatDiff.y = 0;
+
                 float distance = diff.magnitude;
-                if (source.type == HitType.Line || source.type == HitType.Projectile)
+                if (source.type == HitType.Line)
                 {
                     distance = Mathf.Max(0, distance - source.length / 2);
                 }
+                if (source.type == HitType.Projectile)
+                {
+                    distance = Mathf.Max(0, distance - source.range / 2);
+                }
+
                 Vector3 limitedDiff = diff.normalized * Mathf.Clamp(distance, 0, range);
                 if (location == SourceLocation.WorldForward)
                 {
                     Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, planarForward), 0) * planarForward;
                     forwardDiff.y = diff.y;
                     limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
+                    flatDiff = planarForward;
+                    flatDiff.y = 0;
                 }
 
 
-                instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, body.rotation);
+                Quaternion faceRot = Quaternion.LookRotation(flatDiff);
+
+                instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, faceRot);
                 instance.GetComponent<SpellSource>().offsetMult = 0;
                 break;
             case SourceLocation.Body:

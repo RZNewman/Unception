@@ -23,7 +23,7 @@ public class Auth : NetworkBehaviour
     public void signIn(string u)
     {
         CmdSetUser(u);
-        FindObjectOfType<MenuHandler>().mainMenu();
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.MainMenu);
     }
     [Command]
     void CmdSetUser(string u)
@@ -39,7 +39,7 @@ public class Auth : NetworkBehaviour
     public void signInOffline(string u)
     {
         CmdSetUserOffline(u);
-        FindObjectOfType<MenuHandler>().mainMenu();
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.MainMenu);
     }
 
     [Command]

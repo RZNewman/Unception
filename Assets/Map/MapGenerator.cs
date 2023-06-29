@@ -215,7 +215,6 @@ public class MapGenerator : NetworkBehaviour
 
         while ((spawnLocations.Count < packCount || ending) && doors.Count > 0)
         {
-
             Door door;
             if (ending)
             {

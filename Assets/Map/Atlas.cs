@@ -13,10 +13,10 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Atlas : NetworkBehaviour
 {
-    static readonly int avgPacksPerfloor = 20;
+    static readonly int avgPacksPerfloor = 25;
     public static readonly float packVariance = 0.3f;
     public static readonly int breakablesPerFloor = 4;
-    public readonly static float avgFloorsPerMap = 2f;
+    public readonly static float avgFloorsPerMap = 1f;
     public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
     public readonly static float softcap = 12_000f;
 
@@ -591,7 +591,7 @@ public class Atlas : NetworkBehaviour
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {
             inv.syncInventoryUpwards();
-            inv.GetComponent<PlayerGhost>().TargetMainMenu(inv.connectionToClient);
+            inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, mapSuccess);
         }
 
     }

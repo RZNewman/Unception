@@ -33,11 +33,11 @@ public class Pause : MonoBehaviour
     {
         if (paused)
         {
-            menu.gameplayMenu();
+            menu.switchMenu(MenuHandler.Menu.MainMenu);
         }
         else
         {
-            menu.pauseMenu();
+            menu.switchMenu(MenuHandler.Menu.Pause);
         }
         paused = !paused;
         player.pause(paused);

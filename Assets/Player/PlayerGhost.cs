@@ -35,7 +35,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
-            FindObjectOfType<MenuHandler>().clientMenu();
+            FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Login);
             FindObjectOfType<PlayerUiReference>(true).setTarget(this);
             foreach (UiInvLimit limit in FindObjectsOfType<UiInvLimit>(true))
             {
@@ -138,13 +138,18 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     void TargetGameplayMenu(NetworkConnection conn)
     {
         music.Game();
-        FindObjectOfType<MenuHandler>().gameplayMenu();
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
     }
     [TargetRpc]
-    public void TargetMainMenu(NetworkConnection conn)
+    public void TargetMenuFinish(NetworkConnection conn, bool success)
     {
         music.Menu();
-        FindObjectOfType<MenuHandler>().loadoutMenu();
+        MenuHandler.Menu target = success switch
+        {
+            true => MenuHandler.Menu.Blessing,
+            _ => MenuHandler.Menu.Loadout,
+        };
+        FindObjectOfType<MenuHandler>().switchMenu(target);
     }
 
 

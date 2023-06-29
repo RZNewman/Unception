@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.WSA;
+using static Utils;
 
 public class MenuHandler : MonoBehaviour
 {
@@ -14,88 +16,105 @@ public class MenuHandler : MonoBehaviour
     public GameObject settings;
     public GameObject pause;
     public GameObject quest;
+    public GameObject blessing;
 
     GlobalPlayer gp;
     // Start is called before the first frame update
+
+    public enum Menu
+    {
+        MainMenu,
+        Gameplay,
+        Loadout,
+        Map,
+        Login,
+        Title,
+        Settings,
+        Pause,
+        Quest,
+        Blessing,
+    }
+
+    GameObject menuObject(Menu m)
+    {
+        return m switch
+        {
+            Menu.MainMenu => main,
+            Menu.Gameplay => gameplay,
+            Menu.Loadout => loadout,
+            Menu.Map => stageSelect,
+            Menu.Login => login,
+            Menu.Title => network,
+            Menu.Settings => settings,
+            Menu.Pause => pause,
+            Menu.Quest => quest,
+            Menu.Blessing => blessing,
+            _ => main
+        };
+    }
     void Start()
     {
-        gameplay.SetActive(false);
-        main.SetActive(false);
-        loadout.SetActive(false);
-        stageSelect.SetActive(false);
-        login.SetActive(false);
-        settings.SetActive(false);
-        pause.SetActive(false);
-        quest.SetActive(false);
-
-
-        gp = FindObjectOfType<GlobalPlayer>(true);
-        networkMenu();
-
-    }
-
-    public void clientMenu()
-    {
-        loginMenu();
-
-    }
-
-    public void gameplayMenu()
-    {
-        switchMenu(gameplay);
-        FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
-    }
-
-    public void stageMenu()
-    {
-        stageSelect.GetComponent<UiStageSelect>().powerDisplay.GetComponent<UiText>().source = gp.player;
-        switchMenu(stageSelect);
-    }
-
-    public void loadoutMenu()
-    {
-        loadout.GetComponent<UILoadoutMenu>().loadInvMode();
-        switchMenu(loadout);
-    }
-
-    public void mainMenu()
-    {
-        switchMenu(main);
-    }
-
-    public void loginMenu()
-    {
-        switchMenu(login);
-    }
-
-    public void networkMenu()
-    {
-        switchMenu(network);
-    }
-    public void settingsMenu()
-    {
-        switchMenu(settings);
-    }
-
-    public void pauseMenu()
-    {
-        switchMenu(pause);
-    }
-
-    public void questMenu()
-    {
-        switchMenu(quest);
-    }
-
-    GameObject activeMenu;
-
-    void switchMenu(GameObject menu)
-    {
-        if (activeMenu)
+        foreach (Menu m in EnumValues<Menu>())
         {
-            activeMenu.SetActive(false);
+            menuObject(m).SetActive(false);
         }
-        activeMenu = menu;
-        activeMenu.SetActive(true);
+        gp = FindObjectOfType<GlobalPlayer>(true);
+        switchMenu(Menu.Title);
+
+    }
+
+    void menuPostActions(Menu m)
+    {
+        switch (m)
+        {
+            case Menu.Gameplay:
+                FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
+                break;
+        }
+    }
+    void menuPreActions(Menu m)
+    {
+        switch (m)
+        {
+            case Menu.Map:
+                menuObject(m).GetComponent<UiStageSelect>().powerDisplay.GetComponent<UiText>().source = gp.player;
+                break;
+            case Menu.Loadout:
+                menuObject(m).GetComponent<UILoadoutMenu>().loadInvMode();
+                break;
+            case Menu.Blessing:
+                menuObject(m).GetComponent<UiBlessingMenu>().loadBelssings();
+                break;
+        }
+    }
+
+    Menu activeMenu = Menu.Title;
+    Menu prevoiusMenu;
+
+    public void switchMenu(Menu m)
+    {
+        prevoiusMenu = activeMenu;
+        menuObject(activeMenu).SetActive(false);
+        activeMenu = m;
+        menuPreActions(activeMenu);
+        menuObject(activeMenu).SetActive(true);
+        menuPostActions(activeMenu);
+    }
+
+    public void switchTargeted(MenuTargetID id)
+    {
+        switchMenu(id.target);
+    }
+
+    public void blessingDone()
+    {
+        if (prevoiusMenu == Menu.MainMenu)
+        {
+            switchMenu(Menu.MainMenu);
+        }
+        else
+        {
+            switchMenu(Menu.Loadout);
+        }
     }
 }

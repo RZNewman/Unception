@@ -13,6 +13,7 @@ using static GenerateAttack;
 public class Inventory : NetworkBehaviour
 {
     int inventoryLimit = 10;
+    int blessingLimit = 4;
 
     List<AttackBlock> tempDrops = new List<AttackBlock>();
 
@@ -21,6 +22,7 @@ public class Inventory : NetworkBehaviour
     Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
 
     List<AttackTrigger> blessingsActive = new List<AttackTrigger>();
+    AttackTrigger blessingPotential;
 
     PlayerGhost player;
     public PlayerPity pity;
@@ -46,6 +48,13 @@ public class Inventory : NetworkBehaviour
         callback(this);
     }
 
+    public int maxBlessings
+    {
+        get
+        {
+            return blessingLimit;
+        }
+    }
 
 
     public bool overburdened
@@ -92,7 +101,7 @@ public class Inventory : NetworkBehaviour
         equipArray = equippedItems;
         storage = storageItems.ToList();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < blessingLimit; i++)
         {
             blessingsActive.Add(GenerateTrigger.generate(player.power));
         }
@@ -128,6 +137,12 @@ public class Inventory : NetworkBehaviour
     {
         tempDrops.Add(item);
         TargetDropItem(connectionToClient, item, otherPosition);
+    }
+
+    [Server]
+    public void addBlessing()
+    {
+        blessingPotential = GenerateTrigger.generate(player.power);
     }
 
     //server
@@ -170,6 +185,13 @@ public class Inventory : NetworkBehaviour
         get
         {
             return blessingsActive;
+        }
+    }
+    public AttackTrigger potentialBlessing
+    {
+        get
+        {
+            return blessingPotential;
         }
     }
 

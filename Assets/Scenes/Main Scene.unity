@@ -13638,6 +13638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotRow: {fileID: 800384765}
+  slotPotential: {fileID: 563324880}
   blessingSlotPre: {fileID: 702483030765801830, guid: 7ef4481879dc3054c97da28c3e1dea3f, type: 3}
   blessingIconPre: {fileID: 6408374594934726209, guid: 52950a70946eea8428d193de06f69ed3, type: 3}
 --- !u!1 &1715307754

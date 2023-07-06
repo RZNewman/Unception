@@ -590,6 +590,10 @@ public class Atlas : NetworkBehaviour
         makeMaps();
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {
+            if (mapSuccess)
+            {
+                inv.addBlessing(embarkedMap.power);
+            }
             inv.syncInventoryUpwards();
             inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, mapSuccess);
         }

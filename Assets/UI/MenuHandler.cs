@@ -83,7 +83,7 @@ public class MenuHandler : MonoBehaviour
                 menuObject(m).GetComponent<UILoadoutMenu>().loadInvMode();
                 break;
             case Menu.Blessing:
-                menuObject(m).GetComponent<UiBlessingMenu>().loadBelssings();
+                menuObject(m).GetComponent<UiBlessingMenu>().activate();
                 break;
         }
     }

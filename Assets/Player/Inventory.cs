@@ -140,9 +140,9 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public void addBlessing()
+    public void addBlessing(float power)
     {
-        blessingPotential = GenerateTrigger.generate(player.power);
+        blessingPotential = GenerateTrigger.generate(power);
     }
 
     //server
@@ -245,6 +245,7 @@ public class Inventory : NetworkBehaviour
         }
     }
 
+
     [Command]
     public void CmdEquipAbility(string newId)
     {
@@ -334,6 +335,16 @@ public class Inventory : NetworkBehaviour
         equipped.Remove(pair.Key);
         tempDrops.Add(moved);
 
+    }
+    [Command]
+    public void CmdEquipBlessing(int blessingSlot)
+    {
+        if (blessingPotential && blessingSlot > 0 && blessingSlot < maxBlessings)
+        {
+            blessings[blessingSlot] = blessingPotential;
+            blessingPotential = null;
+            RpcInvChange();
+        }
     }
     public void clearDrops()
     {

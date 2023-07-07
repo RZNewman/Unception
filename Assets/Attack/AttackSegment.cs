@@ -290,6 +290,9 @@ public class AttackSegment
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
         Vector3 planarForward = ground.forwardPlanarWorld(body.forward);
         Vector3 bodyFocus = body.position + planarForward * size.scaledRadius;
+        Vector3 targetDiff = target - bodyFocus;
+        Vector3 flatDiff = targetDiff;
+        flatDiff.y = 0;
 
 
         //float angleOff = Vector3.SignedAngle(body.forward, planarDiff, Vector3.up);
@@ -300,11 +303,10 @@ public class AttackSegment
         {
             case SourceLocation.World:
             case SourceLocation.WorldForward:
-                Vector3 diff = target - bodyFocus;
-                Vector3 flatDiff = diff;
-                flatDiff.y = 0;
 
-                float distance = diff.magnitude;
+
+
+                float distance = targetDiff.magnitude;
                 if (source.type == HitType.Line)
                 {
                     distance = Mathf.Max(0, distance - source.length / 2);
@@ -314,11 +316,11 @@ public class AttackSegment
                     distance = Mathf.Max(0, distance - source.range / 2);
                 }
 
-                Vector3 limitedDiff = diff.normalized * Mathf.Clamp(distance, 0, range);
+                Vector3 limitedDiff = targetDiff.normalized * Mathf.Clamp(distance, 0, range);
                 if (location == SourceLocation.WorldForward)
                 {
-                    Vector3 forwardDiff = Mathf.Max(Vector3.Dot(diff, planarForward), 0) * planarForward;
-                    forwardDiff.y = diff.y;
+                    Vector3 forwardDiff = Mathf.Max(Vector3.Dot(targetDiff, planarForward), 0) * planarForward;
+                    forwardDiff.y = targetDiff.y;
                     limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
                     flatDiff = planarForward;
                     flatDiff.y = 0;
@@ -334,7 +336,8 @@ public class AttackSegment
             case SourceLocation.BodyFixed:
             default:
                 Transform targetTransform = location == SourceLocation.Body ? body : mover.transform;
-                instance = GameObject.Instantiate(prefab, bodyFocus, body.rotation, targetTransform);
+                Quaternion rotation = location == SourceLocation.Body ? body.rotation : Quaternion.LookRotation(flatDiff);
+                instance = GameObject.Instantiate(prefab, bodyFocus, rotation, targetTransform);
                 ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
                 adopt.parent = mover.gameObject;
                 adopt.useSubBody = location == SourceLocation.Body;

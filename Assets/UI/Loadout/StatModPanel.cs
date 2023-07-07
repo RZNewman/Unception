@@ -10,7 +10,7 @@ public class StatModPanel : MonoBehaviour
 {
     public GameObject StatModLabelPre;
 
-    public void fill(AttackBlockInstance block, float playerPower, AttackBlockInstance compare)
+    public void fill(AttackBlockInstance block, float playerPower, AttackBlockInstance compare = null)
     {
         clearLabels();
 

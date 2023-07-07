@@ -7,8 +7,11 @@ public class UiBlessingIcon : MonoBehaviour
 {
     public Text identifier;
     public Image symbol;
+
+    AttackBlockInstance attackInst;
+    AttackTrigger trigger;
     // Start is called before the first frame update
-    public void setFill(AttackTrigger t)
+    public void setFill(AttackTrigger t, Inventory inv)
     {
         Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = t.flair.color;
@@ -18,5 +21,23 @@ public class UiBlessingIcon : MonoBehaviour
         symbol.color = t.flair.color;
         identifier.color = partialColor;
         identifier.text = t.flair.identifier;
+
+        attackInst = inv.fillBlock(t.block);
+        trigger = t;
+    }
+
+    public AttackTrigger attackTrigger
+    {
+        get
+        {
+            return trigger;
+        }
+    }
+    public AttackBlockInstance blockInstance
+    {
+        get
+        {
+            return attackInst;
+        }
     }
 }

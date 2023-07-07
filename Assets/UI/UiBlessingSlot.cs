@@ -11,15 +11,28 @@ public class UiBlessingSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     bool hovered = false;
 
     Image image;
+    UiBlessingMenu menu;
+
+
+    public void setMenu(UiBlessingMenu m)
+    {
+        menu = m;
+    }
+    public void setIcon(UiBlessingIcon i)
+    {
+        icon = i;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         hovered = true;
+        menu.setHovered(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         hovered = false;
+        menu.unsetHovered(this);
     }
 
     // Start is called before the first frame update
@@ -69,6 +82,16 @@ public class UiBlessingSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().CmdEquipBlessing(slotNumber);
             mouseHeld = false;
+        }
+    }
+
+#nullable enable
+    UiBlessingIcon? icon = null;
+    public UiBlessingIcon? blessing
+    {
+        get
+        {
+            return icon;
         }
     }
 }

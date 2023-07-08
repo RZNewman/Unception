@@ -21,7 +21,7 @@ public class Inventory : NetworkBehaviour
 
     Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
 
-    List<AttackTrigger> blessingsActive = new List<AttackTrigger>();
+    AttackTrigger[] blessingsActive = new AttackTrigger[0];
     AttackTrigger blessingPotential;
 
     PlayerGhost player;
@@ -101,14 +101,22 @@ public class Inventory : NetworkBehaviour
         equipArray = equippedItems;
         storage = storageItems.ToList();
 
-        for (int i = 0; i < blessingLimit; i++)
-        {
-            blessingsActive.Add(GenerateTrigger.generate(player.power));
-        }
-
-        TargetSyncInventory(connectionToClient, equipArray, storageItems);
+        syncInventoryUpwards();
         RpcInvChange();
     }
+
+    [Server]
+    public void reloadBlessings(AttackTrigger[] bless)
+    {
+        blessingsActive = new AttackTrigger[blessingLimit];
+        for (int i = 0; i < bless.Length; i++)
+        {
+            blessingsActive[i] = bless[i];
+        }
+        syncInventoryUpwards();
+    }
+
+
     [Server]
     public void genMinItems()
     {
@@ -121,6 +129,14 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
+    public void genMinBlessings()
+    {
+
+        blessingsActive = new AttackTrigger[blessingLimit];
+        syncInventoryUpwards();
+    }
+
+    [Server]
     public void genRandomItems()
     {
         for (int i = 0; i < 5; i++)
@@ -128,7 +144,8 @@ public class Inventory : NetworkBehaviour
             AttackBlock item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
             storage.Add(item);
         }
-        blessingsActive.Add(GenerateTrigger.generate(player.power));
+        blessingsActive = new AttackTrigger[blessingLimit];
+        blessingsActive[0] = GenerateTrigger.generate(player.power);
         RpcInvChange();
     }
 
@@ -153,6 +170,11 @@ public class Inventory : NetworkBehaviour
     public AttackBlock[] exportStorage()
     {
         return storage.ToArray();
+    }
+
+    public AttackTrigger[] exportBlessings()
+    {
+        return blessings.ToArray();
     }
 
 
@@ -184,7 +206,7 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return blessingsActive;
+            return blessingsActive.Where(b => b).ToList();
         }
     }
     public AttackTrigger potentialBlessing
@@ -223,16 +245,16 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void syncInventoryUpwards()
     {
-        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray());
+        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray(), blessingsActive, blessingPotential);
     }
 
     [TargetRpc]
-    void TargetSyncInventory(NetworkConnection conn, AttackBlock[] eq, AttackBlock[] st)
+    void TargetSyncInventory(NetworkConnection conn, AttackBlock[] eq, AttackBlock[] st, AttackTrigger[] bl, AttackTrigger blP)
     {
         equipArray = eq;
         storage = st.ToList();
-
-
+        blessingsActive = bl;
+        blessingPotential = blP;
 
     }
 
@@ -339,10 +361,12 @@ public class Inventory : NetworkBehaviour
     [Command]
     public void CmdEquipBlessing(int blessingSlot)
     {
-        if (blessingPotential && blessingSlot > 0 && blessingSlot < maxBlessings)
+        if (blessingPotential && blessingSlot >= 0 && blessingSlot < maxBlessings)
         {
-            blessings[blessingSlot] = blessingPotential;
+            blessingsActive[blessingSlot] = blessingPotential;
             blessingPotential = null;
+
+            syncInventoryUpwards();
             RpcInvChange();
         }
     }

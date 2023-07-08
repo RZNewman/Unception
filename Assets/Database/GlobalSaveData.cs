@@ -36,6 +36,7 @@ public class GlobalSaveData : MonoBehaviour
     {
         public Task<DataSnapshot> storageItems;
         public Task<DataSnapshot> equippedItems;
+        public Task<DataSnapshot> blessings;
         public Task<DataSnapshot> power;
         public Task<DataSnapshot> pity;
         public Task<DataSnapshot> quests;
@@ -49,12 +50,17 @@ public class GlobalSaveData : MonoBehaviour
             power = db.Child("Characters").Child(playerName).Child("power").GetValueAsync(),
             pity = db.Child("Characters").Child(playerName).Child("pity").GetValueAsync(),
             quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
+            blessings = db.Child("Characters").Child(playerName).Child("blessings").GetValueAsync(),
         };
     }
 
     public AttackBlock[] itemsFromSnapshot(DataSnapshot snapshot)
     {
         return JsonConvert.DeserializeObject<AttackBlock[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
+    }
+    public AttackTrigger[] blessingsFromSnapshot(DataSnapshot snapshot)
+    {
+        return JsonConvert.DeserializeObject<AttackTrigger[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
     }
     public delegate void AssignItems(List<AttackBlock> blocks);
 
@@ -110,6 +116,12 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("items").SetRawJsonValueAsync(json);
         json = santitizeJson(JsonConvert.SerializeObject(equipped, Formatting.None, JSONsettings));
         db.Child("Characters").Child(playerName).Child("equipped").SetRawJsonValueAsync(json);
+    }
+
+    public void savePlayerBlessings(string playerName, AttackTrigger[] blessings)
+    {
+        string json = santitizeJson(JsonConvert.SerializeObject(blessings, Formatting.None, JSONsettings));
+        db.Child("Characters").Child(playerName).Child("blessings").SetRawJsonValueAsync(json);
     }
 
     public struct WorldProgress

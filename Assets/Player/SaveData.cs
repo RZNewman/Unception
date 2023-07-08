@@ -25,7 +25,8 @@ public class SaveData : NetworkBehaviour
     WorldProgress worldProgress;
     UIQuestDisplay questDisplay;
 
-    public enum DataSource{
+    public enum DataSource
+    {
         Online,
         Offline
     }
@@ -73,7 +74,7 @@ public class SaveData : NetworkBehaviour
     [Server]
     public void loadData()
     {
-        if(dataSource == DataSource.Online)
+        if (dataSource == DataSource.Online)
         {
             StartCoroutine(loadDataRoutine());
         }
@@ -81,7 +82,7 @@ public class SaveData : NetworkBehaviour
         {
             loadDataOffline();
         }
-        
+
     }
 
 
@@ -95,6 +96,7 @@ public class SaveData : NetworkBehaviour
         Task<DataSnapshot> power = tasks.power;
         Task<DataSnapshot> pityData = tasks.pity;
         Task<DataSnapshot> quests = tasks.quests;
+        Task<DataSnapshot> blessings = tasks.blessings;
 
         while (!quests.IsFaulted && !quests.IsCompleted && !quests.IsCanceled)
         {
@@ -197,6 +199,27 @@ public class SaveData : NetworkBehaviour
             }
         }
 
+        while (!blessings.IsFaulted && !blessings.IsCompleted && !blessings.IsCanceled)
+        {
+            yield return null;
+        }
+        if (blessings.IsFaulted)
+        {
+            Debug.LogError("Error loading blessings");
+        }
+        else if (blessings.IsCompleted)
+        {
+            DataSnapshot snapshotBlessings = blessings.Result;
+            if (snapshotBlessings.Exists)
+            {
+                AttackTrigger[] bless = globalSave.blessingsFromSnapshot(snapshotBlessings);
+                inv.reloadBlessings(bless);
+            }
+            else
+            {
+                inv.genMinBlessings();
+            }
+        }
 
 
 
@@ -223,6 +246,7 @@ public class SaveData : NetworkBehaviour
                 worldProgress = worldProgress,
             });
             saveItems();
+            saveBlessings();
         }
 
     }
@@ -231,5 +255,10 @@ public class SaveData : NetworkBehaviour
     public void saveItems()
     {
         globalSave.savePlayerItems(auth.user, inv.exportEquipped(), inv.exportStorage());
+    }
+
+    public void saveBlessings()
+    {
+        globalSave.savePlayerBlessings(auth.user, inv.exportBlessings());
     }
 }

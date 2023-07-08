@@ -98,6 +98,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         refreshLives();
         inv.clearDrops();
         save.saveItems();
+        save.saveBlessings();
         StartCoroutine(embarkRoutine(mapIndex));
     }
 

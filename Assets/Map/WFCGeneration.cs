@@ -261,7 +261,9 @@ public class WFCGeneration : MonoBehaviour
         return connections;
     }
 
-    bool restrictDomain(Vector3Int loc)
+
+    delegate void UpdateEntropy(Vector3Int loc, float entropy);
+    bool restrictDomain(Vector3Int loc, UpdateEntropy update)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
         if (!cell.initialized)
@@ -273,6 +275,7 @@ public class WFCGeneration : MonoBehaviour
             return false;
         }
         List<(TileOption, int)> options = optionsFromDomain(cell.domainMask);
+        List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
         foreach ((TileOption opt, int index) in options)
         {
@@ -339,16 +342,42 @@ public class WFCGeneration : MonoBehaviour
                 cell.domainMask ^= 1 << index;
                 reduced = true;
             }
+            else
+            {
+                remaining.Add(opt);
+            }
         }
 
         if (cell.domainMask == 0)
         {
             throw new System.Exception("Domain reduced to 0");
         }
+        if (reduced)
+        {
+            update(loc, entropy(remaining));
+        }
 
         return reduced;
     }
 
+    float entropy(List<TileOption> options)
+    {
+        if (options.Count == 0)
+        {
+            return 0;
+        }
+        float maxWeight = options[0].weight;
+        float entropy = 0;
+        int count = 0;
+        foreach (TileOption opt in options)
+        {
+            entropy += opt.weight / maxWeight * (1 + 0.05f * count);
+            count++;
+        }
+
+        return entropy;
+
+    }
     delegate void CollapseEnqueue(Vector3Int loc);
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
@@ -444,7 +473,7 @@ public class WFCGeneration : MonoBehaviour
             while (propagation.Count > 0)
             {
                 Vector3Int propLocation = propagation.Dequeue();
-                if (restrictDomain(propLocation))
+                if (restrictDomain(propLocation, collapseQueue.UpdatePriority))
                 {
                     collapseConnections(propLocation, propagation.Enqueue);
                 }

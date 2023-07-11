@@ -9920,7 +9920,7 @@ MonoBehaviour:
   collapsePerFrame: 4
   mapSize: {x: 25, y: 13, z: 25}
   tiles:
-  - weight: 5
+  - weight: 2.5
     prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
   - weight: 1
     prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
@@ -9928,6 +9928,8 @@ MonoBehaviour:
     prefab: {fileID: 4863423421354933755, guid: 318ee6c2cbd73634f82fdf5bcc70ab58, type: 3}
   - weight: 1
     prefab: {fileID: 4863423421354933755, guid: 6cc6ca28cad735048bf00b43c8ea3f3a, type: 3}
+  - weight: 1
+    prefab: {fileID: 4863423421354933755, guid: c24738a99ea07b248afa4255417c0730, type: 3}
 --- !u!4 &1231075384
 Transform:
   m_ObjectHideFlags: 0
@@ -9937,7 +9939,7 @@ Transform:
   m_GameObject: {fileID: 1231075381}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 2, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

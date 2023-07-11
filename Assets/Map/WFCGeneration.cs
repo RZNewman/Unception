@@ -574,6 +574,9 @@ public class WFCGeneration : MonoBehaviour
         while (collapseQueue.Count > 0)
         {
             Vector3Int coords = collapseQueue.Dequeue();
+            Vector3 location = new Vector3(coords.x, coords.y, coords.z);
+            location.Scale(transform.lossyScale);
+
             WFCCell cell = map[coords.x, coords.y, coords.z];
             cell.domainMask = selectFromTileDomain(cell.domainMask);
             cell.collapsed = true;
@@ -582,7 +585,7 @@ public class WFCGeneration : MonoBehaviour
             {
                 Instantiate(
                 opt.prefab.gameObject,
-                coords,
+                location,
                 Quaternion.AngleAxis(
                     opt.rotation switch
                     {

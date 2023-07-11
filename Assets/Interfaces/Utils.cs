@@ -23,6 +23,8 @@ public static class Utils
         if (export == null) { return new Dictionary<T, float>(); }
         return export.ToDictionary(p => (T)System.Enum.Parse(typeof(T), p.Key), p => p.Value);
     }
+
+
     public static Vector3 input2vec(Vector2 inp)
     {
         return new Vector3(inp.x, 0, inp.y);

@@ -12,6 +12,7 @@ public class WFCTile : MonoBehaviour
         public List<TileConnection> connections;
     }
 
+    public bool skipSpawn = false;
     public List<ConnectionOptions> adjacencies;
 
     public Dictionary<TileDirection, int> getDomains(Rotation rotation = Rotation.None)
@@ -21,6 +22,10 @@ public class WFCTile : MonoBehaviour
         {
             int connD = connectionDomain(connection.connections);
             domains[rotated(connection.direction, rotation)] = connD;
+        }
+        if (domains.Count != 6)
+        {
+            throw new System.Exception("Tile " + name + ", Rotation " + rotation + " without 6 directions: had " + domains.Count);
         }
         return domains;
     }

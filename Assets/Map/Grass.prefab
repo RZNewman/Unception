@@ -130,13 +130,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adjacencies:
   - direction: 0
-    connections: 01000000
+    connections: 010000000400000002000000
   - direction: 2
-    connections: 01000000
+    connections: 010000000400000002000000
   - direction: 1
-    connections: 01000000
+    connections: 010000000400000002000000
   - direction: 3
-    connections: 01000000
+    connections: 010000000400000002000000
   - direction: 4
     connections: 02000000
   - direction: 5

@@ -59,19 +59,21 @@ public class WFCGeneration : MonoBehaviour
 
     public static TileDirection rotated(TileDirection direction, Rotation rotation)
     {
-        return direction switch
+        TileDirection newDir = direction switch
         {
 
             TileDirection.Up => TileDirection.Up,
             TileDirection.Down => TileDirection.Down,
-            TileDirection dir => (TileDirection)(((int)dir) + ((int)rotation) % 4),
+            TileDirection dir => (TileDirection)((((int)dir) + ((int)rotation)) % 4),
         };
+        //Debug.Log(rotation + ":" + direction + " - " + newDir);
+        return newDir;
     }
 
 
     class WFCCell
     {
-        public bool initialized = false;
+        public bool ready = false;
         public bool collapsed = false;
         public int domainMask;
         public int forwardMask;
@@ -80,11 +82,14 @@ public class WFCGeneration : MonoBehaviour
 
         public void init(int fullDomain, int fullConnection)
         {
-            initialized = true;
             domainMask = fullDomain;
             forwardMask = fullConnection;
             rightMask = fullConnection;
             upMask = fullConnection;
+        }
+        public void makeReady()
+        {
+            ready = true;
         }
 
 
@@ -212,7 +217,7 @@ public class WFCGeneration : MonoBehaviour
 
         foreach ((int index, float weight) in indexWeights)
         {
-            if (weight <= pick)
+            if (pick <= weight)
             {
                 selectedIndex = index;
                 break;
@@ -224,7 +229,7 @@ public class WFCGeneration : MonoBehaviour
         }
         if (selectedIndex == -1)
         {
-            selectedIndex = indexWeights[0].Item1;
+            throw new System.Exception("Weight not chosen");
         }
 
         //TODO maybe just spawn the tile here??
@@ -234,7 +239,7 @@ public class WFCGeneration : MonoBehaviour
 
     List<(TileOption, int)> optionsFromTileDomain(int domain)
     {
-        if(domain == 0)
+        if (domain == 0)
         {
             throw new System.Exception("Empty Domain");
         }
@@ -278,7 +283,7 @@ public class WFCGeneration : MonoBehaviour
     }
     Dictionary<TileDirection, int> compositeConnectionDomains(int domain)
     {
-        if(domain == 0)
+        if (domain == 0)
         {
             throw new System.Exception("Empty Domain");
         }
@@ -305,7 +310,7 @@ public class WFCGeneration : MonoBehaviour
     bool restrictTileDomain(Vector3Int loc, UpdateEntropy update)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
-        if (!cell.initialized)
+        if (!cell.ready)
         {
             return false;
         }
@@ -385,6 +390,7 @@ public class WFCGeneration : MonoBehaviour
         MatchFound:
             if (doesntFit)
             {
+                debugConnentions.Add("///");
                 cell.domainMask ^= 1 << index;
                 reduced = true;
             }
@@ -396,7 +402,7 @@ public class WFCGeneration : MonoBehaviour
 
         if (cell.domainMask == 0)
         {
-            throw new System.Exception("Domain reduced to 0"+JsonUtility.ToJson(options)+ string.Join(',', debugConnentions));
+            throw new System.Exception("Domain reduced to 0" + string.Join(',', debugConnentions));
         }
         if (reduced)
         {
@@ -421,6 +427,7 @@ public class WFCGeneration : MonoBehaviour
             count++;
         }
 
+        //Debug.Log(entropy);
         return entropy;
 
     }
@@ -485,6 +492,9 @@ public class WFCGeneration : MonoBehaviour
     }
     public void init()
     {
+        makeDomain();
+        int fullDomain = fullDomainMask();
+        int fullConnection = fullConnectionMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
         for (int x = 0; x < mapSize.x; x++)
         {
@@ -492,59 +502,35 @@ public class WFCGeneration : MonoBehaviour
             {
                 for (int z = 0; z < mapSize.z; z++)
                 {
-                    map[x, y, z]= new WFCCell();
-                    
+                    map[x, y, z] = new WFCCell();
+                    map[x, y, z].init(fullDomain, fullConnection);
                 }
             }
         }
-        makeDomain();
+
     }
 
     public IEnumerator collapseCells(int xx, int yy, int zz, int width, int height, int length)
     {
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
 
-        int fullDomain = fullDomainMask();
-        int fullConnection = fullConnectionMask();
+
         for (int x = xx; x < xx + width; x++)
         {
             for (int y = yy; y < yy + height; y++)
             {
                 for (int z = zz; z < zz + length; z++)
                 {
-                    map[x, y, z].init(fullDomain, fullConnection);
+                    map[x, y, z].makeReady();
                     collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
                 }
             }
         }
 
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
-
-        int collapseCount = 0;
-        while (collapseQueue.Count > 0)
+        System.Action<Vector3Int> propagateTileRestrictions = (Vector3Int loc) =>
         {
-            Vector3Int coords = collapseQueue.Dequeue();
-            WFCCell cell = map[coords.x, coords.y, coords.z];
-            cell.domainMask = selectFromTileDomain(cell.domainMask);
-            cell.collapsed = true;
-            TileOption opt = optionFromSingleDomain(cell.domainMask);
-            Instantiate(
-                opt.prefab.gameObject,
-                coords,
-                Quaternion.AngleAxis(
-                    opt.rotation switch
-                    {
-                      Rotation.Quarter => 90,
-                      Rotation.Half => 180,
-                      Rotation.ThreeQuarters => 270,
-                      _ => 0,
-                    }
-                    , Vector3.up
-                ),
-                transform
-            );
-
-            collapseConnections(coords, propagation.Enqueue);
+            collapseConnections(loc, propagation.Enqueue);
             while (propagation.Count > 0)
             {
                 Vector3Int propLocation = propagation.Dequeue();
@@ -554,14 +540,74 @@ public class WFCGeneration : MonoBehaviour
                 }
 
             }
+        };
+
+        System.Action<Vector3Int> createTileRestrictions = (Vector3Int loc) =>
+        {
+
+            if (restrictTileDomain(loc, collapseQueue.UpdatePriority))
+            {
+                propagateTileRestrictions(loc);
+            }
+
+
+        };
+
+
+        //TODO real constraints
+        for (int x = xx; x < xx + width; x++)
+        {
+            for (int z = zz; z < zz + length; z++)
+            {
+                map[x, yy, z].upMask = (int)TileConnection.Ground;
+                createTileRestrictions(new Vector3Int(x, yy, z));
+                createTileRestrictions(new Vector3Int(x, yy + 1, z));
+            }
+        }
+        Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
+        map[middle.x, middle.y, middle.z].domainMask = 1;
+        propagateTileRestrictions(middle);
+
+
+
+        int collapseCount = 0;
+        while (collapseQueue.Count > 0)
+        {
+            Vector3Int coords = collapseQueue.Dequeue();
+            WFCCell cell = map[coords.x, coords.y, coords.z];
+            cell.domainMask = selectFromTileDomain(cell.domainMask);
+            cell.collapsed = true;
+            TileOption opt = optionFromSingleDomain(cell.domainMask);
+            if (!opt.prefab.skipSpawn)
+            {
+                Instantiate(
+                opt.prefab.gameObject,
+                coords,
+                Quaternion.AngleAxis(
+                    opt.rotation switch
+                    {
+                        Rotation.Quarter => 90,
+                        Rotation.Half => 180,
+                        Rotation.ThreeQuarters => 270,
+                        _ => 0,
+                    }
+                    , Vector3.up
+                ),
+                transform
+            );
+            }
+
+
+            propagateTileRestrictions(coords);
+
             collapseCount++;
-            if(collapseCount >= collapsePerFrame)
+            if (collapseCount >= collapsePerFrame)
             {
                 collapseCount = 0;
                 yield return null;
             }
-            
-            
+
+
         }
     }
 

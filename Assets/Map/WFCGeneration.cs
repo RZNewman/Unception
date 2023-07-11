@@ -131,6 +131,11 @@ public class WFCGeneration : MonoBehaviour
         public float weight;
         public WFCTile prefab;
         public Rotation rotation;
+
+        public Dictionary<TileDirection, int> getDomains()
+        {
+            return prefab.getDomains(rotation);
+        }
     }
 
     List<TileOption> domainTiles = new List<TileOption>();
@@ -175,7 +180,7 @@ public class WFCGeneration : MonoBehaviour
         //http://aggregate.org/MAGIC/#Is%20Power%20of%202
         return i > 0 && (i & (i - 1)) == 0;
     }
-    int selectFromDomain(int domain)
+    int selectFromTileDomain(int domain)
     {
         if (domain == 0)
         {
@@ -226,7 +231,7 @@ public class WFCGeneration : MonoBehaviour
 
     }
 
-    List<(TileOption, int)> optionsFromDomain(int domain)
+    List<(TileOption, int)> optionsFromTileDomain(int domain)
     {
         List<(TileOption, int)> options = new List<(TileOption, int)>();
         int index = 0;
@@ -242,16 +247,16 @@ public class WFCGeneration : MonoBehaviour
         }
         return options;
     }
-    Dictionary<TileDirection, int> compositeDomains(int domain)
+    Dictionary<TileDirection, int> compositeConnectionDomains(int domain)
     {
         Dictionary<TileDirection, int> connections = new Dictionary<TileDirection, int>();
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
             connections[dir] = 0;
         }
-        foreach ((TileOption opt, _) in optionsFromDomain(domain))
+        foreach ((TileOption opt, _) in optionsFromTileDomain(domain))
         {
-            Dictionary<TileDirection, int> connectionsTile = opt.prefab.getDomains();
+            Dictionary<TileDirection, int> connectionsTile = opt.getDomains();
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
                 connections[dir] |= connectionsTile[dir];
@@ -263,7 +268,7 @@ public class WFCGeneration : MonoBehaviour
 
 
     delegate void UpdateEntropy(Vector3Int loc, float entropy);
-    bool restrictDomain(Vector3Int loc, UpdateEntropy update)
+    bool restrictTileDomain(Vector3Int loc, UpdateEntropy update)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
         if (!cell.initialized)
@@ -274,12 +279,12 @@ public class WFCGeneration : MonoBehaviour
         {
             return false;
         }
-        List<(TileOption, int)> options = optionsFromDomain(cell.domainMask);
+        List<(TileOption, int)> options = optionsFromTileDomain(cell.domainMask);
         List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
         foreach ((TileOption opt, int index) in options)
         {
-            Dictionary<TileDirection, int> domains = opt.prefab.getDomains();
+            Dictionary<TileDirection, int> domains = opt.getDomains();
             bool doesntFit = false;
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
@@ -382,7 +387,7 @@ public class WFCGeneration : MonoBehaviour
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
-        Dictionary<TileDirection, int> domains = compositeDomains(cell.domainMask);
+        Dictionary<TileDirection, int> domains = compositeConnectionDomains(cell.domainMask);
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
             WFCCell negativeCell;
@@ -467,13 +472,13 @@ public class WFCGeneration : MonoBehaviour
         {
             Vector3Int coords = collapseQueue.Dequeue();
             WFCCell cell = map[coords.x, coords.y, coords.z];
-            cell.domainMask = selectFromDomain(cell.domainMask);
+            cell.domainMask = selectFromTileDomain(cell.domainMask);
             cell.collapsed = true;
             collapseConnections(coords, propagation.Enqueue);
             while (propagation.Count > 0)
             {
                 Vector3Int propLocation = propagation.Dequeue();
-                if (restrictDomain(propLocation, collapseQueue.UpdatePriority))
+                if (restrictTileDomain(propLocation, collapseQueue.UpdatePriority))
                 {
                     collapseConnections(propLocation, propagation.Enqueue);
                 }

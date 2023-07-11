@@ -10,7 +10,7 @@ public class WFCRunner : MonoBehaviour
     {
         generation = GetComponent<WFCGeneration>();
         generation.init();
-        StartCoroutine(generation.collapseCells(1, 1, 1, 90, 25, 90));
+        StartCoroutine(generation.collapseCells(1, 1, 1, 20, 10, 20));
     }
 
     // Update is called once per frame

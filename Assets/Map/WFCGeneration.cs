@@ -7,10 +7,11 @@ using static Utils;
 
 public class WFCGeneration : MonoBehaviour
 {
+    public int collapsePerFrame = 4;
     public Vector3Int mapSize = new Vector3Int(100, 30, 100);
     public List<TileWeight> tiles;
 
-
+    [System.Serializable]
     public struct TileWeight
     {
         public float weight;
@@ -233,13 +234,19 @@ public class WFCGeneration : MonoBehaviour
 
     List<(TileOption, int)> optionsFromTileDomain(int domain)
     {
+        if(domain == 0)
+        {
+            throw new System.Exception("Empty Domain");
+        }
         List<(TileOption, int)> options = new List<(TileOption, int)>();
         int index = 0;
-        while (domain > 1 && index < domainTiles.Count)
+        //Debug.Log(domain);
+        while (domain > 0 && index < domainTiles.Count)
         {
             if ((domain & 1) > 0)
             {
                 options.Add((domainTiles[index], index));
+                //Debug.Log(domainTiles[index].prefab.name);
             }
 
             domain = domain >> 1;
@@ -247,8 +254,34 @@ public class WFCGeneration : MonoBehaviour
         }
         return options;
     }
+
+    TileOption optionFromSingleDomain(int domain)
+    {
+        if (!oneFlagSet(domain))
+        {
+            throw new System.Exception("mutiple domains at instance");
+        }
+
+        int index = 0;
+        while (index < domainTiles.Count)
+        {
+            if ((domain & 1) > 0)
+            {
+                return domainTiles[index];
+            }
+
+            domain = domain >> 1;
+            index++;
+        }
+
+        throw new System.Exception("tile option not found");
+    }
     Dictionary<TileDirection, int> compositeConnectionDomains(int domain)
     {
+        if(domain == 0)
+        {
+            throw new System.Exception("Empty Domain");
+        }
         Dictionary<TileDirection, int> connections = new Dictionary<TileDirection, int>();
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
@@ -260,6 +293,7 @@ public class WFCGeneration : MonoBehaviour
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
                 connections[dir] |= connectionsTile[dir];
+                //Debug.Log(connections[dir]);
             }
         }
 
@@ -282,6 +316,7 @@ public class WFCGeneration : MonoBehaviour
         List<(TileOption, int)> options = optionsFromTileDomain(cell.domainMask);
         List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
+        List<string> debugConnentions = new List<string>();
         foreach ((TileOption opt, int index) in options)
         {
             Dictionary<TileDirection, int> domains = opt.getDomains();
@@ -292,6 +327,7 @@ public class WFCGeneration : MonoBehaviour
                 switch (dir)
                 {
                     case TileDirection.Forward:
+                        debugConnentions.Add(" Forward:" + cell.forwardMask);
                         if ((cell.forwardMask & domains[TileDirection.Forward]) == 0)
                         {
 
@@ -300,6 +336,7 @@ public class WFCGeneration : MonoBehaviour
                         }
                         break;
                     case TileDirection.Right:
+                        debugConnentions.Add(" Right:" + cell.rightMask);
                         if ((cell.rightMask & domains[TileDirection.Right]) == 0)
                         {
 
@@ -308,6 +345,7 @@ public class WFCGeneration : MonoBehaviour
                         }
                         break;
                     case TileDirection.Up:
+                        debugConnentions.Add(" Up:" + cell.upMask);
                         if ((cell.upMask & domains[TileDirection.Up]) == 0)
                         {
 
@@ -317,6 +355,7 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Backward:
                         negativeCell = map[loc.x, loc.y, loc.z - 1];
+                        debugConnentions.Add(" Backward:" + negativeCell.forwardMask);
                         if ((negativeCell.forwardMask & domains[TileDirection.Backward]) == 0)
                         {
                             doesntFit = true;
@@ -325,6 +364,7 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Left:
                         negativeCell = map[loc.x - 1, loc.y, loc.z];
+                        debugConnentions.Add(" Left:" + negativeCell.rightMask);
                         if ((negativeCell.rightMask & domains[TileDirection.Left]) == 0)
                         {
                             doesntFit = true;
@@ -333,6 +373,7 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Down:
                         negativeCell = map[loc.x, loc.y - 1, loc.z];
+                        debugConnentions.Add(" Down:" + negativeCell.upMask);
                         if ((negativeCell.upMask & domains[TileDirection.Down]) == 0)
                         {
                             doesntFit = true;
@@ -355,7 +396,7 @@ public class WFCGeneration : MonoBehaviour
 
         if (cell.domainMask == 0)
         {
-            throw new System.Exception("Domain reduced to 0");
+            throw new System.Exception("Domain reduced to 0"+JsonUtility.ToJson(options)+ string.Join(',', debugConnentions));
         }
         if (reduced)
         {
@@ -394,6 +435,7 @@ public class WFCGeneration : MonoBehaviour
             switch (dir)
             {
                 case TileDirection.Forward:
+                    //Debug.Log(domains[TileDirection.Forward]);
                     if (cell.forwardMask != domains[TileDirection.Forward])
                     {
                         cell.forwardMask &= domains[TileDirection.Forward];
@@ -444,6 +486,17 @@ public class WFCGeneration : MonoBehaviour
     public void init()
     {
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            for (int y = 0; y < mapSize.y; y++)
+            {
+                for (int z = 0; z < mapSize.z; z++)
+                {
+                    map[x, y, z]= new WFCCell();
+                    
+                }
+            }
+        }
         makeDomain();
     }
 
@@ -467,13 +520,30 @@ public class WFCGeneration : MonoBehaviour
 
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
 
-
+        int collapseCount = 0;
         while (collapseQueue.Count > 0)
         {
             Vector3Int coords = collapseQueue.Dequeue();
             WFCCell cell = map[coords.x, coords.y, coords.z];
             cell.domainMask = selectFromTileDomain(cell.domainMask);
             cell.collapsed = true;
+            TileOption opt = optionFromSingleDomain(cell.domainMask);
+            Instantiate(
+                opt.prefab.gameObject,
+                coords,
+                Quaternion.AngleAxis(
+                    opt.rotation switch
+                    {
+                      Rotation.Quarter => 90,
+                      Rotation.Half => 180,
+                      Rotation.ThreeQuarters => 270,
+                      _ => 0,
+                    }
+                    , Vector3.up
+                ),
+                transform
+            );
+
             collapseConnections(coords, propagation.Enqueue);
             while (propagation.Count > 0)
             {
@@ -484,7 +554,14 @@ public class WFCGeneration : MonoBehaviour
                 }
 
             }
-            yield return null;
+            collapseCount++;
+            if(collapseCount >= collapsePerFrame)
+            {
+                collapseCount = 0;
+                yield return null;
+            }
+            
+            
         }
     }
 

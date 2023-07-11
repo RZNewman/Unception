@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9875,6 +9875,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3965dca96e6f7d4794176b4ae31d3c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1231075381
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1231075384}
+  - component: {fileID: 1231075383}
+  - component: {fileID: 1231075382}
+  m_Layer: 0
+  m_Name: WFC Core
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1231075382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231075381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c914614a9d3d2418c2e6c3374aeb5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1231075383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231075381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f54ffd3090df142b3b7e1fd04c5e49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collapsePerFrame: 4
+  mapSize: {x: 25, y: 13, z: 25}
+  tiles:
+  - weight: 1
+    prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
+  - weight: 1
+    prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
+  - weight: 1
+    prefab: {fileID: 4863423421354933755, guid: 318ee6c2cbd73634f82fdf5bcc70ab58, type: 3}
+--- !u!4 &1231075384
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231075381}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1264704262
 GameObject:
   m_ObjectHideFlags: 0

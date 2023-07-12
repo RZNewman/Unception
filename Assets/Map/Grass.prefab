@@ -128,15 +128,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7aefd46d238b9c4ba6ab7f6cad4f499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skipSpawn: 0
   adjacencies:
   - direction: 0
-    connections: 010000000400000002000000
+    connections: 010000001000000008000000
   - direction: 2
-    connections: 010000000400000002000000
+    connections: 010000001000000008000000
   - direction: 1
-    connections: 010000000400000002000000
+    connections: 010000001000000008000000
   - direction: 3
-    connections: 010000000400000002000000
+    connections: 010000001000000008000000
   - direction: 4
     connections: 02000000
   - direction: 5

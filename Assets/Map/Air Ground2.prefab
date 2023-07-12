@@ -47,11 +47,11 @@ MonoBehaviour:
   skipSpawn: 1
   adjacencies:
   - direction: 0
-    connections: 04000000
+    connections: 10000000
   - direction: 2
     connections: 02000000
   - direction: 1
-    connections: 04000000
+    connections: 10000000
   - direction: 3
     connections: 02000000
   - direction: 4

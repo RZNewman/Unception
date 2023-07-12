@@ -22,14 +22,24 @@ public class WFCGeneration : MonoBehaviour
         Flat = 1 << 0,
         Air = 1 << 1,
         Ground = 1 << 2,
-        //RampLeft,
-        //RampRight,
+        AirConnect = 1 << 3,
+        GroundConnect = 1 << 4,
+        RampLeft = 1 << 5,
+        RampRight = 1 << 6,
         //RampTop,
         //WallLeft,
         //WallRight,
         //FlatUnwalkable,
     }
 
+    Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
+    {
+        {TileConnection.AirConnect, TileConnection.Air },
+        {TileConnection.GroundConnect, TileConnection.Ground },
+        {TileConnection.RampLeft, TileConnection.RampRight },
+        {TileConnection.RampRight, TileConnection.RampLeft },
+    };
+    Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
     public static bool walkable(TileConnection conn)
     {
         return (conn & (TileConnection.Flat)) != 0;
@@ -123,6 +133,30 @@ public class WFCGeneration : MonoBehaviour
         }
         return mask;
     }
+
+    int invertConnections(int domain)
+    {
+        int subtractionMask = 0;
+        int additionMask = 0;
+        foreach (TileConnection key in inversions.Keys)
+        {
+            int keyMask = (int)key;
+            if ((domain & (int)keyMask) > 0)
+            {
+                subtractionMask |= keyMask;
+                additionMask |= (int)inversions[key];
+            }
+        }
+        foreach (TileConnection key in inversionsReverse.Keys)
+        {
+            int keyMask = (int)key;
+            if ((domain & (int)keyMask) > 0)
+            {
+                additionMask |= (int)inversionsReverse[key];
+            }
+        }
+        return domain ^ subtractionMask | additionMask;
+    }
     public enum Rotation
     {
         None,
@@ -180,6 +214,19 @@ public class WFCGeneration : MonoBehaviour
         }
         //Reverse in the sort function 
         domainTiles.Sort((a, b) => b.weight.CompareTo(a.weight));
+    }
+
+    void makeInversions()
+    {
+        foreach (TileConnection key in inversions.Keys)
+        {
+            TileConnection value = inversions[key];
+            if (!inversions.ContainsKey(value))
+            {
+                // the oppisite direction
+                inversionsReverse.Add(value, key);
+            }
+        }
     }
     static bool oneFlagSet(int i)
     {
@@ -329,6 +376,7 @@ public class WFCGeneration : MonoBehaviour
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
                 WFCCell negativeCell;
+                int negativeDomain;
                 switch (dir)
                 {
                     case TileDirection.Forward:
@@ -360,8 +408,9 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Backward:
                         negativeCell = map[loc.x, loc.y, loc.z - 1];
+                        negativeDomain = invertConnections(negativeCell.forwardMask);
                         debugConnentions.Add(" Backward:" + negativeCell.forwardMask);
-                        if ((negativeCell.forwardMask & domains[TileDirection.Backward]) == 0)
+                        if ((negativeDomain & domains[TileDirection.Backward]) == 0)
                         {
                             doesntFit = true;
                             goto MatchFound;
@@ -369,8 +418,9 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Left:
                         negativeCell = map[loc.x - 1, loc.y, loc.z];
+                        negativeDomain = invertConnections(negativeCell.rightMask);
                         debugConnentions.Add(" Left:" + negativeCell.rightMask);
-                        if ((negativeCell.rightMask & domains[TileDirection.Left]) == 0)
+                        if ((negativeDomain & domains[TileDirection.Left]) == 0)
                         {
                             doesntFit = true;
                             goto MatchFound;
@@ -378,8 +428,9 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Down:
                         negativeCell = map[loc.x, loc.y - 1, loc.z];
+                        negativeDomain = invertConnections(negativeCell.upMask);
                         debugConnentions.Add(" Down:" + negativeCell.upMask);
-                        if ((negativeCell.upMask & domains[TileDirection.Down]) == 0)
+                        if ((negativeDomain & domains[TileDirection.Down]) == 0)
                         {
                             doesntFit = true;
                             goto MatchFound;
@@ -439,6 +490,7 @@ public class WFCGeneration : MonoBehaviour
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
             WFCCell negativeCell;
+            int negativeDomain;
             switch (dir)
             {
                 case TileDirection.Forward:
@@ -465,25 +517,28 @@ public class WFCGeneration : MonoBehaviour
                     break;
                 case TileDirection.Backward:
                     negativeCell = map[loc.x, loc.y, loc.z - 1];
-                    if (negativeCell.forwardMask != domains[TileDirection.Backward])
+                    negativeDomain = invertConnections(domains[TileDirection.Backward]);
+                    if (negativeCell.forwardMask != negativeDomain)
                     {
-                        negativeCell.forwardMask &= domains[TileDirection.Backward];
+                        negativeCell.forwardMask &= negativeDomain;
                         queue(loc + new Vector3Int(0, 0, -1));
                     }
                     break;
                 case TileDirection.Left:
                     negativeCell = map[loc.x - 1, loc.y, loc.z];
-                    if (negativeCell.rightMask != domains[TileDirection.Left])
+                    negativeDomain = invertConnections(domains[TileDirection.Left]);
+                    if (negativeCell.rightMask != negativeDomain)
                     {
-                        negativeCell.rightMask &= domains[TileDirection.Left];
+                        negativeCell.rightMask &= negativeDomain;
                         queue(loc + new Vector3Int(-1, 0, 0));
                     }
                     break;
                 case TileDirection.Down:
                     negativeCell = map[loc.x, loc.y - 1, loc.z];
-                    if (negativeCell.upMask != domains[TileDirection.Down])
+                    negativeDomain = invertConnections(domains[TileDirection.Down]);
+                    if (negativeCell.upMask != negativeDomain)
                     {
-                        negativeCell.upMask &= domains[TileDirection.Down];
+                        negativeCell.upMask &= negativeDomain;
                         queue(loc + new Vector3Int(0, -1, 0));
                     }
                     break;
@@ -493,6 +548,7 @@ public class WFCGeneration : MonoBehaviour
     public void init()
     {
         makeDomain();
+        makeInversions();
         int fullDomain = fullDomainMask();
         int fullConnection = fullConnectionMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];

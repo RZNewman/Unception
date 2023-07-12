@@ -27,9 +27,10 @@ public class WFCGeneration : MonoBehaviour
         RampLeft = 1 << 5,
         RampRight = 1 << 6,
         RampTop = 1 << 7,
-        //WallLeft,
-        //WallRight,
-        //FlatUnwalkable,
+        WallLeft = 1 << 8,
+        WallRight = 1 << 9,
+        FlatUnwalkable = 1 << 10,
+        FlatUnwalkableConnect = 1 << 11,
     }
 
     Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
@@ -38,6 +39,9 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.GroundConnect, TileConnection.Ground },
         {TileConnection.RampLeft, TileConnection.RampRight },
         {TileConnection.RampRight, TileConnection.RampLeft },
+        {TileConnection.WallLeft, TileConnection.WallRight },
+        {TileConnection.WallRight, TileConnection.WallLeft },
+        {TileConnection.FlatUnwalkableConnect, TileConnection.FlatUnwalkable },
     };
     Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
     public static int walkableMask()
@@ -91,14 +95,14 @@ public class WFCGeneration : MonoBehaviour
     {
         public bool ready = false;
         public bool collapsed = false;
-        public int domainMask;
+        public long domainMask;
         public int forwardMask;
         public int rightMask;
         public int upMask;
 
         public Dictionary<int, List<Rotation>> alignmentRestrictions;
 
-        public void init(int fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
+        public void init(long fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
         {
             domainMask = fullDomain;
             forwardMask = fullConnection;
@@ -121,13 +125,13 @@ public class WFCGeneration : MonoBehaviour
         return connectionDomain(EnumValues<TileConnection>());
     }
 
-    int fullDomainMask()
+    long fullDomainMask()
     {
-        int mask = 0;
+        long mask = 0;
 
         for (int i = 0; i < domainTiles.Count; i++)
         {
-            mask |= 1 << i;
+            mask |= 1L << i;
         }
         return mask;
     }
@@ -250,12 +254,12 @@ public class WFCGeneration : MonoBehaviour
             }
         }
     }
-    static bool oneFlagSet(int i)
+    static bool oneFlagSet(long i)
     {
         //http://aggregate.org/MAGIC/#Is%20Power%20of%202
         return i > 0 && (i & (i - 1)) == 0;
     }
-    int selectFromTileDomain(int domain)
+    long selectFromTileDomain(long domain)
     {
         if (domain == 0)
         {
@@ -266,7 +270,7 @@ public class WFCGeneration : MonoBehaviour
             return domain;
         }
 
-        int processDomain = domain;
+        long processDomain = domain;
         List<(int, float)> indexWeights = new List<(int, float)>();
         float weightSum = 0;
 
@@ -276,8 +280,11 @@ public class WFCGeneration : MonoBehaviour
             {
                 TileOption opt = domainTiles[i];
                 //Debug.Log(opt.prefab.name + " - " + opt.weight);
+
                 indexWeights.Add((i, opt.weight));
                 weightSum += opt.weight;
+
+
             }
             processDomain = processDomain >> 1;
         }
@@ -305,11 +312,11 @@ public class WFCGeneration : MonoBehaviour
 
         //Debug.Log(selectedIndex);
         //TODO maybe just spawn the tile here??
-        return 1 << selectedIndex;
+        return 1L << selectedIndex;
 
     }
 
-    List<(TileOption, int)> optionsFromTileDomain(int domain)
+    List<(TileOption, int)> optionsFromTileDomain(long domain)
     {
         if (domain == 0)
         {
@@ -332,7 +339,7 @@ public class WFCGeneration : MonoBehaviour
         return options;
     }
 
-    TileOption optionFromSingleDomain(int domain)
+    TileOption optionFromSingleDomain(long domain)
     {
         if (!oneFlagSet(domain))
         {
@@ -355,7 +362,7 @@ public class WFCGeneration : MonoBehaviour
     }
 
 
-    ConnectionDomainInfo compositeConnectionDomains(int domain)
+    ConnectionDomainInfo compositeConnectionDomains(long domain)
     {
         if (domain == 0)
         {
@@ -524,7 +531,7 @@ public class WFCGeneration : MonoBehaviour
             if (doesntFit)
             {
                 debugConnentions.Add("///");
-                cell.domainMask ^= 1 << index;
+                cell.domainMask ^= 1L << index;
                 reduced = true;
             }
             else
@@ -535,7 +542,7 @@ public class WFCGeneration : MonoBehaviour
 
         if (cell.domainMask == 0)
         {
-            throw new System.Exception("Domain reduced to 0" + string.Join(',', debugConnentions));
+            throw new System.Exception("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
         }
         if (reduced)
         {
@@ -672,7 +679,7 @@ public class WFCGeneration : MonoBehaviour
     {
         makeDomain();
         makeInversions();
-        int fullDomain = fullDomainMask();
+        long fullDomain = fullDomainMask();
         int fullConnection = fullConnectionMask();
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];

@@ -125,15 +125,25 @@ public class WFCGeneration : MonoBehaviour
         return connectionDomain(EnumValues<TileConnection>());
     }
 
-    long fullDomainMask()
+    (long, long) fullDomainMask()
     {
         long mask = 0;
+        long EXmask = 0;
 
         for (int i = 0; i < domainTiles.Count; i++)
         {
-            mask |= 1L << i;
+            TileOption opt = domainTiles[i];
+            if (opt.weight > 0)
+            {
+                mask |= 1L << i;
+            }
+            else
+            {
+                EXmask |= 1L << i;
+            }
+
         }
-        return mask;
+        return (mask, EXmask);
     }
 
     Dictionary<int, List<Rotation>> fullAlignmentMask()
@@ -206,7 +216,7 @@ public class WFCGeneration : MonoBehaviour
     {
         foreach (TileWeight tile in tiles)
         {
-            if (tile.weight <= 0)
+            if (tile.weight <= -1)
             {
                 continue;
             }
@@ -419,7 +429,7 @@ public class WFCGeneration : MonoBehaviour
 
 
     delegate void UpdateEntropy(Vector3Int loc, float entropy);
-    bool restrictTileDomain(Vector3Int loc, UpdateEntropy update)
+    bool restrictTileDomain(Vector3Int loc, UpdateEntropy update, bool ExCall = false)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
         if (!cell.ready)
@@ -542,8 +552,31 @@ public class WFCGeneration : MonoBehaviour
 
         if (cell.domainMask == 0)
         {
-            throw new System.Exception("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
+            if (ExCall)
+            {
+                Debug.LogWarning("EXDomain:" + string.Join(',', debugConnentions));
+                return false;
+            }
+            else
+            {
+                cell.domainMask = ExDomain;
+                if (restrictTileDomain(loc, update, true))
+                {
+                    //Ex tile found
+                }
+                else
+                {
+                    throw new System.Exception("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
+                }
+            }
+
         }
+
+        if (ExCall)
+        {
+            return true;
+        }
+
         if (reduced)
         {
             update(loc, entropy(remaining));
@@ -675,11 +708,14 @@ public class WFCGeneration : MonoBehaviour
             }
         }
     }
+
+    long ExDomain = 0;
     public void init()
     {
         makeDomain();
         makeInversions();
-        long fullDomain = fullDomainMask();
+        (long fullDomain, long Ex) = fullDomainMask();
+        ExDomain = Ex;
         int fullConnection = fullConnectionMask();
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];

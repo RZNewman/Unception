@@ -230,13 +230,13 @@ MonoBehaviour:
   dissuadeCollapse: 0
   adjacencies:
   - direction: 0
-    connections: 00010000010000000800000010000000
+    connections: 0001000001000000080000001000000000040000
   - direction: 2
-    connections: 01000000
+    connections: 0100000000040000
   - direction: 1
-    connections: 00020000010000000800000010000000
+    connections: 0002000001000000080000001000000000040000
   - direction: 3
-    connections: 01000000
+    connections: 0100000000040000
   - direction: 4
     connections: 02000000
   - direction: 5

@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skipSpawn: 1
+  dissuadeCollapse: 1
   adjacencies:
   - direction: 0
     connections: 10000000

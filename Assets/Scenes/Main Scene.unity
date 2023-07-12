@@ -9905,6 +9905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7c914614a9d3d2418c2e6c3374aeb5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  genSize: {x: 50, y: 8, z: 50}
 --- !u!114 &1231075383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9917,23 +9918,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15f54ffd3090df142b3b7e1fd04c5e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collapsePerFrame: 4
-  mapSize: {x: 25, y: 13, z: 25}
+  collapsePerFrame: 10
+  mapSize: {x: 52, y: 10, z: 52}
   tiles:
-  - weight: 100
+  - weight: 60
     prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
-  - weight: 1
+  - weight: 10
     prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
   - weight: 0.5
     prefab: {fileID: 4863423421354933755, guid: 318ee6c2cbd73634f82fdf5bcc70ab58, type: 3}
-  - weight: 0.1
+  - weight: 0.5
     prefab: {fileID: 4863423421354933755, guid: 6cc6ca28cad735048bf00b43c8ea3f3a, type: 3}
-  - weight: 0.05
+  - weight: 0.1
     prefab: {fileID: 4863423421354933755, guid: c24738a99ea07b248afa4255417c0730, type: 3}
-  - weight: 40
+  - weight: 100
     prefab: {fileID: 4863423421354933755, guid: 1552fd8bcfad6aa4b856c1b288816738, type: 3}
   - weight: 15
     prefab: {fileID: 4863423421354933755, guid: 45fedb091e967e1488815396e1b8dec7, type: 3}
+  - weight: 2
+    prefab: {fileID: 4863423421354933755, guid: 408ea6b3e7b317b4490b9a5b41db0880, type: 3}
 --- !u!4 &1231075384
 Transform:
   m_ObjectHideFlags: 0

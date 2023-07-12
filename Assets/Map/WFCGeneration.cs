@@ -26,7 +26,7 @@ public class WFCGeneration : MonoBehaviour
         GroundConnect = 1 << 4,
         RampLeft = 1 << 5,
         RampRight = 1 << 6,
-        //RampTop,
+        RampTop = 1 << 7,
         //WallLeft,
         //WallRight,
         //FlatUnwalkable,
@@ -40,9 +40,15 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.RampRight, TileConnection.RampLeft },
     };
     Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
-    public static bool walkable(TileConnection conn)
+    public static int walkableMask()
     {
-        return (conn & (TileConnection.Flat)) != 0;
+        return (int)(TileConnection.Flat);
+    }
+
+    public static List<TileConnection> alignments = new List<TileConnection>() { TileConnection.RampTop };
+    public static int alignmentMask()
+    {
+        return (int)(TileConnection.RampTop);
     }
     public enum TileDirection
     {
@@ -90,12 +96,15 @@ public class WFCGeneration : MonoBehaviour
         public int rightMask;
         public int upMask;
 
-        public void init(int fullDomain, int fullConnection)
+        public Dictionary<int, List<Rotation>> alignmentRestrictions;
+
+        public void init(int fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
         {
             domainMask = fullDomain;
             forwardMask = fullConnection;
             rightMask = fullConnection;
             upMask = fullConnection;
+            alignmentRestrictions = new Dictionary<int, List<Rotation>>(fullRestrictions);
         }
         public void makeReady()
         {
@@ -123,6 +132,15 @@ public class WFCGeneration : MonoBehaviour
         return mask;
     }
 
+    Dictionary<int, List<Rotation>> fullAlignmentMask()
+    {
+        Dictionary<int, List<Rotation>> restrictions = new Dictionary<int, List<Rotation>>();
+        foreach (TileConnection a in alignments)
+        {
+            restrictions[(int)a] = new List<Rotation>() { Rotation.None, Rotation.Quarter, Rotation.Half, Rotation.ThreeQuarters };
+        }
+        return restrictions;
+    }
     public static int connectionDomain(IEnumerable<TileConnection> connections)
     {
         int mask = 0;
@@ -184,6 +202,10 @@ public class WFCGeneration : MonoBehaviour
     {
         foreach (TileWeight tile in tiles)
         {
+            if (tile.weight <= 0)
+            {
+                continue;
+            }
             List<Rotation> rots = new List<Rotation>() { Rotation.None };
             Dictionary<TileDirection, int> domains = tile.prefab.getDomains();
             if (domains[TileDirection.Forward] == domains[TileDirection.Backward]
@@ -208,7 +230,7 @@ public class WFCGeneration : MonoBehaviour
                 {
                     rotation = r,
                     prefab = tile.prefab,
-                    weight = tile.weight,
+                    weight = tile.weight / rots.Count,
                 });
             }
         }
@@ -253,6 +275,7 @@ public class WFCGeneration : MonoBehaviour
             if ((processDomain & 1) > 0)
             {
                 TileOption opt = domainTiles[i];
+                //Debug.Log(opt.prefab.name + " - " + opt.weight);
                 indexWeights.Add((i, opt.weight));
                 weightSum += opt.weight;
             }
@@ -261,6 +284,7 @@ public class WFCGeneration : MonoBehaviour
 
         float pick = Random.value * weightSum;
         int selectedIndex = -1;
+        //Debug.Log(pick);
 
         foreach ((int index, float weight) in indexWeights)
         {
@@ -279,6 +303,7 @@ public class WFCGeneration : MonoBehaviour
             throw new System.Exception("Weight not chosen");
         }
 
+        //Debug.Log(selectedIndex);
         //TODO maybe just spawn the tile here??
         return 1 << selectedIndex;
 
@@ -328,25 +353,58 @@ public class WFCGeneration : MonoBehaviour
 
         throw new System.Exception("tile option not found");
     }
-    Dictionary<TileDirection, int> compositeConnectionDomains(int domain)
+
+
+    ConnectionDomainInfo compositeConnectionDomains(int domain)
     {
         if (domain == 0)
         {
             throw new System.Exception("Empty Domain");
         }
-        Dictionary<TileDirection, int> connections = new Dictionary<TileDirection, int>();
+        ConnectionDomainInfo connections = new ConnectionDomainInfo
+        {
+            validConnections = new Dictionary<TileDirection, int>(),
+            downAlignments = new Dictionary<int, List<Rotation>>(),
+            upAlignments = new Dictionary<int, List<Rotation>>(),
+        };
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
-            connections[dir] = 0;
+            connections.validConnections[dir] = 0;
+        }
+        foreach (TileConnection conn in alignments)
+        {
+            int singleAlignmentMask = (int)conn;
+            connections.upAlignments[singleAlignmentMask] = new List<Rotation>();
+            connections.downAlignments[singleAlignmentMask] = new List<Rotation>();
         }
         foreach ((TileOption opt, _) in optionsFromTileDomain(domain))
         {
             Dictionary<TileDirection, int> connectionsTile = opt.getDomains();
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
-                connections[dir] |= connectionsTile[dir];
+                connections.validConnections[dir] |= connectionsTile[dir];
                 //Debug.Log(connections[dir]);
             }
+            foreach (TileConnection conn in alignments)
+            {
+
+                int singleAlignmentMask = (int)conn;
+                if ((connectionsTile[TileDirection.Up] | singleAlignmentMask) > 0)
+                {
+                    if (!connections.upAlignments[singleAlignmentMask].Contains(opt.rotation))
+                    {
+                        connections.upAlignments[singleAlignmentMask].Add(opt.rotation);
+                    }
+                }
+                if ((connectionsTile[TileDirection.Down] | singleAlignmentMask) > 0)
+                {
+                    if (!connections.downAlignments[singleAlignmentMask].Contains(opt.rotation))
+                    {
+                        connections.downAlignments[singleAlignmentMask].Add(opt.rotation);
+                    }
+                }
+            }
+
         }
 
         return connections;
@@ -371,12 +429,14 @@ public class WFCGeneration : MonoBehaviour
         List<string> debugConnentions = new List<string>();
         foreach ((TileOption opt, int index) in options)
         {
+            debugConnentions.Add(" Tile:" + opt.prefab.name + "*" + opt.rotation + " ");
             Dictionary<TileDirection, int> domains = opt.getDomains();
             bool doesntFit = false;
             foreach (TileDirection dir in EnumValues<TileDirection>())
             {
                 WFCCell negativeCell;
                 int negativeDomain;
+                int overlap;
                 switch (dir)
                 {
                     case TileDirection.Forward:
@@ -399,9 +459,20 @@ public class WFCGeneration : MonoBehaviour
                         break;
                     case TileDirection.Up:
                         debugConnentions.Add(" Up:" + cell.upMask);
-                        if ((cell.upMask & domains[TileDirection.Up]) == 0)
+                        overlap = cell.upMask & domains[TileDirection.Up];
+                        if (overlap == 0)
                         {
 
+                            doesntFit = true;
+                            goto MatchFound;
+                        }
+                        else if (
+                            (overlap | alignmentMask()) == alignmentMask()
+                            &&
+                            !cell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                            )
+                        {
+                            debugConnentions.Add(" Overlap:" + overlap + " - " + opt.rotation);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -430,8 +501,19 @@ public class WFCGeneration : MonoBehaviour
                         negativeCell = map[loc.x, loc.y - 1, loc.z];
                         negativeDomain = invertConnections(negativeCell.upMask);
                         debugConnentions.Add(" Down:" + negativeCell.upMask);
-                        if ((negativeDomain & domains[TileDirection.Down]) == 0)
+                        overlap = negativeDomain & domains[TileDirection.Down];
+                        if (overlap == 0)
                         {
+                            doesntFit = true;
+                            goto MatchFound;
+                        }
+                        else if (
+                            (overlap | alignmentMask()) == alignmentMask()
+                            &&
+                            !negativeCell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                            )
+                        {
+                            debugConnentions.Add(" Overlap:" + overlap + " - " + opt.rotation);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -465,6 +547,7 @@ public class WFCGeneration : MonoBehaviour
 
     float entropy(List<TileOption> options)
     {
+        //return options.Count;
         if (options.Count == 0)
         {
             return 0;
@@ -474,7 +557,14 @@ public class WFCGeneration : MonoBehaviour
         int count = 0;
         foreach (TileOption opt in options)
         {
-            entropy += opt.weight / maxWeight * (1 + 0.05f * count);
+            if (opt.prefab.dissuadeCollapse)
+            {
+                entropy += 1;
+            }
+            else
+            {
+                entropy += opt.weight / maxWeight * (1 + 0.05f * count);
+            }
             count++;
         }
 
@@ -483,14 +573,27 @@ public class WFCGeneration : MonoBehaviour
 
     }
     delegate void CollapseEnqueue(Vector3Int loc);
+
+    struct ConnectionDomainInfo
+    {
+        public Dictionary<TileDirection, int> validConnections;
+        public Dictionary<int, List<Rotation>> upAlignments;
+        public Dictionary<int, List<Rotation>> downAlignments;
+    }
+    public struct ConnectionTileInfo
+    {
+        public Dictionary<TileDirection, int> validConnections;
+    }
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
-        Dictionary<TileDirection, int> domains = compositeConnectionDomains(cell.domainMask);
+        ConnectionDomainInfo connections = compositeConnectionDomains(cell.domainMask);
+        Dictionary<TileDirection, int> domains = connections.validConnections;
         foreach (TileDirection dir in EnumValues<TileDirection>())
         {
             WFCCell negativeCell;
             int negativeDomain;
+            bool altered;
             switch (dir)
             {
                 case TileDirection.Forward:
@@ -509,9 +612,19 @@ public class WFCGeneration : MonoBehaviour
                     }
                     break;
                 case TileDirection.Up:
+                    altered = false;
                     if (cell.upMask != domains[TileDirection.Up])
                     {
                         cell.upMask &= domains[TileDirection.Up];
+                        altered = true;
+                    }
+                    if (cell.alignmentRestrictions.Count < connections.upAlignments.Count)
+                    {
+                        cell.alignmentRestrictions = connections.upAlignments;
+                        altered = true;
+                    }
+                    if (altered)
+                    {
                         queue(loc + new Vector3Int(0, 1, 0));
                     }
                     break;
@@ -534,11 +647,21 @@ public class WFCGeneration : MonoBehaviour
                     }
                     break;
                 case TileDirection.Down:
+                    altered = false;
                     negativeCell = map[loc.x, loc.y - 1, loc.z];
                     negativeDomain = invertConnections(domains[TileDirection.Down]);
                     if (negativeCell.upMask != negativeDomain)
                     {
                         negativeCell.upMask &= negativeDomain;
+                        altered = true;
+                    }
+                    if (negativeCell.alignmentRestrictions.Count < connections.downAlignments.Count)
+                    {
+                        negativeCell.alignmentRestrictions = connections.downAlignments;
+                        altered = true;
+                    }
+                    if (altered)
+                    {
                         queue(loc + new Vector3Int(0, -1, 0));
                     }
                     break;
@@ -551,6 +674,7 @@ public class WFCGeneration : MonoBehaviour
         makeInversions();
         int fullDomain = fullDomainMask();
         int fullConnection = fullConnectionMask();
+        Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
         for (int x = 0; x < mapSize.x; x++)
         {
@@ -559,7 +683,7 @@ public class WFCGeneration : MonoBehaviour
                 for (int z = 0; z < mapSize.z; z++)
                 {
                     map[x, y, z] = new WFCCell();
-                    map[x, y, z].init(fullDomain, fullConnection);
+                    map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
                 }
             }
         }
@@ -620,9 +744,10 @@ public class WFCGeneration : MonoBehaviour
                 createTileRestrictions(new Vector3Int(x, yy + 1, z));
             }
         }
-        Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
-        map[middle.x, middle.y, middle.z].domainMask = 1;
-        propagateTileRestrictions(middle);
+        //Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
+        //map[middle.x, middle.y, middle.z].domainMask = 1;
+        //collapseQueue.UpdatePriority(middle, 0);
+        //propagateTileRestrictions(middle);
 
 
 

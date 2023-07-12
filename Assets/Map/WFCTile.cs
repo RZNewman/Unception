@@ -13,6 +13,7 @@ public class WFCTile : MonoBehaviour
     }
 
     public bool skipSpawn = false;
+    public bool dissuadeCollapse = false;
     public List<ConnectionOptions> adjacencies;
 
     public Dictionary<TileDirection, int> getDomains(Rotation rotation = Rotation.None)

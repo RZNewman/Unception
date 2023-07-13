@@ -31,6 +31,8 @@ public class WFCGeneration : MonoBehaviour
         WallRight = 1 << 9,
         FlatUnwalkable = 1 << 10,
         FlatUnwalkableConnect = 1 << 11,
+        GateLeft = 1 << 12,
+        GateRight = 1 << 13,
     }
 
     Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
@@ -42,11 +44,13 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.WallLeft, TileConnection.WallRight },
         {TileConnection.WallRight, TileConnection.WallLeft },
         {TileConnection.FlatUnwalkableConnect, TileConnection.FlatUnwalkable },
+        {TileConnection.GateLeft, TileConnection.GateRight },
+        {TileConnection.GateRight, TileConnection.GateLeft },
     };
     Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
     public static int walkableMask()
     {
-        return (int)(TileConnection.Flat);
+        return (int)(TileConnection.Flat | TileConnection.RampTop);
     }
 
     public static List<TileConnection> alignments = new List<TileConnection>() { TileConnection.RampTop };
@@ -406,14 +410,14 @@ public class WFCGeneration : MonoBehaviour
             {
 
                 int singleAlignmentMask = (int)conn;
-                if ((connectionsTile[TileDirection.Up] | singleAlignmentMask) > 0)
+                if ((connectionsTile[TileDirection.Up] & singleAlignmentMask) > 0)
                 {
                     if (!connections.upAlignments[singleAlignmentMask].Contains(opt.rotation))
                     {
                         connections.upAlignments[singleAlignmentMask].Add(opt.rotation);
                     }
                 }
-                if ((connectionsTile[TileDirection.Down] | singleAlignmentMask) > 0)
+                if ((connectionsTile[TileDirection.Down] & singleAlignmentMask) > 0)
                 {
                     if (!connections.downAlignments[singleAlignmentMask].Contains(opt.rotation))
                     {
@@ -658,11 +662,15 @@ public class WFCGeneration : MonoBehaviour
                         cell.upMask &= domains[TileDirection.Up];
                         altered = true;
                     }
-                    if (cell.alignmentRestrictions.Count < connections.upAlignments.Count)
+                    foreach (TileConnection a in alignments)
                     {
-                        cell.alignmentRestrictions = connections.upAlignments;
-                        altered = true;
-                    }
+                        int singleAlignmentMask = (int)a;
+                        if (cell.alignmentRestrictions[singleAlignmentMask].Count > connections.upAlignments[singleAlignmentMask].Count)
+                        {
+                            cell.alignmentRestrictions[singleAlignmentMask] = connections.upAlignments[singleAlignmentMask];
+                            altered = true;
+                        }
+                    }             
                     if (altered)
                     {
                         queue(loc + new Vector3Int(0, 1, 0));
@@ -695,10 +703,14 @@ public class WFCGeneration : MonoBehaviour
                         negativeCell.upMask &= negativeDomain;
                         altered = true;
                     }
-                    if (negativeCell.alignmentRestrictions.Count < connections.downAlignments.Count)
+                    foreach (TileConnection a in alignments)
                     {
-                        negativeCell.alignmentRestrictions = connections.downAlignments;
-                        altered = true;
+                        int singleAlignmentMask = (int)a;
+                        if (negativeCell.alignmentRestrictions[singleAlignmentMask].Count > connections.downAlignments[singleAlignmentMask].Count)
+                        {
+                            negativeCell.alignmentRestrictions[singleAlignmentMask] = connections.downAlignments[singleAlignmentMask];
+                            altered = true;
+                        }
                     }
                     if (altered)
                     {

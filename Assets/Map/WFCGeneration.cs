@@ -33,6 +33,8 @@ public class WFCGeneration : MonoBehaviour
         FlatUnwalkableConnect = 1 << 11,
         GateLeft = 1 << 12,
         GateRight = 1 << 13,
+        ArchLeft = 1 << 14,
+        ArchRight = 1 << 15,
     }
 
     Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
@@ -46,6 +48,8 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.FlatUnwalkableConnect, TileConnection.FlatUnwalkable },
         {TileConnection.GateLeft, TileConnection.GateRight },
         {TileConnection.GateRight, TileConnection.GateLeft },
+        {TileConnection.ArchLeft, TileConnection.ArchRight },
+        {TileConnection.ArchRight, TileConnection.ArchLeft },
     };
     Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
     public static int walkableMask()

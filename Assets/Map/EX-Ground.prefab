@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6980675790430893224}
   - component: {fileID: 4863423421354933755}
   m_Layer: 6
-  m_Name: EXGround
+  m_Name: EX-Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
   - direction: 5
     connections: 04000000
   - direction: 0
-    connections: 040000000002000000010000
+    connections: 0400000000020000000100000010000000200000
   - direction: 2
     connections: 04000000
   - direction: 1

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9905,7 +9905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7c914614a9d3d2418c2e6c3374aeb5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSize: {x: 50, y: 8, z: 50}
+  genSize: {x: 30, y: 14, z: 30}
 --- !u!114 &1231075383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9919,11 +9919,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collapsePerFrame: 10
-  mapSize: {x: 52, y: 10, z: 52}
+  mapSize: {x: 1000, y: 100, z: 1000}
   tiles:
   - weight: 60
     prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
-  - weight: 10
+  - weight: 20
     prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
   - weight: 0.5
     prefab: {fileID: 4863423421354933755, guid: 318ee6c2cbd73634f82fdf5bcc70ab58, type: 3}
@@ -9953,6 +9953,8 @@ MonoBehaviour:
     prefab: {fileID: 4863423421354933755, guid: 09928b5dc4eb1f74fb361f8cc6fc9dac, type: 3}
   - weight: 5
     prefab: {fileID: 4863423421354933755, guid: bcaee33e42ac8db4f89b3fda508475f0, type: 3}
+  - weight: 0
+    prefab: {fileID: 4863423421354933755, guid: 8b88ab6a29b7afa49888be865345cf36, type: 3}
 --- !u!4 &1231075384
 Transform:
   m_ObjectHideFlags: 0

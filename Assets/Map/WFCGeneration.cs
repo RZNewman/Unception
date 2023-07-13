@@ -195,7 +195,7 @@ public class WFCGeneration : MonoBehaviour
                 additionMask |= (int)inversionsReverse[key];
             }
         }
-        return domain ^ subtractionMask | additionMask;
+        return (domain ^ subtractionMask) | additionMask;
     }
     public enum Rotation
     {
@@ -505,7 +505,7 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Backward:
                         negativeCell = map[loc.x, loc.y, loc.z - 1];
                         negativeDomain = invertConnections(negativeCell.forwardMask);
-                        debugConnentions.Add(" Backward:" + negativeCell.forwardMask);
+                        debugConnentions.Add(" Backward:" + negativeDomain);
                         if ((negativeDomain & domains[TileDirection.Backward]) == 0)
                         {
                             doesntFit = true;
@@ -515,7 +515,7 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Left:
                         negativeCell = map[loc.x - 1, loc.y, loc.z];
                         negativeDomain = invertConnections(negativeCell.rightMask);
-                        debugConnentions.Add(" Left:" + negativeCell.rightMask);
+                        debugConnentions.Add(" Left:" + negativeDomain);
                         if ((negativeDomain & domains[TileDirection.Left]) == 0)
                         {
                             doesntFit = true;
@@ -525,7 +525,7 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Down:
                         negativeCell = map[loc.x, loc.y - 1, loc.z];
                         negativeDomain = invertConnections(negativeCell.upMask);
-                        debugConnentions.Add(" Down:" + negativeCell.upMask);
+                        debugConnentions.Add(" Down:" + negativeDomain);
                         overlap = negativeDomain & domains[TileDirection.Down];
                         if (overlap == 0)
                         {
@@ -674,7 +674,7 @@ public class WFCGeneration : MonoBehaviour
                             cell.alignmentRestrictions[singleAlignmentMask] = connections.upAlignments[singleAlignmentMask];
                             altered = true;
                         }
-                    }             
+                    }
                     if (altered)
                     {
                         queue(loc + new Vector3Int(0, 1, 0));
@@ -730,41 +730,17 @@ public class WFCGeneration : MonoBehaviour
     {
         makeDomain();
         makeInversions();
-        (long fullDomain, long Ex) = fullDomainMask();
-        ExDomain = Ex;
-        int fullConnection = fullConnectionMask();
-        Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
-        for (int x = 0; x < mapSize.x; x++)
-        {
-            for (int y = 0; y < mapSize.y; y++)
-            {
-                for (int z = 0; z < mapSize.z; z++)
-                {
-                    map[x, y, z] = new WFCCell();
-                    map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
-                }
-            }
-        }
+
+    }
+    void initSpace(int xx, int yy, int zz, int width, int height, int length)
+    {
 
     }
 
     public IEnumerator collapseCells(int xx, int yy, int zz, int width, int height, int length)
     {
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
-
-
-        for (int x = xx; x < xx + width; x++)
-        {
-            for (int y = yy; y < yy + height; y++)
-            {
-                for (int z = zz; z < zz + length; z++)
-                {
-                    map[x, y, z].makeReady();
-                    collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
-                }
-            }
-        }
 
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
         System.Action<Vector3Int> propagateTileRestrictions = (Vector3Int loc) =>
@@ -792,21 +768,80 @@ public class WFCGeneration : MonoBehaviour
 
         };
 
+        (long fullDomain, long Ex) = fullDomainMask();
+        ExDomain = Ex;
+        int fullConnection = fullConnectionMask();
+        Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
 
-        //TODO real constraints
-        for (int x = xx; x < xx + width; x++)
+        int xMax = xx + width - 1;
+        int yMax = yy + height - 1;
+        int zMax = zz + length - 1;
+
+        for (int x = xx; x <= xMax; x++)
         {
-            for (int z = zz; z < zz + length; z++)
+            for (int y = yy; y <= yMax; y++)
             {
-                map[x, yy, z].upMask = (int)TileConnection.Ground;
-                createTileRestrictions(new Vector3Int(x, yy, z));
-                createTileRestrictions(new Vector3Int(x, yy + 1, z));
+                for (int z = zz; z <= zMax; z++)
+                {
+                    map[x, y, z] = new WFCCell();
+                    map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
+
+                    if (
+                        x > xx && x < xMax
+                        &&
+                        y > yy && y < yMax
+                        &&
+                        z > zz && z < zMax
+                        )
+                    {
+                        map[x, y, z].makeReady();
+                        collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
+                    }
+
+                }
             }
         }
-        //Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
-        //map[middle.x, middle.y, middle.z].domainMask = 1;
-        //collapseQueue.UpdatePriority(middle, 0);
-        //propagateTileRestrictions(middle);
+
+        //floor
+        for (int x = xx + 1; x < xMax; x++)
+        {
+            for (int z = zz + 1; z < zMax; z++)
+            {
+                map[x, yy, z].upMask = (int)TileConnection.Ground;
+                map[x, yy + 1, z].upMask = (int)TileConnection.Ground;
+
+                createTileRestrictions(new Vector3Int(x, yy + 1, z));
+                createTileRestrictions(new Vector3Int(x, yy + 2, z));
+            }
+        }
+        //walls
+        int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect | TileConnection.Flat | TileConnection.FlatUnwalkable);
+        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.Flat | TileConnection.FlatUnwalkable);
+        for (int x = xx + 1; x < xMax; x++)
+        {
+            for (int y = yy + 2; y < yMax; y++)
+            {
+                map[x, y, zz].forwardMask = wallMaskIn;
+                createTileRestrictions(new Vector3Int(x, y, zz + 1));
+                map[x, y, zMax - 1].forwardMask = wallMaskOut;
+                createTileRestrictions(new Vector3Int(x, y, zMax - 1));
+            }
+        }
+        for (int z = zz + 1; z < zMax; z++)
+        {
+            for (int y = yy + 2; y < yMax; y++)
+            {
+                map[xx, y, z].rightMask = wallMaskIn;
+                createTileRestrictions(new Vector3Int(xx + 1, y, z));
+                map[xMax - 1, y, z].rightMask = wallMaskOut;
+                createTileRestrictions(new Vector3Int(xMax - 1, y, z));
+            }
+        }
+        //TODO real constraints
+        Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
+        map[middle.x, middle.y, middle.z].domainMask = 1;
+        collapseQueue.UpdatePriority(middle, 0);
+        propagateTileRestrictions(middle);
 
 
 

@@ -1,6 +1,7 @@
 using Priority_Queue;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using static Utils;
@@ -35,6 +36,8 @@ public class WFCGeneration : MonoBehaviour
         GateRight = 1 << 13,
         ArchLeft = 1 << 14,
         ArchRight = 1 << 15,
+        ArchRightConnect = 1 << 16,
+        ArchLeftConnect = 1 << 17,
     }
 
     Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
@@ -50,6 +53,8 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.GateRight, TileConnection.GateLeft },
         {TileConnection.ArchLeft, TileConnection.ArchRight },
         {TileConnection.ArchRight, TileConnection.ArchLeft },
+        {TileConnection.ArchLeftConnect, TileConnection.ArchRight },
+        {TileConnection.ArchRightConnect, TileConnection.ArchLeft },
     };
     Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
     public static int walkableMask()
@@ -103,16 +108,16 @@ public class WFCGeneration : MonoBehaviour
     {
         public bool ready = false;
         public bool collapsed = false;
-        public long domainMask;
+        public BigMask domainMask;
         public int forwardMask;
         public int rightMask;
         public int upMask;
 
         public Dictionary<int, List<Rotation>> alignmentRestrictions;
 
-        public void init(long fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
+        public void init(BigMask fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
         {
-            domainMask = fullDomain;
+            domainMask = new BigMask(fullDomain);
             forwardMask = fullConnection;
             rightMask = fullConnection;
             upMask = fullConnection;
@@ -133,21 +138,21 @@ public class WFCGeneration : MonoBehaviour
         return connectionDomain(EnumValues<TileConnection>());
     }
 
-    (long, long) fullDomainMask()
+    (BigMask, BigMask) fullDomainMask()
     {
-        long mask = 0;
-        long EXmask = 0;
+        BigMask mask = new BigMask();
+        BigMask EXmask = new BigMask();
 
         for (int i = 0; i < domainTiles.Count; i++)
         {
             TileOption opt = domainTiles[i];
             if (opt.weight > 0)
             {
-                mask |= 1L << i;
+                mask.addIndex(i);
             }
             else
             {
-                EXmask |= 1L << i;
+                EXmask.addIndex(i);
             }
 
         }
@@ -279,39 +284,29 @@ public class WFCGeneration : MonoBehaviour
             }
         }
     }
-    static bool oneFlagSet(long i)
+
+    BigMask selectFromTileDomain(BigMask domain)
     {
-        //http://aggregate.org/MAGIC/#Is%20Power%20of%202
-        return i > 0 && (i & (i - 1)) == 0;
-    }
-    long selectFromTileDomain(long domain)
-    {
-        if (domain == 0)
+        if (domain.empty)
         {
             throw new System.Exception("No domain to pick from");
         }
-        if (oneFlagSet(domain))
+        if (domain.singleDomain())
         {
             return domain;
         }
 
-        long processDomain = domain;
         List<(int, float)> indexWeights = new List<(int, float)>();
         float weightSum = 0;
 
-        for (int i = 0; i < domainTiles.Count; i++)
+
+        foreach (int index in domain.indicies)
         {
-            if ((processDomain & 1) > 0)
-            {
-                TileOption opt = domainTiles[i];
-                //Debug.Log(opt.prefab.name + " - " + opt.weight);
+            TileOption opt = domainTiles[index];
+            //Debug.Log(opt.prefab.name + " - " + opt.weight);
 
-                indexWeights.Add((i, opt.weight));
-                weightSum += opt.weight;
-
-
-            }
-            processDomain = processDomain >> 1;
+            indexWeights.Add((index, opt.weight));
+            weightSum += opt.weight;
         }
 
         float pick = Random.value * weightSum;
@@ -335,61 +330,38 @@ public class WFCGeneration : MonoBehaviour
             throw new System.Exception("Weight not chosen");
         }
 
-        //Debug.Log(selectedIndex);
-        //TODO maybe just spawn the tile here??
-        return 1L << selectedIndex;
+        return new BigMask(selectedIndex);
 
     }
 
-    List<(TileOption, int)> optionsFromTileDomain(long domain)
+    List<(TileOption, int)> optionsFromTileDomain(BigMask domain)
     {
-        if (domain == 0)
+        if (domain.empty)
         {
             throw new System.Exception("Empty Domain");
         }
-        List<(TileOption, int)> options = new List<(TileOption, int)>();
-        int index = 0;
-        //Debug.Log(domain);
-        while (domain > 0 && index < domainTiles.Count)
-        {
-            if ((domain & 1) > 0)
-            {
-                options.Add((domainTiles[index], index));
-                //Debug.Log(domainTiles[index].prefab.name);
-            }
-
-            domain = domain >> 1;
-            index++;
-        }
-        return options;
+        return domain.indicies.Select(ind => (domainTiles[ind], ind)).ToList();
     }
 
-    TileOption optionFromSingleDomain(long domain)
+    TileOption optionFromSingleDomain(BigMask domain)
     {
-        if (!oneFlagSet(domain))
+        if (!domain.singleDomain())
         {
             throw new System.Exception("mutiple domains at instance");
         }
 
-        int index = 0;
-        while (index < domainTiles.Count)
+        foreach (int index in domain.indicies)
         {
-            if ((domain & 1) > 0)
-            {
-                return domainTiles[index];
-            }
-
-            domain = domain >> 1;
-            index++;
+            return domainTiles[index];
         }
 
         throw new System.Exception("tile option not found");
     }
 
 
-    ConnectionDomainInfo compositeConnectionDomains(long domain)
+    ConnectionDomainInfo compositeConnectionDomains(BigMask domain)
     {
-        if (domain == 0)
+        if (domain.empty)
         {
             throw new System.Exception("Empty Domain");
         }
@@ -556,7 +528,7 @@ public class WFCGeneration : MonoBehaviour
             if (doesntFit)
             {
                 debugConnentions.Add("///");
-                cell.domainMask ^= 1L << index;
+                cell.domainMask.removeIndex(index);
                 reduced = true;
             }
             else
@@ -565,7 +537,7 @@ public class WFCGeneration : MonoBehaviour
             }
         }
 
-        if (cell.domainMask == 0)
+        if (cell.domainMask.empty)
         {
             if (ExCall)
             {
@@ -574,7 +546,7 @@ public class WFCGeneration : MonoBehaviour
             }
             else
             {
-                cell.domainMask = ExDomain;
+                cell.domainMask = new BigMask(ExDomain);
                 if (restrictTileDomain(loc, update, true))
                 {
                     //Ex tile found
@@ -732,7 +704,7 @@ public class WFCGeneration : MonoBehaviour
         }
     }
 
-    long ExDomain = 0;
+    BigMask ExDomain = new BigMask();
     public void init()
     {
         makeDomain();
@@ -740,11 +712,6 @@ public class WFCGeneration : MonoBehaviour
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
 
     }
-    void initSpace(int xx, int yy, int zz, int width, int height, int length)
-    {
-
-    }
-
     public IEnumerator collapseCells(int xx, int yy, int zz, int width, int height, int length)
     {
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
@@ -775,7 +742,7 @@ public class WFCGeneration : MonoBehaviour
 
         };
 
-        (long fullDomain, long Ex) = fullDomainMask();
+        (BigMask fullDomain, BigMask Ex) = fullDomainMask();
         ExDomain = Ex;
         int fullConnection = fullConnectionMask();
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
@@ -846,7 +813,7 @@ public class WFCGeneration : MonoBehaviour
         }
         //TODO real constraints
         Vector3Int middle = new Vector3Int(xx + width / 2, yy + height / 2, zz + length / 2);
-        map[middle.x, middle.y, middle.z].domainMask = 1;
+        map[middle.x, middle.y, middle.z].domainMask = new BigMask(0);
         collapseQueue.UpdatePriority(middle, 0);
         propagateTileRestrictions(middle);
 

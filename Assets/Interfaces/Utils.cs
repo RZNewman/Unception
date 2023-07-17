@@ -351,5 +351,11 @@ public static class Utils
         //Debug.DrawRay(m.GetPosition(), m.GetUp(), Color.yellow);
         //Debug.DrawRay(m.GetPosition(), m.GetRight(), Color.red);
     }
+
+    public static bool oneFlagSet(this ulong i)
+    {
+        //http://aggregate.org/MAGIC/#Is%20Power%20of%202
+        return i > 0 && (i & (i - 1)) == 0;
+    }
 }
 

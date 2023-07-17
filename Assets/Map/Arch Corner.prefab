@@ -149,11 +149,11 @@ MonoBehaviour:
   - direction: 0
     connections: 02000000
   - direction: 2
-    connections: 00800000
+    connections: 00000100
   - direction: 1
     connections: 02000000
   - direction: 3
-    connections: 00400000
+    connections: 00000200
   - direction: 4
     connections: 04000000
   - direction: 5

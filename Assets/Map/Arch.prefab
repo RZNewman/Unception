@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 415179275646083370}
   - component: {fileID: 4863423421354933755}
   m_Layer: 6
-  m_Name: Ground Arch
+  m_Name: Arch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

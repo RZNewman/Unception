@@ -324,4 +324,4 @@ MonoBehaviour:
   - direction: 4
     connections: 02000000
   - direction: 5
-    connections: 04000000
+    connections: 10000000

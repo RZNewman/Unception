@@ -173,7 +173,7 @@ public class WFCGeneration : MonoBehaviour
         }
         return mask;
     }
-
+    const int impossibleInvertMask = (int)(TileConnection.FlatUnwalkableConnect | TileConnection.AirConnect | TileConnection.GroundConnect);
     int invertConnections(int domain)
     {
         int subtractionMask = 0;
@@ -181,7 +181,7 @@ public class WFCGeneration : MonoBehaviour
         foreach (TileConnection key in inversions.Keys)
         {
             int keyMask = (int)key;
-            if ((domain & (int)keyMask) > 0)
+            if ((domain & keyMask) > 0)
             {
                 subtractionMask |= keyMask;
                 additionMask |= (int)inversions[key];
@@ -190,12 +190,19 @@ public class WFCGeneration : MonoBehaviour
         foreach (TileConnection key in inversionsReverse.Keys)
         {
             int keyMask = (int)key;
-            if ((domain & (int)keyMask) > 0)
+            if ((domain & keyMask) > 0)
             {
                 additionMask |= (int)inversionsReverse[key];
             }
         }
-        return (domain ^ subtractionMask) | additionMask;
+        int newMask = (domain ^ subtractionMask) | additionMask;
+        if ((newMask & impossibleInvertMask) > 0
+            && ((newMask | impossibleInvertMask) == impossibleInvertMask)
+            )
+        {
+            throw new System.Exception("impossible invert: " + domain + " resulted in " + newMask);
+        }
+        return newMask;
     }
     public enum Rotation
     {
@@ -807,11 +814,11 @@ public class WFCGeneration : MonoBehaviour
         {
             for (int z = zz + 1; z < zMax; z++)
             {
-                map[x, yy, z].upMask = (int)TileConnection.Ground;
-                map[x, yy + 1, z].upMask = (int)TileConnection.Ground;
+                map[x, yy, z].upMask = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
+                //map[x, yy + 1, z].upMask = (int)TileConnection.Ground;
 
                 createTileRestrictions(new Vector3Int(x, yy + 1, z));
-                createTileRestrictions(new Vector3Int(x, yy + 2, z));
+                //createTileRestrictions(new Vector3Int(x, yy + 2, z));
             }
         }
         //walls

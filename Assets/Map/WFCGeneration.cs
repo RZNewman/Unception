@@ -10,6 +10,7 @@ public class WFCGeneration : MonoBehaviour
 {
     public int collapsePerFrame = 4;
     public Vector3Int mapSize = new Vector3Int(100, 30, 100);
+    public GameObject TileFailurePre;
     public List<TileWeight> tiles;
 
     [System.Serializable]
@@ -56,7 +57,14 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.ArchLeftConnect, TileConnection.ArchRight },
         {TileConnection.ArchRightConnect, TileConnection.ArchLeft },
     };
-    Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>();
+    Dictionary<TileConnection, TileConnection> inversionsReverse = new Dictionary<TileConnection, TileConnection>()
+    {
+        {TileConnection.Air, TileConnection.AirConnect },
+        {TileConnection.Ground, TileConnection.GroundConnect },
+        {TileConnection.FlatUnwalkable, TileConnection.FlatUnwalkableConnect },
+        {TileConnection.ArchLeft, TileConnection.ArchRightConnect },
+        {TileConnection.ArchRight, TileConnection.ArchLeftConnect },
+    };
     public static int walkableMask()
     {
         return (int)(TileConnection.Flat | TileConnection.RampTop);
@@ -209,6 +217,21 @@ public class WFCGeneration : MonoBehaviour
         }
         return newMask;
     }
+    int EXEnhanceConnections(int domain)
+    {
+        foreach (TileConnection key in inversionsReverse.Keys)
+        {
+            int keyMask = (int)key;
+            TileConnection value = inversionsReverse[key];
+            int valueMask = (int)value;
+
+            if ((domain & valueMask) > 0)
+            {
+                domain |= keyMask;
+            }
+        }
+        return domain;
+    }
     public enum Rotation
     {
         None,
@@ -272,18 +295,6 @@ public class WFCGeneration : MonoBehaviour
         domainTiles.Sort((a, b) => b.weight.CompareTo(a.weight));
     }
 
-    void makeInversions()
-    {
-        foreach (TileConnection key in inversions.Keys)
-        {
-            TileConnection value = inversions[key];
-            if (!inversions.ContainsKey(value))
-            {
-                // the oppisite direction
-                inversionsReverse.Add(value, key);
-            }
-        }
-    }
 
     BigMask selectFromTileDomain(BigMask domain)
     {
@@ -546,10 +557,15 @@ public class WFCGeneration : MonoBehaviour
             }
             else
             {
+                //start EX call
                 cell.domainMask = new BigMask(ExDomain);
+                cell.rightMask = EXEnhanceConnections(cell.rightMask);
+                cell.upMask = EXEnhanceConnections(cell.upMask);
+                cell.forwardMask = EXEnhanceConnections(cell.forwardMask);
                 if (restrictTileDomain(loc, update, true))
                 {
                     //Ex tile found
+                    Debug.LogWarning("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
                 }
                 else
                 {
@@ -708,14 +724,13 @@ public class WFCGeneration : MonoBehaviour
     public void init()
     {
         makeDomain();
-        makeInversions();
         map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
 
     }
     public IEnumerator collapseCells(int xx, int yy, int zz, int width, int height, int length)
     {
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
-
+        int chainCount = 0;
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
         System.Action<Vector3Int> propagateTileRestrictions = (Vector3Int loc) =>
         {
@@ -786,6 +801,12 @@ public class WFCGeneration : MonoBehaviour
 
                 createTileRestrictions(new Vector3Int(x, yy + 1, z));
                 //createTileRestrictions(new Vector3Int(x, yy + 2, z));
+                chainCount++;
+                if (chainCount >= collapsePerFrame)
+                {
+                    chainCount = 0;
+                    yield return null;
+                }
             }
         }
         //walls
@@ -799,6 +820,12 @@ public class WFCGeneration : MonoBehaviour
                 createTileRestrictions(new Vector3Int(x, y, zz + 1));
                 map[x, y, zMax - 1].forwardMask = wallMaskOut;
                 createTileRestrictions(new Vector3Int(x, y, zMax - 1));
+                chainCount++;
+                if (chainCount >= collapsePerFrame)
+                {
+                    chainCount = 0;
+                    yield return null;
+                }
             }
         }
         for (int z = zz + 1; z < zMax; z++)
@@ -809,6 +836,12 @@ public class WFCGeneration : MonoBehaviour
                 createTileRestrictions(new Vector3Int(xx + 1, y, z));
                 map[xMax - 1, y, z].rightMask = wallMaskOut;
                 createTileRestrictions(new Vector3Int(xMax - 1, y, z));
+                chainCount++;
+                if (chainCount >= collapsePerFrame)
+                {
+                    chainCount = 0;
+                    yield return null;
+                }
             }
         }
         //TODO real constraints
@@ -819,7 +852,7 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-        int collapseCount = 0;
+
         while (collapseQueue.Count > 0)
         {
             Vector3Int coords = collapseQueue.Dequeue();
@@ -852,10 +885,10 @@ public class WFCGeneration : MonoBehaviour
 
             propagateTileRestrictions(coords);
 
-            collapseCount++;
-            if (collapseCount >= collapsePerFrame)
+            chainCount++;
+            if (chainCount >= collapsePerFrame)
             {
-                collapseCount = 0;
+                chainCount = 0;
                 yield return null;
             }
 

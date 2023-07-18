@@ -9919,7 +9919,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collapsePerFrame: 10
-  mapSize: {x: 1000, y: 100, z: 1000}
+  mapSize: {x: 100, y: 15, z: 100}
+  TileFailurePre: {fileID: 0}
   tiles:
   - weight: 60
     prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
@@ -9956,9 +9957,11 @@ MonoBehaviour:
   - weight: 0
     prefab: {fileID: 4863423421354933755, guid: 22c5acac42feac64fa8dca9551d343f3, type: 3}
   - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: 8b88ab6a29b7afa49888be865345cf36, type: 3}
-  - weight: 0
     prefab: {fileID: 4863423421354933755, guid: c1e2ecba81fda2e44b4f810dc0600dfe, type: 3}
+  - weight: 0
+    prefab: {fileID: 4863423421354933755, guid: d5a5ec9f233264e4c8cf5ab53c9b1d29, type: 3}
+  - weight: 0
+    prefab: {fileID: 4863423421354933755, guid: fb188c063f0e0c1469e03f056a385c8c, type: 3}
 --- !u!4 &1231075384
 Transform:
   m_ObjectHideFlags: 0

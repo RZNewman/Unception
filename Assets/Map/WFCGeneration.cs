@@ -797,7 +797,7 @@ public class WFCGeneration : MonoBehaviour
             for (int z = zz + 1; z < zMax; z++)
             {
                 map[x, yy, z].upMask = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
-                //map[x, yy + 1, z].upMask = (int)TileConnection.Ground;
+                map[x, yMax - 1, z].upMask = (int)(TileConnection.Air | TileConnection.AirConnect);
 
                 createTileRestrictions(new Vector3Int(x, yy + 1, z));
                 //createTileRestrictions(new Vector3Int(x, yy + 2, z));

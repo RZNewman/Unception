@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 415179275646083370}
   - component: {fileID: 4863423421354933755}
   m_Layer: 0
-  m_Name: EX-Air
+  m_Name: EX-TileFailAir
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,14 +48,14 @@ MonoBehaviour:
   dissuadeCollapse: 1
   adjacencies:
   - direction: 0
-    connections: 0200000010000000
+    connections: 0200000004000000000400000080000000400000
   - direction: 2
-    connections: 0200000010000000
+    connections: 0200000004000000000400000080000000400000
   - direction: 1
-    connections: 0200000010000000
+    connections: 0200000004000000000400000080000000400000
   - direction: 3
-    connections: 0200000010000000
+    connections: 0200000004000000000400000080000000400000
   - direction: 4
     connections: 02000000
   - direction: 5
-    connections: 02000000
+    connections: 0200000004000000

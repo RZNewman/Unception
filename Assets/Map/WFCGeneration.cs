@@ -39,6 +39,7 @@ public class WFCGeneration : MonoBehaviour
         ArchRight = 1 << 15,
         ArchRightConnect = 1 << 16,
         ArchLeftConnect = 1 << 17,
+        Air2 = 1 << 18,
     }
 
     Dictionary<TileConnection, TileConnection> inversions = new Dictionary<TileConnection, TileConnection>()
@@ -797,7 +798,7 @@ public class WFCGeneration : MonoBehaviour
             for (int z = zz + 1; z < zMax; z++)
             {
                 map[x, yy, z].upMask = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
-                map[x, yMax - 1, z].upMask = (int)(TileConnection.Air | TileConnection.AirConnect);
+                map[x, yMax - 1, z].upMask = (int)(TileConnection.Air | TileConnection.AirConnect | TileConnection.Air2);
 
                 createTileRestrictions(new Vector3Int(x, yy + 1, z));
                 //createTileRestrictions(new Vector3Int(x, yy + 2, z));

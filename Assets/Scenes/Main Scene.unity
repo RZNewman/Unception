@@ -9919,7 +9919,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collapsePerFrame: 10
-  mapSize: {x: 50, y: 80, z: 50}
+  mapSize: {x: 60, y: 40, z: 60}
   TileFailurePre: {fileID: 0}
   tiles:
   - weight: 60
@@ -9962,6 +9962,8 @@ MonoBehaviour:
     prefab: {fileID: 4863423421354933755, guid: 3979e29aa7ec1cb4db39023815d6cc76, type: 3}
   - weight: 0
     prefab: {fileID: 4863423421354933755, guid: c1e2ecba81fda2e44b4f810dc0600dfe, type: 3}
+  - weight: 0
+    prefab: {fileID: 4863423421354933755, guid: b7b760654428d934ea81353191ec11b4, type: 3}
   - weight: 0
     prefab: {fileID: 4863423421354933755, guid: d5a5ec9f233264e4c8cf5ab53c9b1d29, type: 3}
   - weight: 0

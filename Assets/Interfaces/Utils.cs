@@ -357,5 +357,29 @@ public static class Utils
         //http://aggregate.org/MAGIC/#Is%20Power%20of%202
         return i > 0 && (i & (i - 1)) == 0;
     }
+
+    public static Vector3Int asInt(this Vector3 v)
+    {
+        return new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
+    }
+
+    public static Vector3 asFloat(this Vector3Int v)
+    {
+        return v;
+    }
+
+    public static Vector3 scale(this Vector3 v, Vector3 scale)
+    {
+        v.Scale(scale);
+        return v;
+    }
+
+    public static BoundsInt asInt(this Bounds b)
+    {
+
+        BoundsInt bb = new BoundsInt(b.min.asInt(), b.size.asInt());
+
+        return bb;
+    }
 }
 

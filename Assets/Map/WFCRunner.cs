@@ -11,7 +11,25 @@ public class WFCRunner : MonoBehaviour
     {
         generation = GetComponent<WFCGeneration>();
         generation.init();
-        StartCoroutine(generation.collapseCells(1, 1, 1, genSize.x, genSize.y, genSize.z));
+        StartCoroutine(generation.collapseCells(makePath()));
+    }
+
+    List<Vector3Int> makePath()
+    {
+        Vector3Int start = new Vector3Int(6, 6 + Mathf.RoundToInt(Random.value * 20), 6);
+        List<Vector3Int> path = new List<Vector3Int>();
+        path.Add(start);
+
+        int points = 2;
+        for (int i = 0; i < points; i++)
+        {
+            path.Add(new Vector3Int(
+                10 + Mathf.RoundToInt(Random.value * 40),
+                6 + Mathf.RoundToInt(Random.value * 20),
+                10 + Mathf.RoundToInt(Random.value * 40)
+                ));
+        }
+        return path;
     }
 
     // Update is called once per frame

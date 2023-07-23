@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7aefd46d238b9c4ba6ab7f6cad4f499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipSpawn: 1
+  skipSpawn: 0
   dissuadeCollapse: 1
   adjacencies:
   - direction: 0

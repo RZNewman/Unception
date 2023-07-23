@@ -66,9 +66,41 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.ArchLeft, TileConnection.ArchRightConnect },
         {TileConnection.ArchRight, TileConnection.ArchLeftConnect },
     };
-    public static int walkableMask()
+    public static int walkableMask = (int)(TileConnection.Flat | TileConnection.RampTop);
+    public List<TileDirection> walkableDirections(Vector3Int loc)
     {
-        return (int)(TileConnection.Flat | TileConnection.RampTop);
+        List<TileDirection> directions = new List<TileDirection>();
+        WFCCell cell = map[loc.x, loc.y, loc.z];
+        WFCCell negCell;
+        if ((cell.forwardMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Forward);
+        }
+        if ((cell.rightMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Right);
+        }
+        if ((cell.upMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Up);
+        }
+        negCell = map[loc.x - 1, loc.y, loc.z];
+        if ((negCell.rightMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Left);
+        }
+        negCell = map[loc.x, loc.y - 1, loc.z];
+        if ((negCell.upMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Down);
+        }
+        negCell = map[loc.x, loc.y, loc.z - 1];
+        if ((negCell.forwardMask & walkableMask) > 0)
+        {
+            directions.Add(TileDirection.Backward);
+        }
+
+        return directions;
     }
 
     public static List<TileConnection> alignments = new List<TileConnection>() { TileConnection.RampTop };
@@ -786,7 +818,6 @@ public class WFCGeneration : MonoBehaviour
         public Vector3Int location;
         public Vector3Int remaining;
         public TileDirection lastDirection;
-        public TileDirection facing;
 
         TileDirection step(TileDirection dir)
         {
@@ -798,54 +829,60 @@ public class WFCGeneration : MonoBehaviour
             return lastDirection;
         }
 
-        public TileDirection walk()
+        public TileDirection walk(WFCGeneration inst)
         {
-            if (lastDirection == TileDirection.Up || lastDirection == TileDirection.Down)
-            {
-                return step(facing);
-            }
 
-            List<TileDirection> directions = new List<TileDirection>();
+            List<TileDirection> preferredDirections = new List<TileDirection>();
+            List<TileDirection> walkableDirs = inst.walkableDirections(location);
+
             if (remaining.x != 0)
             {
                 if (remaining.x > 0)
                 {
-                    directions.Add(TileDirection.Right);
+                    preferredDirections.Add(TileDirection.Right);
                 }
                 else
                 {
-                    directions.Add(TileDirection.Left);
+                    preferredDirections.Add(TileDirection.Left);
                 }
             }
             if (remaining.y != 0)
             {
                 if (remaining.y > 0)
                 {
-                    directions.Add(TileDirection.Up);
+                    preferredDirections.Add(TileDirection.Up);
                 }
                 else
                 {
-                    directions.Add(TileDirection.Down);
+                    preferredDirections.Add(TileDirection.Down);
                 }
             }
             if (remaining.z != 0)
             {
                 if (remaining.z > 0)
                 {
-                    directions.Add(TileDirection.Forward);
+                    preferredDirections.Add(TileDirection.Forward);
                 }
                 else
                 {
-                    directions.Add(TileDirection.Backward);
+                    preferredDirections.Add(TileDirection.Backward);
                 }
             }
 
-            TileDirection picked = directions.RandomItem();
-            if (picked != TileDirection.Up && picked != TileDirection.Down)
+
+            List<TileDirection> overlap = walkableDirs.Intersect(preferredDirections).ToList();
+            if (overlap.Count > 0)
             {
-                facing = picked;
+                return step(overlap.RandomItem());
             }
-            return step(picked);
+            overlap = walkableDirs.Except(new TileDirection[] { opposite(lastDirection) }).ToList();
+            if (overlap.Count > 0)
+            {
+                return step(overlap.RandomItem());
+            }
+
+            return step(opposite(lastDirection));
+
         }
     }
     public IEnumerator collapseCells(List<Vector3Int> path)
@@ -972,16 +1009,9 @@ public class WFCGeneration : MonoBehaviour
                 }
             }
         }
-        //TODO real constraints
-
-        //Vector3Int middle = new Vector3Int(xMin + width / 2, yMin + height / 2, zMin + length / 2);
-        //map[middle.x, middle.y, middle.z].domainMask = new BigMask(0);
-        //collapseQueue.UpdatePriority(middle, 0);
-        //propagateTileRestrictions(middle);
         TileWalker walker = new TileWalker
         {
             location = path[0],
-            facing = TileDirection.Forward,
             lastDirection = TileDirection.Forward,
             remaining = new Vector3Int()
         };
@@ -995,26 +1025,26 @@ public class WFCGeneration : MonoBehaviour
             }
 
             Vector3Int currentLoc = walker.location;
-            TileDirection change = walker.walk();
+            TileDirection change = walker.walk(this);
             switch (change)
             {
                 case TileDirection.Forward:
-                    map[currentLoc.x, currentLoc.y, currentLoc.z].forwardMask = walkableMask();
+                    map[currentLoc.x, currentLoc.y, currentLoc.z].forwardMask &= walkableMask;
                     break;
                 case TileDirection.Right:
-                    map[currentLoc.x, currentLoc.y, currentLoc.z].rightMask = walkableMask();
+                    map[currentLoc.x, currentLoc.y, currentLoc.z].rightMask &= walkableMask;
                     break;
                 case TileDirection.Up:
-                    map[currentLoc.x, currentLoc.y, currentLoc.z].upMask = walkableMask();
+                    map[currentLoc.x, currentLoc.y, currentLoc.z].upMask &= walkableMask;
                     break;
                 case TileDirection.Backward:
-                    map[walker.location.x, walker.location.y, walker.location.z].forwardMask = walkableMask();
+                    map[walker.location.x, walker.location.y, walker.location.z].forwardMask &= walkableMask;
                     break;
                 case TileDirection.Left:
-                    map[walker.location.x, walker.location.y, walker.location.z].rightMask = walkableMask();
+                    map[walker.location.x, walker.location.y, walker.location.z].rightMask &= walkableMask;
                     break;
                 case TileDirection.Down:
-                    map[walker.location.x, walker.location.y, walker.location.z].upMask = walkableMask();
+                    map[walker.location.x, walker.location.y, walker.location.z].upMask &= walkableMask;
                     break;
             }
 

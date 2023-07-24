@@ -9,7 +9,6 @@ using static Utils;
 public class WFCGeneration : MonoBehaviour
 {
     public int collapsePerFrame = 4;
-    public Vector3Int mapSize = new Vector3Int(100, 30, 100);
     public GameObject TileFailurePre;
     public List<TileWeight> tiles;
 
@@ -799,11 +798,15 @@ public class WFCGeneration : MonoBehaviour
     public void init()
     {
         makeDomain();
-        map = new WFCCell[mapSize.x, mapSize.y, mapSize.z];
+
 
     }
-
-    BoundsInt fromPath(List<Vector3Int> path)
+    struct PathInfo
+    {
+        public BoundsInt bounds;
+        public List<Vector3Int> path;
+    }
+    PathInfo fromPath(List<Vector3Int> path)
     {
         Bounds bounds = new Bounds(path[0], Vector3.zero);
         foreach (Vector3Int loc in path)
@@ -811,7 +814,21 @@ public class WFCGeneration : MonoBehaviour
             bounds.Encapsulate(loc);
         }
         bounds.Expand(8);
-        return bounds.asInt();
+        BoundsInt boundsI = bounds.asInt();
+
+        Vector3Int negativePortion = new Vector3Int(Mathf.Min(0, boundsI.min.x), Mathf.Min(0, boundsI.min.y), Mathf.Min(0, boundsI.min.z));
+        //push bounds into the positive
+        boundsI.position += -negativePortion;
+        List<Vector3Int> newPath = new List<Vector3Int>();
+        foreach (Vector3Int loc in path)
+        {
+            newPath.Add(loc - negativePortion);
+        }
+        return new PathInfo
+        {
+            bounds = boundsI,
+            path = newPath,
+        };
     }
     struct TileWalker
     {
@@ -885,7 +902,7 @@ public class WFCGeneration : MonoBehaviour
 
         }
     }
-    public IEnumerator collapseCells(List<Vector3Int> path)
+    public IEnumerator collapseCells(List<Vector3Int> randomPath)
     {
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
         int chainCount = 0;
@@ -919,7 +936,11 @@ public class WFCGeneration : MonoBehaviour
         ExDomain = Ex;
         int fullConnection = fullConnectionMask();
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
-        BoundsInt bounds = fromPath(path);
+        PathInfo infoP = fromPath(randomPath);
+        List<Vector3Int> path = infoP.path;
+        BoundsInt bounds = infoP.bounds;
+
+        map = new WFCCell[bounds.size.x + 1, bounds.size.y + 1, bounds.size.z + 1];
 
         int xMax = bounds.max.x;
         int yMax = bounds.max.y;
@@ -929,6 +950,7 @@ public class WFCGeneration : MonoBehaviour
         int zMin = bounds.min.z;
         Debug.Log(bounds.min);
         Debug.Log(bounds.max);
+        Debug.Log(bounds.size);
 
 
         for (int x = xMin; x <= xMax; x++)
@@ -1017,6 +1039,8 @@ public class WFCGeneration : MonoBehaviour
         };
         path.RemoveAt(0);
 
+        int stepsThisPath = 0;
+
         while (path.Count > 0)
         {
             if (walker.remaining == Vector3Int.zero)
@@ -1065,6 +1089,12 @@ public class WFCGeneration : MonoBehaviour
             {
                 path.RemoveAt(0);
                 walker.remaining = Vector3Int.zero;
+                stepsThisPath = 0;
+            }
+            stepsThisPath++;
+            if (stepsThisPath >= 500)
+            {
+                throw new System.Exception("Too many steps on this segment");
             }
         }
 

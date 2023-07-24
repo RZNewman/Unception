@@ -16,18 +16,25 @@ public class WFCRunner : MonoBehaviour
 
     List<Vector3Int> makePath()
     {
-        Vector3Int start = new Vector3Int(6, 6 + Mathf.RoundToInt(Random.value * 20), 6);
+        Vector3Int point = Vector3Int.zero;
         List<Vector3Int> path = new List<Vector3Int>();
-        path.Add(start);
+        path.Add(point);
 
-        int points = 2;
+        Vector3 diff = Vector3.zero;
+
+        int points = 4;
         for (int i = 0; i < points; i++)
         {
-            path.Add(new Vector3Int(
-                10 + Mathf.RoundToInt(Random.value * 40),
-                6 + Mathf.RoundToInt(Random.value * 20),
-                10 + Mathf.RoundToInt(Random.value * 40)
-                ));
+            if (diff == Vector3.zero)
+            {
+                diff = Random.onUnitSphere * (7 + Random.value * 7);
+            }
+            else
+            {
+                diff = Vector3.RotateTowards(diff.normalized, Random.onUnitSphere, Mathf.PI * 1.5f, 0) * (7 + Random.value * 7);
+            }
+            point += diff.asInt();
+            path.Add(point);
         }
         return path;
     }

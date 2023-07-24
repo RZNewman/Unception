@@ -119,9 +119,9 @@ MonoBehaviour:
   - direction: 2
     connections: 0100000000040000
   - direction: 1
-    connections: 400000001000000000080000
+    connections: 40000000100000000008000008000000
   - direction: 3
-    connections: 200000001000000000080000
+    connections: 20000000100000000008000008000000
   - direction: 4
     connections: 8000000008000000
   - direction: 5

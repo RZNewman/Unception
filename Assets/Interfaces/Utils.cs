@@ -315,7 +315,7 @@ public static class Utils
                 return HasValue == other.HasValue;
         }
     }
-    public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
+    public static void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c, float time = 5f)
     {
         // create matrix
         Matrix4x4 m = new Matrix4x4();
@@ -331,20 +331,20 @@ public static class Utils
         var point7 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, -0.5f));
         var point8 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, -0.5f));
 
-        Debug.DrawLine(point1, point2, c);
-        Debug.DrawLine(point2, point3, c);
-        Debug.DrawLine(point3, point4, c);
-        Debug.DrawLine(point4, point1, c);
+        Debug.DrawLine(point1, point2, c, time);
+        Debug.DrawLine(point2, point3, c, time);
+        Debug.DrawLine(point3, point4, c, time);
+        Debug.DrawLine(point4, point1, c, time);
 
-        Debug.DrawLine(point5, point6, c);
-        Debug.DrawLine(point6, point7, c);
-        Debug.DrawLine(point7, point8, c);
-        Debug.DrawLine(point8, point5, c);
+        Debug.DrawLine(point5, point6, c, time);
+        Debug.DrawLine(point6, point7, c, time);
+        Debug.DrawLine(point7, point8, c, time);
+        Debug.DrawLine(point8, point5, c, time);
 
-        Debug.DrawLine(point1, point5, c);
-        Debug.DrawLine(point2, point6, c);
-        Debug.DrawLine(point3, point7, c);
-        Debug.DrawLine(point4, point8, c);
+        Debug.DrawLine(point1, point5, c, time);
+        Debug.DrawLine(point2, point6, c, time);
+        Debug.DrawLine(point3, point7, c, time);
+        Debug.DrawLine(point4, point8, c, time);
 
         //// optional axis display
         //Debug.DrawRay(m.GetPosition(), m.GetForward(), Color.magenta);

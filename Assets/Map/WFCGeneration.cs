@@ -65,40 +65,35 @@ public class WFCGeneration : MonoBehaviour
         {TileConnection.ArchLeft, TileConnection.ArchRightConnect },
         {TileConnection.ArchRight, TileConnection.ArchLeftConnect },
     };
-    public static int walkableMask = (int)(TileConnection.Flat | TileConnection.RampTop);
+    Dictionary<TileConnection, TileConnection> EXInversions = new Dictionary<TileConnection, TileConnection>()
+    {
+        {TileConnection.Air2, TileConnection.Air },
+    };
+
+    public static int walkableMask = (int)(TileConnection.Flat | TileConnection.RampTop | TileConnection.RampLeft | TileConnection.RampRight);
     public List<TileDirection> walkableDirections(Vector3Int loc)
     {
         List<TileDirection> directions = new List<TileDirection>();
         WFCCell cell = map[loc.x, loc.y, loc.z];
-        WFCCell negCell;
-        if ((cell.forwardMask & walkableMask) > 0)
+        foreach (TileDirection dir in EnumValues<TileDirection>())
         {
-            directions.Add(TileDirection.Forward);
+            Vector3Int adj = loc + fromDir(dir);
+            WFCCell adjCell = map[adj.x, adj.y, adj.z];
+            int mask = dir switch
+            {
+                TileDirection.Forward => cell.forwardMask,
+                TileDirection.Right => cell.rightMask,
+                TileDirection.Up => cell.upMask,
+                TileDirection.Backward => adjCell.forwardMask,
+                TileDirection.Left => adjCell.rightMask,
+                TileDirection.Down => adjCell.upMask,
+                _ => 0,
+            };
+            if (adjCell.ready && (mask & walkableMask) > 0)
+            {
+                directions.Add(dir);
+            }
         }
-        if ((cell.rightMask & walkableMask) > 0)
-        {
-            directions.Add(TileDirection.Right);
-        }
-        if ((cell.upMask & walkableMask) > 0)
-        {
-            directions.Add(TileDirection.Up);
-        }
-        negCell = map[loc.x - 1, loc.y, loc.z];
-        if ((negCell.rightMask & walkableMask) > 0)
-        {
-            directions.Add(TileDirection.Left);
-        }
-        negCell = map[loc.x, loc.y - 1, loc.z];
-        if ((negCell.upMask & walkableMask) > 0)
-        {
-            directions.Add(TileDirection.Down);
-        }
-        negCell = map[loc.x, loc.y, loc.z - 1];
-        if ((negCell.forwardMask & walkableMask) > 0)
-        {
-            directions.Add(TileDirection.Backward);
-        }
-
         return directions;
     }
 
@@ -267,6 +262,7 @@ public class WFCGeneration : MonoBehaviour
     {
         foreach (TileConnection key in inversionsReverse.Keys)
         {
+            //REversed, now we're adding the original key
             int keyMask = (int)key;
             TileConnection value = inversionsReverse[key];
             int valueMask = (int)value;
@@ -274,6 +270,14 @@ public class WFCGeneration : MonoBehaviour
             if ((domain & valueMask) > 0)
             {
                 domain |= keyMask;
+            }
+        }
+        foreach (TileConnection key in EXInversions.Keys)
+        {
+            int keyMask = (int)key;
+            if ((domain & keyMask) > 0)
+            {
+                domain |= (int)EXInversions[key];
             }
         }
         return domain;
@@ -501,29 +505,29 @@ public class WFCGeneration : MonoBehaviour
                 switch (dir)
                 {
                     case TileDirection.Forward:
-                        debugConnentions.Add(" Forward:" + cell.forwardMask);
+
                         if ((cell.forwardMask & domains[TileDirection.Forward]) == 0)
                         {
-
+                            debugConnentions.Add(" Forward:" + cell.forwardMask);
                             doesntFit = true;
                             goto MatchFound;
                         }
                         break;
                     case TileDirection.Right:
-                        debugConnentions.Add(" Right:" + cell.rightMask);
+
                         if ((cell.rightMask & domains[TileDirection.Right]) == 0)
                         {
-
+                            debugConnentions.Add(" Right:" + cell.rightMask);
                             doesntFit = true;
                             goto MatchFound;
                         }
                         break;
                     case TileDirection.Up:
-                        debugConnentions.Add(" Up:" + cell.upMask);
+
                         overlap = cell.upMask & domains[TileDirection.Up];
                         if (overlap == 0)
                         {
-
+                            debugConnentions.Add(" Up:" + cell.upMask);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -541,9 +545,10 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Backward:
                         negativeCell = map[loc.x, loc.y, loc.z - 1];
                         negativeDomain = invertConnections(negativeCell.forwardMask);
-                        debugConnentions.Add(" Backward:" + negativeDomain);
+
                         if ((negativeDomain & domains[TileDirection.Backward]) == 0)
                         {
+                            debugConnentions.Add(" Backward:" + negativeDomain);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -551,9 +556,10 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Left:
                         negativeCell = map[loc.x - 1, loc.y, loc.z];
                         negativeDomain = invertConnections(negativeCell.rightMask);
-                        debugConnentions.Add(" Left:" + negativeDomain);
+
                         if ((negativeDomain & domains[TileDirection.Left]) == 0)
                         {
+                            debugConnentions.Add(" Left:" + negativeDomain);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -561,10 +567,11 @@ public class WFCGeneration : MonoBehaviour
                     case TileDirection.Down:
                         negativeCell = map[loc.x, loc.y - 1, loc.z];
                         negativeDomain = invertConnections(negativeCell.upMask);
-                        debugConnentions.Add(" Down:" + negativeDomain);
+
                         overlap = negativeDomain & domains[TileDirection.Down];
                         if (overlap == 0)
                         {
+                            debugConnentions.Add(" Down:" + negativeDomain);
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -805,36 +812,80 @@ public class WFCGeneration : MonoBehaviour
     {
         public BoundsInt bounds;
         public List<Vector3Int> path;
+        public List<BoundsInt> deltaBounds;
     }
+    static readonly int padding = 4;
     PathInfo fromPath(List<Vector3Int> path)
     {
-        Bounds bounds = new Bounds(path[0], Vector3.zero);
-        foreach (Vector3Int loc in path)
-        {
-            bounds.Encapsulate(loc);
-        }
-        bounds.Expand(8);
-        BoundsInt boundsI = bounds.asInt();
-
-        Vector3Int negativePortion = new Vector3Int(Mathf.Min(0, boundsI.min.x), Mathf.Min(0, boundsI.min.y), Mathf.Min(0, boundsI.min.z));
         //push bounds into the positive
-        boundsI.position += -negativePortion;
-        List<Vector3Int> newPath = new List<Vector3Int>();
+        Vector3Int negativeMin = new Vector3Int();
         foreach (Vector3Int loc in path)
         {
-            newPath.Add(loc - negativePortion);
+            negativeMin.x = Mathf.Min(negativeMin.x, loc.x);
+            negativeMin.y = Mathf.Min(negativeMin.y, loc.y);
+            negativeMin.z = Mathf.Min(negativeMin.z, loc.z);
         }
+        negativeMin -= Vector3Int.one * padding;
+        List<Vector3Int> positivePath = new List<Vector3Int>();
+        foreach (Vector3Int loc in path)
+        {
+            positivePath.Add(loc - negativeMin);
+        }
+
+        Bounds bigBounds = new Bounds();
+        List<BoundsInt> deltaBounds = new List<BoundsInt>();
+        bigBounds.center = positivePath[0];
+        bigBounds.size = Vector3.zero;
+        for (int i = 1; i < positivePath.Count; i++)
+        {
+            Bounds delta = new Bounds();
+            delta.center = positivePath[(i - 1)];
+            delta.size = Vector3.zero;
+            delta.Encapsulate(positivePath[i]);
+            delta.Expand(padding * 2);
+            bigBounds.Encapsulate(delta.min);
+            bigBounds.Encapsulate(delta.max);
+            deltaBounds.Add(delta.asInt());
+        }
+
         return new PathInfo
         {
-            bounds = boundsI,
-            path = newPath,
+            bounds = bigBounds.asInt(),
+            path = positivePath,
+            deltaBounds = deltaBounds,
         };
     }
     struct TileWalker
     {
         public Vector3Int location;
-        public Vector3Int remaining;
+        Vector3Int remaining;
         public TileDirection lastDirection;
+
+        HashSet<Vector3Int> prevLocations;
+
+        public TileWalker(Vector3Int loc)
+        {
+            location = loc;
+            remaining = Vector3Int.zero;
+            lastDirection = TileDirection.Forward;
+            prevLocations = new HashSet<Vector3Int>();
+            prevLocations.Add(loc);
+        }
+
+        public void target(Vector3Int loc)
+        {
+            remaining = loc - location;
+            prevLocations.Clear();
+            prevLocations.Add(location);
+        }
+
+        public bool arrived
+        {
+            get
+            {
+                return remaining.magnitude < 1.5f;
+            }
+        }
 
         TileDirection step(TileDirection dir)
         {
@@ -843,6 +894,8 @@ public class WFCGeneration : MonoBehaviour
 
             location += diff;
             remaining -= diff;
+
+            prevLocations.Add(location);
             return lastDirection;
         }
 
@@ -851,6 +904,9 @@ public class WFCGeneration : MonoBehaviour
 
             List<TileDirection> preferredDirections = new List<TileDirection>();
             List<TileDirection> walkableDirs = inst.walkableDirections(location);
+            List<TileDirection> lastDirList = new List<TileDirection>() { opposite(lastDirection) };
+            List<TileDirection> verticalDirList = new List<TileDirection>() { TileDirection.Up, TileDirection.Down };
+            List<TileDirection> frontierDirections = new List<TileDirection>();
 
             if (remaining.x != 0)
             {
@@ -886,13 +942,26 @@ public class WFCGeneration : MonoBehaviour
                 }
             }
 
+            foreach (TileDirection dir in EnumValues<TileDirection>())
+            {
+                Vector3Int adj = location + fromDir(dir);
+                if (!prevLocations.Contains(adj))
+                {
+                    frontierDirections.Add(dir);
+                }
+            }
 
-            List<TileDirection> overlap = walkableDirs.Intersect(preferredDirections).ToList();
+            List<TileDirection> overlap = walkableDirs.Intersect(preferredDirections).Except(lastDirList).ToList();
             if (overlap.Count > 0)
             {
                 return step(overlap.RandomItem());
             }
-            overlap = walkableDirs.Except(new TileDirection[] { opposite(lastDirection) }).ToList();
+            overlap = walkableDirs.Intersect(frontierDirections).ToList();
+            if (overlap.Count > 0)
+            {
+                return step(overlap.RandomItem());
+            }
+            overlap = walkableDirs.Except(lastDirList).ToList();
             if (overlap.Count > 0)
             {
                 return step(overlap.RandomItem());
@@ -939,113 +1008,152 @@ public class WFCGeneration : MonoBehaviour
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
         BoundsInt bounds = infoP.bounds;
+        List<BoundsInt> deltas = infoP.deltaBounds;
+
 
         map = new WFCCell[bounds.size.x + 1, bounds.size.y + 1, bounds.size.z + 1];
+        //Debug.Log(bounds.size);
 
-        int xMax = bounds.max.x;
-        int yMax = bounds.max.y;
-        int zMax = bounds.max.z;
-        int xMin = bounds.min.x;
-        int yMin = bounds.min.y;
-        int zMin = bounds.min.z;
-        Debug.Log(bounds.min);
-        Debug.Log(bounds.max);
-        Debug.Log(bounds.size);
-
-
-        for (int x = xMin; x <= xMax; x++)
+        Dictionary<TileDirection, HashSet<Vector3Int>> edgeBindings = new Dictionary<TileDirection, HashSet<Vector3Int>>();
+        foreach (TileDirection dir in EnumValues<TileDirection>())
         {
-            for (int y = yMin; y <= yMax; y++)
-            {
-                for (int z = zMin; z <= zMax; z++)
-                {
-                    map[x, y, z] = new WFCCell();
-                    map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
+            edgeBindings[dir] = new HashSet<Vector3Int>();
+        }
 
-                    if (
-                        x > xMin && x < xMax
-                        &&
-                        y > yMin && y < yMax
-                        &&
-                        z > zMin && z < zMax
-                        )
+        foreach (BoundsInt delta in deltas)
+        {
+            int xMax = delta.max.x;
+            int yMax = delta.max.y;
+            int zMax = delta.max.z;
+            int xMin = delta.min.x;
+            int yMin = delta.min.y;
+            int zMin = delta.min.z;
+            //Debug.Log(delta.min);
+            //Debug.Log(delta.max);
+            DrawBox(delta.center.scale(transform.lossyScale), Quaternion.identity, delta.size.asFloat().scale(transform.lossyScale), Color.white, 600);
+
+            for (int x = xMin; x <= xMax; x++)
+            {
+                for (int y = yMin; y <= yMax; y++)
+                {
+                    for (int z = zMin; z <= zMax; z++)
                     {
-                        map[x, y, z].makeReady();
-                        collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
+                        if (map[x, y, z] == null)
+                        {
+                            map[x, y, z] = new WFCCell();
+                            map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
+                        }
+
+
+                        if (
+                            !map[x, y, z].ready
+                            &&
+                            x > xMin && x < xMax
+                            &&
+                            y > yMin && y < yMax
+                            &&
+                            z > zMin && z < zMax
+                            )
+                        {
+                            map[x, y, z].makeReady();
+                            collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
+
+                            if (y == yMin + 1)
+                            {
+                                edgeBindings[TileDirection.Down].Add(new Vector3Int(x, y, z));
+                                //ground tiles have no other restrictions
+                                continue;
+                            }
+                            else if (y == yMax - 1)
+                            {
+                                edgeBindings[TileDirection.Up].Add(new Vector3Int(x, y, z));
+                            }
+
+                            if (x == xMin + 1)
+                            {
+                                edgeBindings[TileDirection.Left].Add(new Vector3Int(x, y, z));
+                            }
+                            else if (x == xMax - 1)
+                            {
+                                edgeBindings[TileDirection.Right].Add(new Vector3Int(x, y, z));
+                            }
+
+                            if (z == zMin + 1)
+                            {
+                                edgeBindings[TileDirection.Backward].Add(new Vector3Int(x, y, z));
+                            }
+                            else if (z == zMax - 1)
+                            {
+                                edgeBindings[TileDirection.Forward].Add(new Vector3Int(x, y, z));
+                            }
+
+
+
+                        }
+
                     }
-
                 }
             }
         }
 
-        //floor
-        for (int x = xMin + 1; x < xMax; x++)
-        {
-            for (int z = zMin + 1; z < zMax; z++)
-            {
-                map[x, yMin, z].upMask = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
-                map[x, yMax - 1, z].upMask = (int)(TileConnection.Air | TileConnection.AirConnect | TileConnection.Air2);
-
-                createTileRestrictions(new Vector3Int(x, yMin + 1, z));
-                createTileRestrictions(new Vector3Int(x, yMax - 1, z));
-                chainCount++;
-                if (chainCount >= collapsePerFrame)
-                {
-                    chainCount = 0;
-                    yield return null;
-                }
-            }
-        }
-        //walls
         int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect | TileConnection.Flat | TileConnection.FlatUnwalkable);
         int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.Flat | TileConnection.FlatUnwalkable);
-        for (int x = xMin + 1; x < xMax; x++)
+        int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect | TileConnection.Air2);
+        int groundMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
+
+        foreach (TileDirection dir in EnumValues<TileDirection>())
         {
-            for (int y = yMin + 2; y < yMax; y++)
+            HashSet<Vector3Int> locs = edgeBindings[dir];
+            foreach (Vector3Int loc in locs)
             {
-                map[x, y, zMin].forwardMask = wallMaskIn;
-                createTileRestrictions(new Vector3Int(x, y, zMin + 1));
-                map[x, y, zMax - 1].forwardMask = wallMaskOut;
-                createTileRestrictions(new Vector3Int(x, y, zMax - 1));
-                chainCount++;
-                if (chainCount >= collapsePerFrame)
+                Vector3Int adj = loc + fromDir(dir);
+                if (!map[adj.x, adj.y, adj.z].ready)
                 {
-                    chainCount = 0;
-                    yield return null;
+                    switch (dir)
+                    {
+                        case TileDirection.Forward:
+                            map[loc.x, loc.y, loc.z].forwardMask = wallMaskOut;
+                            break;
+                        case TileDirection.Right:
+                            map[loc.x, loc.y, loc.z].rightMask = wallMaskOut;
+                            break;
+                        case TileDirection.Up:
+                            map[loc.x, loc.y, loc.z].forwardMask = skyMaskOut;
+                            break;
+                        case TileDirection.Backward:
+                            map[adj.x, adj.y, adj.z].forwardMask = wallMaskIn;
+                            break;
+                        case TileDirection.Left:
+                            map[adj.x, adj.y, adj.z].rightMask = wallMaskIn;
+                            break;
+                        case TileDirection.Down:
+                            map[adj.x, adj.y, adj.z].upMask = groundMaskIn;
+                            break;
+                    }
+
+                    createTileRestrictions(loc);
+
+                    chainCount++;
+                    if (chainCount >= collapsePerFrame)
+                    {
+                        chainCount = 0;
+                        yield return null;
+                    }
                 }
             }
         }
-        for (int z = zMin + 1; z < zMax; z++)
-        {
-            for (int y = yMin + 2; y < yMax; y++)
-            {
-                map[xMin, y, z].rightMask = wallMaskIn;
-                createTileRestrictions(new Vector3Int(xMin + 1, y, z));
-                map[xMax - 1, y, z].rightMask = wallMaskOut;
-                createTileRestrictions(new Vector3Int(xMax - 1, y, z));
-                chainCount++;
-                if (chainCount >= collapsePerFrame)
-                {
-                    chainCount = 0;
-                    yield return null;
-                }
-            }
-        }
-        TileWalker walker = new TileWalker
-        {
-            location = path[0],
-            lastDirection = TileDirection.Forward,
-            remaining = new Vector3Int()
-        };
+
+
+        TileWalker walker = new TileWalker(path[0]);
         path.RemoveAt(0);
 
         int stepsThisPath = 0;
 
         while (path.Count > 0)
         {
-            if (walker.remaining == Vector3Int.zero)
+            if (walker.arrived)
             {
-                walker.remaining = path[0] - walker.location;
+                walker.target(path[0]);
             }
 
             Vector3Int currentLoc = walker.location;
@@ -1072,7 +1180,8 @@ public class WFCGeneration : MonoBehaviour
                     break;
             }
 
-            Debug.DrawLine(currentLoc.asFloat().scale(transform.lossyScale), walker.location.asFloat().scale(transform.lossyScale), Color.blue, 600);
+            Vector3 debugOffset = Random.insideUnitSphere * 0.07f;
+            Debug.DrawLine((currentLoc.asFloat() + debugOffset).scale(transform.lossyScale), (walker.location.asFloat() + debugOffset).scale(transform.lossyScale), Color.blue, 600);
             createTileRestrictions(currentLoc);
             createTileRestrictions(walker.location);
 
@@ -1085,15 +1194,16 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-            if (walker.remaining.magnitude < 2f)
+            if (walker.arrived)
             {
+                Debug.DrawLine(path[0].asFloat().scale(transform.lossyScale), (path[0].asFloat() + Vector3.up).scale(transform.lossyScale), Color.green, 600);
                 path.RemoveAt(0);
-                walker.remaining = Vector3Int.zero;
                 stepsThisPath = 0;
             }
             stepsThisPath++;
-            if (stepsThisPath >= 500)
+            if (stepsThisPath >= 400)
             {
+                Debug.DrawLine(path[0].asFloat().scale(transform.lossyScale), (path[0].asFloat() + Vector3.up).scale(transform.lossyScale), Color.red, 600);
                 throw new System.Exception("Too many steps on this segment");
             }
         }

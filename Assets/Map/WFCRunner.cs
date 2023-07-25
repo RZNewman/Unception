@@ -22,7 +22,7 @@ public class WFCRunner : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = 4;
+        int points = 8;
         for (int i = 0; i < points; i++)
         {
             if (diff == Vector3.zero)

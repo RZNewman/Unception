@@ -1032,6 +1032,7 @@ public class WFCGeneration : MonoBehaviour
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
+        Vector3Int startLoc = path[0];
         BoundsInt bounds = infoP.bounds;
         List<BoundsInt> deltas = infoP.deltaBounds;
 
@@ -1240,7 +1241,9 @@ public class WFCGeneration : MonoBehaviour
                     throw new System.Exception("too many retries");
                 }
                 walker.location = lastPos;
+                walker.target(path[0]);
                 map = mapBackup;
+                stepsThisPath = 0;
             }
         }
         Debug.Log("Constrain Walk: " + Time.time);
@@ -1288,6 +1291,52 @@ public class WFCGeneration : MonoBehaviour
 
         }
         Debug.Log("Collapse: " + Time.time);
+
+        foreach (SpawnCell spawn in getSpawns(startLoc))
+        {
+            Debug.DrawLine(spawn.locationWorld, spawn.locationWorld + Vector3.up, Color.magenta, 600);
+        }
+        Debug.Log("Spawns: " + Time.time);
+    }
+
+    struct SpawnCell
+    {
+        public Vector3 locationWorld;
+        //List<Vector3Int>
+    }
+
+    List<SpawnCell> getSpawns(Vector3Int start)
+    {
+        Queue<Vector3Int> search = new Queue<Vector3Int>();
+        HashSet<Vector3Int> found = new HashSet<Vector3Int>();
+        List<SpawnCell> spawns = new List<SpawnCell>();
+        search.Enqueue(start);
+        found.Add(start);
+        int maxSearch = 10_000;
+        int searchCount = 0;
+        while (search.Count > 0 && searchCount < maxSearch)
+        {
+            searchCount++;
+            Vector3Int loc = search.Dequeue();
+
+            List<TileDirection> walkable = walkableDirections(loc);
+            foreach (TileDirection dir in walkable)
+            {
+                Vector3Int adj = loc + fromDir(dir);
+                if (!found.Contains(adj))
+                {
+                    found.Add(loc);
+                    search.Enqueue(adj);
+                }
+            }
+
+            if (!walkable.Contains(TileDirection.Down))
+            {
+                spawns.Add(new SpawnCell { locationWorld = loc.asFloat().scale(transform.lossyScale) });
+            }
+        }
+        Debug.Log(searchCount);
+        return spawns;
     }
 
 }

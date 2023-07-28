@@ -123,6 +123,6 @@ MonoBehaviour:
   - direction: 3
     connections: 20000000100000000004000004000000
   - direction: 4
-    connections: 8000000004000000
+    connections: 80000000
   - direction: 5
     connections: 08000000

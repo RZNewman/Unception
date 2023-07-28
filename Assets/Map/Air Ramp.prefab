@@ -48,7 +48,7 @@ MonoBehaviour:
   dissuadeCollapse: 1
   adjacencies:
   - direction: 0
-    connections: 01000000
+    connections: 010000000004000010000000
   - direction: 2
     connections: 02000000
   - direction: 1

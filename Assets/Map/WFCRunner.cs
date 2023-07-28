@@ -27,7 +27,7 @@ public class WFCRunner : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = 5;
+        int points = 6;
         for (int i = 0; i < points; i++)
         {
             Vector2 dir2d = Random.insideUnitCircle.normalized;

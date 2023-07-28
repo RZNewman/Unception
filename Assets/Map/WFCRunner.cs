@@ -11,6 +11,11 @@ public class WFCRunner : MonoBehaviour
     {
         generation = GetComponent<WFCGeneration>();
         generation.init();
+
+    }
+
+    public void run()
+    {
         StartCoroutine(generation.collapseCells(makePath()));
     }
 
@@ -22,7 +27,7 @@ public class WFCRunner : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = 8;
+        int points = 4;
         for (int i = 0; i < points; i++)
         {
             if (diff == Vector3.zero)

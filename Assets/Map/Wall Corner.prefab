@@ -328,11 +328,11 @@ MonoBehaviour:
   dissuadeCollapse: 0
   adjacencies:
   - direction: 0
-    connections: 0800000000080000
+    connections: 0400000000080000
   - direction: 2
     connections: 00020000
   - direction: 1
-    connections: 0800000000080000
+    connections: 0400000000080000
   - direction: 3
     connections: 00010000
   - direction: 4

@@ -9958,6 +9958,8 @@ MonoBehaviour:
   - weight: 0
     prefab: {fileID: 4863423421354933755, guid: ae72b60c86e2a354eb6a6c40a40d3d21, type: 3}
   - weight: 0
+    prefab: {fileID: 4863423421354933755, guid: bf66ac6135fde264db34dfbf1fc86a67, type: 3}
+  - weight: 0
     prefab: {fileID: 4863423421354933755, guid: 3979e29aa7ec1cb4db39023815d6cc76, type: 3}
   - weight: 0
     prefab: {fileID: 4863423421354933755, guid: c1e2ecba81fda2e44b4f810dc0600dfe, type: 3}

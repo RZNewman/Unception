@@ -114,14 +114,14 @@ MonoBehaviour:
   dissuadeCollapse: 0
   adjacencies:
   - direction: 4
-    connections: 04000000
-  - direction: 5
     connections: 08000000
+  - direction: 5
+    connections: 04000000
   - direction: 0
-    connections: 04000000
+    connections: 08000000
   - direction: 2
-    connections: 04000000
+    connections: 08000000
   - direction: 1
-    connections: 04000000
+    connections: 08000000
   - direction: 3
-    connections: 04000000
+    connections: 08000000

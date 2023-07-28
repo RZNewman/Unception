@@ -13,6 +13,7 @@ using static RewardManager;
 
 public static class Utils
 {
+    //So slow, please cache
     public static IEnumerable<T> EnumValues<T>()
     {
         return System.Enum.GetValues(typeof(T)).Cast<T>();

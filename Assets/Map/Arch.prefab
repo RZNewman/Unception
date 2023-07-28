@@ -151,10 +151,10 @@ MonoBehaviour:
   - direction: 2
     connections: 10000000
   - direction: 1
-    connections: 0080000010000000
+    connections: 0000010010000000
   - direction: 3
-    connections: 0040000010000000
+    connections: 0080000010000000
   - direction: 4
-    connections: 04000000
+    connections: 08000000
   - direction: 5
     connections: 02000000

@@ -8,7 +8,7 @@ using static Utils;
 
 public class WFCGeneration : MonoBehaviour
 {
-    public int collapsePerFrame = 4;
+    public int collapsePerFrame = 100;
     public GameObject TileFailurePre;
     public List<TileWeight> tiles;
 
@@ -181,7 +181,7 @@ public class WFCGeneration : MonoBehaviour
 
 
     }
-
+    WFCCell[,,] mapBackup;
     WFCCell[,,] map;
 
     int fullConnectionMask()
@@ -509,10 +509,10 @@ public class WFCGeneration : MonoBehaviour
         }
         List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
-        List<string> debugConnentions = new List<string>();
+
         foreach ((TileOption opt, int index) in optionsFromTileDomain(cell.domainMask))
         {
-            debugConnentions.AddRange(new string[] { "Tile", opt.prefab.name, ((int)opt.rotation).ToString() });
+
             ConnectionDomainMasks domains = opt.domains;
             bool doesntFit = false;
             foreach (TileDirection dir in AllDirections)
@@ -526,7 +526,6 @@ public class WFCGeneration : MonoBehaviour
 
                         if ((cell.forwardMask & domains.forward) == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Forward", cell.forwardMask.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -535,7 +534,6 @@ public class WFCGeneration : MonoBehaviour
 
                         if ((cell.rightMask & domains.right) == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Right", cell.rightMask.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -545,7 +543,6 @@ public class WFCGeneration : MonoBehaviour
                         overlap = cell.upMask & domains.up;
                         if (overlap == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Up", cell.upMask.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -555,8 +552,6 @@ public class WFCGeneration : MonoBehaviour
                             !cell.alignmentRestrictions[overlap].Contains(opt.rotation)
                             )
                         {
-                            debugConnentions.AddRange(new string[] { "Overlap", overlap.ToString(), ((int)opt.rotation).ToString(), "out of" });
-                            debugConnentions.AddRange(cell.alignmentRestrictions[overlap].Select(r => ((int)r).ToString()));
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -567,7 +562,6 @@ public class WFCGeneration : MonoBehaviour
 
                         if ((negativeDomain & domains.backward) == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Backward", negativeDomain.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -578,7 +572,6 @@ public class WFCGeneration : MonoBehaviour
 
                         if ((negativeDomain & domains.left) == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Left", negativeDomain.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -590,7 +583,6 @@ public class WFCGeneration : MonoBehaviour
                         overlap = negativeDomain & domains.down;
                         if (overlap == 0)
                         {
-                            debugConnentions.AddRange(new string[] { "Down", negativeDomain.ToString() });
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -600,7 +592,7 @@ public class WFCGeneration : MonoBehaviour
                             !negativeCell.alignmentRestrictions[overlap].Contains(opt.rotation)
                             )
                         {
-                            debugConnentions.Add(" Overlap:" + overlap + " - " + (int)opt.rotation + " out of " + string.Join(',', negativeCell.alignmentRestrictions[overlap].Select(r => (int)r)));
+
                             doesntFit = true;
                             goto MatchFound;
                         }
@@ -610,7 +602,6 @@ public class WFCGeneration : MonoBehaviour
         MatchFound:
             if (doesntFit)
             {
-                debugConnentions.Add("///");
                 cell.domainMask.removeIndex(index);
                 reduced = true;
             }
@@ -624,7 +615,7 @@ public class WFCGeneration : MonoBehaviour
         {
             if (ExCall)
             {
-                Debug.LogWarning("EXDomain:" + string.Join(',', debugConnentions));
+                Debug.LogWarning("EXDomain");
                 return false;
             }
             else
@@ -662,14 +653,25 @@ public class WFCGeneration : MonoBehaviour
                 {
                     negativeCell.alignmentRestrictions[bond] = new List<Rotation>(allRotations);
                 }
+                Debug.LogWarning("Domain reduced to 0:" + loc + ":"
+                        + " Up:" + cell.upMask
+                        + " Forward:" + cell.forwardMask
+                        + " Right:" + cell.rightMask
+                        + " Down:" + map[loc.x, loc.y - 1, loc.z].upMask
+                        + " Back:" + map[loc.x, loc.y, loc.z - 1].forwardMask
+                        + " Left:" + map[loc.x - 1, loc.y, loc.z].rightMask
+                        );
                 if (restrictTileDomain(loc, update, true))
                 {
                     //Ex tile found
-                    Debug.LogWarning("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
+
+
+
                 }
                 else
                 {
-                    throw new System.Exception("Domain reduced to 0:" + loc + ":" + string.Join(',', debugConnentions));
+
+                    throw new System.Exception("Domain reduced to 0");
                 }
             }
 
@@ -835,7 +837,7 @@ public class WFCGeneration : MonoBehaviour
         public List<Vector3Int> path;
         public List<BoundsInt> deltaBounds;
     }
-    static readonly int padding = 4;
+    static readonly int padding = 3;
     PathInfo fromPath(List<Vector3Int> path)
     {
         //push bounds into the positive
@@ -1003,6 +1005,7 @@ public class WFCGeneration : MonoBehaviour
             collapseConnections(loc, propagation.Enqueue);
             while (propagation.Count > 0)
             {
+                chainCount++;
                 Vector3Int propLocation = propagation.Dequeue();
                 if (restrictTileDomain(propLocation, collapseQueue.UpdatePriority))
                 {
@@ -1155,7 +1158,6 @@ public class WFCGeneration : MonoBehaviour
 
                     createTileRestrictions(loc);
 
-                    chainCount++;
                     if (chainCount >= collapsePerFrame)
                     {
                         chainCount = 0;
@@ -1171,11 +1173,15 @@ public class WFCGeneration : MonoBehaviour
         path.RemoveAt(0);
 
         int stepsThisPath = 0;
+        Vector3Int lastPos = Vector3Int.zero;
+        int retries = 0;
 
         while (path.Count > 0)
         {
             if (walker.arrived)
             {
+                mapBackup = map;
+                lastPos = walker.location;
                 walker.target(path[0]);
             }
 
@@ -1227,7 +1233,14 @@ public class WFCGeneration : MonoBehaviour
             if (stepsThisPath >= 400)
             {
                 Debug.DrawLine(path[0].asFloat().scale(transform.lossyScale), (path[0].asFloat() + Vector3.up).scale(transform.lossyScale), Color.red, 600);
-                throw new System.Exception("Too many steps on this segment");
+                Debug.LogWarning("Too many steps on this segment");
+                retries++;
+                if (retries >= 3)
+                {
+                    throw new System.Exception("too many retries");
+                }
+                walker.location = lastPos;
+                map = mapBackup;
             }
         }
         Debug.Log("Constrain Walk: " + Time.time);
@@ -1266,7 +1279,6 @@ public class WFCGeneration : MonoBehaviour
 
             propagateTileRestrictions(coords);
 
-            chainCount++;
             if (chainCount >= collapsePerFrame)
             {
                 chainCount = 0;

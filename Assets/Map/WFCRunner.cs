@@ -27,17 +27,24 @@ public class WFCRunner : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = 4;
+        int points = 5;
         for (int i = 0; i < points; i++)
         {
-            if (diff == Vector3.zero)
+            Vector2 dir2d = Random.insideUnitCircle.normalized;
+            Vector3 dir = new Vector3(dir2d.x, 0, dir2d.y);
+
+            if (i != 0)
             {
-                diff = Random.onUnitSphere * (7 + Random.value * 7);
+                Vector3 flatDiff = new Vector3(diff.x, 0, diff.z);
+                float angle = Vector3.Angle(dir, flatDiff);
+                angle *= 0.75f;
+                dir = Vector3.RotateTowards(dir, flatDiff, Mathf.PI * angle / 180, 0);
             }
-            else
-            {
-                diff = Vector3.RotateTowards(diff.normalized, Random.onUnitSphere, Mathf.PI * 1.5f, 0) * (7 + Random.value * 7);
-            }
+            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.20f, 0);
+            dir.Normalize();
+
+            diff = dir * (4 + Random.value * 6);
+
             point += diff.asInt();
             path.Add(point);
         }

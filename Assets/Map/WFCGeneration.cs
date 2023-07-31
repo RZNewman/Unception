@@ -1144,7 +1144,7 @@ public class WFCGeneration : MonoBehaviour
                             map[loc.x, loc.y, loc.z].rightMask = wallMaskOut;
                             break;
                         case TileDirection.Up:
-                            map[loc.x, loc.y, loc.z].forwardMask = skyMaskOut;
+                            map[loc.x, loc.y, loc.z].upMask = skyMaskOut;
                             break;
                         case TileDirection.Backward:
                             map[adj.x, adj.y, adj.z].forwardMask = wallMaskIn;
@@ -1312,7 +1312,7 @@ public class WFCGeneration : MonoBehaviour
         List<SpawnCell> spawns = new List<SpawnCell>();
         search.Enqueue(start);
         found.Add(start);
-        int maxSearch = 10_000;
+        int maxSearch = 30_000;
         int searchCount = 0;
         while (search.Count > 0 && searchCount < maxSearch)
         {
@@ -1325,7 +1325,7 @@ public class WFCGeneration : MonoBehaviour
                 Vector3Int adj = loc + fromDir(dir);
                 if (!found.Contains(adj))
                 {
-                    found.Add(loc);
+                    found.Add(adj);
                     search.Enqueue(adj);
                 }
             }
@@ -1335,7 +1335,7 @@ public class WFCGeneration : MonoBehaviour
                 spawns.Add(new SpawnCell { locationWorld = loc.asFloat().scale(transform.lossyScale) });
             }
         }
-        Debug.Log(searchCount);
+
         return spawns;
     }
 

@@ -30,6 +30,7 @@ public class Atlas : NetworkBehaviour
     PlayerGhost owner;
     GlobalPlayer gp;
     SoundManager sound;
+    MapGenerator gen;
 
     [SyncVar(hook = nameof(hookMaps))]
     MapListing list;
@@ -135,6 +136,7 @@ public class Atlas : NetworkBehaviour
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
+        gen = FindObjectOfType<MapGenerator>();
         serverMap.gameObject.SetActive(isServer);
     }
     void makeWorld()
@@ -546,7 +548,7 @@ public class Atlas : NetworkBehaviour
             yield break;
         }
         onMission = true;
-        MapGenerator gen = FindObjectOfType<MapGenerator>();
+
         Map m;
         if (index >= 0)
         {
@@ -560,6 +562,13 @@ public class Atlas : NetworkBehaviour
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
         setScaleServer(Power.scaleNumerical(m.power), Power.scaleNumerical(gp.serverPlayer.power));
         yield return gen.buildMap();
+    }
+    public Vector3 playerSpawn
+    {
+        get
+        {
+            return gen.playerSpawn;
+        }
     }
 
     [Server]

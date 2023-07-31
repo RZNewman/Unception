@@ -41,7 +41,7 @@ public class MapTile : MonoBehaviour
                     spawns.Add(new SpawnTransform
                     {
                         rotation = zone.transform.rotation,
-                        halfExtents = new Vector2(widthPerSpawn, heightPerSpawn) / 2,
+                        halfExtents = new Vector3(widthPerSpawn, zone.transform.lossyScale.y, heightPerSpawn) / 2,
                         position = root + halfTile + zone.transform.right * widthPerSpawn * x + zone.transform.forward * heightPerSpawn * y,
 
                     });

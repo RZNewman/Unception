@@ -25,12 +25,14 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     SaveData save;
     Inventory inv;
     PlayerPity pity;
+    Atlas atlas;
     void Start()
     {
         inv = GetComponent<Inventory>();
         pity = GetComponent<PlayerPity>();
         save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
+        atlas = FindObjectOfType<Atlas>();
         listener = music.GetComponent<AudioListener>();
         if (isLocalPlayer)
         {
@@ -105,8 +107,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     [Server]
     IEnumerator embarkRoutine(int mapIndex)
     {
-
-        Atlas atlas = FindObjectOfType<Atlas>();
         yield return atlas.embarkServer(mapIndex);
 
         if (!atlas.embarked)
@@ -122,7 +122,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     void buildUnit()
     {
 
-        GameObject u = Instantiate(unitPre);
+        GameObject u = Instantiate(unitPre, atlas.playerSpawn, Quaternion.identity);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
         p.subscribePower(syncPower);

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
+using static MonsterSpawn;
 using static Utils;
 
 public class WFCGeneration : MonoBehaviour
 {
+    public Vector3 tileScale = new Vector3(8, 4, 8);
     public int collapsePerFrame = 100;
     public GameObject TileFailurePre;
     public List<TileWeight> tiles;
@@ -824,7 +826,12 @@ public class WFCGeneration : MonoBehaviour
 
     BigMask ExDomain = new BigMask();
     static List<TileDirection> AllDirections;
-    public void init()
+
+    private void Start()
+    {
+        init();
+    }
+    void init()
     {
         AllDirections = EnumValues<TileDirection>().ToList();
         makeDomain();
@@ -994,9 +1001,33 @@ public class WFCGeneration : MonoBehaviour
 
         }
     }
+    GameObject floorRoot;
+    public GenData generationData;
+    Vector3 floorScale
+    {
+        get
+        {
+            return floorRoot.transform.lossyScale;
+        }
+    }
+    public struct GenData
+    {
+        public Vector3 start;
+        public Vector3 end;
+        public List<SpawnTransform> spawns;
+    }
+    public IEnumerator generate(GameObject floor)
+    {
+        floorRoot = floor;
+        floorRoot.transform.localScale = tileScale;
+        yield return collapseCells(makePath());
+    }
+
+
     public IEnumerator collapseCells(List<Vector3Int> randomPath)
     {
         Debug.Log("Start: " + Time.time);
+        generationData = new GenData();
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
         int chainCount = 0;
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
@@ -1032,6 +1063,7 @@ public class WFCGeneration : MonoBehaviour
         Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
+        generationData.start = path[0].asFloat().scale(floorScale);
         Vector3Int startLoc = path[0];
         BoundsInt bounds = infoP.bounds;
         List<BoundsInt> deltas = infoP.deltaBounds;
@@ -1056,7 +1088,7 @@ public class WFCGeneration : MonoBehaviour
             int zMin = delta.min.z;
             //Debug.Log(delta.min);
             //Debug.Log(delta.max);
-            DrawBox(delta.center.scale(transform.lossyScale), Quaternion.identity, delta.size.asFloat().scale(transform.lossyScale), Color.white, 600);
+            DrawBox(delta.center.scale(floorScale), Quaternion.identity, delta.size.asFloat().scale(floorScale), Color.white, 600);
 
             for (int x = xMin; x <= xMax; x++)
             {
@@ -1171,6 +1203,7 @@ public class WFCGeneration : MonoBehaviour
 
 
         TileWalker walker = new TileWalker(path[0]);
+
         path.RemoveAt(0);
 
         int stepsThisPath = 0;
@@ -1211,7 +1244,7 @@ public class WFCGeneration : MonoBehaviour
             }
 
             Vector3 debugOffset = Random.insideUnitSphere * 0.07f;
-            Debug.DrawLine((currentLoc.asFloat() + debugOffset).scale(transform.lossyScale), (walker.location.asFloat() + debugOffset).scale(transform.lossyScale), Color.blue, 600);
+            Debug.DrawLine((currentLoc.asFloat() + debugOffset).scale(floorScale), (walker.location.asFloat() + debugOffset).scale(floorScale), Color.blue, 600);
             createTileRestrictions(currentLoc);
             createTileRestrictions(walker.location);
 
@@ -1226,14 +1259,14 @@ public class WFCGeneration : MonoBehaviour
 
             if (walker.arrived)
             {
-                Debug.DrawLine(path[0].asFloat().scale(transform.lossyScale), (path[0].asFloat() + Vector3.up).scale(transform.lossyScale), Color.green, 600);
+                Debug.DrawLine(path[0].asFloat().scale(floorScale), (path[0].asFloat() + Vector3.up).scale(floorScale), Color.green, 600);
                 path.RemoveAt(0);
                 stepsThisPath = 0;
             }
             stepsThisPath++;
             if (stepsThisPath >= 400)
             {
-                Debug.DrawLine(path[0].asFloat().scale(transform.lossyScale), (path[0].asFloat() + Vector3.up).scale(transform.lossyScale), Color.red, 600);
+                Debug.DrawLine(path[0].asFloat().scale(floorScale), (path[0].asFloat() + Vector3.up).scale(floorScale), Color.red, 600);
                 Debug.LogWarning("Too many steps on this segment");
                 retries++;
                 if (retries >= 3)
@@ -1246,6 +1279,7 @@ public class WFCGeneration : MonoBehaviour
                 stepsThisPath = 0;
             }
         }
+        generationData.end = walker.location.asFloat().scale(floorScale);
         Debug.Log("Constrain Walk: " + Time.time);
 
 
@@ -1254,7 +1288,7 @@ public class WFCGeneration : MonoBehaviour
         {
             Vector3Int coords = collapseQueue.Dequeue();
             Vector3 location = new Vector3(coords.x, coords.y, coords.z);
-            location.Scale(transform.lossyScale);
+            location.Scale(floorScale);
 
             WFCCell cell = map[coords.x, coords.y, coords.z];
             cell.domainMask = selectFromTileDomain(cell.domainMask);
@@ -1263,20 +1297,21 @@ public class WFCGeneration : MonoBehaviour
             if (!opt.prefab.skipSpawn)
             {
                 Instantiate(
-                opt.prefab.gameObject,
-                location,
-                Quaternion.AngleAxis(
-                    opt.rotation switch
-                    {
-                        Rotation.Quarter => 90,
-                        Rotation.Half => 180,
-                        Rotation.ThreeQuarters => 270,
-                        _ => 0,
-                    }
-                    , Vector3.up
-                ),
-                transform
-            );
+                    opt.prefab.gameObject,
+                    location,
+                    Quaternion.AngleAxis(
+                        opt.rotation switch
+                        {
+                            Rotation.Quarter => 90,
+                            Rotation.Half => 180,
+                            Rotation.ThreeQuarters => 270,
+                            _ => 0,
+                        }
+                        , Vector3.up
+                    ),
+                    floorRoot.transform
+                );
+                //TODO spawn tile?
             }
 
 
@@ -1292,24 +1327,53 @@ public class WFCGeneration : MonoBehaviour
         }
         Debug.Log("Collapse: " + Time.time);
 
-        foreach (SpawnCell spawn in getSpawns(startLoc))
+        generationData.spawns = getSpawns(startLoc);
+        foreach (SpawnTransform spawn in generationData.spawns)
         {
-            Debug.DrawLine(spawn.locationWorld, spawn.locationWorld + Vector3.up, Color.magenta, 600);
+            Debug.DrawLine(spawn.position, spawn.position + Vector3.forward * spawn.halfExtents.y + Vector3.right * spawn.halfExtents.x, Color.magenta, 600);
         }
         Debug.Log("Spawns: " + Time.time);
     }
 
-    struct SpawnCell
+
+
+    List<Vector3Int> makePath()
     {
-        public Vector3 locationWorld;
-        //List<Vector3Int>
+        Vector3Int point = Vector3Int.zero;
+        List<Vector3Int> path = new List<Vector3Int>();
+        path.Add(point);
+
+        Vector3 diff = Vector3.zero;
+
+        int points = 6;
+        for (int i = 0; i < points; i++)
+        {
+            Vector2 dir2d = Random.insideUnitCircle.normalized;
+            Vector3 dir = new Vector3(dir2d.x, 0, dir2d.y);
+
+            if (i != 0)
+            {
+                Vector3 flatDiff = new Vector3(diff.x, 0, diff.z);
+                float angle = Vector3.Angle(dir, flatDiff);
+                angle *= 0.75f;
+                dir = Vector3.RotateTowards(dir, flatDiff, Mathf.PI * angle / 180, 0);
+            }
+            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.20f, 0);
+            dir.Normalize();
+
+            diff = dir * (4 + Random.value * 6);
+
+            point += diff.asInt();
+            path.Add(point);
+        }
+        return path;
     }
 
-    List<SpawnCell> getSpawns(Vector3Int start)
+    List<SpawnTransform> getSpawns(Vector3Int start)
     {
         Queue<Vector3Int> search = new Queue<Vector3Int>();
         HashSet<Vector3Int> found = new HashSet<Vector3Int>();
-        List<SpawnCell> spawns = new List<SpawnCell>();
+        List<SpawnTransform> spawns = new List<SpawnTransform>();
         search.Enqueue(start);
         found.Add(start);
         int maxSearch = 30_000;
@@ -1332,7 +1396,7 @@ public class WFCGeneration : MonoBehaviour
 
             if (!walkable.Contains(TileDirection.Down))
             {
-                spawns.Add(new SpawnCell { locationWorld = loc.asFloat().scale(transform.lossyScale) });
+                spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), rotation = Quaternion.identity, halfExtents = floorScale * 0.5f });
             }
         }
 

@@ -66,7 +66,10 @@ public class GlobalSaveData : MonoBehaviour
 
     public IEnumerator championItems(AssignItems assign)
     {
-
+        while (db == null)
+        {
+            yield return null;
+        }
         Task<DataSnapshot> abilities = db.Child("Champions").GetValueAsync();
         while (!abilities.IsFaulted && !abilities.IsCompleted && !abilities.IsCanceled)
         {

@@ -16,6 +16,7 @@ public class UiBlessingMenu : MonoBehaviour
 
     public void activate()
     {
+        blessingDetails.gameObject.SetActive(false);
         FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>().subscribeInventory(updateBlessings);
         loadBelssings();
     }

@@ -102,14 +102,15 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public Vector3 position;
         public Quaternion rotation;
-        public Vector2 halfExtents;
+        public Vector3 halfExtents;
 
         public Vector3 randomLocaion
         {
             get
             {
-                Vector3 positionOffset = new Vector3(Random.Range(-halfExtents.x, halfExtents.x), 0, Random.Range(-halfExtents.y, halfExtents.y));
+                Vector3 positionOffset = new Vector3(Random.Range(-halfExtents.x, halfExtents.x), 0, Random.Range(-halfExtents.z, halfExtents.z));
                 positionOffset *= 0.9f;
+                positionOffset.y = halfExtents.y;
                 positionOffset = rotation * positionOffset;
                 return position + positionOffset;
             }
@@ -565,7 +566,7 @@ public class MonsterSpawn : NetworkBehaviour
         float scale = Power.scalePhysical(spawnPower);
         Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
         RaycastHit hit;
-        if (Physics.Raycast(unitPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
+        if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 2, LayerMask.GetMask("Terrain")))
         {
             unitPos = hit.point + Vector3.up * scale;
         }

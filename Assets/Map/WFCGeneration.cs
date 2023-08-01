@@ -915,6 +915,7 @@ public class WFCGeneration : MonoBehaviour
         public Vector3Int location;
         Vector3Int remaining;
         public TileDirection lastDirection;
+        public float arriveMagnitude;
 
         HashSet<Vector3Int> prevLocations;
 
@@ -923,6 +924,7 @@ public class WFCGeneration : MonoBehaviour
             location = loc;
             remaining = Vector3Int.zero;
             lastDirection = TileDirection.Forward;
+            arriveMagnitude = 1.5f;
             prevLocations = new HashSet<Vector3Int>();
             prevLocations.Add(loc);
         }
@@ -938,7 +940,7 @@ public class WFCGeneration : MonoBehaviour
         {
             get
             {
-                return remaining.magnitude < 1.5f;
+                return remaining.magnitude < arriveMagnitude;
             }
         }
 
@@ -1311,6 +1313,7 @@ public class WFCGeneration : MonoBehaviour
                 Debug.DrawLine(path[0].asFloat().scale(floorScale), (path[0].asFloat() + Vector3.up).scale(floorScale), Color.green, 600);
                 path.RemoveAt(0);
                 stepsThisPath = 0;
+                walker.arriveMagnitude = 1.5f;
             }
             stepsThisPath++;
             if (stepsThisPath >= 400)
@@ -1321,6 +1324,10 @@ public class WFCGeneration : MonoBehaviour
                 if (retries >= 3)
                 {
                     throw new System.Exception("too many retries");
+                }
+                else if (retries == 2)
+                {
+                    walker.arriveMagnitude *= 2;
                 }
                 walker.location = lastPos;
                 walker.target(path[0]);

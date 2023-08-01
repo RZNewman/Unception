@@ -167,6 +167,27 @@ public class WFCGeneration : MonoBehaviour
         public int upMask;
 
         public Dictionary<int, List<Rotation>> alignmentRestrictions;
+        public WFCCell()
+        {
+            ready = false;
+            collapsed = false;
+            domainMask = new BigMask();
+            forwardMask = 0;
+            rightMask = 0;
+            upMask = 0;
+            alignmentRestrictions = new Dictionary<int, List<Rotation>>();
+        }
+
+        public WFCCell(WFCCell copy)
+        {
+            ready = copy.ready;
+            collapsed = copy.collapsed;
+            domainMask = new BigMask(copy.domainMask);
+            forwardMask = copy.forwardMask;
+            rightMask = copy.rightMask;
+            upMask = copy.upMask;
+            alignmentRestrictions = new Dictionary<int, List<Rotation>>(copy.alignmentRestrictions);
+        }
 
         public void init(BigMask fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
         {
@@ -1027,6 +1048,26 @@ public class WFCGeneration : MonoBehaviour
         yield return collapseCells(makePath());
     }
 
+    void mapCopy(IEnumerable<Vector3Int> locations, bool toBackup)
+    {
+        if (toBackup)
+        {
+            foreach (Vector3Int loc in locations)
+            {
+                mapBackup[loc.x, loc.y, loc.z] = new WFCCell(map[loc.x, loc.y, loc.z]);
+            }
+
+        }
+        else
+        {
+            foreach (Vector3Int loc in locations)
+            {
+                map[loc.x, loc.y, loc.z] = mapBackup[loc.x, loc.y, loc.z];
+            }
+        }
+
+    }
+
 
     public IEnumerator collapseCells(List<Vector3Int> randomPath)
     {
@@ -1071,9 +1112,11 @@ public class WFCGeneration : MonoBehaviour
         Vector3Int startLoc = path[0];
         BoundsInt bounds = infoP.bounds;
         List<BoundsInt> deltas = infoP.deltaBounds;
+        HashSet<Vector3Int> uniqueLocations = new HashSet<Vector3Int>();
 
 
         map = new WFCCell[bounds.size.x + 1, bounds.size.y + 1, bounds.size.z + 1];
+        mapBackup = new WFCCell[bounds.size.x + 1, bounds.size.y + 1, bounds.size.z + 1];
         //Debug.Log(bounds.size);
 
         Dictionary<TileDirection, HashSet<Vector3Int>> edgeBindings = new Dictionary<TileDirection, HashSet<Vector3Int>>();
@@ -1100,10 +1143,12 @@ public class WFCGeneration : MonoBehaviour
                 {
                     for (int z = zMin; z <= zMax; z++)
                     {
+                        Vector3Int loc = new Vector3Int(x, y, z);
                         if (map[x, y, z] == null)
                         {
                             map[x, y, z] = new WFCCell();
                             map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
+                            uniqueLocations.Add(loc);
                         }
 
 
@@ -1118,33 +1163,33 @@ public class WFCGeneration : MonoBehaviour
                             )
                         {
                             map[x, y, z].makeReady();
-                            collapseQueue.Enqueue(new Vector3Int(x, y, z), domainTiles.Count);
+                            collapseQueue.Enqueue(loc, domainTiles.Count);
 
                             if (y == yMin + 1)
                             {
-                                edgeBindings[TileDirection.Down].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Down].Add(loc);
                             }
                             else if (y == yMax - 1)
                             {
-                                edgeBindings[TileDirection.Up].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Up].Add(loc);
                             }
 
                             if (x == xMin + 1)
                             {
-                                edgeBindings[TileDirection.Left].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Left].Add(loc);
                             }
                             else if (x == xMax - 1)
                             {
-                                edgeBindings[TileDirection.Right].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Right].Add(loc);
                             }
 
                             if (z == zMin + 1)
                             {
-                                edgeBindings[TileDirection.Backward].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Backward].Add(loc);
                             }
                             else if (z == zMax - 1)
                             {
-                                edgeBindings[TileDirection.Forward].Add(new Vector3Int(x, y, z));
+                                edgeBindings[TileDirection.Forward].Add(loc);
                             }
 
 
@@ -1218,7 +1263,7 @@ public class WFCGeneration : MonoBehaviour
         {
             if (walker.arrived)
             {
-                mapBackup = map;
+                mapCopy(uniqueLocations, true);
                 lastPos = walker.location;
                 walker.target(path[0]);
             }
@@ -1279,7 +1324,7 @@ public class WFCGeneration : MonoBehaviour
                 }
                 walker.location = lastPos;
                 walker.target(path[0]);
-                map = mapBackup;
+                mapCopy(uniqueLocations, false);
                 stepsThisPath = 0;
             }
         }

@@ -107,7 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 415179275646083370}
   - component: {fileID: 4863423421354933755}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EX-TileFailGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}

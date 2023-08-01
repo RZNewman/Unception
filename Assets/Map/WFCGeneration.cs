@@ -519,16 +519,23 @@ public class WFCGeneration : MonoBehaviour
 
 
     delegate void UpdateEntropy(Vector3Int loc, float entropy);
-    bool restrictTileDomain(Vector3Int loc, UpdateEntropy update, bool ExCall = false)
+    enum RestrictTileResult
+    {
+        NoChange,
+        Reduced,
+        ReducedEx,
+        Error,
+    }
+    RestrictTileResult restrictTileDomain(Vector3Int loc, UpdateEntropy update, bool ExCall = false)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
         if (!cell.ready)
         {
-            return false;
+            return RestrictTileResult.NoChange;
         }
         if (cell.collapsed)
         {
-            return false;
+            return RestrictTileResult.NoChange;
         }
         List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
@@ -638,8 +645,8 @@ public class WFCGeneration : MonoBehaviour
         {
             if (ExCall)
             {
-                Debug.LogWarning("EXDomain");
-                return false;
+                Debug.LogError("No tile found for location");
+                return RestrictTileResult.Error;
             }
             else
             {
@@ -688,25 +695,15 @@ public class WFCGeneration : MonoBehaviour
                     negativeCell.alignmentRestrictions[bond] = new List<Rotation>(allRotations);
                 }
 
-                if (restrictTileDomain(loc, update, true))
-                {
-                    //Ex tile found
+                return restrictTileDomain(loc, update, true);
 
-
-
-                }
-                else
-                {
-
-                    throw new System.Exception("Domain reduced to 0");
-                }
             }
 
         }
 
         if (ExCall)
         {
-            return true;
+            return RestrictTileResult.ReducedEx;
         }
 
         if (reduced)
@@ -714,7 +711,7 @@ public class WFCGeneration : MonoBehaviour
             update(loc, entropy(remaining));
         }
 
-        return reduced;
+        return reduced ? RestrictTileResult.Reduced : RestrictTileResult.NoChange;
     }
 
     float entropy(List<TileOption> options)
@@ -869,7 +866,7 @@ public class WFCGeneration : MonoBehaviour
         public List<Vector3Int> path;
         public List<BoundsInt> deltaBounds;
     }
-    static readonly int padding = 3;
+    static readonly int padding = 4;
     PathInfo fromPath(List<Vector3Int> path)
     {
         //push bounds into the positive
@@ -1043,11 +1040,38 @@ public class WFCGeneration : MonoBehaviour
         public Vector3 end;
         public List<SpawnTransform> spawns;
     }
+
+    bool generationBroken = false;
     public IEnumerator generate(GameObject floor)
     {
         floorRoot = floor;
         floorRoot.transform.localScale = tileScale;
-        yield return collapseCells(makePath());
+        bool makingFloor = true;
+        while (makingFloor)
+        {
+
+            generationBroken = false;
+            yield return collapseCells(makePath());
+
+            if (generationBroken)
+            {
+                Debug.LogWarning("Retrying...");
+                Debug.Break();
+                foreach (Transform child in floorRoot.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+            else
+            {
+                makingFloor = false;
+            }
+
+
+        }
+
+
+
     }
 
     void mapCopy(IEnumerable<Vector3Int> locations, bool toBackup)
@@ -1078,30 +1102,42 @@ public class WFCGeneration : MonoBehaviour
         SimplePriorityQueue<Vector3Int> collapseQueue = new SimplePriorityQueue<Vector3Int>();
         int chainCount = 0;
         Queue<Vector3Int> propagation = new Queue<Vector3Int>();
-        System.Action<Vector3Int> propagateTileRestrictions = (Vector3Int loc) =>
+
+        System.Action<Vector3Int> restrictAndCollapse = (Vector3Int loc) =>
         {
-            collapseConnections(loc, propagation.Enqueue);
+            RestrictTileResult res = restrictTileDomain(loc, collapseQueue.UpdatePriority);
+            if (res == RestrictTileResult.Reduced || res == RestrictTileResult.ReducedEx)
+            {
+                collapseConnections(loc, propagation.Enqueue);
+            }
+            else if (res == RestrictTileResult.Error)
+            {
+                generationBroken = true;
+                propagation.Clear();
+            }
+        };
+
+        System.Action propagationLoop = () =>
+        {
             while (propagation.Count > 0)
             {
                 chainCount++;
                 Vector3Int propLocation = propagation.Dequeue();
-                if (restrictTileDomain(propLocation, collapseQueue.UpdatePriority))
-                {
-                    collapseConnections(propLocation, propagation.Enqueue);
-                }
-
+                restrictAndCollapse(propLocation);
             }
         };
 
-        System.Action<Vector3Int> createTileRestrictions = (Vector3Int loc) =>
+
+        System.Action<Vector3Int> constrainAfterTileSet = (Vector3Int loc) =>
         {
+            collapseConnections(loc, propagation.Enqueue);
+            propagationLoop();
+        };
 
-            if (restrictTileDomain(loc, collapseQueue.UpdatePriority))
-            {
-                propagateTileRestrictions(loc);
-            }
-
-
+        System.Action<Vector3Int> constrainAfterConnectionSet = (Vector3Int loc) =>
+        {
+            restrictAndCollapse(loc);
+            propagationLoop();
         };
 
         (BigMask fullDomain, BigMask Ex) = fullDomainMask();
@@ -1240,7 +1276,12 @@ public class WFCGeneration : MonoBehaviour
                             break;
                     }
 
-                    createTileRestrictions(loc);
+                    constrainAfterConnectionSet(loc);
+
+                    if (generationBroken)
+                    {
+                        yield break;
+                    }
 
                     if (chainCount >= collapsePerFrame)
                     {
@@ -1296,8 +1337,16 @@ public class WFCGeneration : MonoBehaviour
 
             Vector3 debugOffset = Random.insideUnitSphere * 0.07f;
             Debug.DrawLine((currentLoc.asFloat() + debugOffset).scale(floorScale), (walker.location.asFloat() + debugOffset).scale(floorScale), Color.blue, 600);
-            createTileRestrictions(currentLoc);
-            createTileRestrictions(walker.location);
+            constrainAfterConnectionSet(currentLoc);
+            if (generationBroken)
+            {
+                yield break;
+            }
+            constrainAfterConnectionSet(walker.location);
+            if (generationBroken)
+            {
+                yield break;
+            }
 
 
             if (chainCount >= collapsePerFrame)
@@ -1323,7 +1372,9 @@ public class WFCGeneration : MonoBehaviour
                 retries++;
                 if (retries >= 3)
                 {
-                    throw new System.Exception("too many retries");
+                    Debug.LogError("Too many retries for path");
+                    generationBroken = true;
+                    yield break;
                 }
                 else if (retries == 2)
                 {
@@ -1371,8 +1422,12 @@ public class WFCGeneration : MonoBehaviour
             }
 
 
-            propagateTileRestrictions(coords);
+            constrainAfterTileSet(coords);
 
+            if (generationBroken)
+            {
+                yield break;
+            }
             if (chainCount >= collapsePerFrame)
             {
                 chainCount = 0;
@@ -1414,7 +1469,7 @@ public class WFCGeneration : MonoBehaviour
                 angle *= 0.75f;
                 dir = Vector3.RotateTowards(dir, flatDiff, Mathf.PI * angle / 180, 0);
             }
-            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.20f, 0);
+            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.3f * Random.value, 0);
             dir.Normalize();
 
             diff = dir * (4 + Random.value * 6);

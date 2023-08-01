@@ -138,16 +138,19 @@ public class MapGenerator : NetworkBehaviour
         currentFloor.transform.localScale = Vector3.one * currentFloorScale;
         NetworkServer.Spawn(currentFloor);
 
-        GameObject wfcFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, currentFloor.transform);
-        wfcFloor.GetComponent<ClientAdoption>().parent = currentFloor;
-        NetworkServer.Spawn(wfcFloor);
+
 
         int packCount = currentMap.floors[currentFloorIndex].packs + currentMap.floors[currentFloorIndex].encounters.Length + breakablesPerFloor;
         //increase packs to make sure not every location is populated
         int spawnCount = Mathf.FloorToInt(packCount * currentMap.floors[currentFloorIndex].sparseness);
         //TODO use sparseness in  wfc
 
+
+        GameObject wfcFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, currentFloor.transform);
+        wfcFloor.GetComponent<ClientAdoption>().parent = currentFloor;
+        NetworkServer.Spawn(wfcFloor);
         yield return wfc.generate(wfcFloor);
+
         GameObject p = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
         p.GetComponent<NextLevel>().setGen(this);
         Vector3 tileDirection = wfc.generationData.end - wfc.generationData.start;

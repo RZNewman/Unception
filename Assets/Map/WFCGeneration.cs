@@ -416,9 +416,9 @@ public class WFCGeneration : MonoBehaviour
 
     }
 
-    IEnumerable<(TileOption, int)> optionsFromTileDomain(BigMask domain)
+    IEnumerable<(TileOption, int)> optionsFromTileDomain(BigMask domain, bool debug = false)
     {
-        if (domain.empty)
+        if (domain.empty && !debug)
         {
             throw new System.Exception("Empty Domain");
         }
@@ -622,6 +622,17 @@ public class WFCGeneration : MonoBehaviour
             }
             else
             {
+                Debug.LogWarning("Domain reduced to 0:" + loc + ":"
+                        + " Up:" + cell.upMask
+                        + " Forward:" + cell.forwardMask
+                        + " Right:" + cell.rightMask
+                        + " Down:" + map[loc.x, loc.y - 1, loc.z].upMask
+                        + " Back:" + map[loc.x, loc.y, loc.z - 1].forwardMask
+                        + " Left:" + map[loc.x - 1, loc.y, loc.z].rightMask
+                        + " Up align:" + string.Join(",", cell.alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
+                        + " Down align:" + string.Join(",", map[loc.x, loc.y - 1, loc.z].alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
+                        );
+
                 //start EX call
                 cell.domainMask = new BigMask(ExDomain);
                 cell.rightMask = EXEnhanceConnections(cell.rightMask);
@@ -655,14 +666,7 @@ public class WFCGeneration : MonoBehaviour
                 {
                     negativeCell.alignmentRestrictions[bond] = new List<Rotation>(allRotations);
                 }
-                Debug.LogWarning("Domain reduced to 0:" + loc + ":"
-                        + " Up:" + cell.upMask
-                        + " Forward:" + cell.forwardMask
-                        + " Right:" + cell.rightMask
-                        + " Down:" + map[loc.x, loc.y - 1, loc.z].upMask
-                        + " Back:" + map[loc.x, loc.y, loc.z - 1].forwardMask
-                        + " Left:" + map[loc.x - 1, loc.y, loc.z].rightMask
-                        );
+
                 if (restrictTileDomain(loc, update, true))
                 {
                     //Ex tile found
@@ -1394,7 +1398,10 @@ public class WFCGeneration : MonoBehaviour
                 }
             }
 
-            if (!walkable.Contains(TileDirection.Down))
+            if (
+                !walkable.Contains(TileDirection.Down)
+                & (loc - start).magnitude > 2f
+                )
             {
                 spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), rotation = Quaternion.identity, halfExtents = floorScale * 0.5f });
             }

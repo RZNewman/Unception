@@ -152,6 +152,21 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         };
         FindObjectOfType<MenuHandler>().switchMenu(target);
     }
+    [Client]
+
+    public void stuck()
+    {
+        CmdStuck();
+    }
+
+    [Command]
+    void CmdStuck()
+    {
+        if (currentSelf)
+        {
+            currentSelf.transform.position = atlas.playerSpawn;
+        }
+    }
 
 
     [ClientRpc]

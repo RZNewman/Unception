@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,12 +9,12 @@ public class GlobalPlayer : MonoBehaviour
 
     public void setServerPlayer(PlayerGhost player)
     {
-        if(serverOwnerPlayer == null)
+        if (serverOwnerPlayer == null)
         {
             serverOwnerPlayer = player;
-            
+
         }
-        
+
     }
     public PlayerGhost serverPlayer
     {
@@ -24,7 +25,7 @@ public class GlobalPlayer : MonoBehaviour
 
     PlayerGhost clientLocalPlayer;
 
-    
+
     public void setLocalPlayer(PlayerGhost player)
     {
         clientLocalPlayer = player;
@@ -60,5 +61,11 @@ public class GlobalPlayer : MonoBehaviour
         {
             return clientLocalPlayer && clientLocalPlayer.unit && clientLocalPlayer.unit.GetComponent<Combat>().inCombat;
         }
+    }
+
+    [Client]
+    public void clientPlayerStuck()
+    {
+        clientLocalPlayer.stuck();
     }
 }

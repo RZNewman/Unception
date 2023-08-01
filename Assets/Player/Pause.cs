@@ -33,7 +33,7 @@ public class Pause : MonoBehaviour
     {
         if (paused)
         {
-            menu.switchMenu(MenuHandler.Menu.MainMenu);
+            menu.switchMenu(MenuHandler.Menu.Gameplay);
         }
         else
         {

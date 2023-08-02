@@ -45,12 +45,17 @@ public class UiBlessingDetails : MonoBehaviour
     {
         string prefix = conditions.trigger switch
         {
-            Trigger.Always => "On Cooldown",
+            Trigger.Always => "On cooldown",
             Trigger.HitRecieved => "When hit",
             Trigger.HitGiven => "On hit",
             Trigger.Cast => "On cast",
             _ => "Whenever",
         };
+        if (conditions.triggerSlot.HasValue)
+        {
+            string slot = string.Format(" of your {0} skill", conditions.triggerSlot.Value);
+            prefix += slot;
+        }
         string target = conditions.location switch
         {
             SourceLocation.Body => "in front of you",

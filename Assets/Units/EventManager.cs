@@ -7,6 +7,7 @@ public class EventManager : MonoBehaviour
 {
     public delegate void OnDeath(bool natural);
     public delegate void OnHit(GameObject other);
+    public delegate void OnCast(Ability ability);
     public delegate void OnTransition();
     public delegate void OnTick();
     public delegate void OnIndicator();
@@ -15,6 +16,7 @@ public class EventManager : MonoBehaviour
 
     List<OnDeath> OnDeathCallbacks = new List<OnDeath>();
     List<OnHit> OnHitCallbacks = new List<OnHit>();
+    List<OnCast> OnCastCallbacks = new List<OnCast>();
     List<OnTransition> OnTransitionCallbacks = new List<OnTransition>();
     List<OnTick> OnTickCallbacks = new List<OnTick>();
     List<OnIndicator> OnIndicatorCallbacks = new List<OnIndicator>();
@@ -55,6 +57,19 @@ public class EventManager : MonoBehaviour
             c(other);
         }
     }
+
+    public void subscribeCast(OnCast c)
+    {
+        OnCastCallbacks.Add(c);
+    }
+    public void fireCast(Ability a)
+    {
+        foreach (OnCast c in OnCastCallbacks)
+        {
+            c(a);
+        }
+    }
+
 
     public void subscribeTransition(OnTransition t)
     {

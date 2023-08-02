@@ -21,6 +21,7 @@ public enum TriggerRecovery
 public struct TriggerConditions
 {
     public Trigger trigger;
+    public ItemSlot? triggerSlot;
     public TriggerRecovery recovery;
     public SourceLocation location;
 }

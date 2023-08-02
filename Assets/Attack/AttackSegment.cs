@@ -33,7 +33,7 @@ public class AttackSegment
 
             sourcePoint = SpawnSource(mover, hitData, location, targetOverride);
         }
-        return getNextState();
+        return getNextState().state;
     }
 
     public void clientSyncSource(SpellSource s)
@@ -86,15 +86,27 @@ public class AttackSegment
 
     }
 
-    public AttackStageState getNextState()
+    public struct StateTransitionInfo
     {
+        public AttackStageState state;
+        public bool triggeredCast;
+    }
+
+    public StateTransitionInfo getNextState()
+    {
+        bool triggeredCast = false;
         if (states.Count == 0)
         {
-            return null;
+            return new StateTransitionInfo
+            {
+                state = null,
+                triggeredCast = triggeredCast,
+            };
         }
         if (currentState == windup)
         {
             pastWindup = true;
+            triggeredCast = true;
         }
 
         if (currentState is ActionState)
@@ -117,7 +129,11 @@ public class AttackSegment
 
         }
 
-        return currentState;
+        return new StateTransitionInfo
+        {
+            state = currentState,
+            triggeredCast = triggeredCast,
+        };
     }
 
     void constructIndicators()

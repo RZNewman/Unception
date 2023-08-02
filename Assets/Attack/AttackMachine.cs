@@ -120,7 +120,8 @@ public class AttackMachine
         }
         else
         {
-            s = currentSegment.getNextState();
+            StateTransitionInfo info = currentSegment.getNextState();
+            s = info.state;
             if (s == null)
             {
                 segments.RemoveAt(0);
@@ -131,6 +132,10 @@ public class AttackMachine
                 }
                 currentSegment.exitSegment();
                 nextSegment();
+            }
+            if (info.triggeredCast)
+            {
+                ability.GetComponentInParent<EventManager>().fireCast(ability);
             }
         }
 

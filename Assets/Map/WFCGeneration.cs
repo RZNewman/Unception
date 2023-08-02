@@ -166,7 +166,7 @@ public class WFCGeneration : MonoBehaviour
         public int rightMask;
         public int upMask;
 
-        public Dictionary<int, List<Rotation>> alignmentRestrictions;
+        public Dictionary<int, HashSet<Rotation>> alignmentRestrictions;
         public WFCCell()
         {
             ready = false;
@@ -175,7 +175,7 @@ public class WFCGeneration : MonoBehaviour
             forwardMask = 0;
             rightMask = 0;
             upMask = 0;
-            alignmentRestrictions = new Dictionary<int, List<Rotation>>();
+            alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>();
         }
 
         public WFCCell(WFCCell copy)
@@ -186,16 +186,16 @@ public class WFCGeneration : MonoBehaviour
             forwardMask = copy.forwardMask;
             rightMask = copy.rightMask;
             upMask = copy.upMask;
-            alignmentRestrictions = new Dictionary<int, List<Rotation>>(copy.alignmentRestrictions);
+            alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(copy.alignmentRestrictions);
         }
 
-        public void init(BigMask fullDomain, int fullConnection, Dictionary<int, List<Rotation>> fullRestrictions)
+        public void init(BigMask fullDomain, int fullConnection, Dictionary<int, HashSet<Rotation>> fullRestrictions)
         {
             domainMask = new BigMask(fullDomain);
             forwardMask = fullConnection;
             rightMask = fullConnection;
             upMask = fullConnection;
-            alignmentRestrictions = new Dictionary<int, List<Rotation>>(fullRestrictions);
+            alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(fullRestrictions);
         }
         public void makeReady()
         {
@@ -234,12 +234,12 @@ public class WFCGeneration : MonoBehaviour
     }
     static readonly List<Rotation> allRotations = new List<Rotation>() { Rotation.None, Rotation.Quarter, Rotation.Half, Rotation.ThreeQuarters };
 
-    Dictionary<int, List<Rotation>> fullAlignmentMask()
+    Dictionary<int, HashSet<Rotation>> fullAlignmentMask()
     {
-        Dictionary<int, List<Rotation>> restrictions = new Dictionary<int, List<Rotation>>();
+        Dictionary<int, HashSet<Rotation>> restrictions = new Dictionary<int, HashSet<Rotation>>();
         foreach (TileConnection a in alignments)
         {
-            restrictions[(int)a] = new List<Rotation>(allRotations);
+            restrictions[(int)a] = new HashSet<Rotation>(allRotations);
         }
         return restrictions;
     }
@@ -471,8 +471,8 @@ public class WFCGeneration : MonoBehaviour
         ConnectionDomainInfo connections = new ConnectionDomainInfo
         {
             validConnections = new ConnectionDomainMasks(),
-            downAlignments = new Dictionary<int, List<Rotation>>(),
-            upAlignments = new Dictionary<int, List<Rotation>>(),
+            downAlignments = new Dictionary<int, HashSet<Rotation>>(),
+            upAlignments = new Dictionary<int, HashSet<Rotation>>(),
         };
         connections.validConnections.up = 0;
         connections.validConnections.down = 0;
@@ -484,8 +484,8 @@ public class WFCGeneration : MonoBehaviour
         foreach (TileConnection conn in alignments)
         {
             int singleAlignmentMask = (int)conn;
-            connections.upAlignments[singleAlignmentMask] = new List<Rotation>();
-            connections.downAlignments[singleAlignmentMask] = new List<Rotation>();
+            connections.upAlignments[singleAlignmentMask] = new HashSet<Rotation>();
+            connections.downAlignments[singleAlignmentMask] = new HashSet<Rotation>();
         }
         foreach ((TileOption opt, _) in optionsFromTileDomain(domain))
         {
@@ -679,7 +679,7 @@ public class WFCGeneration : MonoBehaviour
                 }
                 foreach (int bond in bonds)
                 {
-                    cell.alignmentRestrictions[bond] = new List<Rotation>(allRotations);
+                    cell.alignmentRestrictions[bond] = new HashSet<Rotation>(allRotations);
                 }
                 bonds.Clear();
                 WFCCell negativeCell = map[loc.x, loc.y - 1, loc.z];
@@ -692,7 +692,7 @@ public class WFCGeneration : MonoBehaviour
                 }
                 foreach (int bond in bonds)
                 {
-                    negativeCell.alignmentRestrictions[bond] = new List<Rotation>(allRotations);
+                    negativeCell.alignmentRestrictions[bond] = new HashSet<Rotation>(allRotations);
                 }
 
                 return restrictTileDomain(loc, update, true);
@@ -746,8 +746,8 @@ public class WFCGeneration : MonoBehaviour
     struct ConnectionDomainInfo
     {
         public ConnectionDomainMasks validConnections;
-        public Dictionary<int, List<Rotation>> upAlignments;
-        public Dictionary<int, List<Rotation>> downAlignments;
+        public Dictionary<int, HashSet<Rotation>> upAlignments;
+        public Dictionary<int, HashSet<Rotation>> downAlignments;
     }
     public struct ConnectionTileInfo
     {
@@ -790,7 +790,7 @@ public class WFCGeneration : MonoBehaviour
                     foreach (TileConnection a in alignments)
                     {
                         int singleAlignmentMask = (int)a;
-                        if (cell.alignmentRestrictions[singleAlignmentMask].Count > connections.upAlignments[singleAlignmentMask].Count)
+                        if (cell.alignmentRestrictions[singleAlignmentMask] != connections.upAlignments[singleAlignmentMask])
                         {
                             cell.alignmentRestrictions[singleAlignmentMask] = connections.upAlignments[singleAlignmentMask];
                             altered = true;
@@ -831,7 +831,7 @@ public class WFCGeneration : MonoBehaviour
                     foreach (TileConnection a in alignments)
                     {
                         int singleAlignmentMask = (int)a;
-                        if (negativeCell.alignmentRestrictions[singleAlignmentMask].Count > connections.downAlignments[singleAlignmentMask].Count)
+                        if (negativeCell.alignmentRestrictions[singleAlignmentMask] != connections.downAlignments[singleAlignmentMask])
                         {
                             negativeCell.alignmentRestrictions[singleAlignmentMask] = connections.downAlignments[singleAlignmentMask];
                             altered = true;
@@ -1143,7 +1143,7 @@ public class WFCGeneration : MonoBehaviour
         (BigMask fullDomain, BigMask Ex) = fullDomainMask();
         ExDomain = Ex;
         int fullConnection = fullConnectionMask();
-        Dictionary<int, List<Rotation>> fullRestrictions = fullAlignmentMask();
+        Dictionary<int, HashSet<Rotation>> fullRestrictions = fullAlignmentMask();
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
         generationData.start = path[0].asFloat().scale(floorScale);
@@ -1466,7 +1466,7 @@ public class WFCGeneration : MonoBehaviour
             {
                 Vector3 flatDiff = new Vector3(diff.x, 0, diff.z);
                 float angle = Vector3.Angle(dir, flatDiff);
-                angle *= 0.75f;
+                angle *= 0.25f;
                 dir = Vector3.RotateTowards(dir, flatDiff, Mathf.PI * angle / 180, 0);
             }
             dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.3f * Random.value, 0);

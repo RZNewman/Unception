@@ -124,6 +124,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     {
 
         Vector3 diff = target - transform.position;
+        diff = Vector3.ProjectOnPlane(diff, ground.normal);
         float frameDistance = speed * Time.fixedDeltaTime;
         if (diff.magnitude < frameDistance)
         {

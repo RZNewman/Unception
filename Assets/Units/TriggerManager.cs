@@ -52,6 +52,9 @@ public class TriggerManager : NetworkBehaviour
             case Trigger.Always:
                 events.subscribeTransition(alwaysCallback(a, castData));
                 break;
+            case Trigger.Cast:
+                events.subscribeCast(castCallback(a, castData, trig.conditions.triggerSlot));
+                break;
         }
     }
 
@@ -96,6 +99,19 @@ public class TriggerManager : NetworkBehaviour
         {
             location.triggeredPosition = other.transform.position;
             cast(location);
+        };
+    }
+
+    OnCast castCallback(Ability a, CastingLocationData location, ItemSlot? slotRestriction)
+    {
+        Action<CastingLocationData> cast = abilityCallback(a);
+        return (Ability castAbil) =>
+        {
+            if (!slotRestriction.HasValue || castAbil.source().slot == slotRestriction.Value)
+            {
+                cast(location);
+            }
+
         };
     }
 

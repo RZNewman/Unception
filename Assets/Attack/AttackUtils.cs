@@ -14,7 +14,6 @@ using Unity.Burst.Intrinsics;
 using static GenerateAttack;
 using System;
 using static SpellSource;
-using UnityEditor.SceneManagement;
 
 public static class AttackUtils
 {

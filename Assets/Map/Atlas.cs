@@ -9,8 +9,6 @@ using static Utils;
 using static RewardManager;
 using static Power;
 using static Atlas;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
-
 public class Atlas : NetworkBehaviour
 {
     static readonly int avgPacksPerfloor = 25;

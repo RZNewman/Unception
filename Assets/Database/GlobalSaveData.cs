@@ -6,7 +6,6 @@ using Firebase.Database;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using static UnityEditor.Progress;
 
 public class GlobalSaveData : MonoBehaviour
 {

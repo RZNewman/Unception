@@ -453,7 +453,7 @@ public class Atlas : NetworkBehaviour
             {
                 difficulty = difficulty.add(addedDifficulty),
                 type = EncounterType.Ambush,
-                packs = 4,
+                packs = 3,
             };
         }
         return encounters;

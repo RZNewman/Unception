@@ -34,11 +34,12 @@ public class TriggerManager : NetworkBehaviour
 
     }
 
+
     void instanceTrigger(AttackTrigger trig)
     {
         AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
 
-        Ability a = abiltyManager.addAbility(trig.block);
+        Ability a = abiltyManager.addTriggeredAbility(trig.block, trig.conditions.triggerStrength);
         CastingLocationData castData = new CastingLocationData
         {
             hardCast = false,
@@ -107,7 +108,12 @@ public class TriggerManager : NetworkBehaviour
         Action<CastingLocationData> cast = abilityCallback(a);
         return (Ability castAbil) =>
         {
-            if (!slotRestriction.HasValue || castAbil.source().slot == slotRestriction.Value)
+            //only player cast abilities
+            if (castAbil.source().slot.HasValue
+            && (
+            !slotRestriction.HasValue || castAbil.source().slot.Value == slotRestriction.Value
+            )
+            )
             {
                 cast(location);
             }

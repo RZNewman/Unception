@@ -61,6 +61,7 @@ public class UiBlessingDetails : MonoBehaviour
             SourceLocation.Body => "in front of you",
             SourceLocation.World => "at the target",
             SourceLocation.BodyFixed => "in the direction of the target",
+            SourceLocation.WorldForward => "where you are aiming",
             _ => "in some direction",
         };
 

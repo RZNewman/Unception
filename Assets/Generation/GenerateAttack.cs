@@ -46,9 +46,14 @@ public static class GenerateAttack
 
     static readonly float moveValueNegative = 0.4f;
     static readonly float turnValueNegative = 0.1f;
-    static public float getWindValue(WindInstanceData[] winds)
+    static public float getWindValue(WindInstanceData[] winds, bool reducedValue)
     {
-        return winds.Sum(getWindValue);
+        float value = winds.Sum(getWindValue);
+        if (reducedValue)
+        {
+            value *= 0.2f;
+        }
+        return value;
     }
     static public float getWindValue(WindInstanceData wind)
     {
@@ -376,8 +381,18 @@ public static class GenerateAttack
         public InstanceData data;
         public float mult;
     }
-    public static AttackInstanceData populateAttack(AttackGenerationData atk, float power, Ability abil)
+#nullable enable
+    public struct PopulateAttackOptions
     {
+        public float power;
+        public float? addedStrength;
+        public bool? reduceWindValue;
+        public Ability? statLinkAbility;
+    }
+#nullable disable
+    public static AttackInstanceData populateAttack(AttackGenerationData atk, PopulateAttackOptions opts)
+    {
+        float power = opts.power;
         float scaleNum = Power.scaleNumerical(power);
 
         float cooldownValue = atk.cooldown;
@@ -436,7 +451,7 @@ public static class GenerateAttack
                 }
             }
 
-            float strength = getWindValue(windList.ToArray());
+            float strength = getWindValue(windList.ToArray(), opts.reduceWindValue.GetValueOrDefault(false));
             float addedCDStrength = cooldownStrength * (1 - 0.03f * (repeatCount - 1));
             //if (strength * (1 + addedCDStrength) > strength + addedCDStrength)
             //{
@@ -445,6 +460,10 @@ public static class GenerateAttack
             //else
             //{
             strength += addedCDStrength;
+            if (opts.addedStrength.HasValue)
+            {
+                strength += opts.addedStrength.Value;
+            }
             //}
             strength *= qualityPercent(atk.quality);
             float repeatStrength = strength / repeatCount;
@@ -476,9 +495,9 @@ public static class GenerateAttack
 
         StatStream stream = new StatStream();
         stream.setStats(stats);
-        if (abil != null)
+        if (opts.statLinkAbility != null)
         {
-            abil.GetComponent<StatHandler>().link(stream);
+            opts.statLinkAbility.GetComponent<StatHandler>().link(stream);
         }
 
         AttackInstanceData atkIn = new AttackInstanceData
@@ -681,13 +700,13 @@ public static class GenerateAttack
 
         if (type == AttackGenerationType.Monster)
         {
-            windUpMin = 0.25f;
+            windUpMin = 0.5f;
             windDownMin = 0.45f;
         }
         else if (type == AttackGenerationType.IntroMain)
         {
-            windUpMax = 0.3f;
-            windDownMax = 0.3f;
+            windUpMax = 0.2f;
+            windDownMax = 0.5f;
         }
         else if (type == AttackGenerationType.PlayerTrigger)
         {
@@ -696,23 +715,16 @@ public static class GenerateAttack
         }
         else
         {
-            if (slot == ItemSlot.Main)
+            if (slot == ItemSlot.Main || Random.value < 0.65f)
             {
-                windUpMax = 0.4f;
-                windDownMax = 0.3f;
+                //fast hit
+                windUpMax *= 0.2f;
+                windDownMax = 0.5f;
             }
             else
             {
-                if (Random.value < 0.65f)
-                {
-                    //fast hit
-                    windUpMax *= 0.35f;
-                }
-                else
-                {
-                    //fast end
-                    windDownMax = 0.2f;
-                }
+                //fast end
+                windDownMax = 0.2f;
             }
         }
 

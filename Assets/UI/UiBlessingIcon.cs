@@ -22,7 +22,7 @@ public class UiBlessingIcon : MonoBehaviour
         identifier.color = partialColor;
         identifier.text = t.flair.identifier;
 
-        attackInst = inv.fillBlock(t.block);
+        attackInst = inv.fillBlock(t.block, t.conditions.triggerStrength);
         trigger = t;
     }
 

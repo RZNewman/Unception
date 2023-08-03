@@ -226,10 +226,9 @@ public class Inventory : NetworkBehaviour
 
     }
 
-    public AttackBlockInstance fillBlock(AttackBlock block)
+    public AttackBlockInstance fillBlock(AttackBlock block, float? triggerStrength = null)
     {
-
-        return block.fillBlock(null, player.power);
+        return block.fillBlock(new AttackBlock.FillBlockOptions { overridePower = player.power, addedStrength = triggerStrength, reduceWindValue = triggerStrength.HasValue });
     }
     [Client]
     public void syncInventory()

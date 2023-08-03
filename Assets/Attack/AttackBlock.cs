@@ -14,23 +14,37 @@ public class AttackBlock : IdentifyingBlock
     public AttackGenerationData source;
     public ItemSlot? slot;
 
-    public AttackBlockInstance fillBlock(Ability abil = null, float power = -1, bool forceScaling = false)
+#nullable enable
+    public struct FillBlockOptions
+    {
+        public float? overridePower;
+        public float? addedStrength;
+        public bool? reduceWindValue;
+        public bool? forceScaling;
+        public Ability? statLinkAbility;
+    }
+
+    public AttackBlockInstance fillBlock(FillBlockOptions opts)
     {
 
         AttackBlockInstance filled = ScriptableObject.CreateInstance<AttackBlockInstance>();
-        populate(filled, abil, power, forceScaling);
+        populate(filled, opts);
         filled.slot = slot;
         filled.generationData = this;
         return filled;
     }
-    void populate(AttackBlockInstance iBlock, Ability abil = null, float power = -1, bool forceScaling = false)
+    void populate(AttackBlockInstance iBlock, FillBlockOptions opts)
     {
-        if (power < 0)
+        float power = opts.overridePower.HasValue
+            && (opts.forceScaling.GetValueOrDefault(false) || scales)
+            ? opts.overridePower.Value : powerAtGeneration;
+        iBlock.instance = populateAttack(source, new PopulateAttackOptions
         {
-            power = powerAtGeneration;
-        }
-        power = forceScaling || scales ? power : powerAtGeneration;
-        iBlock.instance = populateAttack(source, power, abil);
+            power = power,
+            statLinkAbility = opts.statLinkAbility,
+            addedStrength = opts.addedStrength,
+            reduceWindValue = opts.reduceWindValue,
+        });
         iBlock.flair = flair;
         iBlock.id = id;
     }

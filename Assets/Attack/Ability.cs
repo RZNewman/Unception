@@ -18,6 +18,9 @@ public class Ability : NetworkBehaviour
     AttackBlock attackFormat;
 
     [SyncVar]
+    float? triggerStrength;
+
+    [SyncVar]
     public ItemSlot? clientSyncKey;
 
     AttackBlockInstance attackFilled;
@@ -150,9 +153,10 @@ public class Ability : NetworkBehaviour
         }
     }
     [Server]
-    public void setFormat(AttackBlock b)
+    public void setFormat(AttackBlock b, float? tStrength = null)
     {
         attackFormat = b;
+        triggerStrength = tStrength;
         fillFormat();
         charges = chargeMax;
         if (attackFormat.scales)
@@ -162,13 +166,32 @@ public class Ability : NetworkBehaviour
     }
     void fillFormat()
     {
-        attackFilled = attackFormat.fillBlock(this);
+        attackFilled = attackFormat.fillBlock(
+            new AttackBlock.FillBlockOptions
+            {
+                statLinkAbility = this,
+                addedStrength = triggerStrength,
+                reduceWindValue = triggerStrength.HasValue
+            }
+            );
 
     }
 
     public void demoForceScale()
     {
-        GetComponentInParent<Power>().subscribePower(p => { attackFilled = attackFormat.fillBlock(this, p.power, true); });
+        GetComponentInParent<Power>().subscribePower(p =>
+        {
+            attackFilled = attackFormat.fillBlock(
+            new AttackBlock.FillBlockOptions
+            {
+                statLinkAbility = this,
+                addedStrength = triggerStrength,
+                reduceWindValue = triggerStrength.HasValue,
+                overridePower = p.power,
+                forceScaling = true,
+            }
+            );
+        });
     }
     void subscribeScale()
     {
@@ -176,7 +199,15 @@ public class Ability : NetworkBehaviour
     }
     void scaleAbility(Power p)
     {
-        attackFilled = attackFormat.fillBlock(this, p.power);
+        attackFilled = attackFormat.fillBlock(
+            new AttackBlock.FillBlockOptions
+            {
+                statLinkAbility = this,
+                addedStrength = triggerStrength,
+                reduceWindValue = triggerStrength.HasValue,
+                overridePower = p.power
+            }
+            );
     }
 
 

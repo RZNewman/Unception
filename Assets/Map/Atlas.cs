@@ -135,7 +135,7 @@ public class Atlas : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         gen = FindObjectOfType<MapGenerator>();
-        serverMap.gameObject.SetActive(isServer);
+        serverMap.gameObject.SetActive(false);
     }
     void makeWorld()
     {
@@ -485,10 +485,16 @@ public class Atlas : NetworkBehaviour
     {
         if (selectedMap)
         {
-            selectedMap.deselect();
+            selectedMap.highlighted(false);
         }
         selectedMap = m;
+        selectedMap.highlighted(true);
         checkEmbarkButton();
+    }
+
+    public void openServerMap()
+    {
+        serverMap.gameObject.SetActive(true);
     }
 
     #region embark
@@ -524,6 +530,7 @@ public class Atlas : NetworkBehaviour
     [Server]
     public void embarkManual()
     {
+        serverMap.gameObject.SetActive(false);
         embarkButton.interactable = false;
         sound.playSound(SoundManager.SoundClip.Embark);
         gp.player.embark(-1);

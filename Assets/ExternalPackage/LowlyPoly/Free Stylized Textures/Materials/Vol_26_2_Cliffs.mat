@@ -123,7 +123,7 @@ Material:
     - _Cutoff: 0.41
     - _CylinderObstructionDestroyRadius: 8
     - _CylinderStrength: 1
-    - _DefaultEffectRadius: 20
+    - _DefaultEffectRadius: 100
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DissolveColorSaturation: 1

@@ -69,6 +69,7 @@ public class UiEquipmentDragger : MonoBehaviour
                 drag = hover.gameObject;
                 drag.transform.SetParent(transform);
                 drag.GetComponent<Image>().raycastTarget = false;
+                if (target != null) { target.unslotObject(); }
             }
         }
         if (!Input.GetMouseButton(0))

@@ -684,7 +684,15 @@ public static class GenerateAttack
         }
         if (slot == ItemSlot.Main)
         {
-            cooldownMax = 0.3f;
+            if (Random.value < 0.8f)
+            {
+                noCooldown = true;
+            }
+            else
+            {
+                cooldownMax = 0.3f;
+            }
+
         }
         float charges = noCooldown ? 0 : GaussRandomDecline(4);
         float chargeBaseStats = charges.asRange(0, itemMax(Stat.Charges));
@@ -700,7 +708,7 @@ public static class GenerateAttack
 
         if (type == AttackGenerationType.Monster)
         {
-            windUpMin = 0.5f;
+            windUpMin = 0.25f;
             windDownMin = 0.45f;
         }
         else if (type == AttackGenerationType.IntroMain)

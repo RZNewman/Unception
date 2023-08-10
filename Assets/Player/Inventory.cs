@@ -319,7 +319,13 @@ public class Inventory : NetworkBehaviour
     [Command]
     public void CmdSendStorage(string id)
     {
-        int index = tempDrops.FindIndex(item => item.id == id);
+        int index;
+        index = storage.FindIndex(item => item.id == id);
+        if (index >= 0)
+        {
+            return;
+        }
+        index = tempDrops.FindIndex(item => item.id == id);
         AttackBlock moved;
         if (index >= 0)
         {
@@ -341,7 +347,13 @@ public class Inventory : NetworkBehaviour
     [Command]
     public void CmdSendTrash(string id)
     {
-        int index = storage.FindIndex(item => item.id == id);
+        int index;
+        index = tempDrops.FindIndex(item => item.id == id);
+        if (index >= 0)
+        {
+            return;
+        }
+        index = storage.FindIndex(item => item.id == id);
         AttackBlock moved;
         if (index >= 0)
         {

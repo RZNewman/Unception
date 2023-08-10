@@ -303,13 +303,14 @@ public class UnitMovement : NetworkBehaviour
 
         if (diff.magnitude <= addingFrameMag)
         {
-            planarVelocityCache = desiredVeloicity;
+            planarVelocity = desiredVeloicity;
 
         }
         else
         {
-            planarVelocityCache = planarVelocity + diff.normalized * addingFrameMag;
+            planarVelocity = planarVelocity + diff.normalized * addingFrameMag;
         }
+        planarVelocityCache = planarVelocity;
         planarVelocityCalculated = planarVelocityCache;
 
     }

@@ -87,10 +87,6 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (uiaCurrent)
         {
-            if (uiaCurrent == uiAbil)
-            {
-                return;
-            }
             dragger.storageGrab(uiaCurrent);
         }
         gp.player.GetComponent<Inventory>().CmdEquipAbility(newUI.blockFilled.id);
@@ -102,6 +98,10 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         slotPower = newUI.blockFilled.instance.actingPower;
         newUI.setUpgrade(true);
         dragger.GetComponent<UILoadoutMenu>().displayUpgrades();
+    }
+    public void unslotObject()
+    {
+        uiaCurrent = null;
     }
 
 

@@ -16,6 +16,7 @@ public class MenuHandler : MonoBehaviour
     public GameObject pause;
     public GameObject quest;
     public GameObject blessing;
+    public GameObject loading;
 
     GlobalPlayer gp;
     // Start is called before the first frame update
@@ -32,6 +33,7 @@ public class MenuHandler : MonoBehaviour
         Pause,
         Quest,
         Blessing,
+        Loading,
     }
 
     GameObject menuObject(Menu m)
@@ -48,6 +50,7 @@ public class MenuHandler : MonoBehaviour
             Menu.Pause => pause,
             Menu.Quest => quest,
             Menu.Blessing => blessing,
+            Menu.Loading => loading,
             _ => main
         };
     }

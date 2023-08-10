@@ -6,4 +6,5 @@ using UnityEngine.EventSystems;
 public interface UiDraggerTarget
 {
     public abstract void slotObject(GameObject uiAbil);
+    public virtual void unslotObject() { }
 }

@@ -90,6 +90,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     public void embark(int mapIndex)
     {
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Loading);
         CmdEmbark(mapIndex);
     }
 

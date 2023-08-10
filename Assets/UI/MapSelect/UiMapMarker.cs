@@ -40,13 +40,12 @@ public class UiMapMarker : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         return map;
     }
 
-    public void deselect()
+    public void highlighted(bool highlight)
     {
-        selector.SetActive(false);
+        selector.SetActive(highlight);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        selector.SetActive(true);
         atlas.selectMap(this);
         sound.playSound(SoundManager.SoundClip.Select);
     }

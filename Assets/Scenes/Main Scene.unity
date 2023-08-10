@@ -10504,7 +10504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15f54ffd3090df142b3b7e1fd04c5e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileScale: {x: 10, y: 4, z: 10}
+  tileScale: {x: 10, y: 3.5, z: 10}
   collapsePerFrame: 50
   TileFailurePre: {fileID: 0}
   tiles:

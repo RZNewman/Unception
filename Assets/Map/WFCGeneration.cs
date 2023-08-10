@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using static MonsterSpawn;
 using static Utils;
+using static WFCTile;
 
 public class WFCGeneration : MonoBehaviour
 {
@@ -165,6 +166,9 @@ public class WFCGeneration : MonoBehaviour
         public int rightMask;
         public int upMask;
 
+        public GameObject instancedCell;
+        public NavLoad navType;
+
         public Dictionary<int, HashSet<Rotation>> alignmentRestrictions;
         public WFCCell()
         {
@@ -199,6 +203,13 @@ public class WFCGeneration : MonoBehaviour
         public void makeReady()
         {
             ready = true;
+        }
+
+        public void collapse(NavLoad type, GameObject o = null)
+        {
+            collapsed = true;
+            instancedCell = o;
+            navType = type;
         }
 
 
@@ -1038,6 +1049,7 @@ public class WFCGeneration : MonoBehaviour
         public Vector3 start;
         public Vector3 end;
         public List<SpawnTransform> spawns;
+        public List<GameObject> navTiles;
     }
 
     bool generationBroken = false;
@@ -1398,11 +1410,11 @@ public class WFCGeneration : MonoBehaviour
 
             WFCCell cell = map[coords.x, coords.y, coords.z];
             cell.domainMask = selectFromTileDomain(cell.domainMask);
-            cell.collapsed = true;
             TileOption opt = optionFromSingleDomain(cell.domainMask);
+            GameObject instance = null;
             if (!opt.prefab.skipSpawn)
             {
-                Instantiate(
+                instance = Instantiate(
                     opt.prefab.gameObject,
                     location,
                     Quaternion.AngleAxis(
@@ -1419,7 +1431,7 @@ public class WFCGeneration : MonoBehaviour
                 );
                 //TODO spawn tile?
             }
-
+            cell.collapse(opt.prefab.navType, instance);
 
             constrainAfterTileSet(coords);
 
@@ -1443,6 +1455,9 @@ public class WFCGeneration : MonoBehaviour
             Debug.DrawLine(spawn.position, spawn.position + Vector3.forward * spawn.halfExtents.y + Vector3.right * spawn.halfExtents.x, Color.magenta, 600);
         }
         Debug.Log("Spawns: " + Time.time);
+        yield return null;
+        generationData.navTiles = getNavigation(uniqueLocations);
+        Debug.Log("Nav: " + Time.time);
     }
 
 
@@ -1514,6 +1529,30 @@ public class WFCGeneration : MonoBehaviour
         }
 
         return spawns;
+    }
+
+
+    List<GameObject> getNavigation(IEnumerable<Vector3Int> uniqueLocations)
+    {
+        List<GameObject> nav = new List<GameObject>();
+        foreach (Vector3Int loc in uniqueLocations)
+        {
+            WFCCell cell = map[loc.x, loc.y, loc.z];
+            switch (cell.navType)
+            {
+                case NavLoad.This:
+                    nav.Add(cell.instancedCell);
+                    break;
+                case NavLoad.Beneath:
+                    WFCCell adj = map[loc.x, loc.y - 1, loc.z];
+                    nav.Add(adj.instancedCell);
+                    break;
+
+            }
+
+        }
+        return nav;
+
     }
 
 }

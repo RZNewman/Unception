@@ -133,7 +133,7 @@ public class InputHandler : MonoBehaviour, UnitControl
             if (
                 Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees
                 &&
-                Vector3.Angle(transform.position - info[i].point, r.direction) > 50
+                Vector3.Angle(transform.position - info[i].point, Camera.main.transform.forward) > 50
                 )
             {
                 Vector3 point = info[i].point + info[i].normal * 0.75f * power.scalePhysical();

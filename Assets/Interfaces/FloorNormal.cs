@@ -39,7 +39,7 @@ public class FloorNormal : MonoBehaviour
         }
 
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 10, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
         {
             navPosition = hit.position;
         }

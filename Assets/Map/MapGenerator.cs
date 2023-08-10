@@ -166,7 +166,13 @@ public class MapGenerator : NetworkBehaviour
         agent.agentClimb = 0.3f * currentFloorScale;
         agent.agentHeight = 1.5f * currentFloorScale;
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
-        NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
+        //NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
+        foreach (GameObject tile in wfc.generationData.navTiles)
+        {
+            List<NavMeshBuildSource> sourcesTile = new List<NavMeshBuildSource>();
+            NavMeshBuilder.CollectSources(tile.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sourcesTile);
+            sources.AddRange(sourcesTile);
+        }
         navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
         NavLinkGenerator linkGenerator = ScriptableObject.CreateInstance<NavLinkGenerator>();
         linkGenerator.m_FallLinkPrefab = stitchPre.transform;

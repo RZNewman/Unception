@@ -30,6 +30,14 @@ public class AttackingState : PlayerMovementState
         }
     }
 
+    public bool inWindup
+    {
+        get
+        {
+            return machine.inWindup;
+        }
+    }
+
     public override void enter()
     {
         machine = new AttackMachine(castingAbility, mover, new AttackMachine.CastingLocationData() { hardCast = true });

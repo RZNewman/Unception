@@ -16,6 +16,7 @@ MonoBehaviour:
   maxSpeed: 9
   acceleration: 40
   decceleration: 60
+  friction: 10
   jumpForce: 20
   jumpsquatTime: 0.2
   lookSpeedDegrees: 180

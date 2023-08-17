@@ -237,7 +237,7 @@ public class UnitMovement : NetworkBehaviour
         rb.AddForce(force, ForceMode.Impulse);
     }
 
-    public void move(UnitInput inp, float speedMultiplier = 1.0f, float additionalMovement = 0)
+    public void move(UnitInput inp, float speedStateMultiplier = 1.0f, float additionalMovement = 0)
     {
         float scaleSpeed = power.scaleSpeed();
 
@@ -257,48 +257,60 @@ public class UnitMovement : NetworkBehaviour
         {
             stunnedMultiplier = 0.5f;
         }
+        Vector3 planarVelocity = planarVelocityCalculated;
+        float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0);
 
+        //section: friction
+        float lookMultFriction = toMoveMultiplier(vec2input(planarVelocity));
+        float speedCalcMult = speedStateMultiplier * stunnedMultiplier * airMultiplier * combatMultiplier * lookMultFriction;
+        float maxSpeedInDir = movespeed * speedCalcMult * scaleSpeed;
+        if(planarVelocity.magnitude > maxSpeedInDir)
+        {
+            //apply fricton
+            float frictionMagDiff = planarVelocity.magnitude - maxSpeedInDir;
+            float frictionMult = airMultiplier;
+            float frictiongFrameMag = props.friction * frictionMult * Time.fixedDeltaTime * scaleSpeed;
+            if (frictiongFrameMag >= frictionMagDiff)
+            {
+                planarVelocity = planarVelocity.normalized * maxSpeedInDir;
+
+            }
+            else
+            {
+                planarVelocity += -planarVelocity.normalized * frictiongFrameMag;
+            }
+        }
+        
 
 
         Vector3 desiredDirection = input2vec(inp.move);
+        float speedMultiplier = speedStateMultiplier * lookMultiplier * airMultiplier * combatMultiplier;       
+        float potentialSpeed = movespeed * speedMultiplier * scaleSpeed;
 
-        speedMultiplier *= lookMultiplier * airMultiplier * combatMultiplier;
-
-
-        Vector3 planarVelocity = planarVelocityCalculated;
-        float potentialSpeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0) * speedMultiplier * scaleSpeed;
-        float desiredSpeed;
-        if (grounded)
-        {
-            desiredSpeed = potentialSpeed;
-
-        }
-        else
-        {
-            float usefulSpeed = Mathf.Max(Vector3.Dot(planarVelocity, desiredDirection), 0);
-            desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
-        }
+        //section: stopping
+        float usefulSpeed = Mathf.Max(Vector3.Dot(planarVelocity, desiredDirection), 0);
+        float desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
         Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
         Vector3 diff = desiredVeloicity - planarVelocity;
         float stoppingMagnitude = Vector3.Dot(diff, -planarVelocity);
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
-        Vector3 stoppingDir = -planarVelocity.normalized * stoppingMagnitude;
+        Vector3 stoppingVec = -planarVelocity.normalized * stoppingMagnitude;
         float stoppingMult = stunnedMultiplier * airMultiplier * combatMultiplier;
         float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scaleSpeed;
-
-        if (stoppingDir.magnitude <= stoppingFrameMag)
+        if (stoppingVec.magnitude <= stoppingFrameMag)
         {
-            planarVelocity += stoppingDir;
+            planarVelocity += stoppingVec;
 
         }
         else
         {
-            planarVelocity += stoppingDir.normalized * stoppingFrameMag;
+            planarVelocity += stoppingVec.normalized * stoppingFrameMag;
         }
 
+        //section: acceleration
         diff = desiredVeloicity - planarVelocity;
         float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = stunnedMultiplier * speedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
+        float addingMult = speedStateMultiplier * stunnedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
         float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * scaleSpeed;
 
         if (diff.magnitude <= addingFrameMag)
@@ -308,7 +320,7 @@ public class UnitMovement : NetworkBehaviour
         }
         else
         {
-            planarVelocity = planarVelocity + diff.normalized * addingFrameMag;
+            planarVelocity +=  diff.normalized * addingFrameMag;
         }
         planarVelocityCache = planarVelocity;
         planarVelocityCalculated = planarVelocityCache;

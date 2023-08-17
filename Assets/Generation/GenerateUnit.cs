@@ -22,7 +22,8 @@ public static class GenerateUnit
 
         properties.maxSpeed = speed;
         properties.acceleration = speed * 4;
-        properties.decceleration = speed * 6;
+        properties.decceleration = speed * 4;
+        properties.friction = speed * 3;
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;

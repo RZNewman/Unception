@@ -30,6 +30,8 @@ public class UnitMovement : NetworkBehaviour
     [SyncVar(hook = nameof(syncLookAngle))]
     public float currentLookAngle = 0;
 
+    int castsThisArtime = 0;
+
     Vector3 planarVelocityCache;
     // Start is called before the first frame update
     void Start()
@@ -51,6 +53,7 @@ public class UnitMovement : NetworkBehaviour
         events.suscribeDeath(cleanup);
         events.TransitionEvent += (transition);
         events.TickEvent += (tick);
+        events.CastEvent += cast;
     }
 
     void syncLookAngle(float oldAngle, float newAngle)
@@ -78,7 +81,7 @@ public class UnitMovement : NetworkBehaviour
         return GetComponentInChildren<UnitRotation>().gameObject;
     }
 
-    public void tick()
+    void tick()
     {
         if (!lifeManager.IsDead)
         {
@@ -89,14 +92,27 @@ public class UnitMovement : NetworkBehaviour
             planarVelocityCalculated = Vector3.zero;
         }
     }
-    public void transition()
+    void transition()
     {
         if (!lifeManager.IsDead)
         {
             setGround();
             movement.transition();
+            if (grounded)
+            {
+                castsThisArtime = 0;
+            }
         }
 
+    }
+
+    void cast(Ability a)
+    {
+        //TODO bake hardcast, so we dont have to infer from the slot
+        if (!grounded && a.source().slot.HasValue)
+        {
+            castsThisArtime++;
+        }
     }
     void cleanup(bool natural)
     {
@@ -109,7 +125,11 @@ public class UnitMovement : NetworkBehaviour
 
     public bool canFall()
     {
-        return !(currentState() is AttackingState || currentState() is StunnedState);
+        return !(
+            currentState() is StunnedState
+            || currentState() is DashState
+            || (currentState() is AttackingState && castsThisArtime < 2)
+            );
     }
     public string currentAbilityName()
     {
@@ -264,7 +284,7 @@ public class UnitMovement : NetworkBehaviour
         float lookMultFriction = toMoveMultiplier(vec2input(planarVelocity));
         float speedCalcMult = speedStateMultiplier * stunnedMultiplier * airMultiplier * combatMultiplier * lookMultFriction;
         float maxSpeedInDir = movespeed * speedCalcMult * scaleSpeed;
-        if(planarVelocity.magnitude > maxSpeedInDir)
+        if (planarVelocity.magnitude > maxSpeedInDir)
         {
             //apply fricton
             float frictionMagDiff = planarVelocity.magnitude - maxSpeedInDir;
@@ -280,11 +300,11 @@ public class UnitMovement : NetworkBehaviour
                 planarVelocity += -planarVelocity.normalized * frictiongFrameMag;
             }
         }
-        
+
 
 
         Vector3 desiredDirection = input2vec(inp.move);
-        float speedMultiplier = speedStateMultiplier * lookMultiplier * airMultiplier * combatMultiplier;       
+        float speedMultiplier = speedStateMultiplier * lookMultiplier * airMultiplier * combatMultiplier;
         float potentialSpeed = movespeed * speedMultiplier * scaleSpeed;
 
         //section: stopping
@@ -320,7 +340,7 @@ public class UnitMovement : NetworkBehaviour
         }
         else
         {
-            planarVelocity +=  diff.normalized * addingFrameMag;
+            planarVelocity += diff.normalized * addingFrameMag;
         }
         planarVelocityCache = planarVelocity;
         planarVelocityCalculated = planarVelocityCache;

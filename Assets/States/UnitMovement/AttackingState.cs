@@ -41,13 +41,13 @@ public class AttackingState : PlayerMovementState
     public override void enter()
     {
         machine = new AttackMachine(castingAbility, mover, new AttackMachine.CastingLocationData() { hardCast = true });
-        mover.GetComponent<EventManager>().subscribeIndicator(machine.indicatorUpdate);
+        mover.GetComponent<EventManager>().IndicatorEvent += (machine.indicatorUpdate);
     }
 
     public override void exit(bool expired)
     {
         machine.exit();
-        mover.GetComponent<EventManager>().unsubscribeIndicator(machine.indicatorUpdate);
+        mover.GetComponent<EventManager>().IndicatorEvent -= (machine.indicatorUpdate);
     }
     public override void tick()
     {

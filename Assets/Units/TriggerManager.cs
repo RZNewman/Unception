@@ -48,13 +48,13 @@ public class TriggerManager : NetworkBehaviour
         switch (trig.conditions.trigger)
         {
             case Trigger.HitRecieved:
-                events.suscribeHit(hitCallback(a, castData));
+                events.HitEvent += (hitCallback(a, castData));
                 break;
             case Trigger.Always:
-                events.subscribeTransition(alwaysCallback(a, castData));
+                events.TransitionEvent += (alwaysCallback(a, castData));
                 break;
             case Trigger.Cast:
-                events.subscribeCast(castCallback(a, castData, trig.conditions.triggerSlot));
+                events.CastEvent += (castCallback(a, castData, trig.conditions.triggerSlot));
                 break;
         }
     }
@@ -69,9 +69,9 @@ public class TriggerManager : NetworkBehaviour
 
                 AttackMachine m = new AttackMachine(a, mover, castData, removeMachine);
                 machines.Add(m);
-                events.subscribeIndicator(m.indicatorUpdate);
-                events.subscribeTick(m.tick);
-                events.subscribeTransition(m.transition);
+                events.IndicatorEvent += (m.indicatorUpdate);
+                events.TickEvent += (m.tick);
+                events.TransitionEvent += (m.transition);
 
             }
         };
@@ -80,9 +80,9 @@ public class TriggerManager : NetworkBehaviour
     void removeMachine(AttackMachine m)
     {
         machines.Remove(m);
-        events.unsubscribeIndicator(m.indicatorUpdate);
-        events.unsubscribeTick(m.tick);
-        events.unsubscribeTransition(m.transition);
+        events.IndicatorEvent -= (m.indicatorUpdate);
+        events.TickEvent -= (m.tick);
+        events.TransitionEvent -= (m.transition);
     }
     private void OnDestroy()
     {

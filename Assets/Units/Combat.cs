@@ -15,7 +15,7 @@ public class Combat : NetworkBehaviour
         {
             EventManager events = GetComponent<EventManager>();
             events.suscribeDeath(onDeath);
-            events.suscribeHit(onHit);
+            events.HitEvent += (onHit);
         }
 
     }

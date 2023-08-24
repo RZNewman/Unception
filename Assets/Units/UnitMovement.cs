@@ -49,8 +49,8 @@ public class UnitMovement : NetworkBehaviour
         localPlayer = GetComponent<LocalPlayer>();
         statHandler = GetComponent<StatHandler>();
         events.suscribeDeath(cleanup);
-        events.subscribeTransition(transition);
-        events.subscribeTick(tick);
+        events.TransitionEvent += (transition);
+        events.TickEvent += (tick);
     }
 
     void syncLookAngle(float oldAngle, float newAngle)

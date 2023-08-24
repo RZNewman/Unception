@@ -90,7 +90,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         if (isServer)
         {
 
-            events.suscribeHit(onHit);
+            events.HitEvent += onHit;
             events.suscribeDeath(onDeath);
         }
     }

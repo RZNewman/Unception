@@ -158,8 +158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba253dc7ce2ba8543b1d1a0f0e31ed41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingVelocity: {x: 0, y: 10, z: 0}
-  lifetime: 1
+  startingVelocity: {x: 0, y: 20, z: 0}
+  lifetime: 0.7
   discount: 0.8
 --- !u!1 &8660672800327573439
 GameObject:
@@ -236,8 +236,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278253311
-  m_fontColor: {r: 1, g: 0.9640316, b: 0, a: 1}
+    rgba: 3036739327
+  m_fontColor: {r: 1, g: 0.9640316, b: 0, a: 0.70980394}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

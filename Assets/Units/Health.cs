@@ -51,8 +51,9 @@ public class Health : NetworkBehaviour, BarValue
     [ClientRpc]
     void RpcDisplayDamage(float damage)
     {
-        GameObject o = Instantiate(damageDisplayPre, transform.position, Quaternion.identity);
-        o.transform.localScale *= 4 * (damage/(gp.player.power * 0.4f))*1.2f;
+        Vector3 offset = Random.insideUnitSphere * 4;
+        GameObject o = Instantiate(damageDisplayPre, transform.position + offset, Quaternion.identity);
+        o.transform.localScale *= 4 * (damage / (gp.player.power * 0.4f)) * 0.9f;
         o.GetComponentInChildren<TMP_Text>().text = Power.displayPower(damage);
     }
 

@@ -5,12 +5,19 @@ using UnityEngine;
 public class Pause : MonoBehaviour
 {
 
-    bool paused;
+    static bool paused;
     MenuHandler menu;
     PlayerGhost player;
     Atlas atlas;
 
 
+    public static bool isPaused
+    {
+        get
+        {
+            return paused;
+        }
+    }
     private void Start()
     {
         menu = FindObjectOfType<MenuHandler>(true);
@@ -20,9 +27,13 @@ public class Pause : MonoBehaviour
 
     private void Update()
     {
+        if (!player.isLocalPlayer)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (player.isLocalPlayer && atlas.embarked)
+            if (atlas.embarked)
             {
                 togglePause();
             }
@@ -40,6 +51,8 @@ public class Pause : MonoBehaviour
             menu.switchMenu(MenuHandler.Menu.Pause);
         }
         paused = !paused;
+
+        //cursor unlock in 3rd person
         player.pause(paused);
     }
 }

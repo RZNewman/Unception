@@ -108,6 +108,11 @@ public class MenuHandler : MonoBehaviour
         switchMenu(id.target);
     }
 
+    public void returnPrevious()
+    {
+        switchMenu(prevoiusMenu);
+    }
+
     public void blessingDone()
     {
         if (prevoiusMenu == Menu.MainMenu)

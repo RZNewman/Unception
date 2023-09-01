@@ -121,7 +121,7 @@ Material:
     - _CircleStrength: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ConeObstructionDestroyRadius: 20
+    - _ConeObstructionDestroyRadius: 30
     - _ConeStrength: 1
     - _Cull: 2
     - _CurveObstructionDestroyRadius: 10

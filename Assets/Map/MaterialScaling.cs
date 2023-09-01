@@ -11,7 +11,7 @@ public class MaterialScaling : MonoBehaviour
         foreach (Material mat in materials)
         {
             mat.SetFloat("_DefaultEffectRadius", 100 * scale);
-            mat.SetFloat("_ConeObstructionDestroyRadius", 30 * scale);
+            mat.SetFloat("_ConeObstructionDestroyRadius", 22 * scale);
         }
     }
 

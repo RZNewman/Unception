@@ -592,6 +592,7 @@ GameObject:
   - component: {fileID: 5063614273712356662}
   - component: {fileID: 4598575938194153543}
   - component: {fileID: 9080707966453392499}
+  - component: {fileID: 5933344729765836782}
   m_Layer: 5
   m_Name: KeyBind
   m_TagString: Untagged
@@ -657,6 +658,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5933344729765836782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6642383971219415383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4a12a746f031c438f614ec44068ad5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 0
 --- !u!1 &7608247676876353668
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,7 +813,6 @@ MonoBehaviour:
   identifierInv: {fileID: 2641028216814024407}
   symbolInv: {fileID: 4763115480735699430}
   slotInv: {fileID: 6140212643110149500}
-  keybindGamplay: {fileID: 9080707966453392499}
   foreground: {fileID: 1221062826019131235}
   chargeCount: {fileID: 5393246370323943285}
   Common: {fileID: 21300000, guid: 2c4c8ea7a3cd80b458813449829a7a35, type: 3}

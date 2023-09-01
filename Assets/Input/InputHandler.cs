@@ -47,6 +47,10 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     void setLocalInput()
     {
+        if (Pause.isPaused)
+        {
+            return;
+        }
         Vector2 move = Vector2.zero;
         if (Input.GetKey(keys.binding(KeyName.Forward)))
         {

@@ -86,6 +86,8 @@ public static class SystemClassReaders
                 hit.knockBackDirection = reader.ReadKnockBackDirection();
                 hit.multiple = reader.ReadInt();
                 hit.multipleArc = reader.ReadFloat();
+                hit.dotPercent = reader.ReadFloat();
+                hit.dotTime = reader.ReadFloat();
                 hit.flair = new HitFlair
                 {
                     visualIndex = reader.ReadInt(),

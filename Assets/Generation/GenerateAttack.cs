@@ -133,6 +133,12 @@ public static class GenerateAttack
         {
             string shape = hit.type.ToString();
             float percent;
+            if (hit.dotPercent > 0)
+            {
+                percent = Mathf.Round(hit.dotPercent * 100);
+                shape += " Dot " + percent + "%";
+            }
+
             if (dash != null)
             {
                 percent = Mathf.Round(dash.percentOfEffect * 100);
@@ -182,7 +188,7 @@ public static class GenerateAttack
         public float damage(float power)
         {
 
-            return hit.damage(power) * (repeat == null ? 1 : repeat.repeatCount);
+            return hit.damage(power, false).total * (repeat == null ? 1 : repeat.repeatCount);
 
         }
         public float dps(float power)

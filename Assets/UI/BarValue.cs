@@ -6,6 +6,8 @@ public interface BarValue
     {
         public Color color;
         public float fillPercent;
+        public Color color2;
+        public float fillPercent2;
         public bool active;
         public string text;
     }

@@ -14,6 +14,7 @@ using Unity.Burst.Intrinsics;
 using static GenerateAttack;
 using System;
 using static SpellSource;
+using static GenerateHit.HitInstanceData;
 
 public static class AttackUtils
 {
@@ -35,12 +36,12 @@ public static class AttackUtils
             Posture p = other.GetComponentInParent<Posture>();
             if (h)
             {
-                float damage = hitData.damage(power);
-                if (p && p.isStunned)
+                DamageValues damage = hitData.damage(power, p && p.isStunned);
+                if (damage.dot > 0)
                 {
-                    damage *= 1.1f;
+                    h.addDot(damage.dotTime, damage.dot);
                 }
-                h.takeDamage(damage);
+                h.takeDamage(damage.instant);
             }
 
             if (p)

@@ -95,6 +95,8 @@ public static class SystemClassWriters
                 writer.WriteKnockBackDirection(a.knockBackDirection);
                 writer.WriteInt(a.multiple);
                 writer.WriteFloat(a.multipleArc);
+                writer.WriteFloat(a.dotPercent);
+                writer.WriteFloat(a.dotTime);
                 writer.WriteInt(a.flair.visualIndex);
                 writer.WriteInt(a.flair.soundIndex);
                 break;

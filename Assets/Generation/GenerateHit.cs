@@ -43,7 +43,8 @@ public static class GenerateHit
         public HitFlair flair;
         public int multiple;
         public float multipleArc;
-
+        public float dotPercent;
+        public float dotTime;
 
         public override InstanceData populate(float power, float strength)
         {
@@ -61,6 +62,7 @@ public static class GenerateHit
             StatStream stream = new StatStream();
             stream.setStats(stats);
 
+            float dotBaseTime = this.dotTime.asRange(5f, 20f);
             HitInstanceData baseData = new HitInstanceData
             {
                 strength = strength,
@@ -74,6 +76,9 @@ public static class GenerateHit
                 knockBackType = this.knockBackType,
                 knockBackDirection = this.knockBackDirection,
                 type = this.type,
+                dotPercent = dotPercent,
+                dotTime = dotBaseTime / Power.scaleTime(power),
+                dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
             };
             return baseData;
 
@@ -99,6 +104,9 @@ public static class GenerateHit
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
+        public float dotPercent;
+        public float dotTime;
+        public float dotAddedMult;
 
 
         #region getStats
@@ -171,9 +179,40 @@ public static class GenerateHit
             }
         }
 
-        public float damage(float power)
+        public struct DamageValues
         {
-            return getStat(Stat.DamageMult) * Power.damageFalloff(powerAtGen, power);
+            public float instant;
+            public float dot;
+            public float dotTime;
+            public float total
+            {
+                get
+                {
+                    return instant + dot;
+                }
+            }
+        }
+        public DamageValues damage(float power, bool isStunned)
+        {
+            float baseDamage = getStat(Stat.DamageMult) * Power.damageFalloff(powerAtGen, power);
+
+            if (isStunned)
+            {
+                baseDamage *= 1.1f;
+            }
+            float dotDamage = 0;
+            if (dotPercent > 0)
+            {
+                dotDamage = baseDamage * dotPercent;
+                baseDamage -= dotDamage;
+                dotDamage *= 1 + dotAddedMult;
+            }
+            return new DamageValues
+            {
+                instant = baseDamage,
+                dot = dotDamage,
+                dotTime = dotTime,
+            };
         }
     }
 
@@ -256,6 +295,14 @@ public static class GenerateHit
             kbDir = KnockBackDirection.Backward;
         }
 
+        float dotPercent = 0;
+        r = Random.value;
+        if (r < 0.8f) //0.2
+        {
+            dotPercent = Random.value.asRange(0.25f, 1f);
+        }
+
+
 
         HitFlair flair = new HitFlair
         {
@@ -271,6 +318,8 @@ public static class GenerateHit
         hit.flair = flair;
         hit.multiple = 1;
         hit.multipleArc = 0;
+        hit.dotPercent = dotPercent;
+        hit.dotTime = GaussRandomDecline();
 
         return hit;
 

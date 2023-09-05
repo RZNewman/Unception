@@ -138,6 +138,11 @@ public static class GenerateAttack
                 percent = Mathf.Round(hit.dotPercent * 100);
                 shape += " Dot " + percent + "%";
             }
+            if (hit.exposePercent > 0)
+            {
+                percent = Mathf.Round(hit.exposePercent * 100);
+                shape += " Dot " + percent + "%";
+            }
 
             if (dash != null)
             {

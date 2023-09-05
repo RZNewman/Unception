@@ -12,7 +12,10 @@ public class Health : NetworkBehaviour, BarValue
     float currentHealth;
 
     [SyncVar]
-    float riskHealth;
+    float riskDot;
+
+    [SyncVar]
+    float riskExpose;
 
     Combat combat;
     GameObject damageDisplayPre;
@@ -42,8 +45,9 @@ public class Health : NetworkBehaviour, BarValue
     }
 
     [Server]
-    public void takeDamage(float damage)
+    public void takeDamage(float damage, float strength)
     {
+        damage += hitExposes(strength);
         currentHealth -= damage;
         RpcDisplayDamage(damage);
     }
@@ -76,6 +80,7 @@ public class Health : NetworkBehaviour, BarValue
                 dots.Clear();
             }
             tickDots();
+            tickExposes();
             if (currentHealth <= 0)
             {
                 GetComponent<LifeManager>().die();
@@ -133,18 +138,88 @@ public class Health : NetworkBehaviour, BarValue
                 k++;
             }
         }
-        riskHealth = newRisk;
+        riskDot = newRisk;
     }
+
+    struct Expose
+    {
+        public float time;
+        public float damage;
+        public float remainingStrength;
+    }
+
+    List<Expose> exposes = new List<Expose>();
+    public void addExpose(float duraton, float damage, float strength)
+    {
+        exposes.Add(new Expose() { time = duraton, damage = damage, remainingStrength = strength });
+    }
+
+    void tickExposes()
+    {
+        float newRisk = 0;
+        for (int i = 0; i < exposes.Count; i++)
+        {
+            Expose ex = exposes[i];
+            ex.time -= Time.fixedDeltaTime;
+            exposes[i] = ex;
+            newRisk += ex.damage;
+        }
+        int k = 0;
+        while (k < exposes.Count)
+        {
+            if (exposes[k].time <= 0 || exposes[k].remainingStrength <= 0)
+            {
+                exposes.RemoveAt(k);
+            }
+            else
+            {
+                k++;
+            }
+        }
+        riskExpose = newRisk;
+    }
+    float hitExposes(float strength)
+    {
+        float addedDamage = 0;
+        for (int i = 0; i < exposes.Count; i++)
+        {
+            Expose ex = exposes[i];
+            float damage = Mathf.Clamp01(strength / ex.remainingStrength) * ex.damage;
+            ex.remainingStrength -= strength;
+            ex.damage -= damage;
+            exposes[i] = ex;
+            addedDamage += damage;
+        }
+        return addedDamage;
+    }
+
+
     public BarValue.BarData getBarFill()
     {
+        float riskHealth = riskDot + riskExpose;
         float safeHealth = Mathf.Max(currentHealth - riskHealth, 0);
         return new BarValue.BarData
         {
-            color = combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
-            fillPercent = Mathf.Clamp01(safeHealth / maxHealth),
+
             active = true,
-            color2 = new Color(0.7f, 0, 0),
-            fillPercent2 = Mathf.Clamp01(riskHealth / maxHealth),
+            segments = new UiBarBasic.BarSegment[]
+            {
+                new UiBarBasic.BarSegment
+                {
+                    color = combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
+                    percent = Mathf.Clamp01(safeHealth / maxHealth),
+                },
+                new UiBarBasic.BarSegment
+                {
+                    color = new Color(1f, 0.5f, 0),
+                    percent = Mathf.Clamp01(riskExpose / maxHealth),
+                },
+                new UiBarBasic.BarSegment
+                {
+                    color = new Color(0.7f, 0, 0),
+                    percent = Mathf.Clamp01(riskDot / maxHealth),
+                },
+            }
         };
     }
 

@@ -33,15 +33,7 @@ public class UiBar : MonoBehaviour
         if (useBasic)
         {
             basicBar.gameObject.SetActive(data.active);
-            basicBar.set(new UiBarBasic.BarSegment
-            {
-                color = data.color,
-                percent = data.fillPercent
-            }, new UiBarBasic.BarSegment
-            {
-                color = data.color2,
-                percent = data.fillPercent2
-            });
+            basicBar.set(data.segments);
         }
         else
         {

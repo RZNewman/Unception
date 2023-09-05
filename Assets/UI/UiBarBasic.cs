@@ -2,38 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class UiBarBasic : MonoBehaviour
 {
-    public Image foreground;
-    public Image foreground2;
+    public RectTransform foreground;
+    public GameObject barItem;
 
     public struct BarSegment
     {
         public Color color;
         public float percent;
     }
+
+    List<GameObject> instances = new List<GameObject>();
     public void set(params BarSegment[] segments)
     {
         for (int i = 0; i < segments.Length; i++)
         {
+
             BarSegment seg = segments[i];
             Vector2 size;
-            switch (i)
+            if (i >= instances.Count)
             {
-                case 0:
-                    foreground.color = seg.color;
-                    size = foreground.rectTransform.sizeDelta;
-                    size.x = seg.percent * 100;
-                    foreground.rectTransform.sizeDelta = size;
-                    break;
-                case 1:
-                    foreground2.color = seg.color;
-                    size = foreground2.rectTransform.sizeDelta;
-                    size.x = seg.percent * 100;
-                    foreground2.rectTransform.sizeDelta = size;
-                    break;
+                instances.Add(Instantiate(barItem, foreground));
             }
+            Image img = instances[i].GetComponent<Image>();
+            img.color = seg.color;
+            size = img.rectTransform.sizeDelta;
+            size.x = seg.percent * 100;
+            img.rectTransform.sizeDelta = size;
         }
     }
 }

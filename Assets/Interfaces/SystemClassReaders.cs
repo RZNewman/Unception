@@ -88,6 +88,8 @@ public static class SystemClassReaders
                 hit.multipleArc = reader.ReadFloat();
                 hit.dotPercent = reader.ReadFloat();
                 hit.dotTime = reader.ReadFloat();
+                hit.exposePercent = reader.ReadFloat();
+                hit.exposeStrength = reader.ReadFloat();
                 hit.flair = new HitFlair
                 {
                     visualIndex = reader.ReadInt(),

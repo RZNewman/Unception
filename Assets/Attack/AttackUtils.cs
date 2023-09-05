@@ -41,7 +41,11 @@ public static class AttackUtils
                 {
                     h.addDot(damage.dotTime, damage.dot);
                 }
-                h.takeDamage(damage.instant);
+                h.takeDamage(damage.instant, hitData.strength);
+                if (damage.expose > 0)
+                {
+                    h.addExpose(10f / mover.GetComponent<Power>().scaleTime(), damage.expose, damage.exposeStrength);
+                }
             }
 
             if (p)

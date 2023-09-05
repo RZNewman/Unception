@@ -57,82 +57,6 @@ MonoBehaviour:
   basicBar: {fileID: 8383551941715160404}
   useBasic: 0
   label: {fileID: 280308024420038447}
---- !u!1 &1541897693102915834
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8779772108459589501}
-  - component: {fileID: 2241714740513229732}
-  - component: {fileID: 6146309232147965997}
-  m_Layer: 0
-  m_Name: Foreground Alt
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8779772108459589501
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541897693102915834}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6394691407882303371}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0.5}
---- !u!222 &2241714740513229732
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541897693102915834}
-  m_CullTransparentMesh: 1
---- !u!114 &6146309232147965997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541897693102915834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.5754717, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2710496023816728764
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,201 +110,136 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentName: Player
   hbName: Primary
-  updatesPerSecond: 30
   usingSpriteRenderer: 0
   forceBuiltInShader: 1
   <OverlayColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <InnerColor>k__BackingField:
     _value: {r: 1, g: 0, b: 0, a: 1}
-    _isDirty: 0
   <BorderColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <EmptyColor>k__BackingField:
     _value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    _isDirty: 0
   <SpaceColor>k__BackingField:
     _value: {r: 0, g: 0, b: 0, a: 0}
-    _isDirty: 0
   <SegmentCount>k__BackingField:
     _value: 1
-    _isDirty: 0
   <RemoveSegments>k__BackingField:
     _value: 0.2
-    _isDirty: 0
   <SegmentSpacing>k__BackingField:
     _value: 0.025
-    _isDirty: 0
   <Arc>k__BackingField:
     _value: 0.25
-    _isDirty: 0
   <Radius>k__BackingField:
     _value: 0.2
-    _isDirty: 0
   <LineWidth>k__BackingField:
     _value: 0.041
-    _isDirty: 0
   <Rotation>k__BackingField:
     _value: 0
-    _isDirty: 0
   <Offset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <BorderWidth>k__BackingField:
     _value: 0.01
-    _isDirty: 0
   <BorderSpacing>k__BackingField:
     _value: 0.01
-    _isDirty: 0
   <RemoveBorder>k__BackingField:
     _value: 0.575
-    _isDirty: 0
   <OverlayNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <OverlayNoiseScale>k__BackingField:
     _value: 173.48
-    _isDirty: 0
   <OverlayNoiseStrength>k__BackingField:
     _value: 0.66
-    _isDirty: 0
   <OverlayNoiseOffset>k__BackingField:
     _value: {x: -3.9, y: 0}
-    _isDirty: 0
   <EmptyNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyNoiseScale>k__BackingField:
     _value: 100
-    _isDirty: 0
   <EmptyNoiseStrength>k__BackingField:
     _value: 0.5
-    _isDirty: 0
   <EmptyNoiseOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <ContentNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <ContentNoiseScale>k__BackingField:
     _value: 100
-    _isDirty: 0
   <ContentNoiseStrength>k__BackingField:
     _value: 0.5
-    _isDirty: 0
   <ContentNoiseOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <PulsateWhenLow>k__BackingField:
     _value: 0
-    _isDirty: 0
   <PulseColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <PulseSpeed>k__BackingField:
     _value: 10
-    _isDirty: 0
   <PulseActivationThreshold>k__BackingField:
     _value: 0.25
-    _isDirty: 0
   <OverlayTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <OverlayTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <OverlayTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <OverlayTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <OverlayTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <InnerTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <InnerTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignInnerTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <InnerTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <BorderTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <BorderTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignBorderTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <BorderTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <EmptyTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignEmptyTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <EmptyTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <SpaceTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <SpaceTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignSpaceTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <SpaceTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <SpaceTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <SpaceTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <InnerGradient>k__BackingField:
     _value:
       serializedVersion: 2
@@ -411,13 +270,10 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    _isDirty: 0
   <InnerGradientEnabled>k__BackingField:
     _value: 1
-    _isDirty: 0
   <ValueAsGradientTimeInner>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyGradient>k__BackingField:
     _value:
       serializedVersion: 2
@@ -448,13 +304,10 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    _isDirty: 0
   <EmptyGradientEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <ValueAsGradientTimeEmpty>k__BackingField:
     _value: 0
-    _isDirty: 0
   <VariableWidthCurve>k__BackingField:
     _value:
       serializedVersion: 2
@@ -480,10 +333,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    _isDirty: 0
   <FillClockwise>k__BackingField:
     _value: 0
-    _isDirty: 0
 --- !u!222 &7323015093256153405
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -552,7 +403,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2446447344613704211}
-  - {fileID: 6394691407882303371}
+  - {fileID: 3095825693663723901}
   m_Father: {fileID: 4782669401854760148}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -573,8 +424,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9580449cb20ba014c9d9bd884b7d8aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foreground: {fileID: 8942188170918413732}
-  foreground2: {fileID: 6146309232147965997}
+  foreground: {fileID: 3095825693663723901}
+  barItem: {fileID: 1572391100897963689, guid: 3cfd487924ff45141b8c6a330c45fe77, type: 3}
 --- !u!1 &4195178632427926698
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,83 +561,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &5444696109202123738
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6394691407882303371}
-  - component: {fileID: 5169092512589316630}
-  - component: {fileID: 8942188170918413732}
-  m_Layer: 0
-  m_Name: Foreground
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6394691407882303371
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5444696109202123738}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8779772108459589501}
-  m_Father: {fileID: 3929590736500327594}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 0}
-  m_Pivot: {x: 0, y: 0.5}
---- !u!222 &5169092512589316630
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5444696109202123738}
-  m_CullTransparentMesh: 1
---- !u!114 &8942188170918413732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5444696109202123738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7076284762678833203
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,6 +637,69 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7692897875011011798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3095825693663723901}
+  - component: {fileID: 2455831671215247991}
+  m_Layer: 0
+  m_Name: Foreground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3095825693663723901
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7692897875011011798}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3929590736500327594}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2455831671215247991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7692897875011011798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 3
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &8305092379703194466
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,201 +753,136 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentName: Player
   hbName: Primary
-  updatesPerSecond: 30
   usingSpriteRenderer: 0
   forceBuiltInShader: 1
   <OverlayColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <InnerColor>k__BackingField:
     _value: {r: 1, g: 0, b: 0, a: 1}
-    _isDirty: 0
   <BorderColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <EmptyColor>k__BackingField:
     _value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    _isDirty: 0
   <SpaceColor>k__BackingField:
     _value: {r: 0, g: 0, b: 0, a: 0}
-    _isDirty: 0
   <SegmentCount>k__BackingField:
     _value: 1
-    _isDirty: 0
   <RemoveSegments>k__BackingField:
     _value: 0.2
-    _isDirty: 0
   <SegmentSpacing>k__BackingField:
     _value: 0.025
-    _isDirty: 0
   <Arc>k__BackingField:
     _value: 0.999
-    _isDirty: 0
   <Radius>k__BackingField:
     _value: 150
-    _isDirty: 0
   <LineWidth>k__BackingField:
     _value: 0.058
-    _isDirty: 0
   <Rotation>k__BackingField:
     _value: 270.18
-    _isDirty: 0
   <Offset>k__BackingField:
     _value: {x: 0, y: 150}
-    _isDirty: 0
   <BorderWidth>k__BackingField:
     _value: 0
-    _isDirty: 0
   <BorderSpacing>k__BackingField:
     _value: 0.01
-    _isDirty: 0
   <RemoveBorder>k__BackingField:
     _value: 0.575
-    _isDirty: 0
   <OverlayNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <OverlayNoiseScale>k__BackingField:
     _value: 173.48
-    _isDirty: 0
   <OverlayNoiseStrength>k__BackingField:
     _value: 0.66
-    _isDirty: 0
   <OverlayNoiseOffset>k__BackingField:
     _value: {x: -3.9, y: 0}
-    _isDirty: 0
   <EmptyNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyNoiseScale>k__BackingField:
     _value: 100
-    _isDirty: 0
   <EmptyNoiseStrength>k__BackingField:
     _value: 0.5
-    _isDirty: 0
   <EmptyNoiseOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <ContentNoiseEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <ContentNoiseScale>k__BackingField:
     _value: 100
-    _isDirty: 0
   <ContentNoiseStrength>k__BackingField:
     _value: 0.5
-    _isDirty: 0
   <ContentNoiseOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <PulsateWhenLow>k__BackingField:
     _value: 0
-    _isDirty: 0
   <PulseColor>k__BackingField:
     _value: {r: 1, g: 1, b: 1, a: 1}
-    _isDirty: 0
   <PulseSpeed>k__BackingField:
     _value: 10
-    _isDirty: 0
   <PulseActivationThreshold>k__BackingField:
     _value: 0.25
-    _isDirty: 0
   <OverlayTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <OverlayTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <OverlayTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <OverlayTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <OverlayTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <InnerTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <InnerTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignInnerTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <InnerTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <InnerTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <BorderTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <BorderTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignBorderTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <BorderTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <BorderTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <EmptyTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignEmptyTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureScaleWithSegments>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <EmptyTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <EmptyTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <SpaceTextureEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <SpaceTexture>k__BackingField:
     _value: {fileID: 0}
-    _isDirty: 0
   <AlignSpaceTexture>k__BackingField:
     _value: 1
-    _isDirty: 0
   <SpaceTextureOpacity>k__BackingField:
     _value: 1
-    _isDirty: 0
   <SpaceTextureTiling>k__BackingField:
     _value: {x: 1, y: 1}
-    _isDirty: 0
   <SpaceTextureOffset>k__BackingField:
     _value: {x: 0, y: 0}
-    _isDirty: 0
   <InnerGradient>k__BackingField:
     _value:
       serializedVersion: 2
@@ -1141,13 +913,10 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    _isDirty: 0
   <InnerGradientEnabled>k__BackingField:
     _value: 1
-    _isDirty: 0
   <ValueAsGradientTimeInner>k__BackingField:
     _value: 0
-    _isDirty: 0
   <EmptyGradient>k__BackingField:
     _value:
       serializedVersion: 2
@@ -1178,13 +947,10 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    _isDirty: 0
   <EmptyGradientEnabled>k__BackingField:
     _value: 0
-    _isDirty: 0
   <ValueAsGradientTimeEmpty>k__BackingField:
     _value: 0
-    _isDirty: 0
   <VariableWidthCurve>k__BackingField:
     _value:
       serializedVersion: 2
@@ -1210,10 +976,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    _isDirty: 0
   <FillClockwise>k__BackingField:
     _value: 0
-    _isDirty: 0
 --- !u!222 &8305092379703194471
 CanvasRenderer:
   m_ObjectHideFlags: 0

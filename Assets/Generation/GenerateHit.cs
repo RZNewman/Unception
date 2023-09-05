@@ -45,6 +45,8 @@ public static class GenerateHit
         public float multipleArc;
         public float dotPercent;
         public float dotTime;
+        public float exposePercent;
+        public float exposeStrength;
 
         public override InstanceData populate(float power, float strength)
         {
@@ -63,6 +65,7 @@ public static class GenerateHit
             stream.setStats(stats);
 
             float dotBaseTime = this.dotTime.asRange(5f, 20f);
+            float exposeStr = exposeStrength.asRange(1, 6);
             HitInstanceData baseData = new HitInstanceData
             {
                 strength = strength,
@@ -79,6 +82,9 @@ public static class GenerateHit
                 dotPercent = dotPercent,
                 dotTime = dotBaseTime / Power.scaleTime(power),
                 dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
+                exposePercent = exposePercent,
+                exposeStrength = exposeStr,
+                exposeAddedMult = Mathf.Pow(Mathf.Log(exposeStr, 6), 1.5f) * 0.4f,
             };
             return baseData;
 
@@ -107,6 +113,9 @@ public static class GenerateHit
         public float dotPercent;
         public float dotTime;
         public float dotAddedMult;
+        public float exposePercent;
+        public float exposeStrength;
+        public float exposeAddedMult;
 
 
         #region getStats
@@ -184,11 +193,13 @@ public static class GenerateHit
             public float instant;
             public float dot;
             public float dotTime;
+            public float expose;
+            public float exposeStrength;
             public float total
             {
                 get
                 {
-                    return instant + dot;
+                    return instant + dot + expose;
                 }
             }
         }
@@ -207,11 +218,20 @@ public static class GenerateHit
                 baseDamage -= dotDamage;
                 dotDamage *= 1 + dotAddedMult;
             }
+            float exposeDamage = 0;
+            if (exposePercent > 0)
+            {
+                exposeDamage = baseDamage * exposePercent;
+                baseDamage -= exposeDamage;
+                exposeDamage *= 1 + exposeAddedMult;
+            }
             return new DamageValues
             {
                 instant = baseDamage,
                 dot = dotDamage,
                 dotTime = dotTime,
+                expose = exposeDamage,
+                exposeStrength = exposeStrength,
             };
         }
     }
@@ -296,10 +316,15 @@ public static class GenerateHit
         }
 
         float dotPercent = 0;
+        float exposePercent = 0;
         r = Random.value;
-        if (r < 0.8f) //0.2
+        if (r < 0.2f)
         {
             dotPercent = Random.value.asRange(0.25f, 1f);
+        }
+        else if (r < 0.95f)
+        {
+            exposePercent = Random.value.asRange(0.25f, 0.6f);
         }
 
 
@@ -320,6 +345,8 @@ public static class GenerateHit
         hit.multipleArc = 0;
         hit.dotPercent = dotPercent;
         hit.dotTime = GaussRandomDecline();
+        hit.exposePercent = exposePercent;
+        hit.exposeStrength = GaussRandomDecline();
 
         return hit;
 

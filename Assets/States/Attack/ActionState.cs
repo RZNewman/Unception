@@ -9,7 +9,7 @@ using static SpellSource;
 
 public class ActionState : AttackStageState
 {
-    HitInstanceData actionData;
+    HitInstanceData attackData;
 
     BuffInstanceData buffData;
 
@@ -18,7 +18,7 @@ public class ActionState : AttackStageState
 
     public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, bool hardCasted) : base(m)
     {
-        actionData = data;
+        attackData = data;
         buffData = dataB;
         segment = seg;
         hardCast = hardCasted;
@@ -31,11 +31,11 @@ public class ActionState : AttackStageState
         }
 
 
-        handleAttack(actionData);
+        handleAttack();
 
     }
 
-    void handleAttack(HitInstanceData attackData)
+    void handleAttack()
     {
         SpellSource sourcePoint = segment.sourcePoint;
         List<GameObject> hits = new List<GameObject>();
@@ -132,7 +132,7 @@ public class ActionState : AttackStageState
 
     public HitInstanceData getSource()
     {
-        return actionData;
+        return attackData;
     }
     public override void tick()
     {

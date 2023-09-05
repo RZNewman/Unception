@@ -149,9 +149,9 @@ public class StatModPanel : MonoBehaviour
         public string LabelSecond;
         public Func<AttackBlockInstance, float?> secondaryGetter;
     }
-    StatLabelInfo labelInfo(Stat stat, float playerPower)
+    static StatLabelInfo labelInfo(Stat stat, float playerPower)
     {
-        string label = "";
+        string label = statLabel(stat);
         string labelSecond = "";
         Func<AttackBlockInstance, float> valueGetter = x => 0;
         Func<AttackBlockInstance, float?> secondaryGetter = x => null;
@@ -164,47 +164,36 @@ public class StatModPanel : MonoBehaviour
                 secondaryGetter = b => b.instance.damage(playerPower);
                 break;
             case Stat.Cooldown:
-                label = "CD";
                 valueGetter = b => b.instance.cooldownDisplay(playerPower);
                 break;
             case Stat.Charges:
-                label = "Charges";
                 valueGetter = b => b.instance.getCharges();
                 break;
             case Stat.Haste:
-                label = "Cast";
                 valueGetter = b => b.instance.castTimeDisplay(playerPower);
                 break;
             case Stat.TurnspeedCast:
-                label = "Turn";
                 valueGetter = b => b.instance.avgTurn();
                 break;
             case Stat.MovespeedCast:
-                label = "Move";
                 valueGetter = b => b.instance.avgMove();
                 break;
             case Stat.Length:
-                label = "Length";
                 valueGetter = b => b.instance.avgLength();
                 break;
             case Stat.Width:
-                label = "Width";
                 valueGetter = b => b.instance.avgWidth();
                 break;
             case Stat.Range:
-                label = "Range";
                 valueGetter = b => b.instance.avgRange();
                 break;
             case Stat.Knockback:
-                label = "Knockback";
                 valueGetter = b => b.instance.avgKback();
                 break;
             case Stat.Knockup:
-                label = "Knockup";
                 valueGetter = b => b.instance.avgKup();
                 break;
             case Stat.Stagger:
-                label = "Stagger";
                 valueGetter = b => b.instance.avgStagger();
                 break;
 
@@ -216,6 +205,38 @@ public class StatModPanel : MonoBehaviour
             LabelSecond = labelSecond,
             secondaryGetter = secondaryGetter,
         };
+    }
+
+    public static string statLabel(Stat stat)
+    {
+        switch (stat)
+        {
+            case Stat.Cooldown:
+                return "CD";
+            case Stat.Charges:
+                return "Charges";
+            case Stat.Haste:
+                return "Cast";
+            case Stat.TurnspeedCast:
+                return "Turn";
+            case Stat.MovespeedCast:
+                return "Move";
+            case Stat.Length:
+                return "Length";
+            case Stat.Width:
+                return "Width";
+            case Stat.Range:
+                return "Range";
+            case Stat.Knockback:
+                return "Knockback";
+            case Stat.Knockup:
+                return "Knockup";
+            case Stat.Stagger:
+                return "Stagger";
+            default:
+                return "UNK";
+
+        }
     }
 
 

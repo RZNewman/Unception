@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UiBuffIcon : MonoBehaviour
 {
-    public Image icon;
+    public TMP_Text display;
 
-    public void setImage(Sprite sprite, Color c)
+    public void setDisplay(string text, Color c)
     {
-        icon.sprite = sprite;
-        icon.color = c;
+        display.text = text;
+        display.color = c;
     }
 }

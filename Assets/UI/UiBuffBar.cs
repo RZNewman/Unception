@@ -1,31 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static StatTypes;
+using static StatModPanel;
 
 public class UiBuffBar : MonoBehaviour
 {
     public GameObject BuffIconPre;
 
-    public Sprite length;
-    public Sprite width;
-    public Sprite range;
-    public Sprite turn;
 
-    public Sprite cooldown;
-    public Sprite haste;
-    public Sprite charges;
-    public Sprite devotion;
-
-    public Sprite knockback;
-    public Sprite knockup;
-    public Sprite stagger;
-    public Sprite persist;
-
-    public Sprite move;
-    public Sprite chain;
-    public Sprite splash;
-    public Sprite armor;
 
     public void displayBuffs(List<Buff> buffs)
     {
@@ -33,51 +17,19 @@ public class UiBuffBar : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         foreach (Buff buff in buffs)
         {
-            stats = stats.sum(buff.stats);
-        }
-        foreach (Stat stat in stats.Keys)
-        {
             GameObject instance = Instantiate(BuffIconPre, transform);
-            instance.GetComponent<UiBuffIcon>().setImage(fromStat(stat), stats[stat] >= 0 ? Color.green : Color.red);
+            buff.GetComponent<StatHandler>().subscribe();
+            IDictionary<Stat, float> stats = buff.GetComponent<StatHandler>().stats;
+            string label = "X";
+            float value = 1;
+            if (stats.Count > 0)
+            {
+                label = statLabel(stats.First().Key);
+                value = stats.First().Value;
+            }
+            instance.GetComponent<UiBuffIcon>().setDisplay(label, value >= 0 ? Color.green : Color.red);
         }
-    }
-
-    public Sprite fromStat(Stat stat)
-    {
-        switch (stat)
-        {
-            case Stat.Length:
-                return length;
-            case Stat.Width:
-                return width;
-            case Stat.Range:
-                return range;
-            case Stat.Turnspeed:
-                return turn;
-            case Stat.Cooldown:
-                return cooldown;
-            case Stat.Haste:
-                return haste;
-            case Stat.Charges:
-                return charges;
-            //devotion
-            case Stat.Knockback:
-                return knockback;
-            case Stat.Knockup:
-                return knockup;
-            case Stat.Stagger:
-                return stagger;
-            //persist
-            case Stat.Movespeed:
-                return move;
-
-                //chain
-                //splash
-                //armor
-        }
-        return null;
     }
 }

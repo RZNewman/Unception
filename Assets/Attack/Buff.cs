@@ -11,14 +11,6 @@ public class Buff : NetworkBehaviour
 
     float timeScale;
 
-    StatHandler sth;
-    public IDictionary<Stat, float> stats
-    {
-        get
-        {
-            return sth.stats;
-        }
-    }
 
     public float relativeScale(float targetTimeScale)
     {
@@ -28,8 +20,6 @@ public class Buff : NetworkBehaviour
     void Start()
     {
         GetComponent<ClientAdoption>().trySetAdopted();
-        sth = GetComponent<StatHandler>();
-        sth.subscribe();
         transform.parent.GetComponent<BuffManager>().addBuff(this);
     }
     private void OnDestroy()

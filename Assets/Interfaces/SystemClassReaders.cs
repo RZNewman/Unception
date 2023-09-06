@@ -120,6 +120,7 @@ public static class SystemClassReaders
                 buff.duration = reader.ReadFloat();
                 buff.statValues = reader.ReadStatDict();
                 buff.type = reader.ReadBuffType();
+                buff.mode = (BuffMode)reader.ReadByte();
                 return buff;
             default:
                 return null;

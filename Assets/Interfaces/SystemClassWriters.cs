@@ -117,6 +117,7 @@ public static class SystemClassWriters
                 writer.WriteFloat(b.duration);
                 writer.WriteStatDict(b.statValues);
                 writer.WriteBuffType(b.type);
+                writer.WriteByte((byte)b.mode);
                 break;
 
         }

@@ -120,7 +120,7 @@ public static class AttackUtils
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
-        instance.GetComponent<Buff>().setup(buff.durration, Power.scaleTime(buff.powerAtGen));
+        instance.GetComponent<Buff>().setup(buff.durration, buff.castCount, Power.scaleTime(buff.powerAtGen));
         instance.GetComponent<StatHandler>().setStats(buff.stats);
         NetworkServer.Spawn(instance);
     }

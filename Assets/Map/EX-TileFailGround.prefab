@@ -145,6 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skipSpawn: 0
   dissuadeCollapse: 1
+  navType: 0
   adjacencies:
   - direction: 0
     connections: 02000000080000000004000000800000000001004000000020000000
@@ -157,7 +158,7 @@ MonoBehaviour:
   - direction: 4
     connections: 08000000
   - direction: 5
-    connections: 0200000008000000
+    connections: 020000000800000000000400
 --- !u!1 &7393435958139310899
 GameObject:
   m_ObjectHideFlags: 0

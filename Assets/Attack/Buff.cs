@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateBuff;
 using static StatTypes;
 
 public class Buff : NetworkBehaviour
@@ -9,8 +10,13 @@ public class Buff : NetworkBehaviour
     [SyncVar]
     float duration;
 
-    float timeScale;
+    [SyncVar]
+    float castCount;
 
+    BuffMode mode = BuffMode.Timed;
+
+    float timeScale;
+    EventManager events;
 
     public float relativeScale(float targetTimeScale)
     {
@@ -21,25 +27,55 @@ public class Buff : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         transform.parent.GetComponent<BuffManager>().addBuff(this);
+        events = transform.GetComponentInParent<EventManager>();
+        events.TickEvent += Tick;
+        if (mode == BuffMode.Cast)
+        {
+            events.CastEvent += OnCast;
+        }
     }
+
+
     private void OnDestroy()
     {
+        events.TickEvent -= Tick;
+        if (mode == BuffMode.Cast)
+        {
+            transform.GetComponentInParent<EventManager>().CastEvent -= OnCast;
+        }
+    }
+
+    void OnCast(Ability a)
+    {
+        if (a.source().slot.HasValue)
+        {
+            castCount--;
+        }
 
     }
-    public void setup(float durr, float timeS)
+    public void setup(float durr, float casts, float timeS)
     {
         duration = durr;
         timeScale = timeS;
+        castCount = casts;
+        if (castCount > 0)
+        {
+            mode = BuffMode.Cast;
+        }
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Tick()
     {
         duration -= Time.fixedDeltaTime;
-        if (isServer && duration <= 0)
+        if (isServer)
         {
-            transform.parent.GetComponent<BuffManager>().removeBuff(this);
-            Destroy(gameObject);
+            if (duration <= 0 || (mode == BuffMode.Cast && castCount <= 0))
+            {
+                transform.parent.GetComponent<BuffManager>().removeBuff(this);
+                Destroy(gameObject);
+            }
+
         }
     }
 }

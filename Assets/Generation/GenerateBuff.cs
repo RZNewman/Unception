@@ -16,13 +16,20 @@ public static class GenerateBuff
         Buff,
         Debuff,
     }
+
+    public enum BuffMode : byte
+    {
+        Timed,
+        Cast
+    }
     public class BuffGenerationData : GenerationData
     {
         public float duration;
         public Dictionary<Stat, float> statValues;
         public BuffType type;
+        public BuffMode mode;
 
-        public static float buffStatsBase = 60;
+        public static float buffStatsBase = 45;
 
         public override InstanceData populate(float power, float strength)
         {
@@ -30,13 +37,31 @@ public static class GenerateBuff
             float scaleNum = Power.scaleNumerical(power);
             float scaleTime = Power.scaleTime(power);
 
-            float duration = this.duration.asRange(2, 10) / scaleTime;
+
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
             foreach (Stat s in statValues.Keys)
             {
                 stats[s] = statValues[s];
             }
+            float duration = 0;
+            int castCount = 0;
+            if (mode == BuffMode.Timed)
+            {
+                float baseDuration = this.duration.asRange(6, 20);
+                duration = baseDuration / scaleTime;
+                stats = stats.scale(1 - this.duration);
+            }
+            if (mode == BuffMode.Cast)
+            {
+
+                stats = stats.scale(1.5f);
+                castCount = Mathf.RoundToInt(this.duration.asRange(1, 3));
+                duration = (5f + 5f * castCount) / scaleTime;
+                stats = stats.scale(1f / castCount);
+            }
+
+
             stats = stats.scale(buffStatsBase);
             stats = stats.scale(strength);
             stats = stats.scale(scaleNum);
@@ -52,6 +77,7 @@ public static class GenerateBuff
                 _baseStats = stats,
                 type = type,
                 powerAtGen = power,
+                castCount = castCount,
             };
             return baseData;
 
@@ -64,6 +90,7 @@ public static class GenerateBuff
         public float durration;
         public Dictionary<Stat, float> _baseStats;
         public BuffType type;
+        public int castCount;
 
         public float durationDisplay(float power)
         {
@@ -80,18 +107,22 @@ public static class GenerateBuff
     }
     public static BuffGenerationData createBuff()
     {
-        Value[] typeValues = generateRandomValues(new float[] { 1f, 1f });
         List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
         Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();
 
         BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
-        buff.duration = typeValues[0].val;
-        statValues[generateStats.RandomItem()] = typeValues[1].val;
+        buff.duration = GaussRandomDecline();
+        statValues[generateStats.RandomItem()] = 1;
         buff.statValues = statValues;
         buff.type = BuffType.Buff;
+        buff.mode = BuffMode.Timed;
         if (Random.value < 0.4f)
         {
             buff.type = BuffType.Debuff;
+        }
+        if (buff.type == BuffType.Buff && Random.value < 0.5f)
+        {
+            buff.mode = BuffMode.Cast;
         }
 
         return buff;

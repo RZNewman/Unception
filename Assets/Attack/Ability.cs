@@ -59,6 +59,7 @@ public class Ability : NetworkBehaviour
 
         if (isServer)
         {
+            //TODO once hardcast is baken into the ability, prevent triggers from gaining stats
             transform.parent.GetComponent<StatHandler>().link(GetComponent<StatHandler>());
         }
 

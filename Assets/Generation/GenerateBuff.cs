@@ -55,7 +55,7 @@ public static class GenerateBuff
             if (mode == BuffMode.Cast)
             {
 
-                stats = stats.scale(1.5f);
+                stats = stats.scale(1.9f);
                 castCount = Mathf.RoundToInt(this.duration.asRange(1, 3));
                 duration = (5f + 5f * castCount) / scaleTime;
                 stats = stats.scale(1f / castCount);

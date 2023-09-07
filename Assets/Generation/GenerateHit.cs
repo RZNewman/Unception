@@ -323,7 +323,7 @@ public static class GenerateHit
         {
             dotPercent = Random.value.asRange(0.25f, 1f);
         }
-        else if (r < 0.95f)
+        else if (r < 0.35f)
         {
             exposePercent = Random.value.asRange(0.25f, 0.6f);
         }

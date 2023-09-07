@@ -20,16 +20,8 @@ public class UiBuffBar : MonoBehaviour
         foreach (Buff buff in buffs)
         {
             GameObject instance = Instantiate(BuffIconPre, transform);
-            buff.GetComponent<StatHandler>().subscribe();
-            IDictionary<Stat, float> stats = buff.GetComponent<StatHandler>().stats;
-            string label = "X";
-            float value = 1;
-            if (stats.Count > 0)
-            {
-                label = statLabel(stats.First().Key);
-                value = stats.First().Value;
-            }
-            instance.GetComponent<UiBuffIcon>().setDisplay(label, value >= 0 ? Color.green : Color.red);
+
+            instance.GetComponent<UiBuffIcon>().setSource(buff);
         }
     }
 }

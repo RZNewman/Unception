@@ -11,6 +11,9 @@ public class Buff : NetworkBehaviour
     float duration;
 
     [SyncVar]
+    float durationMax;
+
+    [SyncVar]
     float castCount;
 
     BuffMode mode = BuffMode.Timed;
@@ -21,6 +24,28 @@ public class Buff : NetworkBehaviour
     public float relativeScale(float targetTimeScale)
     {
         return timeScale / targetTimeScale;
+    }
+
+    public float remainingPercent
+    {
+        get
+        {
+            return duration / durationMax;
+        }
+    }
+    public string charges
+    {
+        get
+        {
+            if (mode == BuffMode.Cast)
+            {
+                return castCount.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
     // Start is called before the first frame update
     void Start()
@@ -55,6 +80,7 @@ public class Buff : NetworkBehaviour
     }
     public void setup(float durr, float casts, float timeS)
     {
+        durationMax = durr;
         duration = durr;
         timeScale = timeS;
         castCount = casts;

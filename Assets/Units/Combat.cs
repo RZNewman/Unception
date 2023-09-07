@@ -11,12 +11,27 @@ public class Combat : NetworkBehaviour
 
     private void Start()
     {
+        setUnitUI(false, false);
         if (isServer)
         {
             EventManager events = GetComponent<EventManager>();
             events.suscribeDeath(onDeath);
             events.HitEvent += (onHit);
         }
+
+    }
+    void setUnitUI(bool active, bool aiOnly = true)
+    {
+        LocalPlayer player = GetComponent<LocalPlayer>();
+        //Encounters dont have UI or LocalPlayer
+        if (player)
+        {
+            if (!player.isLocalUnit || !aiOnly)
+            {
+                gameObject.GetComponentInChildren<UnitUiReference>(true).gameObject.SetActive(active);
+            }
+        }
+
 
     }
 
@@ -29,6 +44,7 @@ public class Combat : NetworkBehaviour
         if (!active.Contains(other))
         {
             active.Add(other);
+            setUnitUI(true);
             other.GetComponent<Combat>().addTarget(gameObject);
         }
     }
@@ -79,6 +95,10 @@ public class Combat : NetworkBehaviour
         if (lastUnitHitBy && lastUnitHitBy == other)
         {
             lastUnitHitBy = null;
+        }
+        if (!inCombat)
+        {
+            setUnitUI(false);
         }
         if (aggro)
         {

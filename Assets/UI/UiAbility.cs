@@ -17,6 +17,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Text identifierInv;
     public Image symbolInv;
     public Image slotInv;
+    public UiBuffBar buffBarGameplay;
 
 
     public Image foreground;
@@ -83,6 +84,8 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             UIKeyDisplay keyDisplay = GetComponentInChildren<UIKeyDisplay>();
             keyDisplay.key = toKeyName(a.slot.Value);
             keyDisplay.sync();
+            target.GetComponent<BuffManager>().subscribe(buffBarGameplay.displayBuffs);
+
         }
         else
         {

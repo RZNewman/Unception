@@ -118,9 +118,13 @@ public static class AttackUtils
     public static void SpawnBuff(BuffInstanceData buff, Transform target)
     {
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
+        if (buff.slot.HasValue)
+        {
+            target = target.GetComponent<AbiltyManager>().getAbility(buff.slot.Value).transform;
+        }
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
-        instance.GetComponent<Buff>().setup(buff.durration, buff.castCount, Power.scaleTime(buff.powerAtGen));
+        instance.GetComponent<Buff>().setup(buff);
         instance.GetComponent<StatHandler>().setStats(buff.stats);
         NetworkServer.Spawn(instance);
     }

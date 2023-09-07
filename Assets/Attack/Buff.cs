@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static GenerateBuff;
 using static StatTypes;
 
@@ -15,6 +16,9 @@ public class Buff : NetworkBehaviour
 
     [SyncVar]
     float castCount;
+
+    [SyncVar]
+    ItemSlot? slot;
 
     BuffMode mode = BuffMode.Timed;
 
@@ -72,18 +76,24 @@ public class Buff : NetworkBehaviour
 
     void OnCast(Ability a)
     {
-        if (a.source().slot.HasValue)
+        ItemSlot? castSlot = a.source().slot;
+        if (castSlot.HasValue)
         {
-            castCount--;
+            if (!slot.HasValue || slot.Value == castSlot.Value)
+            {
+                castCount--;
+            }
+
         }
 
     }
-    public void setup(float durr, float casts, float timeS)
+    public void setup(BuffInstanceData buff)
     {
-        durationMax = durr;
-        duration = durr;
-        timeScale = timeS;
-        castCount = casts;
+        durationMax = buff.durration;
+        duration = buff.durration;
+        timeScale = Power.scaleTime(buff.powerAtGen);
+        castCount = buff.castCount;
+        slot = buff.slot;
         if (castCount > 0)
         {
             mode = BuffMode.Cast;

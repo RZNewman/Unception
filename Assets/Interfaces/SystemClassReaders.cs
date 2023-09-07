@@ -121,6 +121,7 @@ public static class SystemClassReaders
                 buff.statValues = reader.ReadStatDict();
                 buff.type = reader.ReadBuffType();
                 buff.mode = (BuffMode)reader.ReadByte();
+                buff.slot = reader.ReadNullSlot();
                 return buff;
             default:
                 return null;

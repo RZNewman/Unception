@@ -28,6 +28,7 @@ public static class GenerateBuff
         public Dictionary<Stat, float> statValues;
         public BuffType type;
         public BuffMode mode;
+        public ItemSlot? slot;
 
         public static float buffStatsBase = 45;
 
@@ -60,6 +61,10 @@ public static class GenerateBuff
                 duration = (5f + 5f * castCount) / scaleTime;
                 stats = stats.scale(1f / castCount);
             }
+            if (slot.HasValue)
+            {
+                stats = stats.scale(1.1f);
+            }
 
 
             stats = stats.scale(buffStatsBase);
@@ -78,6 +83,7 @@ public static class GenerateBuff
                 type = type,
                 powerAtGen = power,
                 castCount = castCount,
+                slot = slot,
             };
             return baseData;
 
@@ -90,6 +96,7 @@ public static class GenerateBuff
         public float durration;
         public Dictionary<Stat, float> _baseStats;
         public BuffType type;
+        public ItemSlot? slot;
         public int castCount;
 
         public float durationDisplay(float power)
@@ -107,13 +114,7 @@ public static class GenerateBuff
     }
     public static BuffGenerationData createBuff()
     {
-        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
-        Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();
-
         BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
-        buff.duration = GaussRandomDecline();
-        statValues[generateStats.RandomItem()] = 1;
-        buff.statValues = statValues;
         buff.type = BuffType.Buff;
         buff.mode = BuffMode.Timed;
         if (Random.value < 0.4f)
@@ -124,6 +125,29 @@ public static class GenerateBuff
         {
             buff.mode = BuffMode.Cast;
         }
+        if (buff.type == BuffType.Buff && Random.value < 0.99f)
+        {
+            buff.mode = BuffMode.Cast;
+            buff.slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+        }
+
+
+        List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
+        List<Stat> debuffStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Range, Stat.Stagger, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
+        List<Stat> itemStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.MovespeedCast };
+        Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();
+        List<Stat> sourceList = (buff.type, buff.slot) switch
+        {
+            (BuffType.Debuff, _) => debuffStats,
+            (_, ItemSlot) => itemStats,
+            _ => generateStats,
+        };
+
+        buff.duration = GaussRandomDecline();
+        statValues[sourceList.RandomItem()] = 1;
+        buff.statValues = statValues;
+
+
 
         return buff;
 

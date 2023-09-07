@@ -13,7 +13,7 @@ public class BuffManager : NetworkBehaviour
     void Start()
     {
         handler = GetComponent<StatHandler>();
-        power = GetComponent<Power>();
+        power = GetComponentInParent<Power>();
     }
 
     void debugStats(List<Buff> b)

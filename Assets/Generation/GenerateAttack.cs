@@ -154,6 +154,10 @@ public static class GenerateAttack
                 percent = Mathf.Round(buff.percentOfEffect * 100);
                 string label = buff.type == GenerateBuff.BuffType.Buff ? "Buff " : "Debuff ";
                 shape += " " + label + " " + buff.stats.First().Key.ToString() + " " + percent + "%";
+                if (buff.slot.HasValue)
+                {
+                    shape += " " + buff.slot;
+                }
                 if (buff.castCount > 0)
                 {
                     shape += " N:" + buff.castCount;

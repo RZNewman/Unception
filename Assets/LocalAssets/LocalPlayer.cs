@@ -17,8 +17,6 @@ public class LocalPlayer : NetworkBehaviour
             Instantiate(localClickPre, transform);
             Instantiate(localAudio, transform);
             GameObject.FindGameObjectWithTag("LocalCanvas").GetComponent<UnitUiReference>().setTarget(gameObject);
-            gameObject.GetComponentInChildren<UnitUiReference>().gameObject.SetActive(false);
-
 
         }
     }

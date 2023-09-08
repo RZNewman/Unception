@@ -124,11 +124,10 @@ public static class GenerateBuff
         if (buff.type == BuffType.Buff && Random.value < 0.5f)
         {
             buff.mode = BuffMode.Cast;
-        }
-        if (buff.type == BuffType.Buff && Random.value < 0.99f)
-        {
-            buff.mode = BuffMode.Cast;
-            buff.slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+            if (Random.value < 0.5f)
+            {
+                buff.slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+            }
         }
 
 

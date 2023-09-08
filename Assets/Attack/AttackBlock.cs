@@ -4,12 +4,14 @@ using static GenerateAttack;
 using static GenerateHit;
 using static GenerateRepeating;
 using static GenerateWind;
+using static RewardManager;
 using static StatModLabel;
 using static StatTypes;
 
 public class CastData : AbilityData
 {
     public ItemSlot? slot;
+    public Quality quality;
 
     public CastDataInstance populateCast(FillBlockOptions opts)
     {
@@ -17,6 +19,7 @@ public class CastData : AbilityData
         CastDataInstance filled = ScriptableObject.CreateInstance<CastDataInstance>();
         populate(filled, opts);
         filled.slot = slot;
+        filled.quality = quality;
         return filled;
     }
 

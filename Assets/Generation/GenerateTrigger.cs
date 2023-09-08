@@ -52,7 +52,7 @@ public static class GenerateTrigger
 
         conditions.recovery = TriggerRecovery.Cooldown;
 
-        AttackGenerationData a = GenerateAttack.generateAttack(null, AttackGenerationType.PlayerTrigger, 1, null, conditions);
+        AttackGenerationData a = GenerateAttack.generateAttack(null, AttackGenerationType.PlayerTrigger, conditions);
         TriggerData trigger = ScriptableObject.CreateInstance<TriggerData>();
 
         trigger.conditions = conditions;

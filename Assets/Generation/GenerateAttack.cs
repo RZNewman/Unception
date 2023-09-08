@@ -18,6 +18,7 @@ using static GenerateBuff;
 using static UnityEngine.Rendering.HableCurve;
 using Castle.Components.DictionaryAdapter;
 using static StatModLabel;
+using UnityEngine.UIElements;
 
 public static class GenerateAttack
 {
@@ -246,8 +247,6 @@ public static class GenerateAttack
         public Mod[] mods;
         public float cooldown;
         public float charges;
-        //TODO Move UP
-        public Quality quality;
 
         public StatInfo getInfo(Stat stat)
         {
@@ -377,16 +376,13 @@ public static class GenerateAttack
     public struct AttackInstanceData
     {
         public SegmentInstanceData[] segments;
-        public Mod[] mods;
         public float cooldown;
         public StatStream stream;
-        public Quality quality;
-        public float power;
-        public float scale;
+        public float _scale;
 
         public float getStat(Stat stat)
         {
-            return stream.getValue(stat, scale);
+            return stream.getValue(stat, _scale);
         }
 
 
@@ -428,24 +424,12 @@ public static class GenerateAttack
             }
         }
         #region display
-        float modPercentValue
-        {
-            get
-            {
-                return mods == null ? 1 : 1 + mods.Select(m => m.powerPercentValue()).Sum();
-            }
-        }
 
-        public float actingPower
+
+
+        public float cooldownDisplay(float powerPlayer)
         {
-            get
-            {
-                return power * modPercentValue * qualityPercent(quality);
-            }
-        }
-        public float cooldownDisplay(float power)
-        {
-            return cooldown * Power.scaleTime(power) / getCooldownMult();
+            return cooldown * Power.scaleTime(powerPlayer) / getCooldownMult();
         }
         public string shapeDisplay()
         {
@@ -532,6 +516,7 @@ public static class GenerateAttack
     public struct PopulateAttackOptions
     {
         public float power;
+        public float enhancementStrength;
         public float? addedStrength;
         public bool? reduceWindValue;
         public Ability? statLinkAbility;
@@ -612,7 +597,7 @@ public static class GenerateAttack
                 strength += opts.addedStrength.Value;
             }
             //}
-            strength *= qualityPercent(atk.quality);
+            strength *= opts.enhancementStrength;
             float repeatStrength = strength / repeatCount;
 
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
@@ -653,10 +638,7 @@ public static class GenerateAttack
             cooldown = cooldownTime,
             stream = stream,
             segments = segmentsInst,
-            quality = atk.quality,
-            mods = atk.mods,
-            power = power,
-            scale = Power.scaleNumerical(power),
+            _scale = scaleNum,
         };
 
         foreach (InstanceStreamInfo info in stagesToParent)
@@ -780,16 +762,9 @@ public static class GenerateAttack
         //Back
     }
 
-    public static AttackGenerationData generateAttack(ItemSlot? slot, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
+    public static AttackGenerationData generateAttack(ItemSlot? slot, AttackGenerationType type, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
     {
-        Quality quality = Quality.Common;
-        Mod[] mods = new Mod[0];
-        if (pity)
-        {
-            quality = pity.rollQuality(qualityMultiplier);
-            int modCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
-            mods = rollMods(pity, modCount, qualityMultiplier);
-        }
+
 
         List<GenerationData> stages = new List<GenerationData>();
         float windUpMax = 1f;
@@ -889,8 +864,6 @@ public static class GenerateAttack
             stages = stages.ToArray(),
             cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(cooldownMin, cooldownMax),
             charges = charges,
-            quality = quality,
-            mods = mods,
 
         };
         return atk;
@@ -913,6 +886,13 @@ public static class GenerateAttack
                 break;
         }
 
+        Quality quality = Quality.Common;
+        if (pity)
+        {
+            quality = pity.rollQuality(qualityMultiplier);
+            int modCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
+        }
+
 
         CastData block = ScriptableObject.CreateInstance<CastData>();
 
@@ -922,11 +902,12 @@ public static class GenerateAttack
 
 
 
-        block.effectGeneration = generateAttack(slot, type, qualityMultiplier, pity, conditions);
+        block.effectGeneration = generateAttack(slot, type, conditions);
         block.slot = slot;
         block.powerAtGeneration = power;
         block.flair = generateFlair();
         block.id = System.Guid.NewGuid().ToString();
+        block.quality = quality;
         return block;
 
     }

@@ -220,9 +220,9 @@ public class Inventory : NetworkBehaviour
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, CastData item, Vector3 location)
     {
-        AbilityDataInstance filled = fillBlock(item);
+        CastDataInstance filled = (CastDataInstance)fillBlock(item);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.effect.quality);
+        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.quality);
 
     }
 

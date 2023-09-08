@@ -61,6 +61,12 @@ public class TriggerDataInstance : AbilityDataInstance
 {
     public TriggerConditions conditions;
 
+    public override float enhancementStrength()
+    {
+        //TODO
+        return 1;
+    }
+
 
 }
 

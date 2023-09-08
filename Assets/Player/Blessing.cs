@@ -7,6 +7,7 @@ using static GenerateAttack;
 using static GenerateHit;
 using static GenerateRepeating;
 using static GenerateWind;
+using static RewardManager;
 using static StatModLabel;
 using static StatTypes;
 
@@ -30,18 +31,21 @@ public abstract class AbilityData : AbilityIdentifiers
         float power = opts.overridePower.HasValue
             && (opts.forceScaling.GetValueOrDefault(false) || scales)
             ? opts.overridePower.Value : powerAtGeneration;
-        instance.effect = populateAttack(effectGeneration, new PopulateAttackOptions
-        {
-            power = power,
-            statLinkAbility = opts.statLinkAbility,
-            addedStrength = opts.addedStrength,
-            reduceWindValue = opts.reduceWindValue,
-        });
+
         instance.flair = flair;
         instance.id = id;
         instance.scales = scales;
         instance.powerAtGeneration = powerAtGeneration;
         instance.effectGeneration = effectGeneration;
+        instance.powerInstance = power;
+        instance.effect = populateAttack(effectGeneration, new PopulateAttackOptions
+        {
+            power = power,
+            enhancementStrength = instance.enhancementStrength(),
+            statLinkAbility = opts.statLinkAbility,
+            addedStrength = opts.addedStrength,
+            reduceWindValue = opts.reduceWindValue,
+        });
     }
 
     public AbilityDataInstance populate(FillBlockOptions opts)
@@ -70,7 +74,24 @@ public abstract class AbilityDataInstance : AbilityIdentifiers
 {
     public AttackGenerationData effectGeneration;
     public AttackInstanceData effect;
+    public float powerInstance;
 
+    public float actingPower
+    {
+        get
+        {
+            return powerInstance * enhancementStrength();
+        }
+    }
 
+    public abstract float enhancementStrength();
+
+    //float modPercentValue
+    //{
+    //    get
+    //    {
+    //        return mods == null ? 1 : 1 + mods.Select(m => m.powerPercentValue()).Sum();
+    //    }
+    //}
 
 }

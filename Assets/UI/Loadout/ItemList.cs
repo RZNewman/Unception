@@ -79,7 +79,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
             UiAbility uia = icon.GetComponent<UiAbility>();
             UiSlotList slotList = dragger.GetComponent<UILoadoutMenu>().slotList;
             float slotPower = slotList.slotOfType(uia.blockFilled.slot.Value).actingPower;
-            float abPower = uia.blockFilled.effect.actingPower;
+            float abPower = uia.blockFilled.actingPower;
             uia.setUpgrade(slotPower < abPower);
         }
     }
@@ -136,7 +136,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
                 return (t1) => t1.GetComponent<UiAbility>().ability.effect.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:
             default:
-                return (t1) => t1.GetComponent<UiAbility>().ability.effect.actingPower;
+                return (t1) => t1.GetComponent<UiAbility>().ability.actingPower;
 
         }
     }

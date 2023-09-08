@@ -69,7 +69,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         filled = a;
         AttackFlair flair = filled.flair;
-        background.sprite = bgFromQuality(filled.effect.quality);
+        background.sprite = bgFromQuality(filled.quality);
         Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = flair.color;
         partialColor.a = 0.4f;
@@ -91,7 +91,8 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             gameplayView.SetActive(false);
             invView.SetActive(true);
-            GetComponentInChildren<StarCounter>().setStars(filled.effect.mods != null ? filled.effect.mods.Length : 0);
+            //TODO
+            GetComponentInChildren<StarCounter>().setStars(0);
             symbolInv.sprite = symbolSource.symbols[flair.symbol];
             symbolInv.color = flair.color;
             identifierInv.color = partialColor;

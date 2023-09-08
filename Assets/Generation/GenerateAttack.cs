@@ -16,6 +16,8 @@ using UnityEditor;
 using System.Runtime.InteropServices;
 using static GenerateBuff;
 using static UnityEngine.Rendering.HableCurve;
+using Castle.Components.DictionaryAdapter;
+using static StatModLabel;
 
 public static class GenerateAttack
 {
@@ -244,7 +246,133 @@ public static class GenerateAttack
         public Mod[] mods;
         public float cooldown;
         public float charges;
+        //TODO Move UP
         public Quality quality;
+
+        public StatInfo getInfo(Stat stat)
+        {
+            float maxStat;
+            float maxRoll = statsPerModMax * 3;
+            float percentRoll = 0;
+            float moddedStat = 0;
+            float modPercent = 0;
+            Color fill = Color.cyan;
+            switch (stat)
+            {
+                case Stat.Length:
+                case Stat.Width:
+                case Stat.Knockback:
+                case Stat.DamageMult:
+                case Stat.Stagger:
+                case Stat.Knockup:
+                case Stat.Range:
+                    maxRoll = itemMax(stat);
+                    percentRoll = averagePercent(stages, stat);
+                    break;
+                case Stat.Charges:
+                    maxRoll = itemMax(stat);
+                    percentRoll = charges;
+                    break;
+                case Stat.Cooldown:
+                    percentRoll = cooldown;
+                    fill = Color.white;
+                    break;
+                case Stat.Haste:
+                    percentRoll = averagePercent(stages, WindSearchMode.Haste);
+                    fill = Color.white;
+                    break;
+                case Stat.TurnspeedCast:
+                    percentRoll = averagePercent(stages, WindSearchMode.Turn);
+                    fill = Color.white;
+                    break;
+                case Stat.MovespeedCast:
+                    percentRoll = averagePercent(stages, WindSearchMode.Move);
+                    fill = Color.white;
+                    break;
+
+            }
+            maxStat = maxRoll;
+            if (stat != Stat.DamageMult)
+            {
+                maxStat += statsPerModMax;
+            }
+            foreach (Mod mod in mods ?? new Mod[0])
+            {
+                if (mod.stat == stat)
+                {
+                    modPercent = mod.rolledPercent;
+                    moddedStat = mod.statBaseValue();
+                }
+            }
+            return new StatInfo
+            {
+                maxStat = maxStat,
+                maxRoll = maxRoll,
+                percentRoll = percentRoll,
+                moddedStat = moddedStat,
+                modPercent = modPercent,
+                fill = fill
+            };
+        }
+        public float averagePercent(GenerationData[] stages, Stat stat)
+        {
+            int count = 0;
+            float total = 0;
+            foreach (GenerationData stage in stages)
+            {
+                if (stage is HitGenerationData)
+                {
+                    HitGenerationData hit = (HitGenerationData)stage;
+                    total += hit.statValues.ContainsKey(stat) ? hit.statValues[stat] : 0;
+                    count++;
+                }
+            }
+            return total / count;
+        }
+        enum WindSearchMode
+        {
+            Haste,
+            Turn,
+            Move,
+        }
+
+        float averagePercent(GenerationData[] stages, WindSearchMode mode)
+        {
+            float count = 0;
+            float total = 0;
+            int repeats = 1;
+            foreach (GenerationData stage in stages)
+            {
+                if (stage is WindGenerationData)
+                {
+                    WindGenerationData wind = (WindGenerationData)stage;
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        switch (mode)
+                        {
+                            case WindSearchMode.Haste:
+                                total += wind.duration;
+                                count++;
+                                break;
+                            case WindSearchMode.Turn:
+                                total += wind.turnMult * wind.duration;
+                                count += wind.duration;
+                                break;
+                            case WindSearchMode.Move:
+                                total += wind.moveMult * wind.duration;
+                                count += wind.duration;
+                                break;
+                        }
+                    }
+                    repeats = 1;
+                }
+                if (stage is RepeatingGenerationData)
+                {
+                    repeats = ((RepeatingGenerationData)stage).repeatCount;
+                }
+            }
+            return total / count;
+        }
     }
     public struct AttackInstanceData
     {
@@ -652,7 +780,7 @@ public static class GenerateAttack
         //Back
     }
 
-    public static AttackBlock generate(float power, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
+    public static AttackGenerationData generateAttack(ItemSlot? slot, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
     {
         Quality quality = Quality.Common;
         Mod[] mods = new Mod[0];
@@ -662,22 +790,7 @@ public static class GenerateAttack
             int modCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
             mods = rollMods(pity, modCount, qualityMultiplier);
         }
-        ItemSlot? slot = null;
-        switch (type)
-        {
-            case AttackGenerationType.Player:
-                slot = EnumValues<ItemSlot>().ToArray().RandomItem();
-                break;
-            case AttackGenerationType.IntroMain:
-                slot = ItemSlot.Main;
-                break;
-            case AttackGenerationType.IntroOff:
-                slot = ItemSlot.OffHand;
-                break;
-        }
 
-
-        AttackBlock block = ScriptableObject.CreateInstance<AttackBlock>();
         List<GenerationData> stages = new List<GenerationData>();
         float windUpMax = 1f;
         float windUpMin = 0f;
@@ -771,10 +884,6 @@ public static class GenerateAttack
 
         }
 
-
-
-        Color color = Color.HSVToRGB(Random.value, 1, 1);
-
         AttackGenerationData atk = new AttackGenerationData
         {
             stages = stages.ToArray(),
@@ -784,19 +893,53 @@ public static class GenerateAttack
             mods = mods,
 
         };
-        block.source = atk;
+        return atk;
+    }
+
+    public static CastData generate(float power, AttackGenerationType type, float qualityMultiplier = 1, PlayerPity pity = null, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
+    {
+
+        ItemSlot? slot = null;
+        switch (type)
+        {
+            case AttackGenerationType.Player:
+                slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+                break;
+            case AttackGenerationType.IntroMain:
+                slot = ItemSlot.Main;
+                break;
+            case AttackGenerationType.IntroOff:
+                slot = ItemSlot.OffHand;
+                break;
+        }
+
+
+        CastData block = ScriptableObject.CreateInstance<CastData>();
+
+
+
+
+
+
+
+        block.effectGeneration = generateAttack(slot, type, qualityMultiplier, pity, conditions);
         block.slot = slot;
         block.powerAtGeneration = power;
-        block.flair = new AttackFlair
-        {
-            name = Naming.name(),
-            identifier = Naming.identifier(),
-            color = color,
-            symbol = Random.Range(1, 117),
-        };
+        block.flair = generateFlair();
         block.id = System.Guid.NewGuid().ToString();
         return block;
 
+    }
+
+    public static AttackFlair generateFlair()
+    {
+        return new AttackFlair
+        {
+            name = Naming.name(),
+            identifier = Naming.identifier(),
+            color = Color.HSVToRGB(Random.value, 1, 1),
+            symbol = Random.Range(1, 117),
+        };
     }
 
     static List<GenerationData> getEffect(float remainingBaseStats, ItemSlot? slot, Optional<TriggerConditions> conditions)

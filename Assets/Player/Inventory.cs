@@ -15,14 +15,14 @@ public class Inventory : NetworkBehaviour
     int inventoryLimit = 10;
     int blessingLimit = 4;
 
-    List<AttackBlock> tempDrops = new List<AttackBlock>();
+    List<CastData> tempDrops = new List<CastData>();
 
-    List<AttackBlock> storage = new List<AttackBlock>();
+    List<CastData> storage = new List<CastData>();
 
-    Dictionary<ItemSlot, AttackBlock> equipped = new Dictionary<ItemSlot, AttackBlock>();
+    Dictionary<ItemSlot, CastData> equipped = new Dictionary<ItemSlot, CastData>();
 
-    AttackTrigger[] blessingsActive = new AttackTrigger[0];
-    AttackTrigger blessingPotential;
+    TriggerData[] blessingsActive = new TriggerData[0];
+    TriggerData blessingPotential;
 
     PlayerGhost player;
     public PlayerPity pity;
@@ -72,7 +72,7 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    AttackBlock[] equipArray
+    CastData[] equipArray
     {
         get
         {
@@ -80,9 +80,9 @@ public class Inventory : NetworkBehaviour
         }
         set
         {
-            equipped = new Dictionary<ItemSlot, AttackBlock>();
+            equipped = new Dictionary<ItemSlot, CastData>();
             int index = 0;
-            foreach (AttackBlock block in value)
+            foreach (CastData block in value)
             {
                 if (block != null && block.slot != null)
                 {
@@ -96,7 +96,7 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public void reloadItems(AttackBlock[] storageItems, AttackBlock[] equippedItems)
+    public void reloadItems(CastData[] storageItems, CastData[] equippedItems)
     {
         equipArray = equippedItems;
         storage = storageItems.ToList();
@@ -106,9 +106,9 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public void reloadBlessings(AttackTrigger[] bless)
+    public void reloadBlessings(TriggerData[] bless)
     {
-        blessingsActive = new AttackTrigger[blessingLimit];
+        blessingsActive = new TriggerData[blessingLimit];
         for (int i = 0; i < bless.Length; i++)
         {
             blessingsActive[i] = bless[i];
@@ -121,7 +121,7 @@ public class Inventory : NetworkBehaviour
     public void genMinItems()
     {
 
-        AttackBlock item = generate(player.power, AttackGenerationType.IntroMain);
+        CastData item = generate(player.power, AttackGenerationType.IntroMain);
         equipped.Add(ItemSlot.Main, item);
         item = generate(player.power, AttackGenerationType.IntroOff);
         equipped.Add(ItemSlot.OffHand, item);
@@ -132,7 +132,7 @@ public class Inventory : NetworkBehaviour
     public void genMinBlessings()
     {
 
-        blessingsActive = new AttackTrigger[blessingLimit];
+        blessingsActive = new TriggerData[blessingLimit];
         syncInventoryUpwards();
     }
 
@@ -141,16 +141,16 @@ public class Inventory : NetworkBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            AttackBlock item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
+            CastData item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
             storage.Add(item);
         }
-        blessingsActive = new AttackTrigger[blessingLimit];
+        blessingsActive = new TriggerData[blessingLimit];
         blessingsActive[0] = GenerateTrigger.generate(player.power);
         RpcInvChange();
     }
 
     [Server]
-    public void AddItem(AttackBlock item, Vector3 otherPosition)
+    public void AddItem(CastData item, Vector3 otherPosition)
     {
         tempDrops.Add(item);
         TargetDropItem(connectionToClient, item, otherPosition);
@@ -163,16 +163,16 @@ public class Inventory : NetworkBehaviour
     }
 
     //server
-    public AttackBlock[] exportEquipped()
+    public CastData[] exportEquipped()
     {
         return equipArray;
     }
-    public AttackBlock[] exportStorage()
+    public CastData[] exportStorage()
     {
         return storage.ToArray();
     }
 
-    public AttackTrigger[] exportBlessings()
+    public TriggerData[] exportBlessings()
     {
         return blessings.ToArray();
     }
@@ -180,21 +180,21 @@ public class Inventory : NetworkBehaviour
 
 
     //Server
-    public Dictionary<ItemSlot, AttackBlock> equippedAbilities
+    public Dictionary<ItemSlot, CastData> equippedAbilities
     {
         get
         {
             return equipped;
         }
     }
-    public List<AttackBlock> stored
+    public List<CastData> stored
     {
         get
         {
             return storage;
         }
     }
-    public List<AttackBlock> dropped
+    public List<CastData> dropped
     {
         get
         {
@@ -202,14 +202,14 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    public List<AttackTrigger> blessings
+    public List<TriggerData> blessings
     {
         get
         {
             return blessingsActive.Where(b => b).ToList();
         }
     }
-    public AttackTrigger potentialBlessing
+    public TriggerData potentialBlessing
     {
         get
         {
@@ -218,17 +218,17 @@ public class Inventory : NetworkBehaviour
     }
 
     [TargetRpc]
-    void TargetDropItem(NetworkConnection conn, AttackBlock item, Vector3 location)
+    void TargetDropItem(NetworkConnection conn, CastData item, Vector3 location)
     {
-        AttackBlockInstance filled = fillBlock(item);
+        AbilityDataInstance filled = fillBlock(item);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.instance.quality);
+        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.effect.quality);
 
     }
 
-    public AttackBlockInstance fillBlock(AttackBlock block, float? triggerStrength = null)
+    public AbilityDataInstance fillBlock(AbilityData block, float? triggerStrength = null)
     {
-        return block.fillBlock(new AttackBlock.FillBlockOptions { overridePower = player.power, addedStrength = triggerStrength, reduceWindValue = triggerStrength.HasValue });
+        return block.populate(new FillBlockOptions { overridePower = player.power, addedStrength = triggerStrength, reduceWindValue = triggerStrength.HasValue });
     }
     [Client]
     public void syncInventory()
@@ -248,7 +248,7 @@ public class Inventory : NetworkBehaviour
     }
 
     [TargetRpc]
-    void TargetSyncInventory(NetworkConnection conn, AttackBlock[] eq, AttackBlock[] st, AttackTrigger[] bl, AttackTrigger blP)
+    void TargetSyncInventory(NetworkConnection conn, CastData[] eq, CastData[] st, TriggerData[] bl, TriggerData blP)
     {
         equipArray = eq;
         storage = st.ToList();
@@ -271,7 +271,7 @@ public class Inventory : NetworkBehaviour
     public void CmdEquipAbility(string newId)
     {
         int newIndex = -1;
-        List<AttackBlock> source = storage;
+        List<CastData> source = storage;
         bool fromDrops = false;
         newIndex = tempDrops.FindIndex(item => item.id == newId);
         if (newIndex >= 0)
@@ -290,8 +290,8 @@ public class Inventory : NetworkBehaviour
             if (fromDrops)
             {
 
-                AttackBlock nowEquipped = tempDrops[newIndex];
-                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out AttackBlock unequipped);
+                CastData nowEquipped = tempDrops[newIndex];
+                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
                 equipped[nowEquipped.slot.Value] = nowEquipped;
                 tempDrops.Remove(nowEquipped);
                 if (previous)
@@ -302,8 +302,8 @@ public class Inventory : NetworkBehaviour
             }
             else
             {
-                AttackBlock nowEquipped = storage[newIndex];
-                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out AttackBlock unequipped);
+                CastData nowEquipped = storage[newIndex];
+                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
                 equipped[nowEquipped.slot.Value] = nowEquipped;
                 storage.Remove(nowEquipped);
                 if (previous)
@@ -326,7 +326,7 @@ public class Inventory : NetworkBehaviour
             return;
         }
         index = tempDrops.FindIndex(item => item.id == id);
-        AttackBlock moved;
+        CastData moved;
         if (index >= 0)
         {
             moved = tempDrops[index];
@@ -335,7 +335,7 @@ public class Inventory : NetworkBehaviour
             RpcInvChange();
             return;
         }
-        KeyValuePair<ItemSlot, AttackBlock> pair = equipped.First(pair => pair.Value.id == id);
+        KeyValuePair<ItemSlot, CastData> pair = equipped.First(pair => pair.Value.id == id);
         moved = equipped[pair.Key];
         equipped.Remove(pair.Key);
         storage.Add(moved);
@@ -354,7 +354,7 @@ public class Inventory : NetworkBehaviour
             return;
         }
         index = storage.FindIndex(item => item.id == id);
-        AttackBlock moved;
+        CastData moved;
         if (index >= 0)
         {
             moved = storage[index];
@@ -363,7 +363,7 @@ public class Inventory : NetworkBehaviour
             RpcInvChange();
             return;
         }
-        KeyValuePair<ItemSlot, AttackBlock> pair = equipped.First(pair => pair.Value.id == id);
+        KeyValuePair<ItemSlot, CastData> pair = equipped.First(pair => pair.Value.id == id);
         moved = equipped[pair.Key];
         equipped.Remove(pair.Key);
         tempDrops.Add(moved);

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static StatModLabel;
 using static StatTypes;
 
@@ -10,7 +11,8 @@ public class StatModPanel : MonoBehaviour
 {
     public GameObject StatModLabelPre;
 
-    public void fill(AttackBlockInstance block, float playerPower, AttackBlockInstance compare = null)
+
+    public void fill(AbilityDataInstance block, float playerPower, AbilityDataInstance compare = null)
     {
         clearLabels();
 
@@ -30,7 +32,7 @@ public class StatModPanel : MonoBehaviour
     }
 
 
-    void statPopulate(AttackBlockInstance block, Stat stat, float playerPower, AttackBlockInstance compare)
+    void statPopulate(AbilityDataInstance block, Stat stat, float playerPower, AbilityDataInstance compare)
     {
         StatLabelInfo info = labelInfo(stat, playerPower);
         float value1 = info.valueGetter(block);
@@ -57,7 +59,7 @@ public class StatModPanel : MonoBehaviour
         }
 
         create()
-            .populate(label1, Power.displayPower(value1), block.generationData.getInfo(stat), label2)
+            .populate(label1, Power.displayPower(value1), block.effectGeneration.getInfo(stat), label2)
             .setColor(color1, color2, comp);
 
     }
@@ -145,56 +147,56 @@ public class StatModPanel : MonoBehaviour
     struct StatLabelInfo
     {
         public string Label;
-        public Func<AttackBlockInstance, float> valueGetter;
+        public Func<AbilityDataInstance, float> valueGetter;
         public string LabelSecond;
-        public Func<AttackBlockInstance, float?> secondaryGetter;
+        public Func<AbilityDataInstance, float?> secondaryGetter;
     }
     static StatLabelInfo labelInfo(Stat stat, float playerPower)
     {
         string label = statLabel(stat);
         string labelSecond = "";
-        Func<AttackBlockInstance, float> valueGetter = x => 0;
-        Func<AttackBlockInstance, float?> secondaryGetter = x => null;
+        Func<AbilityDataInstance, float> valueGetter = x => 0;
+        Func<AbilityDataInstance, float?> secondaryGetter = x => null;
         switch (stat)
         {
             case Stat.DamageMult:
                 label = "DPS";
-                valueGetter = b => b.instance.dps(playerPower);
+                valueGetter = a => a.effect.dps(playerPower);
                 labelSecond = "Damage";
-                secondaryGetter = b => b.instance.damage(playerPower);
+                secondaryGetter = a => a.effect.damage(playerPower);
                 break;
             case Stat.Cooldown:
-                valueGetter = b => b.instance.cooldownDisplay(playerPower);
+                valueGetter = a => a.effect.cooldownDisplay(playerPower);
                 break;
             case Stat.Charges:
-                valueGetter = b => b.instance.getCharges();
+                valueGetter = a => a.effect.getCharges();
                 break;
             case Stat.Haste:
-                valueGetter = b => b.instance.castTimeDisplay(playerPower);
+                valueGetter = a => a.effect.castTimeDisplay(playerPower);
                 break;
             case Stat.TurnspeedCast:
-                valueGetter = b => b.instance.avgTurn();
+                valueGetter = a => a.effect.avgTurn();
                 break;
             case Stat.MovespeedCast:
-                valueGetter = b => b.instance.avgMove();
+                valueGetter = a => a.effect.avgMove();
                 break;
             case Stat.Length:
-                valueGetter = b => b.instance.avgLength();
+                valueGetter = a => a.effect.avgLength();
                 break;
             case Stat.Width:
-                valueGetter = b => b.instance.avgWidth();
+                valueGetter = a => a.effect.avgWidth();
                 break;
             case Stat.Range:
-                valueGetter = b => b.instance.avgRange();
+                valueGetter = a => a.effect.avgRange();
                 break;
             case Stat.Knockback:
-                valueGetter = b => b.instance.avgKback();
+                valueGetter = a => a.effect.avgKback();
                 break;
             case Stat.Knockup:
-                valueGetter = b => b.instance.avgKup();
+                valueGetter = a => a.effect.avgKup();
                 break;
             case Stat.Stagger:
-                valueGetter = b => b.instance.avgStagger();
+                valueGetter = a => a.effect.avgStagger();
                 break;
 
         }

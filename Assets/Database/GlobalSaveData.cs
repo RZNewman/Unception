@@ -53,15 +53,15 @@ public class GlobalSaveData : MonoBehaviour
         };
     }
 
-    public AttackBlock[] itemsFromSnapshot(DataSnapshot snapshot)
+    public CastData[] itemsFromSnapshot(DataSnapshot snapshot)
     {
-        return JsonConvert.DeserializeObject<AttackBlock[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
+        return JsonConvert.DeserializeObject<CastData[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
     }
-    public AttackTrigger[] blessingsFromSnapshot(DataSnapshot snapshot)
+    public TriggerData[] blessingsFromSnapshot(DataSnapshot snapshot)
     {
-        return JsonConvert.DeserializeObject<AttackTrigger[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
+        return JsonConvert.DeserializeObject<TriggerData[]>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
     }
-    public delegate void AssignItems(List<AttackBlock> blocks);
+    public delegate void AssignItems(List<CastData> blocks);
 
     public IEnumerator championItems(AssignItems assign)
     {
@@ -83,7 +83,7 @@ public class GlobalSaveData : MonoBehaviour
         {
             DataSnapshot snapshot = abilities.Result;
 
-            Dictionary<string, AttackBlock> abilityData = JsonConvert.DeserializeObject<Dictionary<string, AttackBlock>>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
+            Dictionary<string, CastData> abilityData = JsonConvert.DeserializeObject<Dictionary<string, CastData>>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
             assign(abilityData.Values.ToList());
 
         }
@@ -112,7 +112,7 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
     }
 
-    public void savePlayerItems(string playerName, AttackBlock[] equipped, AttackBlock[] storage)
+    public void savePlayerItems(string playerName, CastData[] equipped, CastData[] storage)
     {
         string json = santitizeJson(JsonConvert.SerializeObject(storage, Formatting.None, JSONsettings));
         db.Child("Characters").Child(playerName).Child("items").SetRawJsonValueAsync(json);
@@ -120,7 +120,7 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("equipped").SetRawJsonValueAsync(json);
     }
 
-    public void savePlayerBlessings(string playerName, AttackTrigger[] blessings)
+    public void savePlayerBlessings(string playerName, TriggerData[] blessings)
     {
         string json = santitizeJson(JsonConvert.SerializeObject(blessings, Formatting.None, JSONsettings));
         db.Child("Characters").Child(playerName).Child("blessings").SetRawJsonValueAsync(json);

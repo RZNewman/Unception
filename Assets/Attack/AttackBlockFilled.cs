@@ -8,11 +8,10 @@ using static GenerateDash;
 using static AttackUtils;
 using static StatTypes;
 
-public class AttackBlockInstance : IdentifyingBlock
+public class CastDataInstance : AbilityDataInstance
 {
-    public AttackBlock generationData;
     public ItemSlot? slot;
-    public AttackInstanceData instance;
+
 
 }
 

@@ -66,6 +66,32 @@ public static class SystemClassWriters
         writer.WriteByte((byte)key);
     }
 
+    public enum AbilityDataClass : byte
+    {
+        Cast = 0,
+        Trigger
+    }
+
+    public static void WriteAbilityData(this NetworkWriter writer, AbilityData data)
+    {
+        writer.WriteFloat(data.powerAtGeneration);
+        writer.WriteBool(data.scales);
+        writer.WriteString(data.id);
+        writer.Write(data.flair);
+        writer.Write(data.effectGeneration);
+        switch (data)
+        {
+            case CastData c:
+                writer.WriteByte((byte)AbilityDataClass.Cast);
+                writer.WriteNullSlot(c.slot);
+                break;
+            case TriggerData t:
+                writer.WriteByte((byte)AbilityDataClass.Trigger);
+                writer.Write(t.conditions);
+                break;
+        }
+    }
+
 
     public enum GenerationDataClass : byte
     {

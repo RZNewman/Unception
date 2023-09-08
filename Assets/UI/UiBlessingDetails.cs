@@ -20,24 +20,21 @@ public class UiBlessingDetails : MonoBehaviour
 
     public void setDetails(UiBlessingIcon icon)
     {
-        setDetails(icon.blockInstance, icon.attackTrigger.conditions);
-    }
+        TriggerDataInstance trigger = icon.triggerInstance;
 
 
-    public void setDetails(AttackBlockInstance filled, TriggerConditions conditions)
-    {
         if (!player)
         {
             player = FindObjectOfType<PlayerGhost>();
         }
 
-        description.text = descriptionText(conditions, filled.flair);
-        power.text = Power.displayExaggertatedPower(filled.instance.power);
-        powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
-        shape.text = filled.instance.shapeDisplay();
+        description.text = descriptionText(trigger.conditions, trigger.flair);
+        power.text = Power.displayExaggertatedPower(trigger.effect.power);
+        powerTotal.text = Power.displayExaggertatedPower(trigger.effect.actingPower);
+        shape.text = trigger.effect.shapeDisplay();
 
 
-        statPanel.fill(filled, player.power);
+        statPanel.fill(trigger, player.power);
 
     }
 

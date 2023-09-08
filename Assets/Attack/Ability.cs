@@ -15,7 +15,9 @@ public class Ability : NetworkBehaviour
     StatHandler statHandler;
 
     [SyncVar]
-    AttackBlock attackFormat;
+    AbilityData format;
+
+
 
     [SyncVar]
     float? triggerStrength;
@@ -23,7 +25,7 @@ public class Ability : NetworkBehaviour
     [SyncVar]
     public ItemSlot? clientSyncKey;
 
-    AttackBlockInstance attackFilled;
+    AbilityDataInstance formatInstance;
 
     public GameObject abilityIconPrefab;
     GameObject icon;
@@ -75,7 +77,7 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFilled.flair.name;
+            return formatInstance.flair.name;
         }
     }
 
@@ -93,7 +95,7 @@ public class Ability : NetworkBehaviour
     {
         if (charges < chargeMax && cooldownTicking)
         {
-            charges += Time.fixedDeltaTime * attackFilled.instance.getCooldownMult() / cooldownPerCharge;
+            charges += Time.fixedDeltaTime * formatInstance.effect.getCooldownMult() / cooldownPerCharge;
         }
         if (charges >= chargeMax)
         {
@@ -106,7 +108,7 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFilled.instance.cooldown;
+            return formatInstance.effect.cooldown;
         }
     }
 
@@ -114,7 +116,7 @@ public class Ability : NetworkBehaviour
     {
         get
         {
-            return attackFilled.instance.getCharges();
+            return formatInstance.effect.getCharges();
         }
     }
     public List<AttackSegment> cast(UnitMovement mover, CastingLocationData castData)
@@ -124,7 +126,7 @@ public class Ability : NetworkBehaviour
             charges -= 1;
             cooldownTicking = false;
         }
-        return AttackSegment.buildStates(attackFilled.instance, mover, castData);
+        return AttackSegment.buildStates(formatInstance.effect, mover, castData);
     }
     public void startCooldown()
     {
@@ -154,21 +156,21 @@ public class Ability : NetworkBehaviour
         }
     }
     [Server]
-    public void setFormat(AttackBlock b, float? tStrength = null)
+    public void setFormat(AbilityData a, float? tStrength = null)
     {
-        attackFormat = b;
+        format = a;
         triggerStrength = tStrength;
         fillFormat();
         charges = chargeMax;
-        if (attackFormat.scales)
+        if (format.scales)
         {
             subscribeScale();
         }
     }
     void fillFormat()
     {
-        attackFilled = attackFormat.fillBlock(
-            new AttackBlock.FillBlockOptions
+        formatInstance = format.populate(
+            new FillBlockOptions
             {
                 statLinkAbility = this,
                 addedStrength = triggerStrength,
@@ -182,8 +184,8 @@ public class Ability : NetworkBehaviour
     {
         GetComponentInParent<Power>().subscribePower(p =>
         {
-            attackFilled = attackFormat.fillBlock(
-            new AttackBlock.FillBlockOptions
+            formatInstance = format.populate(
+            new FillBlockOptions
             {
                 statLinkAbility = this,
                 addedStrength = triggerStrength,
@@ -200,8 +202,8 @@ public class Ability : NetworkBehaviour
     }
     void scaleAbility(Power p)
     {
-        attackFilled = attackFormat.fillBlock(
-            new AttackBlock.FillBlockOptions
+        formatInstance = format.populate(
+            new FillBlockOptions
             {
                 statLinkAbility = this,
                 addedStrength = triggerStrength,
@@ -214,12 +216,20 @@ public class Ability : NetworkBehaviour
 
     public EffectiveDistance GetEffectiveDistance(float halfHeight)
     {
-        return attackFilled.instance.GetEffectiveDistance(halfHeight);
+        return formatInstance.effect.GetEffectiveDistance(halfHeight);
     }
 
-    public AttackBlockInstance source()
+    public ItemSlot? slot()
     {
-        return attackFilled;
+        return formatInstance switch
+        {
+            CastDataInstance c => c.slot,
+            _ => null
+        };
+    }
+    public AbilityDataInstance source()
+    {
+        return formatInstance;
     }
 
 }

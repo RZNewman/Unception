@@ -18,7 +18,7 @@ public class MonsterSpawn : NetworkBehaviour
 
 
     List<UnitTemplate> monsterProps = new List<UnitTemplate>();
-    List<AttackBlock> championAbilitites = new List<AttackBlock>();
+    List<CastData> championAbilitites = new List<CastData>();
 
     Transform floor;
 
@@ -48,7 +48,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
     }
 
-    void assignItems(List<AttackBlock> loaded)
+    void assignItems(List<CastData> loaded)
     {
         championAbilitites = loaded;
     }
@@ -57,7 +57,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public float power;
         public UnitProperties props;
-        public List<AttackBlock> abilitites;
+        public List<CastData> abilitites;
     }
     public struct Difficulty
     {
@@ -126,7 +126,7 @@ public class MonsterSpawn : NetworkBehaviour
     struct SpawnUnit
     {
         public UnitProperties props;
-        public List<AttackBlock> abilitites;
+        public List<CastData> abilitites;
         public float championHealthMult;
         public List<Color> indicatorColors;
         public float power;
@@ -279,7 +279,7 @@ public class MonsterSpawn : NetworkBehaviour
                 unitsToSpawn.Add(new SpawnUnit
                 {
                     props = data.props,
-                    abilitites = new List<AttackBlock>(data.abilitites),
+                    abilitites = new List<CastData>(data.abilitites),
                     power = data.power,
                     poolCost = poolCost,
                     championHealthMult = 1,
@@ -433,7 +433,7 @@ public class MonsterSpawn : NetworkBehaviour
                 if (poolIncrease < powerPoolChampion)
                 {
                     //TODO no duplicates
-                    AttackBlock ability = championAbilitites.RandomItem();
+                    CastData ability = championAbilitites.RandomItem();
                     u.abilitites.Add(ability);
                     u.poolCost += poolIncrease;
                     u.indicatorColors.Add(ability.flair.color);
@@ -623,8 +623,8 @@ public class MonsterSpawn : NetworkBehaviour
         UnitTemplate u = new UnitTemplate();
         u.power = power;
         u.props = GenerateUnit.generate(power, UnitPre.GetComponentInChildren<PartAssignment>().getVisuals());
-        u.abilitites = new List<AttackBlock>();
-        AttackBlock a = GenerateAttack.generate(power, GenerateAttack.AttackGenerationType.Monster);
+        u.abilitites = new List<CastData>();
+        CastData a = GenerateAttack.generate(power, GenerateAttack.AttackGenerationType.Monster);
         a.scales = true;
         u.abilitites.Add(a);
         return u;

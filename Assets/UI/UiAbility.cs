@@ -30,7 +30,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Sprite Legendary;
 
     Ability target;
-    AttackBlockInstance filled;
+    CastDataInstance filled;
 
     //menu only
     UiEquipmentDragger dragger;
@@ -55,9 +55,9 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void setTarget(Ability ability)
     {
         target = ability;
-        setFill(ability.source(), true);
+        setFill((CastDataInstance)ability.source(), true);
     }
-    public AttackBlockInstance blockFilled
+    public CastDataInstance blockFilled
     {
         get
         {
@@ -65,11 +65,11 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    public void setFill(AttackBlockInstance a, bool inGame = false)
+    public void setFill(CastDataInstance a, bool inGame = false)
     {
         filled = a;
         AttackFlair flair = filled.flair;
-        background.sprite = bgFromQuality(filled.instance.quality);
+        background.sprite = bgFromQuality(filled.effect.quality);
         Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = flair.color;
         partialColor.a = 0.4f;
@@ -91,7 +91,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             gameplayView.SetActive(false);
             invView.SetActive(true);
-            GetComponentInChildren<StarCounter>().setStars(filled.instance.mods != null ? filled.instance.mods.Length : 0);
+            GetComponentInChildren<StarCounter>().setStars(filled.effect.mods != null ? filled.effect.mods.Length : 0);
             symbolInv.sprite = symbolSource.symbols[flair.symbol];
             symbolInv.color = flair.color;
             identifierInv.color = partialColor;
@@ -153,7 +153,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return bg;
     }
 
-    public AttackBlockInstance ability
+    public CastDataInstance ability
     {
         get
         {

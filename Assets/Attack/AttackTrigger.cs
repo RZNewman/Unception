@@ -42,10 +42,25 @@ public struct TriggerConditions
     }
 }
 
-public class AttackTrigger : IdentifyingBlock
+public class TriggerData : AbilityData
 {
     public TriggerConditions conditions;
-    public AttackBlock block;
+
+    public TriggerDataInstance populateTrigger(FillBlockOptions opts)
+    {
+
+        TriggerDataInstance filled = ScriptableObject.CreateInstance<TriggerDataInstance>();
+        populate(filled, opts);
+        filled.conditions = conditions;
+        return filled;
+    }
+
+}
+
+public class TriggerDataInstance : AbilityDataInstance
+{
+    public TriggerConditions conditions;
+
 
 }
 

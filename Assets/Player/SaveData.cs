@@ -184,12 +184,12 @@ public class SaveData : NetworkBehaviour
             DataSnapshot snapshotEquipped = equipped.Result;
             if (snapshotEquipped.Exists)
             {
-                AttackBlock[] storageData = new AttackBlock[0];
+                CastData[] storageData = new CastData[0];
                 if (snapshotStorage.Exists)
                 {
                     storageData = globalSave.itemsFromSnapshot(snapshotStorage);
                 }
-                AttackBlock[] equippedData = globalSave.itemsFromSnapshot(snapshotEquipped);
+                CastData[] equippedData = globalSave.itemsFromSnapshot(snapshotEquipped);
                 inv.reloadItems(storageData, equippedData);
             }
             else
@@ -212,7 +212,7 @@ public class SaveData : NetworkBehaviour
             DataSnapshot snapshotBlessings = blessings.Result;
             if (snapshotBlessings.Exists)
             {
-                AttackTrigger[] bless = globalSave.blessingsFromSnapshot(snapshotBlessings);
+                TriggerData[] bless = globalSave.blessingsFromSnapshot(snapshotBlessings);
                 inv.reloadBlessings(bless);
             }
             else

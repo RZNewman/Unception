@@ -76,7 +76,7 @@ public class Buff : NetworkBehaviour
 
     void OnCast(Ability a)
     {
-        ItemSlot? castSlot = a.source().slot;
+        ItemSlot? castSlot = a.slot();
         if (castSlot.HasValue)
         {
             if (!slot.HasValue || slot.Value == castSlot.Value)

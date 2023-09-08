@@ -7,7 +7,7 @@ using static Utils;
 
 public static class GenerateTrigger
 {
-    public static AttackTrigger generate(float power)
+    public static TriggerData generate(float power)
     {
         TriggerConditions conditions = new TriggerConditions();
 
@@ -52,12 +52,13 @@ public static class GenerateTrigger
 
         conditions.recovery = TriggerRecovery.Cooldown;
 
-        AttackBlock b = GenerateAttack.generate(power, AttackGenerationType.PlayerTrigger, 1, null, conditions);
-        AttackTrigger trigger = ScriptableObject.CreateInstance<AttackTrigger>();
+        AttackGenerationData a = GenerateAttack.generateAttack(null, AttackGenerationType.PlayerTrigger, 1, null, conditions);
+        TriggerData trigger = ScriptableObject.CreateInstance<TriggerData>();
 
         trigger.conditions = conditions;
-        trigger.block = b;
-        trigger.flair = b.flair;
+        trigger.effectGeneration = a;
+        trigger.flair = generateFlair();
+        trigger.powerAtGeneration = power;
         trigger.id = System.Guid.NewGuid().ToString();
 
         return trigger;

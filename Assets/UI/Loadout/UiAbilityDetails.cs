@@ -24,7 +24,7 @@ public class UiAbilityDetails : MonoBehaviour
 
     PlayerGhost player;
 
-    public void setDetails(AttackBlockInstance filled, AttackBlockInstance compare)
+    public void setDetails(CastDataInstance filled, CastDataInstance compare)
     {
         if (!player)
         {
@@ -33,11 +33,11 @@ public class UiAbilityDetails : MonoBehaviour
 
         title.text = filled.flair.name;
         titleSlot.text = slotPhysical(filled.slot) + " of";
-        power.text = Power.displayExaggertatedPower(filled.instance.power);
-        powerTotal.text = Power.displayExaggertatedPower(filled.instance.actingPower);
-        shape.text = filled.instance.shapeDisplay();
+        power.text = Power.displayExaggertatedPower(filled.effect.power);
+        powerTotal.text = Power.displayExaggertatedPower(filled.effect.actingPower);
+        shape.text = filled.effect.shapeDisplay();
         slotIcon.sprite = FindObjectOfType<Symbol>().fromSlot(filled.slot ?? ItemSlot.Main);
-        qualityBG.color = colorQuality(filled.instance.quality);
+        qualityBG.color = colorQuality(filled.effect.quality);
 
         statPanel.fill(filled, player.power, compare);
 

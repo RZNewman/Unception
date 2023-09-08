@@ -54,7 +54,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         }
 
 
-        List<AttackBlock> source;
+        List<CastData> source;
         switch (mode)
         {
             case InventoryMode.Drops:
@@ -79,11 +79,11 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
             UiAbility uia = icon.GetComponent<UiAbility>();
             UiSlotList slotList = dragger.GetComponent<UILoadoutMenu>().slotList;
             float slotPower = slotList.slotOfType(uia.blockFilled.slot.Value).actingPower;
-            float abPower = uia.blockFilled.instance.actingPower;
+            float abPower = uia.blockFilled.effect.actingPower;
             uia.setUpgrade(slotPower < abPower);
         }
     }
-    public GameObject createIcon(AttackBlock ability)
+    public GameObject createIcon(CastData ability)
     {
         if (!dragger)
         {
@@ -92,7 +92,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         GameObject icon = Instantiate(abilityIconPre, transform);
         icon.transform.localScale = Vector3.one * 0.6f;
         UiAbility uia = icon.GetComponent<UiAbility>();
-        uia.setFill(inv.fillBlock(ability));
+        uia.setFill((CastDataInstance)inv.fillBlock(ability));
         uia.setDragger(dragger);
         return icon;
     }
@@ -129,14 +129,14 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         switch (sortMode)
         {
             case SortMode.DPS:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.dps(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().ability.effect.dps(gp.player.power);
             case SortMode.Cooldown:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.cooldownDisplay(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().ability.effect.cooldownDisplay(gp.player.power);
             case SortMode.CastTime:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.castTimeDisplay(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().ability.effect.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:
             default:
-                return (t1) => t1.GetComponent<UiAbility>().ability.instance.actingPower;
+                return (t1) => t1.GetComponent<UiAbility>().ability.effect.actingPower;
 
         }
     }

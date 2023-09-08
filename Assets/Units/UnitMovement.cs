@@ -109,7 +109,7 @@ public class UnitMovement : NetworkBehaviour
     void cast(Ability a)
     {
         //TODO bake hardcast, so we dont have to infer from the slot
-        if (!grounded && a.source().slot.HasValue)
+        if (!grounded && a.slot().HasValue)
         {
             castsThisArtime++;
         }

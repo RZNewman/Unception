@@ -15,32 +15,32 @@ public class AbiltyManager : NetworkBehaviour
     {
 
     }
-    public void addAbility(Dictionary<ItemSlot, AttackBlock> blocks)
+    public void addAbility(Dictionary<ItemSlot, CastData> blocks)
     {
-        foreach ((ItemSlot slot, AttackBlock block) in blocks)
+        foreach ((ItemSlot slot, CastData block) in blocks)
         {
             instanceAbility(slot, block);
         }
 
     }
-    public void addAbility(List<AttackBlock> blocks)
+    public void addAbility(List<CastData> blocks)
     {
         for (int i = 0; i < blocks.Count; i++)
         {
             ItemSlot slotFake = (ItemSlot)i;
-            AttackBlock block = blocks[i];
+            CastData block = blocks[i];
 
             instanceAbility(slotFake, block);
         }
 
 
     }
-    public Ability addTriggeredAbility(AttackBlock block, float strength)
+    public Ability addTriggeredAbility(TriggerData block, float strength)
     {
         return instanceTriggeredAbility(block, strength);
 
     }
-    void instanceAbility(ItemSlot key, AttackBlock block)
+    void instanceAbility(ItemSlot key, CastData block)
     {
         GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
@@ -50,7 +50,7 @@ public class AbiltyManager : NetworkBehaviour
         o.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(o);
     }
-    Ability instanceTriggeredAbility(AttackBlock block, float strength)
+    Ability instanceTriggeredAbility(TriggerData block, float strength)
     {
         GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();

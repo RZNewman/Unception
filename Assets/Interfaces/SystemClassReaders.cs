@@ -71,6 +71,39 @@ public static class SystemClassReaders
         return (BuffType)reader.ReadByte();
     }
 
+    public static AbilityData ReadAbilityData(this NetworkReader reader)
+    {
+        float powerAtGeneration = reader.ReadFloat();
+        bool scales = reader.ReadBool();
+        string id = reader.ReadString();
+        GenerateAttack.AttackFlair flair = reader.Read<GenerateAttack.AttackFlair>();
+        GenerateAttack.AttackGenerationData attack = reader.Read<GenerateAttack.AttackGenerationData>();
+        AbilityDataClass c = (AbilityDataClass)reader.ReadByte();
+        switch (c)
+        {
+            case AbilityDataClass.Cast:
+                CastData cast = ScriptableObject.CreateInstance<CastData>();
+                cast.powerAtGeneration = powerAtGeneration;
+                cast.id = id;
+                cast.scales = scales;
+                cast.flair = flair;
+                cast.effectGeneration = attack;
+                cast.slot = reader.ReadNullSlot();
+                return cast;
+            case AbilityDataClass.Trigger:
+                TriggerData trig = ScriptableObject.CreateInstance<TriggerData>();
+                trig.powerAtGeneration = powerAtGeneration;
+                trig.id = id;
+                trig.scales = scales;
+                trig.flair = flair;
+                trig.effectGeneration = attack;
+                trig.conditions = reader.Read<TriggerConditions>();
+                return trig;
+            default:
+                return null;
+        }
+    }
+
     public static GenerateAttack.GenerationData ReadGenerationData(this NetworkReader reader)
     {
         float strengthFactor = reader.ReadFloat();

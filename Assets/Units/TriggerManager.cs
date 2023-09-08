@@ -22,9 +22,9 @@ public class TriggerManager : NetworkBehaviour
     }
 
 
-    public void addTrigger(List<AttackTrigger> trigs)
+    public void addTrigger(List<TriggerData> trigs)
     {
-        foreach (AttackTrigger trig in trigs)
+        foreach (TriggerData trig in trigs)
         {
 
             instanceTrigger(trig);
@@ -35,11 +35,11 @@ public class TriggerManager : NetworkBehaviour
     }
 
 
-    void instanceTrigger(AttackTrigger trig)
+    void instanceTrigger(TriggerData trig)
     {
         AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
 
-        Ability a = abiltyManager.addTriggeredAbility(trig.block, trig.conditions.triggerStrength);
+        Ability a = abiltyManager.addTriggeredAbility(trig, trig.conditions.triggerStrength);
         CastingLocationData castData = new CastingLocationData
         {
             hardCast = false,
@@ -109,9 +109,9 @@ public class TriggerManager : NetworkBehaviour
         return (Ability castAbil) =>
         {
             //only player cast abilities
-            if (castAbil.source().slot.HasValue
+            if (castAbil.slot().HasValue
             && (
-            !slotRestriction.HasValue || castAbil.source().slot.Value == slotRestriction.Value
+            !slotRestriction.HasValue || castAbil.slot().Value == slotRestriction.Value
             )
             )
             {

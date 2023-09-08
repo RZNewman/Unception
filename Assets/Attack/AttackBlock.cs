@@ -12,6 +12,7 @@ public class CastData : AbilityData
 {
     public ItemSlot? slot;
     public Quality quality;
+    public int stars;
 
     public CastDataInstance populateCast(FillBlockOptions opts)
     {
@@ -20,6 +21,7 @@ public class CastData : AbilityData
         populate(filled, opts);
         filled.slot = slot;
         filled.quality = quality;
+        filled.stars = stars;
         return filled;
     }
 

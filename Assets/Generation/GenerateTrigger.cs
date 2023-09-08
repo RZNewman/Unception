@@ -7,7 +7,7 @@ using static Utils;
 
 public static class GenerateTrigger
 {
-    public static TriggerData generate(float power)
+    public static TriggerData generate(float power, float difficulty = 0)
     {
         TriggerConditions conditions = new TriggerConditions();
 
@@ -60,7 +60,7 @@ public static class GenerateTrigger
         trigger.flair = generateFlair();
         trigger.powerAtGeneration = power;
         trigger.id = System.Guid.NewGuid().ToString();
-
+        trigger.difficultyTotal = difficulty;
         return trigger;
     }
 }

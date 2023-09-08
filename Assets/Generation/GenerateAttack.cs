@@ -887,10 +887,11 @@ public static class GenerateAttack
         }
 
         Quality quality = Quality.Common;
+        int starCount = 0;
         if (pity)
         {
             quality = pity.rollQuality(qualityMultiplier);
-            int modCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
+            starCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
         }
 
 
@@ -908,6 +909,7 @@ public static class GenerateAttack
         block.flair = generateFlair();
         block.id = System.Guid.NewGuid().ToString();
         block.quality = quality;
+        block.stars = starCount;
         return block;
 
     }

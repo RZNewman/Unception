@@ -89,6 +89,8 @@ public static class SystemClassReaders
                 cast.flair = flair;
                 cast.effectGeneration = attack;
                 cast.slot = reader.ReadNullSlot();
+                cast.quality = reader.ReadQuality();
+                cast.stars = reader.ReadInt();
                 return cast;
             case AbilityDataClass.Trigger:
                 TriggerData trig = ScriptableObject.CreateInstance<TriggerData>();
@@ -98,6 +100,7 @@ public static class SystemClassReaders
                 trig.flair = flair;
                 trig.effectGeneration = attack;
                 trig.conditions = reader.Read<TriggerConditions>();
+                trig.difficultyTotal = reader.ReadFloat();
                 return trig;
             default:
                 return null;

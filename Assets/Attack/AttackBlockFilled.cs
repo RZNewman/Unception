@@ -13,10 +13,11 @@ public class CastDataInstance : AbilityDataInstance
 {
     public ItemSlot? slot;
     public Quality quality;
+    public int stars;
 
     public override float enhancementStrength()
     {
-        return qualityPercent(quality);
+        return qualityPercent(quality) + 0.03f * stars;
     }
 
 }

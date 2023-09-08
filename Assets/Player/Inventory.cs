@@ -157,9 +157,9 @@ public class Inventory : NetworkBehaviour
     }
 
     [Server]
-    public void addBlessing(float power)
+    public void addBlessing(float power, float difficulty)
     {
-        blessingPotential = GenerateTrigger.generate(power);
+        blessingPotential = GenerateTrigger.generate(power, difficulty);
     }
 
     //server

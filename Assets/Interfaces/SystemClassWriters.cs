@@ -84,10 +84,13 @@ public static class SystemClassWriters
             case CastData c:
                 writer.WriteByte((byte)AbilityDataClass.Cast);
                 writer.WriteNullSlot(c.slot);
+                writer.WriteQuality(c.quality);
+                writer.WriteInt(c.stars);
                 break;
             case TriggerData t:
                 writer.WriteByte((byte)AbilityDataClass.Trigger);
                 writer.Write(t.conditions);
+                writer.WriteFloat(t.difficultyTotal);
                 break;
         }
     }

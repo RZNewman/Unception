@@ -91,8 +91,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             gameplayView.SetActive(false);
             invView.SetActive(true);
-            //TODO
-            GetComponentInChildren<StarCounter>().setStars(0);
+            GetComponentInChildren<StarCounter>().setStars(filled.stars);
             symbolInv.sprite = symbolSource.symbols[flair.symbol];
             symbolInv.color = flair.color;
             identifierInv.color = partialColor;

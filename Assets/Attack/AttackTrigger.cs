@@ -45,6 +45,7 @@ public struct TriggerConditions
 public class TriggerData : AbilityData
 {
     public TriggerConditions conditions;
+    public float difficultyTotal;
 
     public TriggerDataInstance populateTrigger(FillBlockOptions opts)
     {
@@ -52,6 +53,7 @@ public class TriggerData : AbilityData
         TriggerDataInstance filled = ScriptableObject.CreateInstance<TriggerDataInstance>();
         populate(filled, opts);
         filled.conditions = conditions;
+        filled.difficultyTotal = difficultyTotal;
         return filled;
     }
 
@@ -60,11 +62,11 @@ public class TriggerData : AbilityData
 public class TriggerDataInstance : AbilityDataInstance
 {
     public TriggerConditions conditions;
+    public float difficultyTotal;
 
     public override float enhancementStrength()
     {
-        //TODO
-        return 1;
+        return 1 + difficultyTotal * 0.25f;
     }
 
 

@@ -606,7 +606,7 @@ public class Atlas : NetworkBehaviour
         {
             if (mapSuccess)
             {
-                inv.addBlessing(embarkedMap.power);
+                inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
             inv.syncInventoryUpwards();
             inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, mapSuccess);

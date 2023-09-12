@@ -252,9 +252,9 @@ public class AttackSegment
                 }
             }
             states.AddRange(effectStates);
-            if (seg.winddown.HasValue)
+            if (seg.winddown != null)
             {
-                WindState winddown = new WindState(mover, seg.winddown.Value, true, castData.hardCast);
+                WindState winddown = new WindState(mover, seg.winddown, true, castData.hardCast);
                 states.Add(winddown);
                 finalSeg.winddown = winddown;
             }

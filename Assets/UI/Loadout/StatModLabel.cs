@@ -39,9 +39,9 @@ public class StatModLabel : MonoBehaviour
         ModCount.text = Mathf.Round(i.modPercent * 100).ToString();
 
         float width = StatBarBase.sizeDelta.x;
-        float maxRollPercent = i.maxRoll / i.maxStat;
-        MaxRoll.sizeDelta = new Vector2(maxRollPercent * width, MaxRoll.sizeDelta.y);
-        RollBar.sizeDelta = new Vector2(i.percentRoll * maxRollPercent * width, RollBar.sizeDelta.y);
+        //float maxRollPercent = i.maxRoll / i.maxStat;
+        MaxRoll.sizeDelta = new Vector2(0, MaxRoll.sizeDelta.y);
+        RollBar.sizeDelta = new Vector2(i.percentRoll * width, RollBar.sizeDelta.y);
         RollBar.GetComponent<Image>().color = i.fill;
         ModBar.sizeDelta = new Vector2(i.moddedStat / i.maxStat * width, ModBar.sizeDelta.y);
 

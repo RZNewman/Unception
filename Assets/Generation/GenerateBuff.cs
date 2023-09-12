@@ -52,6 +52,12 @@ public static class GenerateBuff
                 float baseDuration = this.duration.asRange(6, 20);
                 duration = baseDuration / scaleTime;
                 stats = stats.scale(1 - this.duration);
+
+                //CD Only
+                if (slot.HasValue)
+                {
+                    stats = stats.scale(2.1f);
+                }
             }
             if (mode == BuffMode.Cast)
             {
@@ -60,11 +66,14 @@ public static class GenerateBuff
                 castCount = Mathf.RoundToInt(this.duration.asRange(1, 3));
                 duration = (5f + 5f * castCount) / scaleTime;
                 stats = stats.scale(1f / castCount);
+
+                if (slot.HasValue)
+                {
+                    stats = stats.scale(1.1f);
+                }
             }
-            if (slot.HasValue)
-            {
-                stats = stats.scale(1.1f);
-            }
+
+
 
 
             stats = stats.scale(buffStatsBase);
@@ -127,18 +136,25 @@ public static class GenerateBuff
             if (Random.value < 0.5f)
             {
                 buff.slot = EnumValues<ItemSlot>().ToArray().RandomItem();
+                //for CD buffs on slots, aka 'resets'
+                if (Random.value < 0.3f)
+                {
+                    buff.mode = BuffMode.Timed;
+                }
             }
         }
 
 
         List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
         List<Stat> debuffStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Range, Stat.Stagger, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
-        List<Stat> itemStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Cooldown, Stat.Haste, Stat.MovespeedCast };
+        List<Stat> itemStatsCast = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Haste, Stat.MovespeedCast };
+        List<Stat> itemStatsTime = new List<Stat>() { Stat.Cooldown };
         Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();
-        List<Stat> sourceList = (buff.type, buff.slot) switch
+        List<Stat> sourceList = (buff.type, buff.mode, buff.slot) switch
         {
-            (BuffType.Debuff, _) => debuffStats,
-            (_, ItemSlot) => itemStats,
+            (BuffType.Debuff, _, _) => debuffStats,
+            (_, BuffMode.Cast, ItemSlot) => itemStatsCast,
+            (_, BuffMode.Timed, ItemSlot) => itemStatsTime,
             _ => generateStats,
         };
 

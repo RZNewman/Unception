@@ -96,62 +96,62 @@ public static class SystemClassWriters
     }
 
 
-    public enum GenerationDataClass : byte
-    {
-        Wind = 0,
-        Hit,
-        Dash,
-        Repeat,
-        Buff
-    }
+    //public enum GenerationDataClass : byte
+    //{
+    //    Wind = 0,
+    //    Hit,
+    //    Dash,
+    //    Repeat,
+    //    Buff
+    //}
 
-    public static void WriteGenerationData(this NetworkWriter writer, GenerateAttack.GenerationData data)
-    {
-        writer.WriteFloat(data.percentOfEffect);
-        switch (data)
-        {
-            case GenerateWind.WindGenerationData w:
-                writer.WriteByte((byte)GenerationDataClass.Wind);
-                writer.WriteFloat(w.duration);
-                writer.WriteFloat(w.moveMult);
-                writer.WriteFloat(w.turnMult);
-                break;
-            case GenerateHit.HitGenerationData a:
-                writer.WriteByte((byte)GenerationDataClass.Hit);
-                writer.WriteHitType(a.type);
-                writer.WriteStatDict(a.statValues);
-                writer.WriteKnockBackType(a.knockBackType);
-                writer.WriteKnockBackDirection(a.knockBackDirection);
-                writer.WriteInt(a.multiple);
-                writer.WriteFloat(a.multipleArc);
-                writer.WriteFloat(a.dotPercent);
-                writer.WriteFloat(a.dotTime);
-                writer.WriteFloat(a.exposePercent);
-                writer.WriteFloat(a.exposeStrength);
-                writer.WriteInt(a.flair.visualIndex);
-                writer.WriteInt(a.flair.soundIndex);
-                break;
-            case GenerateDash.DashGenerationData d:
-                writer.WriteByte((byte)GenerationDataClass.Dash);
-                writer.WriteFloat(d.speed);
-                writer.WriteFloat(d.distance);
-                writer.WriteDashControl(d.control);
-                break;
-            case GenerateRepeating.RepeatingGenerationData r:
-                writer.WriteByte((byte)GenerationDataClass.Repeat);
-                writer.WriteInt(r.repeatCount);
-                break;
-            case GenerateBuff.BuffGenerationData b:
-                writer.WriteByte((byte)GenerationDataClass.Buff);
-                writer.WriteFloat(b.duration);
-                writer.WriteStatDict(b.statValues);
-                writer.WriteBuffType(b.type);
-                writer.WriteByte((byte)b.mode);
-                writer.WriteNullSlot(b.slot);
-                break;
+    //public static void WriteGenerationData(this NetworkWriter writer, GenerateAttack.GenerationData data)
+    //{
+    //    writer.WriteFloat(data.percentOfEffect);
+    //    switch (data)
+    //    {
+    //        case GenerateWind.WindGenerationData w:
+    //            writer.WriteByte((byte)GenerationDataClass.Wind);
+    //            writer.WriteFloat(w.duration);
+    //            writer.WriteFloat(w.moveMult);
+    //            writer.WriteFloat(w.turnMult);
+    //            break;
+    //        case GenerateHit.HitGenerationData a:
+    //            writer.WriteByte((byte)GenerationDataClass.Hit);
+    //            writer.WriteHitType(a.type);
+    //            writer.WriteStatDict(a.statValues);
+    //            writer.WriteKnockBackType(a.knockBackType);
+    //            writer.WriteKnockBackDirection(a.knockBackDirection);
+    //            writer.WriteInt(a.multiple);
+    //            writer.WriteFloat(a.multipleArc);
+    //            writer.WriteFloat(a.dotPercent);
+    //            writer.WriteFloat(a.dotTime);
+    //            writer.WriteFloat(a.exposePercent);
+    //            writer.WriteFloat(a.exposeStrength);
+    //            writer.WriteInt(a.flair.visualIndex);
+    //            writer.WriteInt(a.flair.soundIndex);
+    //            break;
+    //        case GenerateDash.DashGenerationData d:
+    //            writer.WriteByte((byte)GenerationDataClass.Dash);
+    //            writer.WriteFloat(d.speed);
+    //            writer.WriteFloat(d.distance);
+    //            writer.WriteDashControl(d.control);
+    //            break;
+    //        case GenerateRepeating.RepeatingGenerationData r:
+    //            writer.WriteByte((byte)GenerationDataClass.Repeat);
+    //            writer.WriteInt(r.repeatCount);
+    //            break;
+    //        case GenerateBuff.BuffGenerationData b:
+    //            writer.WriteByte((byte)GenerationDataClass.Buff);
+    //            writer.WriteFloat(b.duration);
+    //            writer.WriteStatDict(b.statValues);
+    //            writer.WriteBuffType(b.type);
+    //            writer.WriteByte((byte)b.mode);
+    //            writer.WriteNullSlot(b.slot);
+    //            break;
 
-        }
+    //    }
 
-    }
+    //}
 }
 

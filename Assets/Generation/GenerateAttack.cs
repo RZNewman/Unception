@@ -77,11 +77,10 @@ public static class GenerateAttack
         return totalTime * moveMult * turnMult;
     }
 
-    //not networked
     public struct SegmentGenerationData
     {
         public WindGenerationData windup;
-        public Optional<WindGenerationData> winddown;
+        public WindGenerationData winddown;
         public HitGenerationData hit;
         public DashGenerationData dash;
         public RepeatingGenerationData repeat;
@@ -95,7 +94,7 @@ public static class GenerateAttack
     public struct SegmentInstanceData
     {
         public WindInstanceData windup;
-        public Optional<WindInstanceData> winddown;
+        public WindInstanceData winddown;
         public HitInstanceData hit;
         public DashInstanceData dash;
         public RepeatingInstanceData repeat;
@@ -109,9 +108,9 @@ public static class GenerateAttack
             get
             {
                 List<WindInstanceData> winds = new List<WindInstanceData> { windup };
-                if (winddown.HasValue)
+                if (winddown != null)
                 {
-                    winds.Add(winddown.Value);
+                    winds.Add(winddown);
                 }
                 if (repeat != null)
                 {
@@ -243,8 +242,7 @@ public static class GenerateAttack
     [System.Serializable]
     public struct AttackGenerationData
     {
-        public GenerationData[] stages;
-        public Mod[] mods;
+        public SegmentGenerationData[] segments;
         public float cooldown;
         public float charges;
 
@@ -266,7 +264,7 @@ public static class GenerateAttack
                 case Stat.Knockup:
                 case Stat.Range:
                     maxRoll = itemMax(stat);
-                    percentRoll = averagePercent(stages, stat);
+                    percentRoll = averagePercent(segments, stat);
                     break;
                 case Stat.Charges:
                     maxRoll = itemMax(stat);
@@ -277,32 +275,20 @@ public static class GenerateAttack
                     fill = Color.white;
                     break;
                 case Stat.Haste:
-                    percentRoll = averagePercent(stages, WindSearchMode.Haste);
+                    percentRoll = averagePercent(segments, WindSearchMode.Haste);
                     fill = Color.white;
                     break;
                 case Stat.TurnspeedCast:
-                    percentRoll = averagePercent(stages, WindSearchMode.Turn);
+                    percentRoll = averagePercent(segments, WindSearchMode.Turn);
                     fill = Color.white;
                     break;
                 case Stat.MovespeedCast:
-                    percentRoll = averagePercent(stages, WindSearchMode.Move);
+                    percentRoll = averagePercent(segments, WindSearchMode.Move);
                     fill = Color.white;
                     break;
 
             }
             maxStat = maxRoll;
-            if (stat != Stat.DamageMult)
-            {
-                maxStat += statsPerModMax;
-            }
-            foreach (Mod mod in mods ?? new Mod[0])
-            {
-                if (mod.stat == stat)
-                {
-                    modPercent = mod.rolledPercent;
-                    moddedStat = mod.statBaseValue();
-                }
-            }
             return new StatInfo
             {
                 maxStat = maxStat,
@@ -313,16 +299,15 @@ public static class GenerateAttack
                 fill = fill
             };
         }
-        public float averagePercent(GenerationData[] stages, Stat stat)
+        public float averagePercent(SegmentGenerationData[] segments, Stat stat)
         {
             int count = 0;
             float total = 0;
-            foreach (GenerationData stage in stages)
+            foreach (SegmentGenerationData segment in segments)
             {
-                if (stage is HitGenerationData)
+                if (segment.hit)
                 {
-                    HitGenerationData hit = (HitGenerationData)stage;
-                    total += hit.statValues.ContainsKey(stat) ? hit.statValues[stat] : 0;
+                    total += segment.hit.statValues.ContainsKey(stat) ? segment.hit.statValues[stat] : 0;
                     count++;
                 }
             }
@@ -335,16 +320,34 @@ public static class GenerateAttack
             Move,
         }
 
-        float averagePercent(GenerationData[] stages, WindSearchMode mode)
+        float averagePercent(SegmentGenerationData[] segments, WindSearchMode mode)
         {
             float count = 0;
             float total = 0;
             int repeats = 1;
-            foreach (GenerationData stage in stages)
+            foreach (SegmentGenerationData segment in segments)
             {
-                if (stage is WindGenerationData)
+
+                List<WindGenerationData> winds = new List<WindGenerationData>();
+                if (segment.windup)
                 {
-                    WindGenerationData wind = (WindGenerationData)stage;
+                    winds.Add(segment.windup);
+                }
+                if (segment.winddown)
+                {
+                    winds.Add(segment.windup);
+                }
+                if (segment.windRepeat)
+                {
+                    for (int i = 0; i < segment.repeat.repeatCount; i++)
+                    {
+                        winds.Add(segment.windRepeat);
+                    }
+
+                }
+
+                foreach (WindGenerationData wind in winds)
+                {
                     for (int i = 0; i < repeats; i++)
                     {
                         switch (mode)
@@ -364,10 +367,6 @@ public static class GenerateAttack
                         }
                     }
                     repeats = 1;
-                }
-                if (stage is RepeatingGenerationData)
-                {
-                    repeats = ((RepeatingGenerationData)stage).repeatCount;
                 }
             }
             return total / count;
@@ -533,10 +532,9 @@ public static class GenerateAttack
         cooldownTime /= Power.scaleTime(power);
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
-        stats = stats.sum(atk.mods.statDict());
         stats = stats.scale(scaleNum);
 
-        List<SegmentGenerationData> segmentsGen = splitSegments(atk.stages);
+        List<SegmentGenerationData> segmentsGen = atk.segments.ToList();
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
         List<InstanceStreamInfo> stagesToParent = new List<InstanceStreamInfo>();
         System.Action<InstanceData> parent = (InstanceData data) =>
@@ -553,12 +551,12 @@ public static class GenerateAttack
             WindInstanceData up = (WindInstanceData)segment.windup.populate(power, 1.0f);
             parent(up);
             List<WindInstanceData> windList = new List<WindInstanceData> { up };
-            Optional<WindInstanceData> down = new Optional<WindInstanceData>();
-            if (segment.winddown.HasValue)
+            WindInstanceData down = null;
+            if (segment.winddown)
             {
-                down = (WindInstanceData)segment.winddown.Value.populate(power, 1.0f);
-                parent(down.Value);
-                windList.Add(down.Value);
+                down = (WindInstanceData)segment.winddown.populate(power, 1.0f);
+                parent(down);
+                windList.Add(down);
             }
             else
             {
@@ -648,78 +646,7 @@ public static class GenerateAttack
         return atkIn;
 
     }
-    public static List<SegmentGenerationData> splitSegments(GenerationData[] stages)
-    {
-        List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
-        SegmentGenerationData segment;
-        segment = new SegmentGenerationData();
-        bool open = false;
-        bool dashAfter = false;
-        bool repeatOpen = false;
-        foreach (GenerationData state in stages)
-        {
-            if (state is WindGenerationData)
-            {
-                if (!open)
-                {
-                    segment.windup = (WindGenerationData)state;
-                    open = true;
-                }
-                else
-                {
-                    if (repeatOpen)
-                    {
-                        segment.windRepeat = (WindGenerationData)state;
-                        repeatOpen = false;
-                    }
-                    else
-                    {
-                        segment.winddown = (WindGenerationData)state;
-                        segments.Add(segment);
-                        segment = new SegmentGenerationData();
-                        open = false;
-                        dashAfter = false;
-                    }
 
-
-                }
-
-            }
-            else
-            {
-                switch (state)
-                {
-                    case HitGenerationData hit:
-                        segment.hit = hit;
-                        dashAfter = true;
-                        break;
-                    case DashGenerationData dash:
-                        segment.dash = dash;
-                        segment.dashAfter = dashAfter;
-                        segment.dashInside = repeatOpen;
-                        break;
-                    case RepeatingGenerationData repeat:
-                        segment.repeat = repeat;
-                        repeatOpen = true;
-                        break;
-                    case BuffGenerationData buff:
-                        segment.buff = buff;
-                        break;
-                }
-            }
-
-
-        }
-
-        if (open)
-        {
-            //no windown attack
-            segment.winddown = new Optional<WindGenerationData>();
-            segments.Add(segment);
-        }
-        //Debug.Log(System.String.Join("---", segments.Select(s => System.String.Join(" ", s.stages.Select(j => j.ToString()).ToArray())).ToArray()));
-        return segments;
-    }
 
     static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
@@ -764,9 +691,6 @@ public static class GenerateAttack
 
     public static AttackGenerationData generateAttack(ItemSlot? slot, AttackGenerationType type, Optional<TriggerConditions> conditions = new Optional<TriggerConditions>())
     {
-
-
-        List<GenerationData> stages = new List<GenerationData>();
         float windUpMax = 1f;
         float windUpMin = 0f;
         float windDownMax = 0.7f;
@@ -822,6 +746,7 @@ public static class GenerateAttack
         {
             windUpMax = 0.2f;
             windDownMax = 0.5f;
+            windDownMin = 0.1f;
         }
         else if (type == AttackGenerationType.PlayerTrigger)
         {
@@ -835,6 +760,7 @@ public static class GenerateAttack
                 //fast hit
                 windUpMax *= 0.2f;
                 windDownMax = 0.5f;
+                windDownMin = 0.1f;
             }
             else
             {
@@ -844,24 +770,18 @@ public static class GenerateAttack
         }
 
 
-
+        List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
         for (int i = 0; i < segmentCount; i++)
         {
-
-            WindGenerationData windup = createWind(windUpMin, windUpMax);
-            stages.Add(windup);
-            stages.AddRange(getEffect(itemStatSpread - chargeBaseStats, slot, conditions));
-            if (windDownMax > 0)
-            {
-                stages.Add(createWind(windDownMin, windDownMax));
-            }
-
-
+            SegmentGenerationData segment = getEffect(itemStatSpread - chargeBaseStats, slot, conditions);
+            segment.windup = createWind(windUpMin, windUpMax);
+            segment.winddown = createWind(windDownMin, windDownMax);
+            segments.Add(segment);
         }
 
         AttackGenerationData atk = new AttackGenerationData
         {
-            stages = stages.ToArray(),
+            segments = segments.ToArray(),
             cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(cooldownMin, cooldownMax),
             charges = charges,
 
@@ -925,26 +845,19 @@ public static class GenerateAttack
         };
     }
 
-    static List<GenerationData> getEffect(float remainingBaseStats, ItemSlot? slot, Optional<TriggerConditions> conditions)
+    static SegmentGenerationData getEffect(float remainingBaseStats, ItemSlot? slot, Optional<TriggerConditions> conditions)
     {
-        List<GenerationData> effects = new List<GenerationData>();
+        SegmentGenerationData segment = new SegmentGenerationData();
         float gen = Random.value;
-
-        DashGenerationData d = null;
-        RepeatingGenerationData r = null;
-        WindGenerationData rWind = null;
-        BuffGenerationData b = null;
-        HitGenerationData h = createHit(remainingBaseStats, conditions);
-
-        bool dashInside = false;
+        segment.hit = createHit(remainingBaseStats, conditions);
 
         if (slot != ItemSlot.Main
             && slot != ItemSlot.Helm
             && gen < 0.3f)
         {
             //repeat effect
-            r = createRepeating();
-            rWind = createWind(0, 0.4f);
+            segment.repeat = createRepeating();
+            segment.windRepeat = createWind(0, 0.4f);
         }
 
         gen = Random.value;
@@ -952,19 +865,21 @@ public static class GenerateAttack
             && slot != ItemSlot.Helm
             && !conditions.HasValue
             && (slot == ItemSlot.Boots || gen < 0.2f)
-            && h.type != HitType.Ground)
+            && segment.hit.type != HitType.Ground)
         {
             //dash effect
-            d = createDash();
+            segment.dash = createDash();
 
             float hitValue = Random.value.asRange(0.6f, 0.8f);
-            h.percentOfEffect = hitValue;
-            d.percentOfEffect = 1 - hitValue;
+            segment.hit.percentOfEffect = hitValue;
+            segment.dash.percentOfEffect = 1 - hitValue;
+
+            segment.dashAfter = segment.dash.control == DashControl.Backward;
 
             gen = Random.value;
-            if (gen < 0.1f && r != null)
+            if (gen < 0.1f && segment.repeat != null)
             {
-                dashInside = true;
+                segment.dashInside = true;
             }
         }
 
@@ -972,54 +887,17 @@ public static class GenerateAttack
         if (slot != ItemSlot.Main
             && !conditions.HasValue
             && (slot == ItemSlot.Helm || gen < 0.2f)
-            && r == null && d == null)
+            && segment.repeat == null && segment.dash == null)
         {
             //buff effect
-            b = createBuff();
+            segment.buff = createBuff();
 
             float hitValue = Random.value.asRange(0.5f, 0.75f);
-            h.percentOfEffect = hitValue;
-            b.percentOfEffect = 1 - hitValue;
+            segment.hit.percentOfEffect = hitValue;
+            segment.buff.percentOfEffect = 1 - hitValue;
         }
 
-        effects.Add(h);
-
-
-        if (r != null)
-        {
-            if (dashInside)
-            {
-                if (d.control == DashControl.Backward)
-                {
-                    effects.Add(d);
-                }
-                else
-                {
-                    effects.Insert(0, d);
-                }
-            }
-            effects.Insert(0, r);
-            effects.Add(rWind);
-        }
-        if (d != null && !dashInside)
-        {
-            if (d.control == DashControl.Backward)
-            {
-                effects.Add(d);
-            }
-            else
-            {
-                effects.Insert(0, d);
-            }
-        }
-        if (b != null)
-        {
-            effects.Add(b);
-        }
-
-
-
-        return effects;
+        return segment;
     }
 
 

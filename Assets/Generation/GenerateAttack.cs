@@ -673,6 +673,7 @@ public static class GenerateAttack
     {
         Player,
         Monster,
+        MonsterStrong,
         PlayerTrigger,
         IntroMain,
         IntroOff,
@@ -705,6 +706,11 @@ public static class GenerateAttack
         }
         float cooldownMin = 0;
         float cooldownMax = 1;
+        if (type == AttackGenerationType.MonsterStrong)
+        {
+            cooldownMin = 0.3f;
+            cooldownMax = 0.5f;
+        }
         if (slot == ItemSlot.Chest)
         {
             cooldownMin = 0.4f;
@@ -737,7 +743,7 @@ public static class GenerateAttack
             windUpMax = 0.6f;
         }
 
-        if (type == AttackGenerationType.Monster)
+        if (type == AttackGenerationType.Monster || type == AttackGenerationType.MonsterStrong)
         {
             windUpMin = 0.25f;
             windDownMin = 0.45f;

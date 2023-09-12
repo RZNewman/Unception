@@ -63,32 +63,32 @@ public class GlobalSaveData : MonoBehaviour
     }
     public delegate void AssignItems(List<CastData> blocks);
 
-    public IEnumerator championItems(AssignItems assign)
-    {
-        while (db == null)
-        {
-            yield return null;
-        }
-        Task<DataSnapshot> abilities = db.Child("Champions").GetValueAsync();
-        while (!abilities.IsFaulted && !abilities.IsCompleted && !abilities.IsCanceled)
-        {
-            yield return null;
-        }
+    //public IEnumerator championItems(AssignItems assign)
+    //{
+    //    while (db == null)
+    //    {
+    //        yield return null;
+    //    }
+    //    Task<DataSnapshot> abilities = db.Child("Champions").GetValueAsync();
+    //    while (!abilities.IsFaulted && !abilities.IsCompleted && !abilities.IsCanceled)
+    //    {
+    //        yield return null;
+    //    }
 
-        if (abilities.IsFaulted)
-        {
-            Debug.LogError("Error loading champion abilities");
-        }
-        else if (abilities.IsCompleted)
-        {
-            DataSnapshot snapshot = abilities.Result;
+    //    if (abilities.IsFaulted)
+    //    {
+    //        Debug.LogError("Error loading champion abilities");
+    //    }
+    //    else if (abilities.IsCompleted)
+    //    {
+    //        DataSnapshot snapshot = abilities.Result;
 
-            Dictionary<string, CastData> abilityData = JsonConvert.DeserializeObject<Dictionary<string, CastData>>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
-            assign(abilityData.Values.ToList());
+    //        Dictionary<string, CastData> abilityData = JsonConvert.DeserializeObject<Dictionary<string, CastData>>(unsantitizeJson(snapshot.GetRawJsonValue()), JSONsettings);
+    //        assign(abilityData.Values.ToList());
 
-        }
+    //    }
 
-    }
+    //}
 
     public struct PlayerSaveData
     {

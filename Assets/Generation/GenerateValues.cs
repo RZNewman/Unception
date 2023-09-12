@@ -20,7 +20,7 @@ public static class GenerateValues
                 storedValues[keys[i]] = vals[i];
             }
         }
-        public void augmentInner(IDictionary<T, float> equivDict)
+        public void augmentInner(IDictionary<T, float> equivDict, float balance = 2)
         {
             ValueGenerator<T> vg = this;
             T[] keys = storedValues.Keys.ToArray();
@@ -29,7 +29,7 @@ public static class GenerateValues
             T[] newKeys = equivDict.Keys.ToArray();
             float[] equivs = newKeys.Select(k => equivDict[k]).ToArray();
             keys = keys.Concat(newKeys).ToArray();
-            vals = augment(vals, equivs);
+            vals = augment(vals, equivs, balance);
             for (int i = 0; i < keys.Length; i++)
             {
                 storedValues[keys[i]] = vals[i];
@@ -138,7 +138,7 @@ public static class GenerateValues
         values[boost].val += transfer * ratio;
         return values;
     }
-    public static Value[] augment(Value[] prevValues, float[] equivs)
+    public static Value[] augment(Value[] prevValues, float[] equivs, float balance = 2)
     {
         int oldCount = prevValues.Length;
         int addedCount = equivs.Length;
@@ -159,7 +159,7 @@ public static class GenerateValues
         for (int i = oldCount; i < newValues.Length; i++)
         {
             int oldDrain = Random.Range(0, oldCount - 1);
-            newValues = transfer(newValues, oldDrain, i, 0.25f);
+            newValues = transfer(newValues, oldDrain, i, balance);
         }
 
 

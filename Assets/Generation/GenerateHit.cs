@@ -273,23 +273,23 @@ public static class GenerateHit
 
         float fillPercent = remainingBaseStats / sumMax(generateStats);
 
-        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1.7f, fillPercent);
+        ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1f, fillPercent);
 
 
         if (Random.value < 0.3f)
         {
             if (t == HitType.Projectile)
             {
-                vg.augmentInner(itemMaxDict(Stat.Length));
+                vg.augmentInner(itemMaxDict(Stat.Length), 1f);
             }
             else
             {
-                vg.augmentInner(itemMaxDict(Stat.Range));
+                vg.augmentInner(itemMaxDict(Stat.Range), 1f);
             }
         }
         if (Random.value < 0.2f)
         {
-            vg.augmentInner(itemMaxDict(Stat.Knockup));
+            vg.augmentInner(itemMaxDict(Stat.Knockup), 1f);
         }
 
 

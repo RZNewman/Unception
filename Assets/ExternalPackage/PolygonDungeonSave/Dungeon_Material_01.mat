@@ -155,7 +155,7 @@ Material:
     - _PlayerPosYOffset: 0
     - _PreviewIndicatorLineThickness: 0.04
     - _PreviewMode: 0
-    - _QueueControl: -1
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _RaycastMode: 0
     - _ReceiveShadows: 1

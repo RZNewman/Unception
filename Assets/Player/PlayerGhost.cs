@@ -140,7 +140,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     void TargetGameplayMenu(NetworkConnection conn)
     {
         music.Game();
-        FindObjectOfType<MaterialScaling>().scale(Power.scalePhysical(playerPower));
+
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
     }
     [TargetRpc]

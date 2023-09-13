@@ -41,8 +41,11 @@ public class LocalCamera : MonoBehaviour
         localClip = cam.nearClipPlane;
         oldPowerMag = transform.localPosition.magnitude;
         keys = FindObjectOfType<Keybinds>(true);
-        GetComponentInParent<Power>().subscribePower(scaleCameraSize);
+        Power p = GetComponentInParent<Power>();
+        p.subscribePower(scaleCameraSize);
         pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
+
+        float cameraClipScale = 0;
         if (mode == CameraMode.Turn)
         {
             setCursorLocks(true);
@@ -50,8 +53,10 @@ public class LocalCamera : MonoBehaviour
         else
         {
             transform.localRotation = Quaternion.Euler(pitchMax, 0, 0);
-        }
+            cameraClipScale = p.scalePhysical();
 
+        }
+        FindObjectOfType<MaterialScaling>().scale(cameraClipScale);
     }
     private void OnDestroy()
     {

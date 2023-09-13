@@ -261,8 +261,8 @@ public static class GenerateHit
             t = HitType.Line;
         }
 
-        List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult, Stat.Stagger };
-        if (t == HitType.Projectile)
+        List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult };
+        if (t == HitType.Projectile || t == HitType.Ground)
         {
             generateStats.Add(Stat.Range);
         }
@@ -286,6 +286,10 @@ public static class GenerateHit
             {
                 vg.augmentInner(itemMaxDict(Stat.Range), 1f);
             }
+        }
+        if (Random.value < 0.4f)
+        {
+            vg.augmentInner(itemMaxDict(Stat.Stagger), 1f);
         }
         if (Random.value < 0.2f)
         {

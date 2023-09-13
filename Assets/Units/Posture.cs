@@ -89,6 +89,23 @@ public class Posture : NetworkBehaviour, BarValue
         }
 
     }
+    float fallOffMult
+    {
+        get
+        {
+            float scaleTime = power.scaleTime();
+            return (1 + (recentlyStunnedTime / scaleTime) / 3);
+        }
+    }
+
+    float stunThreshold
+    {
+        get
+        {
+            return maxPosture * fallOffMult;
+        }
+
+    }
 
     // Update is called once per frame
     public void OrderedUpdate()
@@ -98,7 +115,7 @@ public class Posture : NetworkBehaviour, BarValue
         {
             currentPosture = 0;
         }
-        if (!stunned && currentPosture > maxPosture)
+        if (!stunned && currentPosture > stunThreshold)
         {
             stunned = true;
             currentStunHighestPosture = currentPosture;
@@ -106,7 +123,7 @@ public class Posture : NetworkBehaviour, BarValue
         float currentPostureRecover;
         if (stunned)
         {
-            currentPostureRecover = stunnedPostureRecover * (1 + (recentlyStunnedTime / scaleTime) / 2);
+            currentPostureRecover = stunnedPostureRecover * fallOffMult;
             recentlyStunnedTime += Time.fixedDeltaTime * scaleTime;
         }
         else
@@ -140,7 +157,7 @@ public class Posture : NetworkBehaviour, BarValue
         }
         else
         {
-            denom = maxPosture;
+            denom = stunThreshold;
         }
         return new BarValue.BarData
         {

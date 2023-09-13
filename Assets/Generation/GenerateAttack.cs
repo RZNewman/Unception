@@ -779,7 +779,7 @@ public static class GenerateAttack
         List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
         for (int i = 0; i < segmentCount; i++)
         {
-            SegmentGenerationData segment = getEffect(itemStatSpread - chargeBaseStats, slot, conditions);
+            SegmentGenerationData segment = getEffect(itemStatSpread - chargeBaseStats, type, slot, conditions);
             segment.windup = createWind(windUpMin, windUpMax);
             segment.winddown = createWind(windDownMin, windDownMax);
             segments.Add(segment);
@@ -851,7 +851,7 @@ public static class GenerateAttack
         };
     }
 
-    static SegmentGenerationData getEffect(float remainingBaseStats, ItemSlot? slot, Optional<TriggerConditions> conditions)
+    static SegmentGenerationData getEffect(float remainingBaseStats, AttackGenerationType type, ItemSlot? slot, Optional<TriggerConditions> conditions)
     {
         SegmentGenerationData segment = new SegmentGenerationData();
         float gen = Random.value;
@@ -896,7 +896,7 @@ public static class GenerateAttack
             && segment.repeat == null && segment.dash == null)
         {
             //buff effect
-            segment.buff = createBuff();
+            segment.buff = createBuff(type);
 
             float hitValue = Random.value.asRange(0.5f, 0.75f);
             segment.hit.percentOfEffect = hitValue;

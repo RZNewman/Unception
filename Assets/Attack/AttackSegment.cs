@@ -363,7 +363,6 @@ public class AttackSegment
         SpellSource instanceSource = instance.GetComponent<SpellSource>();
 
         instanceSource.init(size.sizeC, mover.gameObject, team, moveType);
-        //TODO Line attack flexible range
         NetworkServer.Spawn(instance);
 
 

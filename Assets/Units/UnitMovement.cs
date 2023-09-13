@@ -108,8 +108,7 @@ public class UnitMovement : NetworkBehaviour
 
     void cast(Ability a)
     {
-        //TODO bake hardcast, so we dont have to infer from the slot
-        if (!grounded && a.slot().HasValue)
+        if (!grounded && a.isHardcast)
         {
             castsThisArtime++;
         }
@@ -242,10 +241,15 @@ public class UnitMovement : NetworkBehaviour
             Vector3 vertdiff = rb.velocity - plane3;
 
             Vector3 move3 = new Vector3(value.x, 0, value.z);
-            Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(ground.normal, Vector3.up), Vector3.Cross(Vector3.up, ground.normal));
-            Vector3 plane3New = rot * move3;
+            Vector3 plane3New = vectorInPlane(move3);
             rb.velocity = plane3New + vertdiff;
         }
+    }
+
+    Vector3 vectorInPlane(Vector3 vec)
+    {
+        Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(ground.normal, Vector3.up), Vector3.Cross(Vector3.up, ground.normal));
+        return rot * vec;
     }
 
     public void jump()
@@ -350,24 +354,33 @@ public class UnitMovement : NetworkBehaviour
     public DashInstanceData baseDash()
     {
         float combatMultiplier = 1.0f;
+        float airMultiplier = 1.0f;
+        float pitch = 0;
         if (!combat.inCombat)
         {
             combatMultiplier = 1.5f;
         }
+        if (!grounded)
+        {
+            airMultiplier = 0.5f;
+            pitch = -45;
+        }
+
         float scalePhys = power.scalePhysical();
         float scaleSpeed = power.scaleSpeed();
         return new DashInstanceData
         {
-            distance = props.dashDistance * scalePhys,
-            speed = props.dashSpeed * combatMultiplier * scaleSpeed,
+            distance = props.dashDistance * airMultiplier * scalePhys,
+            speed = props.dashSpeed * airMultiplier * combatMultiplier * scaleSpeed,
             control = DashControl.Input,
             endMomentum = DashEndMomentum.Walk,
+            pitch = pitch,
         };
     }
-    public void dash(UnitInput inp, float dashSpeed, DashControl control)
+    public void dash(UnitInput inp, DashInstanceData opts)
     {
         Vector3 desiredDirection;
-        switch (control)
+        switch (opts.control)
         {
             case DashControl.Forward:
                 desiredDirection = getSpawnBody().transform.forward;
@@ -382,7 +395,12 @@ public class UnitMovement : NetworkBehaviour
                 desiredDirection = Vector3.zero;
                 break;
         }
-        planarVelocityCalculated = desiredDirection * dashSpeed;
+        if (opts.pitch > 0 || (!grounded && opts.pitch < 0))
+        {
+            Quaternion rot = Quaternion.AngleAxis(opts.pitch, Vector3.Cross(desiredDirection, Vector3.up));
+            desiredDirection = rot * desiredDirection;
+        }
+        rb.velocity = vectorInPlane(desiredDirection * opts.speed);
 
     }
     public void setToWalkSpeed()

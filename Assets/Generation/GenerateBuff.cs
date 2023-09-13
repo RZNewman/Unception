@@ -121,7 +121,7 @@ public static class GenerateBuff
         }
 
     }
-    public static BuffGenerationData createBuff()
+    public static BuffGenerationData createBuff(AttackGenerationType type)
     {
         BuffGenerationData buff = ScriptableObject.CreateInstance<BuffGenerationData>();
         buff.type = BuffType.Buff;
@@ -133,7 +133,7 @@ public static class GenerateBuff
         if (buff.type == BuffType.Buff && Random.value < 0.5f)
         {
             buff.mode = BuffMode.Cast;
-            if (Random.value < 0.5f)
+            if (Random.value < 0.5f && type != AttackGenerationType.Monster && type != AttackGenerationType.MonsterStrong)
             {
                 buff.slot = EnumValues<ItemSlot>().ToArray().RandomItem();
                 //for CD buffs on slots, aka 'resets'

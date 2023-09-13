@@ -23,11 +23,15 @@ public static class GenerateDash
         Walk,
         Stop
     }
+
+
     public class DashGenerationData : GenerationData
     {
         public float speed;
         public float distance;
+        public float pitch;
         public DashControl control;
+
 
         public override InstanceData populate(float power, float strength)
         {
@@ -45,6 +49,7 @@ public static class GenerateDash
 
                 speed = speed,
                 distance = distance,
+                pitch = pitch,
                 control = control,
                 endMomentum = DashEndMomentum.Walk,
 
@@ -60,6 +65,7 @@ public static class GenerateDash
 
         public float speed;
         public float distance;
+        public float pitch;
         public DashControl control;
         public DashEndMomentum endMomentum;
 
@@ -82,7 +88,7 @@ public static class GenerateDash
         dash.distance = typeValues[0].val;
         dash.speed = typeValues[1].val;
         dash.control = control;
-
+        dash.pitch = 0;
         return dash;
     }
 }

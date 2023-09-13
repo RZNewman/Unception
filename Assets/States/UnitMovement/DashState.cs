@@ -67,7 +67,7 @@ public class DashState : AttackStageState
     {
         base.tick();
 
-        mover.dash(inpSnapshot, opts.speed, opts.control);
+        mover.dash(inpSnapshot, opts);
 
     }
     public override IndicatorOffsets GetIndicatorOffsets()

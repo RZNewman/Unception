@@ -294,62 +294,48 @@ public class UnitMovement : NetworkBehaviour
     {
         float scaleSpeed = power.scaleSpeed();
 
-        float lookMultiplier = toMoveMultiplier(inp.move);
-        float airMultiplier = 1.0f;
-        float combatMultiplier = 1.0f;
-        float stunnedMultiplier = 1.0f;
-        if (!grounded)
-        {
-            airMultiplier = 0.6f;
-        }
-        if (!combat.inCombat)
-        {
-            combatMultiplier = 1.5f;
-        }
-        if (posture.isStunned)
-        {
-            stunnedMultiplier = 0.5f;
-        }
+
         Vector3 planarVelocity = planarVelocityCalculated;
+        Vector3 desiredDirection = input2vec(inp.move);
         float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0);
+        float movespeedMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
+        float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (posture.isStunned ? 0.5f : 1.0f);
+        float stoppingMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
+        float accelerationMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
+
+
+        float maxSpeedFriction = movespeed * movespeedMult * toMoveMultiplier(vec2input(planarVelocity)) * scaleSpeed;
+        float frictionFrameMag = props.friction * frictionMult * Time.fixedDeltaTime * scaleSpeed;
+        float potentialSpeed = movespeed * movespeedMult * toMoveMultiplier(inp.move) * scaleSpeed;
+        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scaleSpeed;
+        //the look mulitplier for acceleration is applied later
+        float accelerationFrameMag = props.acceleration * accelerationMult * Time.fixedDeltaTime * scaleSpeed;
+
 
         //section: friction
-        float lookMultFriction = toMoveMultiplier(vec2input(planarVelocity));
-        float speedCalcMult = speedStateMultiplier * stunnedMultiplier * airMultiplier * combatMultiplier * lookMultFriction;
-        float maxSpeedInDir = movespeed * speedCalcMult * scaleSpeed;
-        if (planarVelocity.magnitude > maxSpeedInDir)
+        if (planarVelocity.magnitude > maxSpeedFriction)
         {
             //apply fricton
-            float frictionMagDiff = planarVelocity.magnitude - maxSpeedInDir;
-            float frictionMult = airMultiplier;
-            float frictiongFrameMag = props.friction * frictionMult * Time.fixedDeltaTime * scaleSpeed;
-            if (frictiongFrameMag >= frictionMagDiff)
+            float frictionMagDiff = planarVelocity.magnitude - maxSpeedFriction;
+            if (frictionFrameMag >= frictionMagDiff)
             {
-                planarVelocity = planarVelocity.normalized * maxSpeedInDir;
-
+                planarVelocity = planarVelocity.normalized * maxSpeedFriction;
             }
             else
             {
-                planarVelocity += -planarVelocity.normalized * frictiongFrameMag;
+                planarVelocity += -planarVelocity.normalized * frictionFrameMag;
             }
         }
 
-
-
-        Vector3 desiredDirection = input2vec(inp.move);
-        float speedMultiplier = speedStateMultiplier * lookMultiplier * airMultiplier * combatMultiplier;
-        float potentialSpeed = movespeed * speedMultiplier * scaleSpeed;
 
         //section: stopping
         float usefulSpeed = Mathf.Max(Vector3.Dot(planarVelocity, desiredDirection), 0);
         float desiredSpeed = Mathf.Max(usefulSpeed, potentialSpeed);
         Vector3 desiredVeloicity = desiredDirection * desiredSpeed;
-        Vector3 diff = desiredVeloicity - planarVelocity;
-        float stoppingMagnitude = Vector3.Dot(diff, -planarVelocity);
+        Vector3 stoppingDiff = desiredVeloicity - planarVelocity;
+        float stoppingMagnitude = Vector3.Dot(stoppingDiff, -planarVelocity);
         stoppingMagnitude = Mathf.Max(stoppingMagnitude, 0);
         Vector3 stoppingVec = -planarVelocity.normalized * stoppingMagnitude;
-        float stoppingMult = stunnedMultiplier * airMultiplier * combatMultiplier;
-        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scaleSpeed;
         if (stoppingVec.magnitude <= stoppingFrameMag)
         {
             planarVelocity += stoppingVec;
@@ -361,19 +347,17 @@ public class UnitMovement : NetworkBehaviour
         }
 
         //section: acceleration
-        diff = desiredVeloicity - planarVelocity;
-        float lookMultiplierDiff = toMoveMultiplier(vec2input(diff));
-        float addingMult = speedStateMultiplier * stunnedMultiplier * airMultiplier * combatMultiplier * lookMultiplierDiff;
-        float addingFrameMag = props.acceleration * addingMult * Time.fixedDeltaTime * scaleSpeed;
-
-        if (diff.magnitude <= addingFrameMag)
+        Vector3 accelerationDiff = desiredVeloicity - planarVelocity;
+        float lookMultiplierAcc = toMoveMultiplier(vec2input(accelerationDiff));
+        accelerationFrameMag *= lookMultiplierAcc;
+        if (accelerationDiff.magnitude <= accelerationFrameMag)
         {
             planarVelocity = desiredVeloicity;
 
         }
         else
         {
-            planarVelocity += diff.normalized * addingFrameMag;
+            planarVelocity += accelerationDiff.normalized * accelerationFrameMag;
         }
         planarVelocityCache = planarVelocity;
         planarVelocityCalculated = planarVelocityCache;

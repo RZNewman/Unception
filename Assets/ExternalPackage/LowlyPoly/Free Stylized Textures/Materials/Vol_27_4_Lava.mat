@@ -116,7 +116,7 @@ Material:
     - _CircleStrength: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ConeObstructionDestroyRadius: 0
+    - _ConeObstructionDestroyRadius: 22
     - _ConeStrength: 1
     - _Cull: 2
     - _CurveObstructionDestroyRadius: 10
@@ -124,7 +124,7 @@ Material:
     - _Cutoff: 0.41
     - _CylinderObstructionDestroyRadius: 8
     - _CylinderStrength: 1
-    - _DefaultEffectRadius: 0
+    - _DefaultEffectRadius: 100
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DissolveColorSaturation: 1

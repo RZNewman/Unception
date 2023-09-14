@@ -16,11 +16,12 @@ public class DashState : AttackStageState
     {
         opts = o;
         isAttack = attack;
+        inpSnapshot = UnitInput.zero();
     }
 
     public override void enter()
     {
-        inpSnapshot = mover.input;
+        inpSnapshot.merge(mover.input);
         if (inpSnapshot.move == Vector2.zero)
         {
             inpSnapshot.move = vec2input(inpSnapshot.lookOffset.normalized);

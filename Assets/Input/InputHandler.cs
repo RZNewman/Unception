@@ -78,7 +78,6 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.move = move;
 
         currentInput.jump = Input.GetKeyDown(keys.binding(KeyName.Jump));
-        if (currentInput.jump) { Debug.Log("Jump key"); }
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
 

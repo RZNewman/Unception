@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static Utils;
 
 public class Keybinds : MonoBehaviour
@@ -48,7 +49,10 @@ public class Keybinds : MonoBehaviour
     {
         foreach (Sprite sprite in Keys)
         {
-            keyLookup.Add(Enum.Parse<KeyCode>(sprite.name), sprite);
+
+            KeyCode code = Enum.Parse<KeyCode>(sprite.name);
+            //Debug.Log(sprite.name + " - " + code);
+            keyLookup.Add(code, sprite);
         }
         foreach (KeyName name in EnumValues<KeyName>())
         {
@@ -83,23 +87,41 @@ public class Keybinds : MonoBehaviour
     private void OnGUI()
     {
         Event e = Event.current;
-        if (rebinding && e.isKey)
+        if (rebinding && (e.isKey || e.isMouse))
         {
             rebinding = false;
+
+            if (e.keyCode != KeyCode.Escape)
+            {
+                KeyCode code = e.isKey ? e.keyCode : fromMouse(e.button);
+                setters[bindKey].setLabel(bindKey, code, this);
+                binds[bindKey] = code;
+                PlayerPrefs.SetInt("Key" + bindKey.ToString(), (int)code);
+            }
+
             foreach (KeySetter s in setters.Values)
             {
                 s.enableButton(true);
-            }
-            if (e.keyCode != KeyCode.Escape)
-            {
-                setters[bindKey].setLabel(bindKey, e.keyCode, this);
-                binds[bindKey] = e.keyCode;
-                PlayerPrefs.SetInt("Key" + bindKey.ToString(), (int)e.keyCode);
             }
 
 
         }
 
+    }
+
+    KeyCode fromMouse(int mouseButton)
+    {
+        return mouseButton switch
+        {
+            0 => KeyCode.Mouse0,
+            1 => KeyCode.Mouse1,
+            2 => KeyCode.Mouse2,
+            3 => KeyCode.Mouse3,
+            4 => KeyCode.Mouse4,
+            5 => KeyCode.Mouse5,
+            6 => KeyCode.Mouse6,
+            _ => KeyCode.Escape,
+        };
     }
 
     KeyCode getKey(KeyName name)

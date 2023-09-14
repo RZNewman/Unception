@@ -30,11 +30,9 @@ public class UnitMovement : NetworkBehaviour
     [SyncVar(hook = nameof(syncLookAngle))]
     public float currentLookAngle = 0;
 
-    int castsThisArtime = 0;
-
     Vector3 planarVelocityCache;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -104,20 +102,12 @@ public class UnitMovement : NetworkBehaviour
         {
             setGround();
             movement.transition();
-            if (grounded)
-            {
-                castsThisArtime = 0;
-            }
         }
 
     }
 
     void cast(Ability a)
     {
-        if (!grounded && a.isHardcast)
-        {
-            castsThisArtime++;
-        }
     }
     void cleanup(bool natural)
     {
@@ -151,7 +141,6 @@ public class UnitMovement : NetworkBehaviour
 
     public void toggleFloat()
     {
-        Debug.Log("toggle + " + legMode);
         legMode = legMode switch
         {
             LegMode.Float => LegMode.Normal,
@@ -284,7 +273,6 @@ public class UnitMovement : NetworkBehaviour
     {
         if (grounded)
         {
-            Debug.Log("Jump");
             jump();
         }
         else

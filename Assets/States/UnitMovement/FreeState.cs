@@ -17,9 +17,9 @@ public class FreeState : PlayerMovementState
         base.tick();
         UnitInput inp = mover.input;
 
-        if (inp.jump && mover.grounded)
+        if (inp.consumeJump())
         {
-            mover.jump();
+            mover.tryJump();
         }
 
         mover.rotate(inp);

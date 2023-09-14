@@ -34,6 +34,7 @@ public class StunnedState : PlayerMovementState, BarValue
     public override void enter()
     {
         mover.sound.playSound(mover.local.isLocalUnit ? UnitSound.UnitSoundClip.LocalStun : UnitSound.UnitSoundClip.Stun);
+        mover.legMode = UnitMovement.LegMode.Normal;
     }
 
     public override void exit(bool expired)

@@ -8,7 +8,7 @@ using static Utils;
 public interface UnitControl
 {
     [Serializable]
-    public struct UnitInput
+    public class UnitInput
     {
         public Vector2 move;
         public Vector3 lookOffset;
@@ -27,6 +27,14 @@ public interface UnitControl
             cancel = false;
             attacks = new ItemSlot[0];
         }
+
+        public bool consumeJump()
+        {
+            bool j = jump;
+            jump = false;
+            return j;
+        }
+
         public void cleanButtons()
         {
             jump = false;
@@ -64,8 +72,13 @@ public interface UnitControl
                 attacks = new ItemSlot[0],
             };
         }
-        public UnitInput merge(UnitInput newer)
+        public void merge(UnitInput newer)
         {
+            move = newer.move;
+            lookOffset = newer.lookOffset;
+            jump = jump || newer.jump;
+            dash = dash || newer.dash;
+            cancel = cancel || newer.cancel;
             HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
             foreach (ItemSlot k in attacks)
             {
@@ -75,17 +88,8 @@ public interface UnitControl
             {
                 atks.Add(k);
             }
-            ItemSlot[] aArray = new ItemSlot[atks.Count];
-            atks.CopyTo(aArray);
-            return new UnitInput
-            {
-                move = newer.move,
-                lookOffset = newer.lookOffset,
-                jump = jump || newer.jump,
-                dash = dash || newer.dash,
-                cancel = cancel || newer.cancel,
-                attacks = aArray,
-            };
+            attacks = new ItemSlot[atks.Count];
+            atks.CopyTo(attacks);
         }
         public Vector2 look
         {

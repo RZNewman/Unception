@@ -25,6 +25,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     // Start is called before the first frame update
     public void init()
     {
+        currentInput = UnitInput.zero();
         currentInput.reset();
     }
 
@@ -76,7 +77,8 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         currentInput.move = move;
 
-        currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
+        currentInput.jump = Input.GetKeyDown(keys.binding(KeyName.Jump));
+        if (currentInput.jump) { Debug.Log("Jump key"); }
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
 

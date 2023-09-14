@@ -33,6 +33,8 @@ public class UnitMovement : NetworkBehaviour
     int castsThisArtime = 0;
 
     Vector3 planarVelocityCache;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +87,10 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!lifeManager.IsDead)
         {
+            if (grounded)
+            {
+                legMode = LegMode.Normal;
+            }
             movement.tick();
         }
         else
@@ -122,13 +128,35 @@ public class UnitMovement : NetworkBehaviour
         return movement.state();
     }
 
-    public bool canFall()
+    public bool floating()
     {
-        return !(
-            currentState() is StunnedState
-            || currentState() is DashState
-            || (currentState() is AttackingState && castsThisArtime < 2)
-            );
+        return legMode == LegMode.Float;
+    }
+
+    public bool dashing()
+    {
+        return movement.state() switch
+        {
+            DashState => true,
+            AttackingState => true,
+            _ => false
+        };
+    }
+    public enum LegMode
+    {
+        Normal,
+        Float
+    }
+    public LegMode legMode = LegMode.Normal;
+
+    public void toggleFloat()
+    {
+        Debug.Log("toggle + " + legMode);
+        legMode = legMode switch
+        {
+            LegMode.Float => LegMode.Normal,
+            _ => LegMode.Float,
+        };
     }
     public string currentAbilityName()
     {
@@ -250,6 +278,19 @@ public class UnitMovement : NetworkBehaviour
     {
         Quaternion rot = Quaternion.AngleAxis(Vector3.Angle(ground.normal, Vector3.up), Vector3.Cross(Vector3.up, ground.normal));
         return rot * vec;
+    }
+
+    public void tryJump()
+    {
+        if (grounded)
+        {
+            Debug.Log("Jump");
+            jump();
+        }
+        else
+        {
+            toggleFloat();
+        }
     }
 
     public void jump()

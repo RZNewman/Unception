@@ -65,14 +65,8 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
 
     public UnitInput GetUnitInput()
     {
-        UnitInput current = currentInput;
-        if (useLocalLook && isLocalAuthority)
-        {
-            //Local look for smoother client turning
-            current.lookOffset = localInput.lookOffset;
-        }
         serverRead = true;
-        return current;
+        return currentInput;
     }
     //Used to sync keydown events between update and Fixedupdate
     //set to true on read, so that the buttons can be cleared the next write
@@ -88,13 +82,18 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
                 serverRead = false;
             }
             controller.refreshInput();
-            currentInput = currentInput.merge(controller.getUnitInuput());
-            localInput = localInput.merge(currentInput);
+            currentInput.merge(controller.getUnitInuput());
+            localInput.merge(currentInput);
         }
         else if (isLocalAuthority)
         {
             controller.refreshInput();
-            localInput = localInput.merge(controller.getUnitInuput());
+            localInput.merge(controller.getUnitInuput());
+            if (useLocalLook)
+            {
+                //Local look for smoother client turning
+                currentInput.lookOffset = localInput.lookOffset;
+            }
             //Debug.Log(localInput.attacks.Length);
 
         }
@@ -103,10 +102,11 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             if (!isPlayer)
             {
                 controller.refreshInput();
-                currentInput = controller.getUnitInuput();
+                currentInput.reset();
+                currentInput.merge(controller.getUnitInuput());
 
             }
-            localInput = localInput.merge(currentInput);
+            localInput.merge(currentInput);
         }
 
         if (checkSendtime(localInput))
@@ -152,6 +152,11 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     {
         if (!isServer)
         {
+            if (useLocalLook)
+            {
+                //Local look for smoother client turning
+                input.lookOffset = localInput.lookOffset;
+            }
             currentInput = input;
         }
 

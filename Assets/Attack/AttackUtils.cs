@@ -36,6 +36,7 @@ public static class AttackUtils
             Health h = other.GetComponentInParent<Health>();
             Posture p = other.GetComponentInParent<Posture>();
             Mezmerize mez = other.GetComponentInParent<Mezmerize>();
+            Knockdown kDown = other.GetComponentInParent<Knockdown>();
             if (h)
             {
                 DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
@@ -61,25 +62,28 @@ public static class AttackUtils
             }
             if (mez)
             {
-                //TODO
-                mez.takeFocus(hitData.mezmerize);
+                float focusHit = hitData.mezmerize;
+                if (kDown && kDown.knockedDown)
+                {
+                    focusHit *= 1.1f;
+                }
+                mez.takeFocus(focusHit);
             }
 
 
             if (otherMover)
             {
-                Vector3 knockBackVec;
+                Vector3 knockBackDir;
                 switch (hitData.knockBackType)
                 {
                     case KnockBackType.inDirection:
-                        knockBackVec = hitData.knockback * knockbackData.direction;
-
+                        knockBackDir = knockbackData.direction;
                         break;
                     case KnockBackType.fromCenter:
                         Vector3 dir = other.transform.position - knockbackData.center;
                         dir.y = 0;
                         dir.Normalize();
-                        knockBackVec = hitData.knockback * dir;
+                        knockBackDir = dir;
                         break;
                     default:
                         throw new System.Exception("No kb type");
@@ -87,11 +91,10 @@ public static class AttackUtils
                 switch (hitData.knockBackDirection)
                 {
                     case KnockBackDirection.Backward:
-                        knockBackVec *= -1;
+                        knockBackDir *= -1;
                         break;
                 }
-                otherMover.applyForce(knockBackVec);
-                otherMover.applyForce(hitData.knockup * Vector3.up);
+                otherMover.knock(knockBackDir, hitData.knockback, hitData.knockup);
             }
 
             return true;

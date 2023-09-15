@@ -23,6 +23,7 @@ public class UnitMovement : NetworkBehaviour
     UnitSound _sound;
     Posture posture;
     Mezmerize mezmerize;
+    Knockdown knockdown;
     LocalPlayer localPlayer;
     StatHandler statHandler;
 
@@ -50,6 +51,7 @@ public class UnitMovement : NetworkBehaviour
         _sound = GetComponent<UnitSound>();
         posture = GetComponent<Posture>();
         mezmerize = GetComponent<Mezmerize>();
+        knockdown = GetComponent<Knockdown>();
         localPlayer = GetComponent<LocalPlayer>();
         statHandler = GetComponent<StatHandler>();
         events.suscribeDeath(cleanup);
@@ -171,7 +173,7 @@ public class UnitMovement : NetworkBehaviour
     {
         get
         {
-            return posture.isStunned || mezmerize.isMezmerized;
+            return posture.isStunned || mezmerize.isMezmerized || knockdown.knockedDown;
         }
     }
 
@@ -291,7 +293,20 @@ public class UnitMovement : NetworkBehaviour
     {
         rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scalePhysical(), rb.velocity.z);
     }
-    public void applyForce(Vector3 force)
+    public void knock(Vector3 dir, float back, float up)
+    {
+        dir.Normalize();
+        if (posture.isStunned)
+        {
+            back *= 1.1f;
+            up *= 1.1f;
+        }
+        knockdown.tryKnockDown(back, up);
+        applyForce(dir * back);
+        applyForce(Vector3.up * up);
+    }
+
+    void applyForce(Vector3 force)
     {
         rb.AddForce(force, ForceMode.Impulse);
     }
@@ -304,10 +319,10 @@ public class UnitMovement : NetworkBehaviour
         Vector3 planarVelocity = planarVelocityCalculated;
         Vector3 desiredDirection = input2vec(inp.move);
         float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0);
-        float movespeedMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
-        float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (isIncapacitated ? 0.5f : 1.0f);
-        float stoppingMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 6.0f : 1.0f);
-        float accelerationMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
+        float movespeedMult = speedStateMultiplier * (isIncapacitated ? knockdown.knockedDown ? 0 : 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
+        float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (isIncapacitated ? 0.6f : 1.0f);
+        float stoppingMult = speedStateMultiplier * (isIncapacitated ? knockdown.knockedDown ? 0 : 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 6.0f : 1.0f);
+        float accelerationMult = speedStateMultiplier * (isIncapacitated ? knockdown.knockedDown ? 0 : 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
 
 
         float maxSpeedFriction = movespeed * movespeedMult * toMoveMultiplier(vec2input(planarVelocity)) * scaleSpeed;

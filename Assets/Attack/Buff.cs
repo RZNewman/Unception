@@ -70,7 +70,12 @@ public class Buff : NetworkBehaviour
         events.TickEvent -= Tick;
         if (mode == BuffMode.Cast)
         {
-            transform.GetComponentInParent<EventManager>().CastEvent -= OnCast;
+            EventManager em = transform.GetComponentInParent<EventManager>();
+            if (em)
+            {
+                em.CastEvent -= OnCast;
+            }
+
         }
     }
 

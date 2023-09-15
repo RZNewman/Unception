@@ -30,7 +30,7 @@ public static class StatTypes
     {
         {Stat.Length,3.5f},
         {Stat.Width,3.5f},
-        {Stat.Knockback,17},
+        {Stat.Knockback,12},
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},
         {Stat.Mezmerize,200},
@@ -62,6 +62,14 @@ public static class StatTypes
             }
         }
     };
+
+    public static float relativeKnockup
+    {
+        get
+        {
+            return statValues[Stat.Knockback] / statValues[Stat.Knockup];
+        }
+    }
 
     public static float statToValue(Stat stat, float amount, float scale, HitType type)
     {
@@ -146,11 +154,11 @@ public static class StatTypes
     {
         {Stat.Length,69},
         {Stat.Width,60},
-        {Stat.Knockback,44},
+        {Stat.Knockback,55},
         {Stat.DamageMult,106},
         {Stat.Stagger,65},
         {Stat.Mezmerize,65},
-        {Stat.Knockup,37},
+        {Stat.Knockup,60},
         {Stat.Charges,81},
         {Stat.Range,75},
     };

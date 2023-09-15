@@ -6,6 +6,7 @@ public class AnimationController : MonoBehaviour
 {
     UnitMovement mover;
     Power power;
+    Knockdown knockdown;
     UnitProperties props;
     public Animator anim;
 
@@ -31,6 +32,7 @@ public class AnimationController : MonoBehaviour
     {
         mover = GetComponent<UnitMovement>();
         power = GetComponent<Power>();
+        knockdown = GetComponent<Knockdown>();
         props = GetComponent<UnitPropsHolder>().props;
         anim.SetFloat("Jumpsquat Time", props.jumpsquatTime);
         power.subscribePower(scaleMovement);
@@ -45,6 +47,7 @@ public class AnimationController : MonoBehaviour
     public void OrderedUpdate()
     {
         anim.SetBool("Grounded", mover.grounded);
+        anim.SetBool("KnockedDownBool", knockdown.knockedDown);
         anim.SetFloat("MoveSpeed", mover.planarVelocity.magnitude * moveSpeedMult);
 
         switch (mover.currentState())
@@ -68,5 +71,9 @@ public class AnimationController : MonoBehaviour
     public void setAttack()
     {
         anim.SetTrigger("Attack");
+    }
+    public void setKnockedDown()
+    {
+        anim.SetTrigger("KnockedDown");
     }
 }

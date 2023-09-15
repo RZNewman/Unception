@@ -5,6 +5,7 @@ public class UnitUpdateOrder : NetworkBehaviour
     Health health;
     Posture posture;
     Mezmerize mezmerize;
+    Knockdown knockdown;
     Stamina stamina;
     AnimationController anim;
     PackHeal packHeal;
@@ -18,6 +19,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         posture = GetComponent<Posture>();
         stamina = GetComponent<Stamina>();
         mezmerize = GetComponent<Mezmerize>();
+        knockdown = GetComponent<Knockdown>();
         anim = GetComponent<AnimationController>();
         packHeal = GetComponent<PackHeal>();
         eventManager = GetComponent<EventManager>();
@@ -52,6 +54,11 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void mezmerizeTick()
     {
         mezmerize.OrderedUpdate();
+    }
+
+    public void knockdownTick()
+    {
+        knockdown.OrderedUpdate();
     }
     public void staminaTick()
     {

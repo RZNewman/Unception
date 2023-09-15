@@ -39,6 +39,10 @@ public class DeterministicUpdate : NetworkBehaviour
         }
         foreach (UnitUpdateOrder unit in unitList)
         {
+            unit.knockdownTick();
+        }
+        foreach (UnitUpdateOrder unit in unitList)
+        {
             unit.machineTransition();
         }
         foreach (UnitUpdateOrder unit in unitList)

@@ -285,7 +285,7 @@ public static class GenerateHit
 
         if (Random.value < 0.3f)
         {
-            if (t == HitType.Projectile)
+            if (t == HitType.Projectile || t == HitType.Ground)
             {
                 vg.augmentInner(itemMaxDict(Stat.Length), 1f);
             }

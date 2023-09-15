@@ -147,6 +147,13 @@ public static class GenerateHit
                 return getStat(Stat.Stagger);
             }
         }
+        public float mezmerize
+        {
+            get
+            {
+                return getStat(Stat.Mezmerize);
+            }
+        }
         public float knockback
         {
             get
@@ -287,9 +294,13 @@ public static class GenerateHit
                 vg.augmentInner(itemMaxDict(Stat.Range), 1f);
             }
         }
-        if (Random.value < 0.4f)
+        if (Random.value < 0.5f)
         {
             vg.augmentInner(itemMaxDict(Stat.Stagger), 1f);
+        }
+        if (Random.value < 0.2f)
+        {
+            vg.augmentInner(itemMaxDict(Stat.Mezmerize), 0.25f);
         }
         if (Random.value < 0.2f)
         {

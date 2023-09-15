@@ -21,7 +21,8 @@ public class UnitMovement : NetworkBehaviour
     FloorNormal ground;
     Combat combat;
     UnitSound _sound;
-    Posture _posture;
+    Posture posture;
+    Mezmerize mezmerize;
     LocalPlayer localPlayer;
     StatHandler statHandler;
 
@@ -47,7 +48,8 @@ public class UnitMovement : NetworkBehaviour
         size = GetComponentInChildren<Size>();
         combat = GetComponent<Combat>();
         _sound = GetComponent<UnitSound>();
-        _posture = GetComponent<Posture>();
+        posture = GetComponent<Posture>();
+        mezmerize = GetComponent<Mezmerize>();
         localPlayer = GetComponent<LocalPlayer>();
         statHandler = GetComponent<StatHandler>();
         events.suscribeDeath(cleanup);
@@ -164,9 +166,13 @@ public class UnitMovement : NetworkBehaviour
         return null;
     }
 
-    public Posture posture
+
+    public bool isIncapacitated
     {
-        get { return _posture; }
+        get
+        {
+            return posture.isStunned || mezmerize.isMezmerized;
+        }
     }
 
     public UnitInput input
@@ -298,10 +304,10 @@ public class UnitMovement : NetworkBehaviour
         Vector3 planarVelocity = planarVelocityCalculated;
         Vector3 desiredDirection = input2vec(inp.move);
         float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0);
-        float movespeedMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
-        float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (posture.isStunned ? 0.5f : 1.0f);
-        float stoppingMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
-        float accelerationMult = speedStateMultiplier * (posture.isStunned ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
+        float movespeedMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
+        float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (isIncapacitated ? 0.5f : 1.0f);
+        float stoppingMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 6.0f : 1.0f);
+        float accelerationMult = speedStateMultiplier * (isIncapacitated ? 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f);
 
 
         float maxSpeedFriction = movespeed * movespeedMult * toMoveMultiplier(vec2input(planarVelocity)) * scaleSpeed;

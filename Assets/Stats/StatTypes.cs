@@ -14,6 +14,7 @@ public static class StatTypes
         Knockback,
         DamageMult,
         Stagger,
+        Mezmerize,
         Knockup,
         Charges,
         Cooldown,
@@ -32,6 +33,7 @@ public static class StatTypes
         {Stat.Knockback,17},
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},
+        {Stat.Mezmerize,200},
         {Stat.Knockup,15},
         {Stat.Charges,1.1f },
         {Stat.Haste, 0.5f },
@@ -124,6 +126,7 @@ public static class StatTypes
             case Stat.Cooldown:
             case Stat.Haste:
             case Stat.Stagger:
+            case Stat.Mezmerize:
                 switch (value)
                 {
                     case float f when f < 0:
@@ -145,7 +148,8 @@ public static class StatTypes
         {Stat.Width,60},
         {Stat.Knockback,44},
         {Stat.DamageMult,106},
-        {Stat.Stagger,55},
+        {Stat.Stagger,65},
+        {Stat.Mezmerize,65},
         {Stat.Knockup,37},
         {Stat.Charges,81},
         {Stat.Range,75},

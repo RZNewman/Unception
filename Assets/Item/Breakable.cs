@@ -95,7 +95,7 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         }
     }
 
-    void onHit(GameObject other)
+    void onHit(GameObject other, float _)
     {
         other.GetComponent<Reward>().recieveReward(r);
         life.die();

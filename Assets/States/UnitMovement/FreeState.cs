@@ -29,7 +29,7 @@ public class FreeState : PlayerMovementState
     public override StateTransition transition()
     {
         //Only hit on server, bc damage is dealt there
-        if (mover.posture.isStunned)
+        if (mover.isIncapacitated)
         {
             return new StateTransition(new StunnedState(mover), true);
         }

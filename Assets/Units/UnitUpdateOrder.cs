@@ -2,11 +2,10 @@ using Mirror;
 
 public class UnitUpdateOrder : NetworkBehaviour
 {
-    UnitMovement move;
     Health health;
     Posture posture;
+    Mezmerize mezmerize;
     Stamina stamina;
-    Cast cast;
     AnimationController anim;
     PackHeal packHeal;
     EventManager eventManager;
@@ -17,9 +16,8 @@ public class UnitUpdateOrder : NetworkBehaviour
         FindObjectOfType<DeterministicUpdate>().register(this);
         health = GetComponent<Health>();
         posture = GetComponent<Posture>();
-        move = GetComponent<UnitMovement>();
         stamina = GetComponent<Stamina>();
-        cast = GetComponent<Cast>();
+        mezmerize = GetComponent<Mezmerize>();
         anim = GetComponent<AnimationController>();
         packHeal = GetComponent<PackHeal>();
         eventManager = GetComponent<EventManager>();
@@ -49,6 +47,11 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void postureTick()
     {
         posture.OrderedUpdate();
+    }
+
+    public void mezmerizeTick()
+    {
+        mezmerize.OrderedUpdate();
     }
     public void staminaTick()
     {

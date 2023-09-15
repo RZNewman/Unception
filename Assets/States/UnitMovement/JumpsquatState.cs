@@ -14,7 +14,7 @@ public class JumpsquatState : PlayerMovementState
     }
     public override StateTransition transition()
     {
-        if (mover.posture.isStunned)
+        if (mover.isIncapacitated)
         {
             return new StateTransition(new StunnedState(mover), true);
         }

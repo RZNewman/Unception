@@ -19,7 +19,7 @@ public class StatModPanel : MonoBehaviour
         List<Stat> labelStats = new List<Stat>() {
             Stat.Haste, Stat.Cooldown, Stat.TurnspeedCast, Stat.MovespeedCast,
             Stat.Charges, Stat.DamageMult,
-            Stat.Length, Stat.Width, Stat.Range, Stat.Knockback, Stat.Knockup, Stat.Stagger,
+            Stat.Length, Stat.Width, Stat.Range, Stat.Knockback, Stat.Knockup, Stat.Stagger,  Stat.Mezmerize,
 
         };
         foreach (Stat stat in labelStats)
@@ -198,6 +198,9 @@ public class StatModPanel : MonoBehaviour
             case Stat.Stagger:
                 valueGetter = a => a.effect.avgStagger();
                 break;
+            case Stat.Mezmerize:
+                valueGetter = a => a.effect.avgMezmerize();
+                break;
 
         }
         return new StatLabelInfo
@@ -220,8 +223,10 @@ public class StatModPanel : MonoBehaviour
             case Stat.Haste:
                 return "Cast";
             case Stat.TurnspeedCast:
+            case Stat.Turnspeed:
                 return "Turn";
             case Stat.MovespeedCast:
+            case Stat.Movespeed:
                 return "Move";
             case Stat.Length:
                 return "Length";
@@ -235,6 +240,8 @@ public class StatModPanel : MonoBehaviour
                 return "Knockup";
             case Stat.Stagger:
                 return "Stagger";
+            case Stat.Mezmerize:
+                return "Mezmerize";
             default:
                 return "UNK";
 

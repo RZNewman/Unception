@@ -21,8 +21,7 @@ public class UnitProperties : ScriptableObject
     public float maxHealthMult;
 
     public float maxPosture;
-    public float passivePostureRecover;
-    public float stunnedPostureRecover;
+    public float maxFocus;
 
     public float maxStamina;
     public float staminaRecover;
@@ -34,5 +33,5 @@ public class UnitProperties : ScriptableObject
 public struct UnitVisuals
 {
     public Color[] colors;
-    public int[] parts; 
+    public int[] parts;
 }

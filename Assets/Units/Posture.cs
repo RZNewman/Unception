@@ -26,6 +26,7 @@ public class Posture : NetworkBehaviour, BarValue
     UnitProperties props;
     Power power;
     Combat combat;
+    Mezmerize mezmerize;
     public bool isStunned
     {
         get
@@ -38,7 +39,7 @@ public class Posture : NetworkBehaviour, BarValue
     {
         get
         {
-            return isStunned ? maxPosture : maxPosture - currentPosture;
+            return isStunned ? stunThreshold : stunThreshold - currentPosture;
         }
     }
 
@@ -48,6 +49,7 @@ public class Posture : NetworkBehaviour, BarValue
         props = GetComponent<UnitPropsHolder>().props;
         power = GetComponent<Power>();
         combat = GetComponent<Combat>();
+        mezmerize = GetComponent<Mezmerize>();
 
         currentPosture = 0;
         maxPosture = props.maxPosture;
@@ -65,8 +67,8 @@ public class Posture : NetworkBehaviour, BarValue
         float scaleNum = p.scaleNumerical();
 
         maxPosture = props.maxPosture * scaleNum;
-        passivePostureRecover = props.passivePostureRecover * scaleNum;
-        stunnedPostureRecover = props.stunnedPostureRecover * scaleNum;
+        passivePostureRecover = props.maxPosture * scaleNum;
+        stunnedPostureRecover = props.maxPosture * scaleNum * 2;
 
 
         float proportion = maxPosture / lastMax;
@@ -120,6 +122,13 @@ public class Posture : NetworkBehaviour, BarValue
             stunned = true;
             currentStunHighestPosture = currentPosture;
         }
+
+        if (mezmerize.isMezmerized)
+        {
+            //stun lingers while mezmerized
+            return;
+        }
+
         float currentPostureRecover;
         if (stunned)
         {

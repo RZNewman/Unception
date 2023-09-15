@@ -5,7 +5,7 @@ using UnityEngine;
 public class EventManager : MonoBehaviour
 {
     public delegate void OnDeath(bool natural);
-    public delegate void OnHit(GameObject other);
+    public delegate void OnHit(GameObject other, float powerByStrength);
     public delegate void OnCast(Ability ability);
     public delegate void OnTransition();
     public delegate void OnTick();
@@ -42,9 +42,9 @@ public class EventManager : MonoBehaviour
     }
 
 
-    public void fireHit(GameObject other)
+    public void fireHit(GameObject other, float powerByStrength)
     {
-        HitEvent?.Invoke(other);
+        HitEvent?.Invoke(other, powerByStrength);
     }
 
 

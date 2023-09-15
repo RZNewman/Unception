@@ -10,6 +10,7 @@ public static class GameColors
 
 
     public readonly static Color Stunned = new Color(1.0f, 0.5f, 0.0f);
+    public readonly static Color Mezmerized = new Color(1.0f, 0.0f, 1.0f);
 
 
     public readonly static Color QualityCommon = new Color(0.8f, 0.8f, 0.8f);

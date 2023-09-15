@@ -472,6 +472,10 @@ public static class GenerateAttack
         {
             return segmentAvg(s => s.hit.stagger);
         }
+        public float avgMezmerize()
+        {
+            return segmentAvg(s => s.hit.mezmerize);
+        }
 
 
         float segmentAvg(System.Func<SegmentInstanceData, float> prop)

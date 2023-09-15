@@ -65,7 +65,7 @@ public class AggroHandler : MonoBehaviour
     }
 
 
-    void aggroUnitParent(GameObject parent)
+    void aggroUnitParent(GameObject parent, float _)
     {
         GameObject other = parent.GetComponentInChildren<Size>().gameObject;
         aggro(other);

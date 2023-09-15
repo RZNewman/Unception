@@ -66,7 +66,7 @@ public class AttackingState : PlayerMovementState
     }
     public override StateTransition transition()
     {
-        if (mover.posture.isStunned)
+        if (mover.isIncapacitated)
         {
             float remaining = machine.remainingWindDown;
             if (remaining > 0)

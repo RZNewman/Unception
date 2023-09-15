@@ -5,7 +5,7 @@ public class UnitUiReference : MonoBehaviour
 {
     public UiBar healthbar;
     public UiBar staggerbar;
-    public UiBar staggermirror;
+    public UiBar mezmerizeBar;
     public UiBar castbar;
     public UiBar staminaBar;
     public UiBar packHealBar;
@@ -26,9 +26,9 @@ public class UnitUiReference : MonoBehaviour
         healthbar.source = unitTarget.GetComponentInParent<Health>();
         staggerbar.source = unitTarget.GetComponentInParent<Posture>();
         castbar.source = unitTarget.GetComponentInParent<Cast>();
-        if (staggermirror)
+        if (mezmerizeBar)
         {
-            staggermirror.source = unitTarget.GetComponentInParent<Posture>();
+            mezmerizeBar.source = unitTarget.GetComponentInParent<Mezmerize>();
         }
         if (staminaBar)
         {

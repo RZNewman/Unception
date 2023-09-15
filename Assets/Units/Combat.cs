@@ -105,7 +105,7 @@ public class Combat : NetworkBehaviour
             aggro.removeTarget(other.GetComponentInChildren<Size>().gameObject);
         }
     }
-    void onHit(GameObject other)
+    void onHit(GameObject other, float _)
     {
         lastUnitHitBy = other;
         setFighting(other);

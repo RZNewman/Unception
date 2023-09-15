@@ -30,13 +30,15 @@ public static class AttackUtils
 
             if (mover)
             {
-                other.GetComponentInParent<EventManager>().fireHit(mover.gameObject);
+                other.GetComponentInParent<EventManager>().fireHit(mover.gameObject, hitData.powerByStrength);
             }
+            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
             Health h = other.GetComponentInParent<Health>();
             Posture p = other.GetComponentInParent<Posture>();
+            Mezmerize mez = other.GetComponentInParent<Mezmerize>();
             if (h)
             {
-                DamageValues damage = hitData.damage(power, p && p.isStunned);
+                DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
                 if (damage.dot > 0)
                 {
                     h.addDot(damage.dotTime, damage.dot);
@@ -50,9 +52,20 @@ public static class AttackUtils
 
             if (p)
             {
-                p.takeStagger(hitData.stagger);
+                float stagger = hitData.stagger;
+                if (mez && mez.isMezmerized)
+                {
+                    stagger *= 1.1f;
+                }
+                p.takeStagger(stagger);
             }
-            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
+            if (mez)
+            {
+                //TODO
+                mez.takeFocus(hitData.mezmerize);
+            }
+
+
             if (otherMover)
             {
                 Vector3 knockBackVec;

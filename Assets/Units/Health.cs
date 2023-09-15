@@ -47,6 +47,7 @@ public class Health : NetworkBehaviour, BarValue
     [Server]
     public void takeDamage(float damage, float strength)
     {
+        //TODO scale strength with power of attacker
         damage += hitExposes(strength);
         currentHealth -= damage;
         RpcDisplayDamage(damage);

@@ -26,7 +26,7 @@ public class StunnedState : PlayerMovementState, BarValue
 
     public override StateTransition transition()
     {
-        if (currentDurration <= 0 && !mover.posture.isStunned)
+        if (currentDurration <= 0 && !mover.isIncapacitated)
         {
             return new StateTransition(new FreeState(mover), true);
         }

@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using static EventManager;
 
 public class Combat : NetworkBehaviour
 {
@@ -105,10 +106,10 @@ public class Combat : NetworkBehaviour
             aggro.removeTarget(other.GetComponentInChildren<Size>().gameObject);
         }
     }
-    void onHit(GameObject other, float _)
+    void onHit(GetHitEventData data)
     {
-        lastUnitHitBy = other;
-        setFighting(other);
+        lastUnitHitBy = data.other;
+        setFighting(data.other);
     }
 
     public void setHitBy(GameObject hitter)

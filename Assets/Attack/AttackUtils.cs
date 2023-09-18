@@ -15,6 +15,7 @@ using static GenerateAttack;
 using System;
 using static SpellSource;
 using static GenerateHit.HitInstanceData;
+using static EventManager;
 
 public static class AttackUtils
 {
@@ -27,27 +28,34 @@ public static class AttackUtils
     {
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team)
         {
-
+            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
+            DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
             if (mover)
             {
-                other.GetComponentInParent<EventManager>().fireHit(mover.gameObject, hitData.powerByStrength);
+
+                other.GetComponentInParent<EventManager>().fireHit(new GetHitEventData
+                {
+                    other = mover.gameObject,
+                    powerByStrength = hitData.powerByStrength,
+                    damage = damage.instant,
+                });
             }
-            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
+
             Health h = other.GetComponentInParent<Health>();
             Posture p = other.GetComponentInParent<Posture>();
             Mezmerize mez = other.GetComponentInParent<Mezmerize>();
             Knockdown kDown = other.GetComponentInParent<Knockdown>();
             if (h)
             {
-                DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
+
                 if (damage.dot > 0)
                 {
-                    h.addDot(damage.dotTime, damage.dot);
+                    SpawnBuff(otherMover.transform, BuffMode.Dot, hitData.powerAtGen, damage.dotTime, damage.dot);
                 }
-                h.takeDamage(damage.instant, hitData.strength);
+                h.takeDamageHit(damage.instant);
                 if (damage.expose > 0)
                 {
-                    h.addExpose(10f / mover.GetComponent<Power>().scaleTime(), damage.expose, damage.exposeStrength);
+                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.powerAtGen, 10f / mover.GetComponent<Power>().scaleTime(), damage.expose);
                 }
             }
 
@@ -144,6 +152,16 @@ public static class AttackUtils
         instance.GetComponent<StatHandler>().setStats(buff.stats);
         NetworkServer.Spawn(instance);
     }
+
+    public static void SpawnBuff(Transform target, BuffMode buffMode, float powerAtGen, float duration, float value, float regen = 0)
+    {
+        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
+        GameObject instance = GameObject.Instantiate(prefab, target);
+        instance.GetComponent<ClientAdoption>().parent = target.gameObject;
+        instance.GetComponent<Buff>().setup(buffMode, powerAtGen, duration, value, regen);
+        NetworkServer.Spawn(instance);
+    }
+
     public struct LineInfo
     {
         public Vector3 boxCenter;

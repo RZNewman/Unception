@@ -96,9 +96,9 @@ public class TriggerManager : NetworkBehaviour
     OnHit hitCallback(Ability a, CastingLocationData location)
     {
         Action<CastingLocationData> cast = abilityCallback(a);
-        return (GameObject other, float _) =>
+        return (GetHitEventData data) =>
         {
-            location.triggeredPosition = other.transform.position;
+            location.triggeredPosition = data.other.transform.position;
             cast(location);
         };
     }

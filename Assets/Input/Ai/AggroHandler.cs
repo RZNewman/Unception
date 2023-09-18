@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static EventManager;
 
 public class AggroHandler : MonoBehaviour
 {
@@ -65,9 +66,9 @@ public class AggroHandler : MonoBehaviour
     }
 
 
-    void aggroUnitParent(GameObject parent, float _)
+    void aggroUnitParent(GetHitEventData data)
     {
-        GameObject other = parent.GetComponentInChildren<Size>().gameObject;
+        GameObject other = data.other.GetComponentInChildren<Size>().gameObject;
         aggro(other);
     }
     public void aggro(GameObject other)

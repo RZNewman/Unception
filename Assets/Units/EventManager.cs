@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class EventManager : MonoBehaviour
 {
+    public struct GetHitEventData
+    {
+        public GameObject other;
+        public float powerByStrength;
+        public float damage;
+    }
+
     public delegate void OnDeath(bool natural);
-    public delegate void OnHit(GameObject other, float powerByStrength);
+    public delegate void OnHit(GetHitEventData data);
     public delegate void OnCast(Ability ability);
     public delegate void OnTransition();
     public delegate void OnTick();
@@ -42,9 +49,9 @@ public class EventManager : MonoBehaviour
     }
 
 
-    public void fireHit(GameObject other, float powerByStrength)
+    public void fireHit(GetHitEventData data)
     {
-        HitEvent?.Invoke(other, powerByStrength);
+        HitEvent?.Invoke(data);
     }
 
 

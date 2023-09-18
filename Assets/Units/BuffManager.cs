@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateBuff;
 
 public class BuffManager : NetworkBehaviour
 {
@@ -30,13 +31,38 @@ public class BuffManager : NetworkBehaviour
         buffs.Add(b);
         if (isServer)
         {
-            b.GetComponent<StatHandler>().link(handler, b.relativeScale(power.scaleTime()));
+            switch (b.buffMode)
+            {
+                case BuffMode.Dot:
+                case BuffMode.Expose:
+                case BuffMode.Shield:
+                    GetComponent<Health>().addReference(b);
+                    break;
+                case BuffMode.Timed:
+                case BuffMode.Cast:
+                    b.GetComponent<StatHandler>().link(handler, b.relativeScale(power.scaleTime()));
+                    break;
+            }
+
         }
         callback();
     }
     public void removeBuff(Buff b)
     {
         buffs.Remove(b);
+        if (isServer)
+        {
+            switch (b.buffMode)
+            {
+                case BuffMode.Dot:
+                case BuffMode.Expose:
+                case BuffMode.Shield:
+                    GetComponent<Health>().removeReference(b);
+                    break;
+                    //Stat stream unlink is in StatHandler OnDestroy
+            }
+
+        }
         callback();
     }
 

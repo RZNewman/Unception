@@ -1,6 +1,6 @@
 using Mirror;
 using UnityEngine;
-
+using static EventManager;
 
 public class Mezmerize : NetworkBehaviour, BarValue
 {
@@ -59,11 +59,11 @@ public class Mezmerize : NetworkBehaviour, BarValue
 
     }
 
-    void getHit(GameObject _, float powerByStrength)
+    void getHit(GetHitEventData data)
     {
         if (mezmerized)
         {
-            float relativeStrength = powerByStrength / power.power;
+            float relativeStrength = data.powerByStrength / power.power;
             currentFocus -= maxFocus * 0.1f * relativeStrength;
         }
     }

@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static EventManager;
 using static GenerateAttack;
 using static GenerateBuff;
 using static StatTypes;
@@ -20,14 +21,31 @@ public class Buff : NetworkBehaviour
     [SyncVar]
     ItemSlot? slot;
 
+    [SyncVar]
+    float value;
+
+    [SyncVar]
+    float valueMax;
+
+    [SyncVar]
+    float regen;
+
     BuffMode mode = BuffMode.Timed;
 
     float timeScale;
     EventManager events;
-
+    Health health;
     public float relativeScale(float targetTimeScale)
     {
         return timeScale / targetTimeScale;
+    }
+
+    public float remainingDuration
+    {
+        get
+        {
+            return duration;
+        }
     }
 
     public float remainingPercent
@@ -56,6 +74,7 @@ public class Buff : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         transform.parent.GetComponent<BuffManager>().addBuff(this);
+        health = GetComponentInParent<Health>();
         events = transform.GetComponentInParent<EventManager>();
         events.TickEvent += Tick;
         if (mode == BuffMode.Cast)
@@ -67,16 +86,42 @@ public class Buff : NetworkBehaviour
 
     private void OnDestroy()
     {
+
+        transform.parent.GetComponent<BuffManager>().removeBuff(this);
+
         events.TickEvent -= Tick;
         if (mode == BuffMode.Cast)
         {
-            EventManager em = transform.GetComponentInParent<EventManager>();
-            if (em)
-            {
-                em.CastEvent -= OnCast;
-            }
-
+            events.CastEvent -= OnCast;
         }
+    }
+
+    public float valueByTime
+    {
+        get
+        {
+            return value * duration;
+        }
+    }
+
+    public float valueCurrent
+    {
+        get
+        {
+            return value;
+        }
+    }
+    public BuffMode buffMode
+    {
+        get
+        {
+            return mode;
+        }
+    }
+
+    public void changeValue(float delta)
+    {
+        value += delta;
     }
 
     void OnCast(Ability a)
@@ -92,6 +137,7 @@ public class Buff : NetworkBehaviour
         }
 
     }
+
     public void setup(BuffInstanceData buff)
     {
         durationMax = buff.durration;
@@ -105,17 +151,46 @@ public class Buff : NetworkBehaviour
         }
     }
 
+    public void setup(BuffMode buffMode, float powerAtGen, float durationBegin, float valueBegin, float regenBegin = 0)
+    {
+        durationMax = durationBegin;
+        duration = durationBegin;
+        timeScale = Power.scaleTime(powerAtGen);
+        mode = buffMode;
+        valueMax = valueBegin;
+        value = valueBegin;
+        regen = regenBegin;
+    }
+
     // Update is called once per frame
     void Tick()
     {
+        if (isServer)
+        {
+            switch (mode)
+            {
+                case BuffMode.Dot:
+                    float damageThisTick = Mathf.Min(duration, Time.fixedDeltaTime) * value;
+                    health.takeDamageDrain(damageThisTick);
+                    break;
+                case BuffMode.Shield:
+                    value += regen * Time.fixedDeltaTime;
+                    value = Mathf.Min(value, valueMax);
+                    break;
+            }
+        }
         duration -= Time.fixedDeltaTime;
         if (isServer)
         {
             if (duration <= 0 || (mode == BuffMode.Cast && castCount <= 0))
             {
-                transform.parent.GetComponent<BuffManager>().removeBuff(this);
                 Destroy(gameObject);
             }
+            if (mode == BuffMode.Expose && value <= 0)
+            {
+                Destroy(gameObject);
+            }
+
 
         }
     }

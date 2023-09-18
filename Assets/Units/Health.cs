@@ -1,7 +1,10 @@
 using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using static EventManager;
+using static GenerateBuff;
 
 public class Health : NetworkBehaviour, BarValue
 {
@@ -11,15 +14,11 @@ public class Health : NetworkBehaviour, BarValue
     [SyncVar]
     float currentHealth;
 
-    [SyncVar]
-    float riskDot;
-
-    [SyncVar]
-    float riskExpose;
-
     Combat combat;
     GameObject damageDisplayPre;
     GlobalPlayer gp;
+
+    Dictionary<BuffMode, List<Buff>> buffReferences = new Dictionary<BuffMode, List<Buff>>();
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +26,11 @@ public class Health : NetworkBehaviour, BarValue
         combat = GetComponent<Combat>();
         damageDisplayPre = FindObjectOfType<GlobalPrefab>().DamageNumberPre;
         gp = FindObjectOfType<GlobalPlayer>();
+        GetComponent<EventManager>().HitEvent += OnGetHit;
+        buffReferences[BuffMode.Dot] = new List<Buff>();
+        buffReferences[BuffMode.Expose] = new List<Buff>();
+        buffReferences[BuffMode.Shield] = new List<Buff>();
+
         if (isServer)
         {
             maxHealth = 1;
@@ -45,13 +49,36 @@ public class Health : NetworkBehaviour, BarValue
     }
 
     [Server]
-    public void takeDamage(float damage, float strength)
+    public void takeDamageHit(float damage)
     {
-        //TODO scale strength with power of attacker
-        damage += hitExposes(strength);
-        currentHealth -= damage;
+        takeDamageShielded(damage);
         RpcDisplayDamage(damage);
     }
+
+    [Server]
+    public void takeDamageDrain(float damage)
+    {
+        takeDamageShielded(damage);
+    }
+
+    void takeDamageShielded(float damage)
+    {
+        buffReferences[BuffMode.Shield].Sort((a, b) => a.remainingDuration.CompareTo(b.remainingDuration));
+
+        for (int i = 0; i < buffReferences[BuffMode.Shield].Count; i++)
+        {
+            Buff shield = buffReferences[BuffMode.Shield][i];
+            float shieldValue = Mathf.Min(damage, shield.valueCurrent);
+            shield.changeValue(-shieldValue);
+            damage -= shieldValue;
+            if (damage <= 0)
+            {
+                break;
+            }
+        }
+        currentHealth -= damage;
+    }
+
     public void takePercentDamage(float percent)
     {
         currentHealth -= maxHealth * percent;
@@ -78,10 +105,9 @@ public class Health : NetworkBehaviour, BarValue
             if (!combat.inCombat)
             {
                 currentHealth = maxHealth;
-                dots.Clear();
+                clearReferences(BuffMode.Dot);
+                clearReferences(BuffMode.Expose);
             }
-            tickDots();
-            tickExposes();
             if (currentHealth <= 0)
             {
                 GetComponent<LifeManager>().die();
@@ -98,107 +124,63 @@ public class Health : NetworkBehaviour, BarValue
         currentHealth = maxHealth;
     }
 
-    struct Dot
+
+    public void addReference(Buff b)
     {
-        public float time;
-        public float damage;
+        buffReferences[b.buffMode].Add(b);
+    }
+    public void removeReference(Buff b)
+    {
+        buffReferences[b.buffMode].Remove(b);
     }
 
-    List<Dot> dots = new List<Dot>();
-    public void addDot(float duraton, float damage)
+    void clearReferences(BuffMode mode)
     {
-        dots.Add(new Dot() { time = duraton, damage = damage });
+        buffReferences[mode].ForEach(b =>
+        {
+            Destroy(b.gameObject);
+        });
     }
 
-    void tickDots()
+    void OnGetHit(GetHitEventData data)
     {
-        float newRisk = 0;
-        for (int i = 0; i < dots.Count; i++)
+        if (isServer)
         {
-            Dot dot = dots[i];
-            bool finalTick = dot.time <= Time.fixedDeltaTime;
-            float dotTime = finalTick ? dot.time : Time.fixedDeltaTime;
+            buffReferences[BuffMode.Expose].Sort((a, b) => a.remainingDuration.CompareTo(b.remainingDuration));
+            float incDamage = data.damage;
 
-
-            float damage = dotTime / dot.time * dot.damage;
-            dot.time -= dotTime;
-            dot.damage -= damage;
-            currentHealth -= damage;
-            dots[i] = dot;
-            newRisk += dot.damage;
-        }
-        int k = 0;
-        while (k < dots.Count)
-        {
-            if (dots[k].time <= 0)
+            float addedDamage = 0;
+            for (int i = 0; i < buffReferences[BuffMode.Expose].Count; i++)
             {
-                dots.RemoveAt(k);
-            }
-            else
-            {
-                k++;
-            }
-        }
-        riskDot = newRisk;
-    }
+                Buff ex = buffReferences[BuffMode.Expose][i];
+                float exposeValue = Mathf.Min(incDamage, ex.valueCurrent);
+                ex.changeValue(-exposeValue);
+                addedDamage += exposeValue;
+                incDamage -= exposeValue;
 
-    struct Expose
-    {
-        public float time;
-        public float damage;
-        public float remainingStrength;
-    }
-
-    List<Expose> exposes = new List<Expose>();
-    public void addExpose(float duraton, float damage, float strength)
-    {
-        exposes.Add(new Expose() { time = duraton, damage = damage, remainingStrength = strength });
-    }
-
-    void tickExposes()
-    {
-        float newRisk = 0;
-        for (int i = 0; i < exposes.Count; i++)
-        {
-            Expose ex = exposes[i];
-            ex.time -= Time.fixedDeltaTime;
-            exposes[i] = ex;
-            newRisk += ex.damage;
-        }
-        int k = 0;
-        while (k < exposes.Count)
-        {
-            if (exposes[k].time <= 0 || exposes[k].remainingStrength <= 0)
-            {
-                exposes.RemoveAt(k);
+                if (incDamage <= 0)
+                {
+                    break;
+                }
             }
-            else
-            {
-                k++;
-            }
+            takeDamageDrain(addedDamage);
         }
-        riskExpose = newRisk;
-    }
-    float hitExposes(float strength)
-    {
-        float addedDamage = 0;
-        for (int i = 0; i < exposes.Count; i++)
-        {
-            Expose ex = exposes[i];
-            float damage = Mathf.Clamp01(strength / ex.remainingStrength) * ex.damage;
-            ex.remainingStrength -= strength;
-            ex.damage -= damage;
-            exposes[i] = ex;
-            addedDamage += damage;
-        }
-        return addedDamage;
     }
 
 
     public BarValue.BarData getBarFill()
     {
+        float riskDot = buffReferences[BuffMode.Dot].Sum(b => b.valueByTime);
+        riskDot = Mathf.Min(riskDot, currentHealth);
+        float riskExpose = buffReferences[BuffMode.Expose].Sum(b => b.valueCurrent);
+        riskExpose = Mathf.Min(riskExpose, currentHealth - riskDot);
+        float shield = buffReferences[BuffMode.Shield].Sum(b => b.valueCurrent);
+
+
         float riskHealth = riskDot + riskExpose;
         float safeHealth = Mathf.Max(currentHealth - riskHealth, 0);
+
+        float barMax = Mathf.Max(maxHealth, currentHealth + shield);
         return new BarValue.BarData
         {
 
@@ -208,17 +190,22 @@ public class Health : NetworkBehaviour, BarValue
                 new UiBarBasic.BarSegment
                 {
                     color = combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
-                    percent = Mathf.Clamp01(safeHealth / maxHealth),
+                    percent = Mathf.Clamp01(safeHealth / barMax),
                 },
                 new UiBarBasic.BarSegment
                 {
                     color = new Color(1f, 0.5f, 0),
-                    percent = Mathf.Clamp01(riskExpose / maxHealth),
+                    percent = Mathf.Clamp01(riskExpose / barMax),
                 },
                 new UiBarBasic.BarSegment
                 {
                     color = new Color(0.7f, 0, 0),
-                    percent = Mathf.Clamp01(riskDot / maxHealth),
+                    percent = Mathf.Clamp01(riskDot / barMax),
+                },
+                new UiBarBasic.BarSegment
+                {
+                    color = new Color(1f, 1, 1),
+                    percent = Mathf.Clamp01(shield / barMax),
                 },
             }
         };

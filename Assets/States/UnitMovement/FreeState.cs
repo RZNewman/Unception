@@ -4,6 +4,7 @@ using static GenerateAttack;
 using static GenerateDash;
 using static UnitControl;
 using static Utils;
+using static AttackUtils;
 
 public class FreeState : PlayerMovementState
 {
@@ -56,6 +57,11 @@ public class FreeState : PlayerMovementState
         {
             s.spendStamina(Stamina.dashCost);
             DashInstanceData o = mover.baseDash();
+            if (!mover.grounded)
+            {
+                float power = mover.GetComponent<Power>().power;
+                SpawnBuff(mover.transform, GenerateBuff.BuffMode.Shield, power, 0.3f, power * 2.0f);
+            }
             return new StateTransition(new DashState(mover, o, false), true);
         }
 

@@ -20,7 +20,11 @@ public static class GenerateBuff
     public enum BuffMode : byte
     {
         Timed,
-        Cast
+        Cast,
+        //Not used in generation, but used by Dot, Expose, and Shield
+        Dot,
+        Expose,
+        Shield,
     }
     public class BuffGenerationData : GenerationData
     {
@@ -51,7 +55,9 @@ public static class GenerateBuff
             {
                 float baseDuration = this.duration.asRange(6, 20);
                 duration = baseDuration / scaleTime;
-                stats = stats.scale(1 - this.duration);
+                float portion = 0.2f;
+                float scale = portion + (1 - portion) * (1 - this.duration);
+                stats = stats.scale(scale);
 
                 //CD Only
                 if (slot.HasValue)

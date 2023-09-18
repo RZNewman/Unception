@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using static EventManager;
 
 public class Breakable : NetworkBehaviour, TeamOwnership
 {
@@ -95,9 +96,9 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         }
     }
 
-    void onHit(GameObject other, float _)
+    void onHit(GetHitEventData data)
     {
-        other.GetComponent<Reward>().recieveReward(r);
+        data.other.GetComponent<Reward>().recieveReward(r);
         life.die();
     }
 

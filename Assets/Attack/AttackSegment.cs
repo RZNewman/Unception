@@ -205,7 +205,7 @@ public class AttackSegment
             WindState windup = new WindState(mover, seg.windup, false, castData.hardCast);
 
 
-            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, castData.hardCast);
+            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast);
             finalSeg.hitData = seg.hit;
 
             states.Add(windup);

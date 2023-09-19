@@ -6,6 +6,7 @@ using static UnitControl;
 using static AttackUtils;
 using static GenerateBuff;
 using static SpellSource;
+using static GenerateDefense;
 
 public class ActionState : AttackStageState
 {
@@ -13,13 +14,16 @@ public class ActionState : AttackStageState
 
     BuffInstanceData buffData;
 
+    DefenseInstanceData defData;
+
     AttackSegment segment;
     bool hardCast;
 
-    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, bool hardCasted) : base(m)
+    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, DefenseInstanceData def, bool hardCasted) : base(m)
     {
         attackData = data;
         buffData = dataB;
+        defData = def;
         segment = seg;
         hardCast = hardCasted;
     }
@@ -118,6 +122,11 @@ public class ActionState : AttackStageState
                 }
             }
 
+        }
+
+        if (defData != null)
+        {
+            SpawnBuff(mover.transform, BuffMode.Shield, defData.powerAtGen, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
         }
     }
 

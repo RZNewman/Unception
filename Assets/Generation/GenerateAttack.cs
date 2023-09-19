@@ -19,6 +19,7 @@ using static UnityEngine.Rendering.HableCurve;
 using Castle.Components.DictionaryAdapter;
 using static StatModLabel;
 using UnityEngine.UIElements;
+using static GenerateDefense;
 
 public static class GenerateAttack
 {
@@ -86,6 +87,7 @@ public static class GenerateAttack
         public RepeatingGenerationData repeat;
         public WindGenerationData windRepeat;
         public BuffGenerationData buff;
+        public DefenseGenerationData defense;
         public bool dashAfter;
         public bool dashInside;
 
@@ -100,6 +102,7 @@ public static class GenerateAttack
         public RepeatingInstanceData repeat;
         public WindInstanceData windRepeat;
         public BuffInstanceData buff;
+        public DefenseInstanceData defense;
         public bool dashAfter;
         public bool dashInside;
 
@@ -154,7 +157,7 @@ public static class GenerateAttack
             if (buff != null)
             {
                 percent = Mathf.Round(buff.percentOfEffect * 100);
-                string label = buff.type == GenerateBuff.BuffType.Buff ? "Buff " : "Debuff ";
+                string label = buff.type == GenerateBuff.BuffType.Buff ? "Buff" : "Debuff";
                 shape += " " + label + " " + buff.stats.First().Key.ToString() + " " + percent + "%";
                 if (buff.slot.HasValue)
                 {
@@ -164,6 +167,12 @@ public static class GenerateAttack
                 {
                     shape += " N:" + buff.castCount;
                 }
+            }
+            if (defense != null)
+            {
+                percent = Mathf.Round(defense.percentOfEffect * 100);
+                string label = "Shield";
+                shape += " " + label + " " + percent + "%";
             }
             if (repeat != null)
             {
@@ -611,6 +620,12 @@ public static class GenerateAttack
                 buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength);
             }
 
+            DefenseInstanceData defense = null;
+            if (segment.defense != null)
+            {
+                defense = (DefenseInstanceData)segment.defense.populate(power, repeatStrength);
+            }
+
             segmentsInst[i] = new SegmentInstanceData
             {
                 windup = up,
@@ -618,6 +633,7 @@ public static class GenerateAttack
                 hit = hit,
                 dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
                 buff = buff,
+                defense = defense,
                 repeat = repeat,
                 windRepeat = windRepeat,
                 dashAfter = segment.dashAfter,
@@ -715,7 +731,7 @@ public static class GenerateAttack
             cooldownMin = 0.3f;
             cooldownMax = 0.5f;
         }
-        if (slot == ItemSlot.Chest)
+        if (slot == ItemSlot.Gloves)
         {
             cooldownMin = 0.4f;
         }
@@ -905,6 +921,20 @@ public static class GenerateAttack
             float hitValue = Random.value.asRange(0.5f, 0.75f);
             segment.hit.percentOfEffect = hitValue;
             segment.buff.percentOfEffect = 1 - hitValue;
+        }
+
+        gen = Random.value;
+        if (slot != ItemSlot.Main
+            && !conditions.HasValue
+            && (slot == ItemSlot.Chest || gen < 0.9f)
+            && segment.repeat == null && segment.dash == null && segment.buff == null)
+        {
+            //buff effect
+            segment.defense = createDefense();
+
+            float hitValue = Random.value.asRange(0.5f, 0.75f);
+            segment.hit.percentOfEffect = hitValue;
+            segment.defense.percentOfEffect = 1 - hitValue;
         }
 
         return segment;

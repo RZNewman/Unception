@@ -584,6 +584,10 @@ public class Atlas : NetworkBehaviour
         {
             Destroy(unit);
         }
+        if (Pause.isPaused)
+        {
+            FindObjectOfType<Pause>().togglePause();
+        }
         if (mapSuccess)
         {
             if (embarkedMap.quest)

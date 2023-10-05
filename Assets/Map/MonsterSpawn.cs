@@ -183,26 +183,9 @@ public class MonsterSpawn : NetworkBehaviour
         return units;
     }
 
-    public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff, EncounterData[] encounters)
+    public IEnumerator spawnLevel(List<SpawnTransform> locations, float sparseness, Difficulty baseDiff, EncounterData[] encounters)
     {
         monsterUnits = createUnits(baseDiff);
-
-        for (int i = 0; i < packCount; i++)
-        {
-
-            int z = locations.RandomIndex();
-            SpawnTransform t = locations[z];
-            locations.RemoveAt(z);
-            SpawnPack packData = new SpawnPack
-            {
-                spawnTransform = t,
-                packMult = 1 + baseDiff.pack,
-                ignoreWakeup = false,
-            };
-
-            spawnCreatures(packData, monsterUnits);
-            yield return null;
-        }
 
         for (int i = 0; i < encounters.Length; i++)
         {
@@ -225,6 +208,30 @@ public class MonsterSpawn : NetworkBehaviour
             BreakableType bType = gp.serverPlayer.pityTimers.rollBreakable(1);
             spawnBreakables(t, bType, baseDiff.total);
             yield return null;
+        }
+
+        float sparseCounter = 0;
+        while(locations.Count>0)
+        {
+            int z = locations.RandomIndex();
+            SpawnTransform t = locations[z];
+            locations.RemoveAt(z);
+
+            sparseCounter += 1f;
+
+            if (sparseCounter > sparseness)
+            {
+                sparseCounter -= sparseness;
+                SpawnPack packData = new SpawnPack
+                {
+                    spawnTransform = t,
+                    packMult = 1 + baseDiff.pack,
+                    ignoreWakeup = false,
+                };
+
+                spawnCreatures(packData, monsterUnits);
+                yield return null;
+            }           
         }
     }
 

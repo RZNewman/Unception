@@ -11,12 +11,10 @@ using static Power;
 using static Atlas;
 public class Atlas : NetworkBehaviour
 {
-    static readonly int avgPacksPerfloor = 25;
-    public static readonly float packVariance = 0.3f;
     public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 1f;
-    public static readonly int avgPacksPerMap = Mathf.RoundToInt(avgPacksPerfloor * avgFloorsPerMap);
     public readonly static float softcap = 12_000f;
+    public static readonly float sparsness = 5f;
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;
@@ -92,7 +90,6 @@ public class Atlas : NetworkBehaviour
     {
         public int tier;
         public Difficulty difficulty;
-        public int packs;
         public int floors;
         public int encounters;
     }
@@ -117,7 +114,6 @@ public class Atlas : NetworkBehaviour
     }
     public struct Floor
     {
-        public int packs;
         public float sparseness;
         public EncounterData[] encounters;
     }
@@ -207,17 +203,10 @@ public class Atlas : NetworkBehaviour
             _ => 0
         };
         int floors = Mathf.Max(Mathf.CeilToInt(tier / 7f), 1);
-        int packs = tier switch
-        {
-            int i when i == 0 => 10,
-            int i when i == 1 => 20,
-            int i => Mathf.RoundToInt(avgPacksPerfloor * (1 + i * 0.07f) * floors),
-        };
         return new Quest
         {
             tier = tier,
             difficulty = Difficulty.fromTotal(totalDifficutly),
-            packs = packs,
             floors = floors,
             encounters = encounters,
         };
@@ -370,8 +359,7 @@ public class Atlas : NetworkBehaviour
                         new Floor
                         {
                             encounters = floorEncounters(q.difficulty, q.encounters),
-                            sparseness = 3,
-                            packs = q.packs / q.floors
+                            sparseness = sparsness,
 
                         }
                     , q.floors).ToArray(),
@@ -384,20 +372,12 @@ public class Atlas : NetworkBehaviour
                 float currentDifficulty = baseDifficulty + Mathf.Lerp(0, difficultyRange, difficultyRangePercent);
                 Difficulty difficulty = Difficulty.fromTotal(currentDifficulty);
 
-                List<int> floorPacks = new List<int>();
-                int floors = Mathf.RoundToInt(avgFloorsPerMap);
-                for (int i = 0; i < floors; i++)
-                {
-                    float packs = avgPacksPerfloor;
-
-                    floorPacks.Add(Mathf.RoundToInt(GaussRandomCentered().asRange(packs * (1 - packVariance), packs * (1 + packVariance))));
-                }
                 mapsGen.Add(new Map
                 {
                     index = mapIndex,
                     power = gp.serverPlayer.power,
                     difficulty = difficulty,
-                    floors = mapRandomFloors(difficulty, floorPacks.ToArray()),
+                    floors = mapRandomFloors(difficulty, Mathf.RoundToInt(avgFloorsPerMap)),
                     visualLocation = location.visualLocation,
                     difficultyRangePercent = difficultyRangePercent,
                 });
@@ -413,23 +393,16 @@ public class Atlas : NetworkBehaviour
 
     public static Floor[] mapFloors(Difficulty difficulty)
     {
-        List<int> packs = new List<int>();
-        for (int i = 0; i < Mathf.RoundToInt(avgFloorsPerMap); i++)
-        {
-            packs.Add(avgPacksPerfloor);
-        }
-        return mapRandomFloors(difficulty, packs.ToArray());
+        return mapRandomFloors(difficulty, Mathf.RoundToInt(avgFloorsPerMap));
     }
-    public static Floor[] mapRandomFloors(Difficulty difficulty, int[] packs)
+    public static Floor[] mapRandomFloors(Difficulty difficulty, int floorCount)
     {
-        int floorCount = packs.Length;
         Floor[] floors = new Floor[floorCount];
         for (int j = 0; j < floorCount; j++)
         {
             floors[j] = new Floor
             {
-                packs = packs[j],
-                sparseness = 3,
+                sparseness = sparsness,
                 encounters = floorEncounters(difficulty),
             };
         }

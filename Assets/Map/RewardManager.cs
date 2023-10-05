@@ -94,20 +94,19 @@ public static class RewardManager
 
     readonly static float mapsPerFalloff = 3.0f;
 
-    readonly static float clearPercent = 0.45f;
-
     //the percent increase in power to create a scale change equal to the % increase of the highest quality
     //this controls the falloff speed of items during leveling
     //~1.56
     readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
     //the XP rate is directly calulated from the desired falloff speed
-    public readonly static float packsPerMap = Atlas.avgPacksPerMap * clearPercent;
+    public readonly static float packsKilledPerMap = 12f;
+
 
     public readonly static float powerMapPercent = (powerPercentFalloff - 1) / mapsPerFalloff;
-    public readonly static float powerPackPercent = powerMapPercent / packsPerMap;
+    public readonly static float powerPackPercent = powerMapPercent / packsKilledPerMap;
 
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * Atlas.avgPacksPerMap * clearPercent);
+    public static readonly float uncommonChance = 4f / (itemsPerPack * packsKilledPerMap);
     public static readonly float qualityRarityFactor = 0.25f;
 
     public static readonly float chestChance = 0.125f;

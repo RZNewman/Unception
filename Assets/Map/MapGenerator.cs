@@ -139,13 +139,6 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(currentFloor);
 
 
-
-        int packCount = currentMap.floors[currentFloorIndex].packs + currentMap.floors[currentFloorIndex].encounters.Length + breakablesPerFloor;
-        //increase packs to make sure not every location is populated
-        int spawnCount = Mathf.FloorToInt(packCount * currentMap.floors[currentFloorIndex].sparseness);
-        //TODO use sparseness in  wfc
-
-
         GameObject wfcFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, currentFloor.transform);
         wfcFloor.GetComponent<ClientAdoption>().parent = currentFloor;
         NetworkServer.Spawn(wfcFloor);
@@ -186,7 +179,7 @@ public class MapGenerator : NetworkBehaviour
         GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].packs, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters);
+        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].sparseness, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 

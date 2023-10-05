@@ -90,7 +90,7 @@ public static class RewardManager
         return Mathf.Lerp(1, itemQualityPercent, ((float)q) / ((float)Quality.Legendary));
     }
 
-    public readonly static float itemsPerPack = 2f;
+    public readonly static float itemsPerPack = 3f;
 
     readonly static float mapsPerFalloff = 3.0f;
 

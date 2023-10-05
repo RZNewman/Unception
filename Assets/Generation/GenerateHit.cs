@@ -229,7 +229,7 @@ public static class GenerateHit
             return new DamageValues
             {
                 instant = baseDamage,
-                dot = dotDamage,
+                dot = dotDamage / dotTime,
                 dotTime = dotTime,
                 expose = exposeDamage,
             };

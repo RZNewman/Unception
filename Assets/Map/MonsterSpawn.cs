@@ -17,7 +17,8 @@ public class MonsterSpawn : NetworkBehaviour
 
 
 
-    List<UnitTemplate> monsterProps = new List<UnitTemplate>();
+    List<UnitTemplate> monsterTemplates = new List<UnitTemplate>();
+    List<SpawnUnit> monsterUnits;
 
     Transform floor;
 
@@ -27,7 +28,7 @@ public class MonsterSpawn : NetworkBehaviour
     float lastPowerAdded = 100;
     float spawnPower = 100;
 
-    public static float Ai2PlayerPowerFactor = 0.8f;
+    public static float Ai2PlayerPowerFactor = 1.2f;
     static float maxSingleUnitFactor = 0.8f;
     static float lowerUnitPowerExponent = 2f;
 
@@ -48,12 +49,7 @@ public class MonsterSpawn : NetworkBehaviour
     }
 
 
-    struct UnitTemplate
-    {
-        public float power;
-        public UnitProperties props;
-        public List<CastData> abilitites;
-    }
+
     public struct Difficulty
     {
         public float pack;
@@ -93,6 +89,12 @@ public class MonsterSpawn : NetworkBehaviour
             };
         }
     }
+    struct UnitTemplate
+    {
+        public float power;
+        public UnitProperties props;
+        public List<CastData> abilitites;
+    }
     public struct SpawnTransform
     {
         public Vector3 position;
@@ -114,7 +116,7 @@ public class MonsterSpawn : NetworkBehaviour
     struct SpawnPack
     {
         public SpawnTransform spawnTransform;
-        public Difficulty difficulty;
+        public float packMult;
         public bool ignoreWakeup;
     }
 
@@ -122,38 +124,71 @@ public class MonsterSpawn : NetworkBehaviour
     {
         public UnitProperties props;
         public List<CastData> abilitites;
-        public List<CastData> champAbilityPool;
         public float championHealthMult;
         public List<Color> indicatorColors;
         public float power;
-        public float poolCost;
+        public float killerHealMult;
+        public float rewardMult;
+        public float rewardPercent;
+        public float packPercent;
     }
     public void setFloor(Transform f)
     {
         floor = f;
     }
 
+    List<SpawnUnit> createUnits(Difficulty difficulty)
+    {
+        float championHealthPercent = 0.25f;
+        float championAbilityPercent = 0.5f;
+        float championTotalPercent = championHealthPercent + championAbilityPercent;
+
+        List<SpawnUnit> units = new List<SpawnUnit>();
+        foreach (UnitTemplate template in monsterTemplates)
+        {
+            float poolPower = weightedPower(template.power);
+            float packPercent = poolPower / weightedPool();
+            float veteranMult = (1 + difficulty.veteran) / (1 + difficulty.pack);
+            poolPower *= veteranMult;
+            float spawnPower = inverseWeightedPower(poolPower);
+            float championMult = (1 + difficulty.champion) / (1 + difficulty.pack + difficulty.veteran);
+            poolPower *= championMult;
+            int championTiers = Mathf.FloorToInt(championMult / championTotalPercent);
+            int extraAbilityCount = championTiers;
+            float remainingMult = championMult - (championTiers * championTotalPercent);
+            if (remainingMult > championAbilityPercent)
+            {
+                extraAbilityCount += 1;
+                remainingMult -= championAbilityPercent;
+            }
+            List<CastData> abilities = template.abilitites.Take(extraAbilityCount + 1).ToList();
+            float healthMult = (championTiers * championHealthPercent + remainingMult) * 2.0f;
+
+            float rewardPercent = poolPower / weightedPool();
+
+            SpawnUnit unit = new SpawnUnit()
+            {
+                props = template.props,
+                power = spawnPower,
+                abilitites = abilities,
+                championHealthMult = healthMult,
+                indicatorColors = abilities.Count > 1 ? abilities.Skip(1).Select(a => a.flair.color).ToList() : new List<Color>(),
+                killerHealMult = 1 / (1 + difficulty.pack),
+                rewardMult = difficulty.total,
+                rewardPercent = rewardPercent,
+                packPercent = packPercent,
+            };
+            units.Add(unit);
+        }
+        return units;
+    }
+
     public IEnumerator spawnLevel(List<SpawnTransform> locations, int packCount, Difficulty baseDiff, EncounterData[] encounters)
     {
-
-        List<Difficulty> packs = new List<Difficulty>();
-        for (int i = 0; i < packCount; i++)
-        {
-            float packRange = baseDiff.pack / 2;
-            float veteranRange = baseDiff.veteran / 2;
-            float championRange = baseDiff.champion / 2;
-            packs.Add(new Difficulty
-            {
-                pack = Mathf.Lerp(baseDiff.pack - packRange, baseDiff.pack + packRange, (float)i / (packCount - 1)),
-                veteran = Mathf.Lerp(baseDiff.veteran - veteranRange, baseDiff.veteran + veteranRange, (float)i / (packCount - 1)),
-                champion = Mathf.Lerp(baseDiff.champion - championRange, baseDiff.champion + championRange, (float)i / (packCount - 1))
-            });
-
-        }
+        monsterUnits = createUnits(baseDiff);
 
         for (int i = 0; i < packCount; i++)
         {
-            Difficulty packDifficulty = packs[i];
 
             int z = locations.RandomIndex();
             SpawnTransform t = locations[z];
@@ -161,11 +196,11 @@ public class MonsterSpawn : NetworkBehaviour
             SpawnPack packData = new SpawnPack
             {
                 spawnTransform = t,
-                difficulty = packDifficulty,
+                packMult = 1 + baseDiff.pack,
                 ignoreWakeup = false,
             };
 
-            spawnCreatures(packData);
+            spawnCreatures(packData, monsterUnits);
             yield return null;
         }
 
@@ -208,28 +243,25 @@ public class MonsterSpawn : NetworkBehaviour
         Encounter encounter = o.GetComponent<Encounter>();
         encounter.setScale(scale);
 
+        List<SpawnUnit> encounterUnits = createUnits(encounterData.difficulty);
+
 
         NetworkServer.Spawn(o);
-        Optional<Pack> packOption;
-        float poolTotal = 0;
+        Pack pack;
         for (int i = 0; i < encounterData.packs; i++)
         {
             SpawnPack packData = new SpawnPack
             {
                 spawnTransform = spawn,
-                difficulty = encounterData.difficulty,
+                packMult = 1 + encounterData.difficulty.pack,
                 ignoreWakeup = true,
             };
-            packOption = spawnCreatures(packData);
-            if (packOption.HasValue)
-            {
-                encounter.addPack(packOption.Value);
-                poolTotal += packOption.Value.powerPoolPack;
-            }
+            pack = spawnCreatures(packData, encounterUnits);
+            encounter.addPack(pack);
+
         }
 
-        float percentOfBasePack = poolTotal / weightedPool();
-        o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, percentOfBasePack, 2);
+        o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, encounter.rewardPercent, 2);
     }
 
     void spawnBreakables(SpawnTransform spawn, BreakableType type, float totalDifficulty)
@@ -253,217 +285,10 @@ public class MonsterSpawn : NetworkBehaviour
     }
 
 
-    static readonly float packWiggleRoom = 0.1f;
-    Optional<Pack> spawnCreatures(SpawnPack spawnData)
+    Pack spawnCreatures(SpawnPack spawnData, List<SpawnUnit> unitsToSpawn)
     {
 
-        float powerPoolBase = weightedPool();
-
-        List<SpawnUnit> unitsToSpawn = new List<SpawnUnit>();
-
-        float propsSelect = Random.value;
-        float powerPoolPackPotential = powerPoolBase * (1 + spawnData.difficulty.pack);
-        float wiggle = packWiggleRoom * powerPoolPackPotential;
-        float powerPoolPack = 0;
-        System.Action<UnitTemplate, int> addUnitsPack = (UnitTemplate data, int instances) =>
-        {
-            float poolCost = weightedPower(data.power);
-            powerPoolPack += poolCost * instances;
-
-            for (int j = 0; j < instances; j++)
-            {
-                unitsToSpawn.Add(new SpawnUnit
-                {
-                    props = data.props,
-                    abilitites = new List<CastData>() { data.abilitites[0] },
-                    champAbilityPool = new List<CastData>(data.abilitites.Skip(1)),
-                    power = data.power,
-                    poolCost = poolCost,
-                    championHealthMult = 1,
-                    indicatorColors = new List<Color>(),
-                });
-            }
-        };
-        SpawnUnit u;
-
-        #region pack
-        if (propsSelect < 0.5f)
-        {
-            //mode: single
-            int index = Random.Range(0, monsterProps.Count);
-            UnitTemplate data = monsterProps[index];
-
-            InstanceInfo info = maxInstances(data.power, powerPoolPackPotential, wiggle);
-            if (info.filledPool)
-            {
-                //Debug.Log(string.Format("count: {0}, diff: {1}, power: {2}", info.instanceCount, spawnData.difficulty.pack, data.power));
-                addUnitsPack(data, info.instanceCount);
-            }
-            else
-            {
-                UnitTemplate fillData = monsterProps[0];
-                InstanceInfo fillInfo = maxInstances(fillData.power, info.remainingPool, wiggle);
-                if (fillInfo.filledPool)
-                {
-                    addUnitsPack(data, info.instanceCount);
-                    addUnitsPack(fillData, fillInfo.instanceCount);
-                }
-                else
-                {
-
-                    Debug.LogError("Couldnt fill out in single Mode " + data.power + ":" + info.instanceCount + " - " + fillData.power + ":" + fillInfo.instanceCount);
-                    return new Optional<Pack>();
-                }
-            }
-
-        }
-        else
-        {
-
-            //mode: multi
-            for (int i = monsterProps.Count - 1; i >= 0; i--)
-            {
-                float remainingPower = powerPoolPackPotential - powerPoolPack;
-                UnitTemplate data = monsterProps[i];
-                InstanceInfo info = maxInstances(data.power, remainingPower, wiggle);
-                if (i == 0)
-                {
-                    if (info.filledPool)
-                    {
-                        addUnitsPack(data, info.instanceCount);
-                        break;
-                    }
-                    else
-                    {
-                        //Debug.Log("Multi " + data.power + ":" + info.instanceCount);
-                        Debug.LogError("Couldnt fill out in multi Mode");
-                        return new Optional<Pack>();
-                    }
-                }
-                if (info.instanceCount > 0 && Random.value < 0.4f)
-                {
-                    info = randomInstances(data.power, remainingPower, wiggle);
-                    addUnitsPack(data, info.instanceCount);
-                    //Debug.Log("Multi " + data.power + ":" + info.instanceCount);
-                    if (info.filledPool)
-                    {
-                        break;
-                    }
-                }
-            }
-
-        }
-
-
-        if (powerPoolPack > powerPoolPackPotential * (1 + packWiggleRoom))
-        {
-            Debug.LogError("Too much power in pack!");
-            return new Optional<Pack>();
-        }
-        if (unitsToSpawn.Count == 0)
-        {
-            Debug.LogError("NO units in pack");
-            return new Optional<Pack>();
-        }
-        //account for the wiggle room in the result(reward) difficulty
-        spawnData.difficulty.pack = (powerPoolPack / powerPoolBase) - 1;
-        #endregion
-
-        #region veteran
-        float powerPoolVeteran = powerPoolBase * spawnData.difficulty.veteran;
-        powerPoolPack += powerPoolVeteran;
-        propsSelect = Random.value;
-        int veteranMajorIndex = -1;
-        int splitCount = unitsToSpawn.Count;
-        if (propsSelect < 0.5f)
-        {
-            //veteran mode: single
-            veteranMajorIndex = unitsToSpawn.RandomIndex();
-            splitCount--;
-            u = unitsToSpawn[veteranMajorIndex];
-
-            float poolCap = weightedPower(u.power) * (1f + 1.5f * spawnData.difficulty.veteran);
-            //Debug.Log(u.power + " " + potentialPower + " " + powerCap + " " + powerPoolVeteran);
-            float potentialPool = Mathf.Min(powerPoolVeteran, poolCap);
-            float potentialPower = getVeteranPower(u.power, potentialPool);
-            u.power = potentialPower;
-            float newPoolCost = weightedPower(potentialPower);
-            powerPoolVeteran -= newPoolCost - u.poolCost;
-            u.poolCost = newPoolCost;
-            unitsToSpawn[veteranMajorIndex] = u;
-        }
-
-
-
-        //veteran mode: multi
-        float splitPool = powerPoolVeteran / splitCount;
-        for (int j = 0; j < unitsToSpawn.Count; j++)
-        {
-            if (j != veteranMajorIndex)
-            {
-                u = unitsToSpawn[j];
-                u.power = getVeteranPower(u.power, splitPool);
-                u.poolCost += splitPool;
-                //Debug.Log(unitsToSpawn[j].power + " " + u.power);
-                unitsToSpawn[j] = u;
-            }
-
-        }
-        #endregion
-
-        #region champion
-        float powerPoolChampion = powerPoolBase * spawnData.difficulty.champion;
-        powerPoolPack += powerPoolChampion;
-        unitsToSpawn = unitsToSpawn.OrderBy(u => u.power).Reverse().ToList();
-        float championAbilityPoolMultiplier = 0.5f;
-        float championHealthPoolMultiplier = 0.25f;
-        float championHealthPercentIncrease = 1.25f;
-        float percentToIncrease, poolChange;
-        bool abilityGranted = true;
-        while (abilityGranted)
-        {
-            for (int i = 0; i < unitsToSpawn.Count; i++)
-            {
-                u = unitsToSpawn[i];
-                float poolIncrease = u.poolCost * championAbilityPoolMultiplier;
-                //Debug.Log(poolIncrease+" - "+ powerPoolChampion);
-                if (poolIncrease < powerPoolChampion)
-                {
-                    CastData ability = u.champAbilityPool[0];
-                    u.champAbilityPool.RemoveAt(0);
-                    u.abilitites.Add(ability);
-                    u.poolCost += poolIncrease;
-                    u.indicatorColors.Add(ability.flair.color);
-                    powerPoolChampion -= poolIncrease;
-
-                    float percentRemaining = powerPoolChampion / u.poolCost;
-                    percentToIncrease = Mathf.Min(percentRemaining, championHealthPercentIncrease * championHealthPoolMultiplier);
-                    u.championHealthMult += percentToIncrease * championHealthPercentIncrease;
-                    poolChange = percentToIncrease * u.poolCost;
-                    u.poolCost += poolChange;
-                    powerPoolChampion -= poolChange;
-
-                    unitsToSpawn[i] = u;
-                }
-                else
-                {
-                    abilityGranted = false;
-                }
-            }
-        }
-
-        u = unitsToSpawn[0];
-        percentToIncrease = powerPoolChampion / u.poolCost;
-        u.championHealthMult += percentToIncrease * championHealthPercentIncrease;
-        poolChange = percentToIncrease * u.poolCost;
-        u.poolCost += poolChange;
-        powerPoolChampion -= poolChange;
-        unitsToSpawn[0] = u;
-
-        #endregion
-
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
-        p.powerPoolPack = powerPoolPack;
         p.scale = Power.scalePhysical(spawnPower);
         p.transform.position = spawnData.spawnTransform.position;
         if (spawnData.ignoreWakeup)
@@ -471,19 +296,15 @@ public class MonsterSpawn : NetworkBehaviour
             p.GetComponent<Collider>().enabled = false;
         }
 
-
-        for (int j = 0; j < unitsToSpawn.Count; j++)
+        List<SpawnUnit> toCreate = Utils.RandomItemsWeighted(unitsToSpawn, spawnData.packMult, u => 1 / u.packPercent, u => u.packPercent);
+        foreach (SpawnUnit unit in toCreate)
         {
-
-            SpawnUnit data = unitsToSpawn[j];
-            //Debug.Log(data.power + " " + spawnData.difficulty.pack + " " + spawnData.difficulty.veteran + " " + veteranMajorIndex);
-
-            InstanceCreature(spawnData, data, p);
+            InstanceCreature(spawnData, unit, p);
         }
 
 
         NetworkServer.Spawn(p.gameObject);
-        return new Optional<Pack>(p);
+        return p;
     }
     float weightedPool()
     {
@@ -499,63 +320,13 @@ public class MonsterSpawn : NetworkBehaviour
         return Mathf.Pow(pool, 1 / lowerUnitPowerExponent);
     }
 
-    static float getVeteranPower(float powerOriginal, float veteranPool)
-    {
-        return Mathf.Pow(Mathf.Pow(powerOriginal, lowerUnitPowerExponent) + veteranPool, 1 / lowerUnitPowerExponent);
-    }
-
-
-    //public static float scaledPowerReward(float mypower, float otherPower)
-    //{
-    //    return mypower / (weightedPower(mypower) / weightedPower(otherPower));
-    //}
     struct InstanceInfo
     {
         public int instanceCount;
         public bool filledPool;
         public float remainingPool;
     }
-    InstanceInfo maxInstances(float power, float poolWeighted, float powerWiggle = 0)
-    {
-        float instancePool = weightedPower(power);
-        int instanceCount = Mathf.FloorToInt((poolWeighted + powerWiggle) / instancePool);
-        return fillCheck(instancePool, instanceCount, poolWeighted, powerWiggle);
 
-    }
-
-    InstanceInfo randomInstances(float power, float poolWeighted, float powerWiggle = 0)
-    {
-        float instancePool = weightedPower(power);
-        int maxInstance = Mathf.FloorToInt((poolWeighted + powerWiggle) / instancePool);
-        int instanceCount = Random.Range(1, maxInstance + 1);
-        return fillCheck(instancePool, instanceCount, poolWeighted, powerWiggle);
-    }
-    InstanceInfo fillCheck(float instancePool, int instanceCount, float poolWeighted, float poolWiggle)
-    {
-        if (poolWeighted < poolWiggle)
-        {
-            throw new System.Exception("Wiggle greater than pool");
-        }
-        float usedPool = instanceCount * instancePool;
-        bool filledPool;
-        float remainingPool;
-        if (usedPool > poolWeighted - poolWiggle)
-        {
-            filledPool = true;
-            remainingPool = 0;
-        }
-        else
-        {
-            filledPool = false;
-            remainingPool = poolWeighted - usedPool;
-        }
-        return new InstanceInfo
-        {
-            instanceCount = instanceCount,
-            filledPool = filledPool,
-            remainingPool = remainingPool,
-        };
-    }
 
     void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Pack p)
     {
@@ -578,9 +349,8 @@ public class MonsterSpawn : NetworkBehaviour
             ind.colors.Add(color);
         }
 
-        float percentOfBasePack = spawnUnit.poolCost / weightedPool();
-        o.GetComponent<Reward>().setReward(spawnPower, spawnData.difficulty.total, percentOfBasePack);
-        o.GetComponent<PackHeal>().packPool = spawnUnit.poolCost;
+        o.GetComponent<Reward>().setReward(spawnPower, spawnUnit.rewardMult, spawnUnit.rewardPercent);
+        o.GetComponent<PackHeal>().percentHealKiller = spawnUnit.packPercent * spawnUnit.killerHealMult;
 
         //Debug.Log(spawnUnit.power + " - " + spawnUnit.poolCost + " - " + weightedPool() + " - " + spawnPower + " - " + reward);
         p.addToPack(o);
@@ -600,7 +370,7 @@ public class MonsterSpawn : NetworkBehaviour
         spawnPower = power;
         float powerMultDiff = 1.2f;
         //clear data
-        monsterProps.Clear();
+        monsterTemplates.Clear();
 
         float pool = weightedPool();
         lastPowerAdded = inverseWeightedPower(pool / maxPackSize);
@@ -609,7 +379,7 @@ public class MonsterSpawn : NetworkBehaviour
         {
             lastPowerAdded *= powerMultDiff;
             //Debug.Log(lastPowerAdded);
-            monsterProps.Add(createType(lastPowerAdded));
+            monsterTemplates.Add(createType(lastPowerAdded));
         }
 
     }

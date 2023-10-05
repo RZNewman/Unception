@@ -269,6 +269,53 @@ public static class Utils
         return index;
     }
 
+    public struct Weighted<T>
+    {
+        public T item;
+        public float weight;
+    }
+    public static List<T> RandomItemsWeighted<T>(this IList<T> list, float totalCost, System.Func<T, float> weightSelector, System.Func<T, float> costSelector)
+    {
+        List<Weighted<T>> weights = new List<Weighted<T>>();
+        float totalWeight = 0;
+        foreach (T item in list)
+        {
+            float weight = weightSelector(item);
+            weights.Add(new Weighted<T>
+            {
+                item = item,
+                weight = weight,
+            });
+            totalWeight += weight;
+        }
+        weights.Sort((w1, w2) => w1.weight.CompareTo(w2.weight));
+
+        List<T> selections = new List<T>();
+        float cost = 0;
+        while (cost < totalCost)
+        {
+            float random = Random.value * totalWeight;
+            T selection = weights.Last().item;
+            int i = 0;
+            while (random > 0 && i < weights.Count)
+            {
+                random -= weights[i].weight;
+                if (random <= 0)
+                {
+                    selection = weights[i].item;
+                    break;
+                }
+                i++;
+            }
+            selections.Add(selection);
+            cost += costSelector(selection);
+        }
+
+        return selections;
+
+    }
+
+
     public static T RandomItemWeighted<T>(this SimplePriorityQueue<T> list, float weight = 2f)
     {
         int index = Mathf.FloorToInt(Mathf.Pow(Random.value, 1 / weight) * list.Count);

@@ -34,6 +34,14 @@ public class Reward : MonoBehaviour
         get { return rewardTotalPercent * rewardBasePower; }
     }
 
+    public float rewardPercent
+    {
+        get
+        {
+            return rewardPackPercent;
+        }
+    }
+
     float rewardTotalPercent
     {
         get

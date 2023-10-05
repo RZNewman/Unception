@@ -6,24 +6,20 @@ using static LifeManager;
 
 public class PackHeal : NetworkBehaviour, BarValue
 {
-    List<float> packTargets = new List<float>();
-    public float packPool = 0;
+    public float percentHealKiller = 0;
     Combat combat;
 
-    float currentPackProgress = 0;
+    float currentHealPercent = 0;
 
     private void Start()
     {
         combat = GetComponent<Combat>();
     }
-    public void addPack(float pool)
-    {
-        packTargets.Add(pool);
-    }
 
-    public void rewardKill(float poolPoints)
+
+    public void rewardKill(float percentHealReaped)
     {
-        currentPackProgress += poolPoints;
+        currentHealPercent += percentHealReaped;
     }
 
     public void OrderedUpdate()
@@ -34,19 +30,18 @@ public class PackHeal : NetworkBehaviour, BarValue
         }
         if (!GetComponent<LifeManager>().IsDead)
         {
+            float percentPerFrame = 0.1f * Time.fixedDeltaTime;
+            float percentThisFrame = Mathf.Min(percentPerFrame, currentHealPercent);
+            currentHealPercent -= percentThisFrame;
             if (!combat.inCombat)
             {
-                packTargets.Clear();
-                currentPackProgress = 0;
+                GetComponent<Health>().healPercent(percentPerFrame * 0.8f);
             }
-            if (packTargets.Count > 0 && currentPackProgress >= packTargets[0] * 0.999f)
+            else if (percentThisFrame > 0)
             {
-                GetComponent<Health>().healToFull();
-                currentPackProgress -= packTargets[0];
-                packTargets.RemoveAt(0);
-
-
+                GetComponent<Health>().healPercent(percentThisFrame * 0.8f);
             }
+
         }
 
 
@@ -58,8 +53,8 @@ public class PackHeal : NetworkBehaviour, BarValue
         return new BarValue.BarData
         {
             color = new Color(1, 0.5f, 0.5f),
-            fillPercent = packTargets.Count > 0 ? Mathf.Clamp01(currentPackProgress / packTargets[0]) : 0,
-            active = packTargets.Count > 0,
+            fillPercent = Mathf.Clamp01(currentHealPercent),
+            active = currentHealPercent > 0,
         };
     }
 }

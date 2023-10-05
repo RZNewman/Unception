@@ -10,8 +10,7 @@ public class Pack : NetworkBehaviour
     List<GameObject> pack = new List<GameObject>();
     public GameObject spawnWarning;
 
-    [HideInInspector]
-    public float powerPoolPack;
+
     [HideInInspector]
     public float scale;
 
@@ -24,6 +23,14 @@ public class Pack : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         disableUnits();
+    }
+
+    public float rewardPercent
+    {
+        get
+        {
+            return pack.Sum(u => u.GetComponent<Reward>().rewardPercent);
+        }
     }
 
     List<GameObject> players = new List<GameObject>();
@@ -167,7 +174,6 @@ public class Pack : NetworkBehaviour
     public void packAggro(GameObject target)
     {
         aggroed = true;
-        target.GetComponentInParent<PackHeal>().addPack(powerPoolPack);
         foreach (GameObject a in pack)
         {
             a.GetComponent<ControlManager>().spawnControl(); //spawn early so we can access aggro in encoutners

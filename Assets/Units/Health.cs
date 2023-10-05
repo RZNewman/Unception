@@ -84,13 +84,24 @@ public class Health : NetworkBehaviour, BarValue
         currentHealth -= maxHealth * percent;
     }
 
+    public void healPercent(float percent)
+    {
+        currentHealth += maxHealth * percent;
+        currentHealth = Mathf.Min(currentHealth, maxHealth);
+    }
+
     [ClientRpc]
     void RpcDisplayDamage(float damage)
     {
-        Vector3 offset = Random.insideUnitSphere * 4;
-        GameObject o = Instantiate(damageDisplayPre, transform.position + offset, Quaternion.identity);
-        o.transform.localScale *= 4 * (damage / (gp.player.power * 0.4f)) * 0.9f;
-        o.GetComponentInChildren<TMP_Text>().text = Power.displayPower(damage);
+        //Not the local player
+        if (!hasAuthority)
+        {
+            Vector3 offset = Random.insideUnitSphere * 4;
+            GameObject o = Instantiate(damageDisplayPre, transform.position + offset, Quaternion.identity);
+            o.transform.localScale *= 4 * (damage / (gp.player.power * 0.4f)) * 0.9f;
+            o.GetComponentInChildren<TMP_Text>().text = Power.displayPower(damage);
+        }
+
     }
 
     // Update is called once per frame
@@ -104,7 +115,9 @@ public class Health : NetworkBehaviour, BarValue
         {
             if (!combat.inCombat)
             {
-                currentHealth = maxHealth;
+                //healed in Pack heal now
+                //currentHealth = maxHealth;
+                currentHealth = Mathf.Max(currentHealth, 1);
                 clearReferences(BuffMode.Dot);
                 clearReferences(BuffMode.Expose);
             }
@@ -117,11 +130,6 @@ public class Health : NetworkBehaviour, BarValue
 
 
 
-    }
-
-    public void healToFull()
-    {
-        currentHealth = maxHealth;
     }
 
 

@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using static TeamOwnership;
@@ -27,6 +28,15 @@ public class Encounter : NetworkBehaviour
     {
         scale = s;
     }
+
+    public float rewardPercent
+    {
+        get
+        {
+            return packs.Sum(p => p.rewardPercent);
+        }
+    }
+
     private void OnTriggerEnter(Collider otherCol)
     {
         if (!isServer)

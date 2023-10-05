@@ -72,7 +72,7 @@ public class Combat : NetworkBehaviour
             PackHeal heal = GetComponent<PackHeal>();
             if (heal)
             {
-                lastUnitHitBy.GetComponent<PackHeal>().rewardKill(heal.packPool);
+                lastUnitHitBy.GetComponent<PackHeal>().rewardKill(heal.percentHealKiller);
             }
 
         }

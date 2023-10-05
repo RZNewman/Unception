@@ -36,6 +36,7 @@ public class UiBuffBar : MonoBehaviour
                 }
 
             }
+            reset = false;
         }
     }
 }

@@ -14,6 +14,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     UnitInput currentInput;
     Power power;
+    UnitMovement mover;
     Keybinds keys;
 
 
@@ -31,6 +32,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     private void Start()
     {
+        mover = GetComponentInParent<UnitMovement>();
         power = GetComponentInParent<Power>();
         keys = FindObjectOfType<Keybinds>(true);
     }
@@ -115,7 +117,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         r = Camera.main.ScreenPointToRay(Input.mousePosition);
 
 
-        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, LayerMask.GetMask("Terrain"));
+        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, LayerMask.GetMask("Terrain","Stopper"));
 
         for (int i = 0; i <= info.Length; i++)
         {
@@ -135,16 +137,35 @@ public class InputHandler : MonoBehaviour, UnitControl
                 }
 
             }
-            if (
-                Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees
-                &&
-                Vector3.Angle(transform.position - info[i].point, Camera.main.transform.forward) > 50
-                )
+
+            RaycastHit hit = info[i];
+
+            float angle = Vector3.Angle(transform.position - info[i].point, Camera.main.transform.forward);
+            if(angle < 50)
             {
-                Vector3 point = info[i].point + info[i].normal * 0.75f * power.scalePhysical();
+                //too close to the camera
+                continue;
+            }
+
+            if (hit.transform.gameObject.layer == LayerMask.GetMask("Terrain"))
+            {
+                if (
+                Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees
+                )
+                {
+                    Vector3 point = info[i].point + info[i].normal * 0.75f * power.scalePhysical();
+                    currentInput.lookOffset = point - transform.position;
+                    break;
+                }
+            }
+            if (hit.transform.gameObject.layer == LayerMask.GetMask("Stopper"))
+            {
+  
+                Vector3 point = hit.transform.position;
                 currentInput.lookOffset = point - transform.position;
                 break;
             }
+
 
         }
 

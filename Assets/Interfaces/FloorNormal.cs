@@ -72,13 +72,8 @@ public class FloorNormal : MonoBehaviour
 
     public Quaternion getIndicatorRotation(Vector3 forward)
     {
+        //backwards, bc indicators are build backwards
         return Quaternion.LookRotation(groundNormal, forward);
-    }
-    public Quaternion getIndicatorOverride(Vector3 forward)
-    {
-        Vector3 left = Vector3.Cross(forward, groundNormal);
-        Vector3 newNormal = Vector3.Cross(forward, left);
-        return Quaternion.LookRotation(newNormal, forward);
     }
 
     public Quaternion getAimRotation(Vector3 forward)

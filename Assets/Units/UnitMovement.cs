@@ -32,6 +32,10 @@ public class UnitMovement : NetworkBehaviour
     [SyncVar(hook = nameof(syncLookAngle))]
     public float currentLookAngle = 0;
 
+    [HideInInspector]
+    [SyncVar]
+    public float currentLookVerticalAngle = 0;
+
     Vector3 planarVelocityCache;
 
 
@@ -81,6 +85,11 @@ public class UnitMovement : NetworkBehaviour
     }
 
     public GameObject getSpawnBody()
+    {
+        return GetComponentInChildren<UnitEye>().gameObject;
+    }
+
+    public GameObject getRotationBody()
     {
         return GetComponentInChildren<UnitRotation>().gameObject;
     }
@@ -417,10 +426,10 @@ public class UnitMovement : NetworkBehaviour
         switch (opts.control)
         {
             case DashControl.Forward:
-                desiredDirection = getSpawnBody().transform.forward;
+                desiredDirection = getRotationBody().transform.forward;
                 break;
             case DashControl.Backward:
-                desiredDirection = -getSpawnBody().transform.forward;
+                desiredDirection = -getRotationBody().transform.forward;
                 break;
             case DashControl.Input:
                 desiredDirection = input2vec(inp.move);
@@ -505,6 +514,7 @@ public class UnitMovement : NetworkBehaviour
         canSnap &= props.isPlayer;
         float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : Mathf.Max(props.lookSpeedDegrees + additionalRotationDegrees + statHandler.getValue(Stat.Turnspeed, power.scaleNumerical()), 0);
 
+        //horizontal angle
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);
         float diff = desiredAngle - currentLookAngle;
         float frameMagnitude = turnSpeed * speedMultiplier * airMultiplier * Time.fixedDeltaTime;
@@ -516,6 +526,18 @@ public class UnitMovement : NetworkBehaviour
         else
         {
             currentLookAngle += frameMagnitude * Mathf.Sign(diff);
+        }
+
+        //verticalAngle
+        desiredAngle = inp.lookVerticalAngle;
+        diff = desiredAngle - currentLookVerticalAngle;
+        if (Mathf.Abs(diff) <= frameMagnitude)
+        {
+            currentLookVerticalAngle = desiredAngle;
+        }
+        else
+        {
+            currentLookVerticalAngle += frameMagnitude * Mathf.Sign(diff);
         }
     }
     public void maybeSnapRotation(UnitInput inp)

@@ -126,7 +126,7 @@ public class InputHandler : MonoBehaviour, UnitControl
                 RaycastHit clickHit;
                 if (Physics.Raycast(r, out clickHit, cameraRayMax, LayerMask.GetMask("ClickPlane")))
                 {
-                    Vector3 point = clickHit.point + clickHit.normal * 0.75f * power.scalePhysical();
+                    Vector3 point = clickHit.point + clickHit.normal * 0.8f * power.scalePhysical();
                     currentInput.lookOffset = point - transform.position;
                     break;
                 }

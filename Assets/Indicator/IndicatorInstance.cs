@@ -80,20 +80,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         if (transform.parent)
         {
-            GameObject trackingBody = transform.parent.gameObject;
-            FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
-            IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
-            Vector3 worldFoward = ground.forwardPlanarWorld(trackingBody.transform.forward);
-
-            IndicatorLocalLook point = ih.pointOverride(worldFoward, ground.normal);
-            if (point.shouldOverride)
-            {
-                transform.rotation = ground.getIndicatorOverride(point.newForward);
-            }
-            else
-            {
-                transform.rotation = ground.getIndicatorRotation(trackingBody.transform.forward);
-            }
+            transform.rotation = GetComponentInParent<SpellSource>().aimRotation(AimType.Indicator);
         }
     }
 

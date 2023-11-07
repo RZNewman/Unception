@@ -75,8 +75,7 @@ public class ActionState : AttackStageState
                 break;
             case HitType.Ground:
                 float radius = GroundRadius(attackData.length, attackData.width);
-                Quaternion aim = sourcePoint.GetComponent<FloorNormal>().getAimRotation(sourcePoint.transform.forward);
-                GroundParticle(sourcePoint.transform.position, radius, aim, attackData.flair, mover.sound.dists);
+                GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
                 if (!mover.isServer)
                 {
                     return;

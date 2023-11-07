@@ -156,13 +156,13 @@ public static class StatTypes
         {Stat.Width,60},
         {Stat.Knockback,55},
         {Stat.DamageMult,106},
-        {Stat.Stagger,65},
-        {Stat.Mezmerize,65},
+        {Stat.Stagger,80},
+        {Stat.Mezmerize,80},
         {Stat.Knockup,60},
         {Stat.Charges,81},
         {Stat.Range,75},
     };
-    public static readonly float itemStatSpread = 175;
+    public static readonly float itemStatSpread = 210;
     public static readonly float statsPerModMax = 45;
     public static readonly float statModBasePercent = 0.5f;
     public static readonly float modBonusPercent = 0.025f;
@@ -210,7 +210,8 @@ public static class StatTypes
         {Stat.Range,1},
         {Stat.Length,6},
         {Stat.Width,9},
-        {Stat.DamageMult,230},
+        {Stat.DamageMult,200},
+        {Stat.Mezmerize,20},
     };
 
     public static float itemStatBaseTotal

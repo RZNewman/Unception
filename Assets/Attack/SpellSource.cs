@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -71,6 +72,34 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     }
 
 
+    public enum AimType
+    {
+        Normal,
+        Indicator
+    }
+    public Quaternion aimRotation(AimType type)
+    {
+        UnitEye eye = GetComponentInParent<UnitEye>();
+
+        if (eye)
+        {
+            //rotation handled by unit eye; default to foward
+            return type switch
+            {
+                AimType.Indicator => Quaternion.LookRotation(transform.up, transform.forward),
+                _ => transform.rotation
+            };
+        }
+        else
+        {
+            return type switch
+            {
+                AimType.Indicator => ground.getIndicatorRotation(transform.forward),
+                _ => ground.getAimRotation(transform.forward)
+            };
+        }
+    }
+
 
     public CapsuleSize sizeCapsule
     {
@@ -100,17 +129,6 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     public float offsetMultiplier()
     {
         return offsetMult;
-    }
-    public IndicatorLocalLook pointOverride(Vector3 forwardPlanar, Vector3 groundNormal)
-    {
-        if (offsetMult == 0)
-        {
-            return new IndicatorLocalLook
-            {
-                shouldOverride = false,
-            };
-        }
-        return sizeC.pointOverride(transform, forwardPlanar, groundNormal);
     }
 
     public void setTarget(Vector3 t, float s)

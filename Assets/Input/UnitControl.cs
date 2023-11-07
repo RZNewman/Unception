@@ -101,6 +101,15 @@ public interface UnitControl
                 return vec2input(dir);
             }
         }
+        public float lookVerticalAngle
+        {
+            get
+            {
+                Vector3 flatLookDiff = Vector3.ProjectOnPlane(lookOffset, Vector3.up);
+                Vector3 cross = Vector3.Cross(flatLookDiff, lookOffset);
+                return Vector3.SignedAngle(flatLookDiff, lookOffset, cross);
+            }
+        }
     }
 
     public static KeyName toKeyName(ItemSlot slot)

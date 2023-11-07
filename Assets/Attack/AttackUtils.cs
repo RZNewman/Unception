@@ -130,7 +130,7 @@ public static class AttackUtils
     {
         FloorNormal floor = source.GetComponent<FloorNormal>();
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
-        Quaternion aim = floor.getAimRotation(source.transform.forward);
+        Quaternion aim = source.aimRotation(AimType.Normal);
         GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
@@ -174,11 +174,11 @@ public static class AttackUtils
         public Vector3 bodyForward;
     }
     public static LineInfo LineCalculations(SpellSource source, float range, float length, float width)
-    {
-        FloorNormal floor = source.GetComponent<FloorNormal>();
+    {      
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
-        Quaternion aim = floor.getAimRotation(source.transform.forward);
+        FloorNormal floor = source.GetComponent<FloorNormal>();
+        Quaternion aim = source.aimRotation(AimType.Normal);
         Vector3 attackFocus = source.transform.position + aim * Vector3.forward * range;
         Vector3 boxCenter = attackFocus + maxDistance * 0.5f * (aim * Vector3.forward);
         float boxHeight = attackHitboxHalfHeight(HitType.Line, source.sizeCapsule.distance, maxDistance);

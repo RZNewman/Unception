@@ -93,14 +93,6 @@ public class Projectile : NetworkBehaviour
         terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
         playerHit.transform.localScale = new Vector3(hitR, attackHitboxHalfHeight(HitType.Projectile, data.halfHeight, hitR) / 2, hitR) * 2;
         setAudioDistances(Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.visualIndex], visualScale.transform), data.dists);
-        setThreatColor();
-    }
-    public void setThreatColor()
-    {
-        float threat = data.powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
-        Color c = getIndicatorColor(data.team, threat, false).color;
-        playerHit.GetComponent<ColorIndividual>().setColor(c);
-
     }
 
     [Server]

@@ -11,7 +11,7 @@ public class AiHandler : MonoBehaviour, UnitControl
     UnitInput currentInput;
     AggroHandler aggro;
     UnitMovement mover;
-    FloorNormal ground;
+    UnitEye eye;
     GameObject rotatingBody;
     float scale = 1;
 
@@ -51,7 +51,7 @@ public class AiHandler : MonoBehaviour, UnitControl
         currentInput.reset();
         aggro = GetComponent<AggroHandler>();
         mover = GetComponentInParent<UnitMovement>(true);
-        ground = GetComponentInParent<FloorNormal>(true);
+        eye = mover.GetComponentInChildren<UnitEye>(true);
         //pathCalculator = FindObjectOfType<NavPathCalc>();
         //obstacle = GetComponent<NavMeshObstacle>();
         agent = GetComponent<NavMeshAgent>();
@@ -144,7 +144,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     AbilityPair pair = GetComponentInParent<AbiltyManager>().getBestAbility();
                     EffectiveDistance eff = pair.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
 
-                    Quaternion aim = ground.getAimRotation(rotatingBody.transform.forward);
+                    Quaternion aim = eye.transform.rotation;
                     Vector3 aimedDiff = Quaternion.Inverse(aim) * rawDiffAttack;
                     float fullRange = eff.maximums.z + mySize.scaledRadius + thierSize.scaledRadius;
                     if (aimedDiff.z > 0 && aimedDiff.z <= fullRange && Mathf.Abs(aimedDiff.x) < eff.maximums.x && Mathf.Abs(aimedDiff.y) < eff.maximums.y)

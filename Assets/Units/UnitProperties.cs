@@ -16,7 +16,7 @@ public class UnitProperties : ScriptableObject
     public float backwardsMoveMultiplier = 0.7f;
     public float dashDistance = 3f;
     public float dashSpeed = 9f;
-
+    public bool canFloat = false;
 
     public float maxHealthMult;
 

@@ -301,7 +301,7 @@ public class UnitMovement : NetworkBehaviour
         {
             jump();
         }
-        else
+        else if(props.canFloat)
         {
             toggleFloat();
         }

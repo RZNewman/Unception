@@ -14,7 +14,8 @@ using UnityEditor;
 
 public class MapGenerator : NetworkBehaviour
 {
-    public GameObject stitchPre;
+    public GameObject fallPre;
+    public GameObject jumpPre;
     public GameObject floorRootPre;
     public GameObject endPortalPre;
 
@@ -168,9 +169,9 @@ public class MapGenerator : NetworkBehaviour
         }
         navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
         NavLinkGenerator linkGenerator = ScriptableObject.CreateInstance<NavLinkGenerator>();
-        linkGenerator.m_FallLinkPrefab = stitchPre.transform;
-        linkGenerator.m_JumpLinkPrefab = stitchPre.transform;
-        linkGenerator.m_MaxVerticalJump = 0;
+        linkGenerator.m_FallLinkPrefab = fallPre.transform;
+        linkGenerator.m_JumpLinkPrefab = jumpPre.transform;
+        linkGenerator.m_MaxVerticalJump = 6 * currentFloorScale;
         linkGenerator.m_MaxHorizontalJump = 5 * currentFloorScale;
         linkGenerator.m_MaxVerticalFall = 15 * currentFloorScale;
         linkGenerator.m_PhysicsMask = LayerMask.GetMask("Terrain");
@@ -200,6 +201,8 @@ public class MapGenerator : NetworkBehaviour
         {
             return;
         }
+
+        edge_list = edge_list.SelectMany((e) => e.split(gen.m_MaxHorizontalJump * 1.0f));
 
         RemoveLinks();
         navLinks.Clear();
@@ -243,10 +246,14 @@ public class MapGenerator : NetworkBehaviour
                 var max_distance = gen.m_MaxVerticalFall - phys_hit.distance;
                 hit = NavMesh.SamplePosition(phys_hit.point, out nav_hit, max_distance, gen.m_NavMask);
                 // Only place downward links (to avoid double placement).
-                hit = hit && (nav_hit.position.y <= mid.y);
+                hit = hit && (nav_hit.position.y < mid.y);
                 bool is_original_edge = edge.IsPointOnEdge(nav_hit.position);
                 hit &= !is_original_edge; // don't count self
                                           //~ Debug.DrawLine(phys_hit.point, nav_hit.position, hit ? navmesh_found : navmesh_missing, k_DrawDuration);
+                Vector3 horizontalDist = nav_hit.position - mid;
+                horizontalDist.y = 0;
+                //remove drops that dont go very far
+                hit &= horizontalDist.magnitude > gen.m_MaxHorizontalJump * 0.2f;
                 if (hit)
                 {
                     var height_offset = Vector3.up * gen.m_AgentHeight;
@@ -283,7 +290,7 @@ public class MapGenerator : NetworkBehaviour
                     // connection. Necessary to prevent invalid links.
                     var inset = 0.05f;
                     link.startPoint = link.transform.InverseTransformPoint(mid - fwd * inset);
-                    link.endPoint = link.transform.InverseTransformPoint(nav_hit.position) + (Vector3.forward * inset);
+                    link.endPoint = link.transform.InverseTransformPoint(nav_hit.position) + (fwd * inset);
                     link.width = edge.m_Length;
                     link.UpdateLink();
                     //Debug.Log("Created NavLink");
@@ -402,7 +409,31 @@ public class MapGenerator : NetworkBehaviour
         }
         public bool IsPointOnEdge(Vector3 point)
         {
-            return DistanceSqToPointOnLine(m_StartPos, m_EndPos, point) < 0.001f;
+            return DistanceSqToPointOnLine(m_StartPos, m_EndPos, point) < 0.1f;
+        }
+
+        public IEnumerable<NavEdge> split(float maxLength)
+        {
+            if(m_Length < maxLength)
+            {
+                return new NavEdge[] { this };
+            }
+
+            int divisions = Mathf.FloorToInt(m_Length / maxLength);
+            float divisionLength = m_Length / divisions;
+            List<NavEdge> edges = new List<NavEdge>();
+            Vector3 dir = m_EndPos - m_StartPos;
+            dir.Normalize();
+            Vector3 edgeVec = dir * divisionLength;
+
+            for(int i = 0; i < divisions; i++)
+            {
+                NavEdge e = new NavEdge(m_StartPos+ edgeVec* i, m_StartPos+ edgeVec* (i+1));
+                e.ComputeDerivedData();
+                edges.Add(e);
+            }
+            return edges;
+
         }
     }
     class NavEdgeEqualityComparer : IEqualityComparer<NavEdge>

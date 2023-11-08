@@ -14,6 +14,7 @@ public class AiHandler : MonoBehaviour, UnitControl
     UnitEye eye;
     GameObject rotatingBody;
     float scaleSpeed = 1;
+    float scalePhys = 1;
 
     NavMeshAgent agent;
     public enum EffectiveDistanceType
@@ -88,7 +89,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     void setRadius(Power p)
     {
-        float scalePhys = p.scalePhysical();
+        scalePhys = p.scalePhysical();
         agent.baseOffset = 0.75f * scalePhys;
         agent.radius = 0.7f * scalePhys;
         agent.height = 1.5f * scalePhys;
@@ -108,12 +109,24 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     void syncAgent()
     {
-        timeAgentSync = Time.time;
-        agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
-        agent.velocity = mover.worldVelocity;
-        agent.speed = mover.props.maxSpeed * scaleSpeed;
-        agent.acceleration = agent.speed * 5;
-        //agent.angularSpeed = mover.props.lookSpeedDegrees;
+        if (!agent.isOnOffMeshLink  && mover.grounded)
+        {
+            timeAgentSync = Time.time;
+            if((agent.nextPosition -transform.position).magnitude > 2f * scalePhys)
+            {
+                agent.Warp(transform.position + mover.worldVelocity * Time.fixedDeltaTime);
+                transform.localPosition = Vector3.zero;
+            }
+            
+            agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
+            agent.velocity = mover.worldVelocity;
+            agent.speed = mover.props.maxSpeed * scaleSpeed;
+            agent.acceleration = agent.speed * 5;
+            //agent.angularSpeed = mover.props.lookSpeedDegrees;
+        }
+
+
+
     }
 
     enum DistanceType
@@ -122,7 +135,8 @@ public class AiHandler : MonoBehaviour, UnitControl
         SlightlyClose,
         JustRight,
         SlightlyFar,
-        TooFar
+        TooFar,
+        WayTooFar,
     }
 
     public void refreshInput()
@@ -151,7 +165,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                 Optional<Ability> currentAttack = mover.currentAttackingAbility();
                 AbilityPair bestNext = GetComponentInParent<AbiltyManager>().getBestAbility();
                 EffectiveDistance eff = currentAttack.HasValue ? currentAttack.Value.GetEffectiveDistance(mySize.scaledHalfHeight) : bestNext.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
-                DistanceType dist = DistanceType.TooFar;
+                DistanceType dist = DistanceType.WayTooFar;
                 bool canAttack = false;
                 currentInput.attacks = new ItemSlot[0];
 
@@ -170,12 +184,13 @@ public class AiHandler : MonoBehaviour, UnitControl
                         float i when i < eff.minDistance + goodDist * 0.2f => DistanceType.SlightlyClose,
                         float i when i < eff.minDistance + goodDist * 0.8f => DistanceType.JustRight,
                         float i when i <= fullRange => DistanceType.SlightlyFar,
-                        _ => DistanceType.TooFar,
+                        float i when i <= fullRange * 1.5 => DistanceType.TooFar,
+                        _ => DistanceType.WayTooFar,
                     };
 
                     if (aimedDiff.z > 0)
                     {
-                        if(dist != DistanceType.TooClose && dist != DistanceType.TooFar)
+                        if(dist != DistanceType.TooClose && dist != DistanceType.TooFar && dist != DistanceType.WayTooFar)
                         {
                             if (Mathf.Abs(aimedDiff.x) < eff.width
                                     && Mathf.Abs(aimedDiff.y) < eff.height)
@@ -226,9 +241,19 @@ public class AiHandler : MonoBehaviour, UnitControl
                     DistanceType.JustRight => Vector2.zero,
                     _ => inpVec,
                 };
+                if(mover.grounded && agent.isOnOffMeshLink && agent.nextPosition.y > transform.position.y
+                    )
+                {
+                    currentInput.jump = true;
+                }
+                else
+                {
+                    currentInput.jump = false;
+                }
+
 
                 Vector3 moveLookDiff = rawDiff.normalized * 2f;
-                if(dist == DistanceType.TooClose && !currentAttack.HasValue)
+                if((dist == DistanceType.TooClose || dist == DistanceType.WayTooFar) && !currentAttack.HasValue)
                 {
                     currentInput.lookOffset = moveLookDiff;
                 }
@@ -308,7 +333,6 @@ public class AiHandler : MonoBehaviour, UnitControl
         if (didHit)
         {
             Vector3 diff = hit.position - location;
-            Debug.Log(diff.magnitude + " - " + dist * 0.2f);
             if(diff.magnitude > dist * 0.2f)
             {
                 return hit.position;

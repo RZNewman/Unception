@@ -22,6 +22,13 @@ public class AttackingState : PlayerMovementState
             return castingAbility.abilityName;
         }
     }
+    public Ability currentAbility
+    {
+        get
+        {
+            return castingAbility;
+        }
+    }
     public AttackSegment segment
     {
         get

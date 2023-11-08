@@ -29,8 +29,8 @@ public static class GenerateUnit
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;
-        properties.sidewaysMoveMultiplier = 0.1f;
-        properties.backwardsMoveMultiplier = 0.0f;
+        properties.sidewaysMoveMultiplier = 0.2f;
+        properties.backwardsMoveMultiplier = 0.1f;
 
         properties.maxHealthMult = health;
 

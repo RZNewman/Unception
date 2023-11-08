@@ -177,6 +177,15 @@ public class UnitMovement : NetworkBehaviour
         return null;
     }
 
+    public Optional<Ability> currentAttackingAbility()
+    {
+        if (currentState() is AttackingState)
+        {
+            return ((AttackingState)currentState()).currentAbility;
+        }
+        return new Optional<Ability>();
+    }
+
 
     public bool isIncapacitated
     {

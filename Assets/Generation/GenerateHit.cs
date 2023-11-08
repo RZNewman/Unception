@@ -180,13 +180,13 @@ public static class GenerateHit
             {
                 case HitType.Line:
 
-                    return new EffectiveDistance(range + max.magnitude, max.y, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
+                    return new EffectiveDistance(range, range + max.magnitude, max.y, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
                 case HitType.Projectile:
-                    return new EffectiveDistance(range, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
+                    return new EffectiveDistance(0, range, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
                 case HitType.Ground:
-                    return new EffectiveDistance(range + GroundRadius(length, width), GroundRadius(length, width) / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.5f);
+                    return new EffectiveDistance(0, range + GroundRadius(length, width), GroundRadius(length, width) / 2, GroundRadius(length, width) / 2);
                 default:
-                    return new EffectiveDistance(length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude));
+                    return new EffectiveDistance(0, length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude));
             }
         }
 

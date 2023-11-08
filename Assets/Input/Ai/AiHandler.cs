@@ -13,7 +13,7 @@ public class AiHandler : MonoBehaviour, UnitControl
     UnitMovement mover;
     UnitEye eye;
     GameObject rotatingBody;
-    float scale = 1;
+    float scaleSpeed = 1;
 
     NavMeshAgent agent;
     public enum EffectiveDistanceType
@@ -24,20 +24,45 @@ public class AiHandler : MonoBehaviour, UnitControl
     }
     public struct EffectiveDistance
     {
-        public Vector3 maximums;
+        public float minDistance;
+        public float maxDistance;
+        public float width;
+        public float height;
         public EffectiveDistanceType type;
-        public EffectiveDistance(float distance, float width, float height, EffectiveDistanceType t = EffectiveDistanceType.Hit)
+        public EffectiveDistance(float min, float max, float widthHit, float heightHit, EffectiveDistanceType t = EffectiveDistanceType.Hit)
         {
-            this.maximums = new Vector3(width, height, distance);
-            this.type = t;
+            type = t;
+            minDistance = min;
+            maxDistance = max;
+            width = widthHit;
+            height = heightHit;
+        }
+        public static EffectiveDistance empty
+        {
+            get
+            {
+                return new EffectiveDistance()
+                {
+                    minDistance = 0,
+                    maxDistance = 0,
+                    width = 0,
+                    height = 0,
+                    type = EffectiveDistanceType.None,
+                };
+            }
         }
 
         public EffectiveDistance sum(EffectiveDistance other)
         {
             return new EffectiveDistance
             {
-                maximums = other.maximums + maximums,
+                
                 type = other.type,
+                minDistance = minDistance + other.minDistance,
+                maxDistance = other.maxDistance,
+                width = other.width,
+                height = other.height,
+
             };
         }
     }
@@ -63,15 +88,16 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     void setRadius(Power p)
     {
-        scale = p.scalePhysical();
-        agent.baseOffset = 0.75f * scale;
-        agent.radius = 0.7f * scale;
-        agent.height = 1.5f * scale;
+        float scalePhys = p.scalePhysical();
+        agent.baseOffset = 0.75f * scalePhys;
+        agent.radius = 0.7f * scalePhys;
+        agent.height = 1.5f * scalePhys;
+        scaleSpeed = p.scaleSpeed();
     }
     float timePathed;
     readonly float pathPeriod = 1f;
     float timeAgentSync;
-    readonly float agentSyncPeriod = 0.2f;
+    readonly float agentSyncPeriod = 0.1f;
     void makePath(Vector3 navTarget)
     {
         agent.SetDestination(navTarget);
@@ -85,9 +111,18 @@ public class AiHandler : MonoBehaviour, UnitControl
         timeAgentSync = Time.time;
         agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
         agent.velocity = mover.worldVelocity;
-        agent.speed = mover.props.maxSpeed * scale;
+        agent.speed = mover.props.maxSpeed * scaleSpeed;
         agent.acceleration = agent.speed * 5;
         //agent.angularSpeed = mover.props.lookSpeedDegrees;
+    }
+
+    enum DistanceType
+    {
+        TooClose,
+        SlightlyClose,
+        JustRight,
+        SlightlyFar,
+        TooFar
     }
 
     public void refreshInput()
@@ -110,11 +145,64 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                 Vector3 moveTarget;
                 Vector3 attackTarget = target.transform.position;
+                Vector3 rawDiffAttack = attackTarget - transform.position;
+
                 bool canSee = aggro.canSee(target);
+                Optional<Ability> currentAttack = mover.currentAttackingAbility();
+                AbilityPair bestNext = GetComponentInParent<AbiltyManager>().getBestAbility();
+                EffectiveDistance eff = currentAttack.HasValue ? currentAttack.Value.GetEffectiveDistance(mySize.scaledHalfHeight) : bestNext.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
+                DistanceType dist = DistanceType.TooFar;
+                bool canAttack = false;
+                currentInput.attacks = new ItemSlot[0];
+
+                if (canSee)
+                {
+                    Quaternion aim = eye.transform.rotation;
+                    
+                    float fullRange = eff.maxDistance + mySize.scaledRadius + thierSize.scaledRadius;
+                    Vector3 aimedDiff = Quaternion.Inverse(aim) * rawDiffAttack;
+                    float distanceFromTarget = rawDiffAttack.magnitude;
+                    float goodDist = fullRange - eff.minDistance;
+
+                    dist = distanceFromTarget switch
+                    {
+                        float i when i < eff.minDistance => DistanceType.TooClose,
+                        float i when i < eff.minDistance + goodDist * 0.2f => DistanceType.SlightlyClose,
+                        float i when i < eff.minDistance + goodDist * 0.8f => DistanceType.JustRight,
+                        float i when i <= fullRange => DistanceType.SlightlyFar,
+                        _ => DistanceType.TooFar,
+                    };
+
+                    if (aimedDiff.z > 0)
+                    {
+                        if(dist != DistanceType.TooClose && dist != DistanceType.TooFar)
+                        {
+                            if (Mathf.Abs(aimedDiff.x) < eff.width
+                                    && Mathf.Abs(aimedDiff.y) < eff.height)
+                            {
+                                canAttack = true;
+
+                            }
+                        }       
+                    }
+                }
+
+                if(!currentAttack.HasValue && canAttack)
+                {
+                    currentInput.attacks = new ItemSlot[] { bestNext.key };
+                }
+                
+
 
                 if (Time.time > timePathed + pathPeriod)
                 {
-                    makePath(thierGround.nav);
+                    Vector3 targetNav = thierGround.nav;
+                    if(dist == DistanceType.TooClose || dist == DistanceType.SlightlyClose)
+                    {
+                        targetNav = escapePosition(transform.position, target.transform.position, Mathf.Max(eff.minDistance, rawDiffAttack.magnitude));
+                        Debug.DrawLine(targetNav, targetNav + Vector3.up, Color.cyan, 1f);
+                    }
+                    makePath(targetNav);
 
                 }
                 moveTarget = agent.nextPosition;
@@ -133,33 +221,28 @@ public class AiHandler : MonoBehaviour, UnitControl
                 Vector3 inpDiff = planarDiff;
                 inpDiff.Normalize();
                 Vector2 inpVec = vec2input(inpDiff);
-                currentInput.move = inpVec;
-                currentInput.lookOffset = rawDiff;
-
-                if (canSee)
+                currentInput.move = dist switch
                 {
-                    Vector3 rawDiffAttack = attackTarget - transform.position;
-                    currentInput.lookOffset = rawDiffAttack;
+                    DistanceType.JustRight => Vector2.zero,
+                    _ => inpVec,
+                };
 
-                    AbilityPair pair = GetComponentInParent<AbiltyManager>().getBestAbility();
-                    EffectiveDistance eff = pair.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
-
-                    Quaternion aim = eye.transform.rotation;
-                    Vector3 aimedDiff = Quaternion.Inverse(aim) * rawDiffAttack;
-                    float fullRange = eff.maximums.z + mySize.scaledRadius + thierSize.scaledRadius;
-                    if (aimedDiff.z > 0 && aimedDiff.z <= fullRange && Mathf.Abs(aimedDiff.x) < eff.maximums.x && Mathf.Abs(aimedDiff.y) < eff.maximums.y)
-                    {
-                        currentInput.attacks = new ItemSlot[] { pair.key };
-                        if (aimedDiff.z <= fullRange * 0.8f)
-                        {
-                            currentInput.move = Vector2.zero;
-                        }
-                    }
-                    else
-                    {
-                        currentInput.attacks = new ItemSlot[0];
-                    }
+                Vector3 moveLookDiff = rawDiff.normalized * 2f;
+                if(dist == DistanceType.TooClose && !currentAttack.HasValue)
+                {
+                    currentInput.lookOffset = moveLookDiff;
                 }
+                else if (canSee)
+                {
+                    currentInput.lookOffset = rawDiffAttack;
+                }
+                else
+                {
+                    currentInput.lookOffset = moveLookDiff;
+                }
+                
+
+                
 
 
             }
@@ -171,4 +254,67 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     }
 
+    public Vector3 escapePosition(Vector3 location, Vector3 enemyPosition, float distance)
+    {
+        Vector3 enemyDiff = enemyPosition - location;
+        Optional<Vector3> escape;
+        Vector3 awayPos;
+
+        awayPos = transform.position - enemyDiff;
+        escape = validEscape(location, awayPos, distance);
+        if (escape.HasValue)
+        {
+            return escape.Value;
+        }
+
+        Vector3 cross = Vector3.Cross(Vector3.up, enemyDiff);
+        cross *= Random.Range(-1, 1);
+        cross.Normalize();
+        cross *= enemyDiff.magnitude;
+
+        awayPos = transform.position + cross;
+        escape = validEscape(location, awayPos, distance);
+        if (escape.HasValue)
+        {
+            return escape.Value;
+        }
+
+        cross *= -1;
+
+        awayPos = transform.position + cross;
+        escape = validEscape(location, awayPos, distance);
+        if (escape.HasValue)
+        {
+            return escape.Value;
+        }
+
+        awayPos = transform.position + enemyDiff;
+        escape = validEscape(location, awayPos, distance);
+        if (escape.HasValue)
+        {
+            return escape.Value;
+        }
+
+        return location;
+
+    }
+
+    public Optional<Vector3> validEscape(Vector3 location, Vector3 look, float dist)
+    {
+        NavMeshHit hit;
+        bool didHit;
+
+        didHit = NavMesh.SamplePosition(look, out hit, dist, NavMesh.AllAreas);
+        if (didHit)
+        {
+            Vector3 diff = hit.position - location;
+            Debug.Log(diff.magnitude + " - " + dist * 0.2f);
+            if(diff.magnitude > dist * 0.2f)
+            {
+                return hit.position;
+            }
+        }
+
+        return new Optional<Vector3>();
+    }
 }

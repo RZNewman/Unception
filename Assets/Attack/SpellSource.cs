@@ -86,8 +86,8 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
             //rotation handled by unit eye; default to foward
             return type switch
             {
-                AimType.Indicator => Quaternion.LookRotation(transform.up, transform.forward),
-                _ => transform.rotation
+                AimType.Indicator => Quaternion.LookRotation(ground.normal, transform.forward),
+                _ => Quaternion.LookRotation( transform.forward, ground.normal),
             };
         }
         else

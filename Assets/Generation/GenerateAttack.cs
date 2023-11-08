@@ -36,11 +36,7 @@ public static class GenerateAttack
         public float percentOfEffect;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
-            return new EffectiveDistance()
-            {
-                maximums = Vector3.zero,
-                type = EffectiveDistanceType.None,
-            };
+            return EffectiveDistance.empty;
         }
     }
 
@@ -408,11 +404,7 @@ public static class GenerateAttack
 
         public EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
-            AiHandler.EffectiveDistance saved = new AiHandler.EffectiveDistance
-            {
-                maximums = Vector3.zero,
-                type = AiHandler.EffectiveDistanceType.None
-            };
+            EffectiveDistance saved = EffectiveDistance.empty;
 
             //TODO take highest
             SegmentInstanceData prime = segments[0];

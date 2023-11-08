@@ -22,7 +22,7 @@ public class Size : MonoBehaviour
         {
             get
             {
-                return distance - IndicatorHeightOffset;
+                return distance * 0.85f;
             }
         }
         public Vector3 indicatorPosition(Vector3 worldForward)

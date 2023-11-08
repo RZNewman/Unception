@@ -295,6 +295,7 @@ public class AttackSegment
         Transform body = mover.getSpawnBody().transform;
         uint team = mover.GetComponent<TeamOwnership>().getTeam();
         FloorNormal ground = mover.GetComponent<FloorNormal>();
+        UnitEye eye = mover.GetComponentInChildren<UnitEye>();
 
         float range = source.type == HitType.Projectile ? 0 : source.range;
 
@@ -304,8 +305,8 @@ public class AttackSegment
             moveType = MoveMode.World;
         }
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
-        Vector3 planarForward = ground.forwardPlanarWorld(body.forward);
-        Vector3 bodyFocus = body.position + planarForward * size.scaledRadius;
+        Vector3 eyeForward = eye.transform.forward;
+        Vector3 bodyFocus = body.position + eyeForward * size.scaledRadius;
         Vector3 targetDiff = target - bodyFocus;
         Vector3 flatDiff = targetDiff;
         flatDiff.y = 0;
@@ -335,10 +336,9 @@ public class AttackSegment
                 Vector3 limitedDiff = targetDiff.normalized * Mathf.Clamp(distance, 0, range);
                 if (location == SourceLocation.WorldForward)
                 {
-                    Vector3 forwardDiff = Mathf.Max(Vector3.Dot(targetDiff, planarForward), 0) * planarForward;
-                    forwardDiff.y = targetDiff.y;
+                    Vector3 forwardDiff = Mathf.Max(Vector3.Dot(targetDiff, eyeForward), 0) * eyeForward;
                     limitedDiff = forwardDiff.normalized * Mathf.Clamp(forwardDiff.magnitude, 0, range);
-                    flatDiff = planarForward;
+                    flatDiff = limitedDiff;
                     flatDiff.y = 0;
                 }
 

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Drawing;
+
 using UnityEngine;
 using static Keybinds;
 using static UnitControl;
@@ -119,6 +119,8 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, LayerMask.GetMask("Terrain","Stopper"));
 
+        System.Array.Sort(info, (a, b) => a.distance.CompareTo(b.distance));
+
         for (int i = 0; i <= info.Length; i++)
         {
             if (i == info.Length)
@@ -128,6 +130,7 @@ public class InputHandler : MonoBehaviour, UnitControl
                 {
                     Vector3 point = clickHit.point + clickHit.normal * 0.8f * power.scalePhysical();
                     currentInput.lookOffset = point - transform.position;
+                    Debug.DrawLine(clickHit.point, clickHit.point + Vector3.up, Color.magenta, 0.01f);
                     break;
                 }
                 else
@@ -140,14 +143,16 @@ public class InputHandler : MonoBehaviour, UnitControl
 
             RaycastHit hit = info[i];
 
+            
             float angle = Vector3.Angle(transform.position - info[i].point, Camera.main.transform.forward);
             if(angle < 50)
             {
                 //too close to the camera
+                Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.red, 0.01f);
                 continue;
             }
 
-            if (hit.transform.gameObject.layer == LayerMask.GetMask("Terrain"))
+            if (1 << hit.transform.gameObject.layer == LayerMask.GetMask("Terrain"))
             {
                 if (
                 Vector3.Angle(Vector3.up, info[i].normal) < floorDegrees
@@ -155,14 +160,18 @@ public class InputHandler : MonoBehaviour, UnitControl
                 {
                     Vector3 point = info[i].point + info[i].normal * 0.75f * power.scalePhysical();
                     currentInput.lookOffset = point - transform.position;
+                    
+                    Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 0.01f);
                     break;
                 }
+                Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.white, 0.01f);
             }
-            if (hit.transform.gameObject.layer == LayerMask.GetMask("Stopper"))
+            if (1 << hit.transform.gameObject.layer == LayerMask.GetMask("Stopper"))
             {
   
                 Vector3 point = hit.transform.position;
                 currentInput.lookOffset = point - transform.position;
+                Debug.DrawLine(hit.point, hit.point + Vector3.up, Color.green, 0.01f);
                 break;
             }
 

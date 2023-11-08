@@ -71,7 +71,7 @@ public static class GenerateDash
 
         public override EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
-            return new EffectiveDistance(distance, 0, 0, EffectiveDistanceType.Modifier);
+            return new EffectiveDistance(distance, distance, 0, 0, EffectiveDistanceType.Modifier);
         }
     }
     public static DashGenerationData createDash()

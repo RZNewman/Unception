@@ -270,11 +270,11 @@ public class MapGenerator : NetworkBehaviour
                         continue;
                     }
                     var height_delta = mid.y - nav_hit.position.y;
-                    if (height_delta < gen.m_AgentHeight * 0.5f)
-                    {
-                        //ignore small drops
-                        continue;
-                    }
+                    //if (height_delta < gen.m_AgentHeight * 0.5f)
+                    //{
+                    //    //ignore small drops
+                    //    continue;
+                    //}
                     var prefab = gen.m_JumpLinkPrefab;
                     if (height_delta > gen.m_MaxVerticalJump)
                     {

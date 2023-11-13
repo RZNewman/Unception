@@ -1259,8 +1259,8 @@ public class WFCGeneration : MonoBehaviour
         yield return null;
         Debug.Log("Init: " + Time.time);
 
-        int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect | TileConnection.Flat | TileConnection.FlatUnwalkable);
-        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.Flat | TileConnection.FlatUnwalkable);
+        int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
+        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air );
         int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect | TileConnection.Air2);
         int groundMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
 

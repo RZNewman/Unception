@@ -7,6 +7,8 @@ using static GenerateValues;
 using static Atlas;
 using static Utils;
 using static Breakable;
+using Unity.Burst.CompilerServices;
+using UnityEngine.AI;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -98,7 +100,6 @@ public class MonsterSpawn : NetworkBehaviour
     public struct SpawnTransform
     {
         public Vector3 position;
-        public Quaternion rotation;
         public Vector3 halfExtents;
 
         public Vector3 randomLocaion
@@ -106,9 +107,15 @@ public class MonsterSpawn : NetworkBehaviour
             get
             {
                 Vector3 positionOffset = new Vector3(Random.Range(-halfExtents.x, halfExtents.x), 0, Random.Range(-halfExtents.z, halfExtents.z));
+                float searchRad = positionOffset.magnitude;
                 positionOffset *= 0.9f;
+                NavMeshHit hit;
+                if(NavMesh.SamplePosition(positionOffset, out hit, searchRad, NavMesh.AllAreas))
+                {
+                    positionOffset = hit.position;
+                }
+                
                 positionOffset.y = halfExtents.y;
-                positionOffset = rotation * positionOffset;
                 return position + positionOffset;
             }
         }
@@ -198,7 +205,6 @@ public class MonsterSpawn : NetworkBehaviour
                 t = new SpawnTransform
                 {
                     position = endPortal.transform.position,
-                    rotation = Quaternion.identity,
                     halfExtents = Power.scalePhysical(spawnPower) * 0.5f * Vector3.one,
                 };
                 endPortal.SetActive(false);

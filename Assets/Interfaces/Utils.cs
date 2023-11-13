@@ -316,14 +316,23 @@ public static class Utils
     }
 
 
-    public static T RandomItemWeighted<T>(this SimplePriorityQueue<T> list, float weight = 2f)
+    public static T RandomItemWeighted<T>(this IEnumerable<T> list, System.Func<T, float> weightSelector)
     {
-        int index = Mathf.FloorToInt(Mathf.Pow(Random.value, 1 / weight) * list.Count);
-        if (index == list.Count)
+        float sum = 0;
+        foreach(T item in list)
         {
-            index--;
+            sum += weightSelector(item);
         }
-        return list.Skip(index).First();
+        float value = Random.value * sum;
+        foreach (T item in list)
+        {
+            value -= weightSelector(item);
+            if(value <= 0)
+            {
+                return item;
+            }
+        }
+        return list.First();
     }
 
     public struct Optional<T>

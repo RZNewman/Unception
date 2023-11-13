@@ -6,6 +6,7 @@ using UnityEngine;
 using static MonsterSpawn;
 using static Utils;
 using static WFCTile;
+using static WFCTileOption;
 
 public class WFCGeneration : MonoBehaviour
 {
@@ -1419,13 +1420,27 @@ public class WFCGeneration : MonoBehaviour
             cell.domainMask = selectFromTileDomain(cell.domainMask);
             TileOption opt = optionFromSingleDomain(cell.domainMask);
             GameObject instance = null;
+            WFCTileOption alt = null;
             if (!opt.prefab.skipSpawn)
             {
+                GameObject prefab = opt.prefab.getPrefabToSpawn();
+                alt = prefab.GetComponent<WFCTileOption>();
+                float additionalRot = 0;
+                if (alt)
+                {
+                    additionalRot = alt.rotationOptions switch
+                    {
+                        TileOptionRotations.Halves => Mathf.Round(Random.value) * 180,
+                        TileOptionRotations.Quarters => Mathf.Round(Random.value.asRange(0,4)) * 90,
+                        _ => 0,
+                    };
+                }
+
                 instance = Instantiate(
-                    opt.prefab.gameObject,
+                    prefab,
                     location,
                     Quaternion.AngleAxis(
-                        opt.rotation switch
+                        additionalRot + opt.rotation switch
                         {
                             Rotation.Quarter => 90,
                             Rotation.Half => 180,
@@ -1438,7 +1453,14 @@ public class WFCGeneration : MonoBehaviour
                 );
                 //TODO spawn tile?
             }
-            cell.collapse(opt.prefab.navType, instance);
+            NavLoad navLoadType = (opt.prefab.navType, alt == null ? false : alt.navAddThis) switch
+            {
+                (NavLoad.None, true) => NavLoad.This,
+                (NavLoad.Beneath, true) => NavLoad.ThisAndBeneath,
+                _ => opt.prefab.navType,
+            };
+
+            cell.collapse(navLoadType, instance);
 
             constrainAfterTileSet(coords);
 
@@ -1531,7 +1553,7 @@ public class WFCGeneration : MonoBehaviour
                 & (loc - start).magnitude > 2f
                 )
             {
-                spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), rotation = Quaternion.identity, halfExtents = floorScale * 0.5f });
+                spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), halfExtents = floorScale * 0.5f });
             }
         }
 
@@ -1545,16 +1567,15 @@ public class WFCGeneration : MonoBehaviour
         foreach (Vector3Int loc in uniqueLocations)
         {
             WFCCell cell = map[loc.x, loc.y, loc.z];
-            switch (cell.navType)
-            {
-                case NavLoad.This:
-                    nav.Add(cell.instancedCell);
-                    break;
-                case NavLoad.Beneath:
-                    WFCCell adj = map[loc.x, loc.y - 1, loc.z];
-                    nav.Add(adj.instancedCell);
-                    break;
 
+            if(cell.navType == NavLoad.This || cell.navType == NavLoad.ThisAndBeneath)
+            {
+                nav.Add(cell.instancedCell);
+            }
+            if (cell.navType == NavLoad.Beneath || cell.navType == NavLoad.ThisAndBeneath)
+            {
+                WFCCell adj = map[loc.x, loc.y - 1, loc.z];
+                nav.Add(adj.instancedCell);
             }
 
         }

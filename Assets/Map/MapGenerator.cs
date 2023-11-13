@@ -171,7 +171,7 @@ public class MapGenerator : NetworkBehaviour
         NavLinkGenerator linkGenerator = ScriptableObject.CreateInstance<NavLinkGenerator>();
         linkGenerator.m_FallLinkPrefab = fallPre.transform;
         linkGenerator.m_JumpLinkPrefab = jumpPre.transform;
-        linkGenerator.m_MaxVerticalJump = 6 * currentFloorScale;
+        linkGenerator.m_MaxVerticalJump = 4 * currentFloorScale;
         linkGenerator.m_MaxHorizontalJump = 5 * currentFloorScale;
         linkGenerator.m_MaxVerticalFall = 15 * currentFloorScale;
         linkGenerator.m_PhysicsMask = LayerMask.GetMask("Terrain");

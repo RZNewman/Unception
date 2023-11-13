@@ -114,6 +114,9 @@ MonoBehaviour:
   skipSpawn: 0
   dissuadeCollapse: 0
   navType: 1
+  alternatives:
+  - {fileID: -406439127432545489, guid: 07be89678fcbde54c9f09364e0f02773, type: 3}
+  - {fileID: -406439127432545489, guid: 99b26b43720df7642a2e3e04900cf842, type: 3}
   adjacencies:
   - direction: 0
     connections: 10000000

@@ -1,5 +1,7 @@
+using Priority_Queue;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static WFCGeneration;
 
@@ -16,11 +18,13 @@ public class WFCTile : MonoBehaviour
         None,
         This,
         Beneath,
+        ThisAndBeneath,
     }
 
     public bool skipSpawn = false;
     public bool dissuadeCollapse = false;
     public NavLoad navType = NavLoad.None;
+    public List<WFCTileOption> alternatives = new List<WFCTileOption>();
     public List<ConnectionOptions> adjacencies;
 
 
@@ -37,5 +41,22 @@ public class WFCTile : MonoBehaviour
             throw new System.Exception("Tile " + name + ", Rotation " + rotation + " without 6 directions: had " + domains.Count);
         }
         return domains;
+    }
+
+
+    public GameObject getPrefabToSpawn()
+    {
+        if (alternatives.Count == 0)
+        {
+            return gameObject;
+        }
+
+        List<GameObject> tiles = new List<GameObject>();
+        foreach(WFCTileOption opt in alternatives)
+        {
+            tiles.Add(opt.gameObject);
+        }
+        tiles.Add(gameObject);
+        return tiles.RandomItemWeighted((t) => { WFCTileOption opt = t.GetComponent<WFCTileOption>(); return opt ? opt.weightPercent : 100; });
     }
 }

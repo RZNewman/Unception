@@ -183,7 +183,7 @@ public class MonsterSpawn : NetworkBehaviour
         return units;
     }
 
-    public IEnumerator spawnLevel(List<SpawnTransform> locations, float sparseness, Difficulty baseDiff, EncounterData[] encounters)
+    public IEnumerator spawnLevel(List<SpawnTransform> locations, float sparseness, Difficulty baseDiff, EncounterData[] encounters, GameObject endPortal)
     {
         monsterUnits = createUnits(baseDiff);
 
@@ -191,11 +191,28 @@ public class MonsterSpawn : NetworkBehaviour
         {
             EncounterData e = encounters[i];
 
-            int z = locations.RandomIndex();
-            SpawnTransform t = locations[z];
-            locations.RemoveAt(z);
+            SpawnTransform t;
+            GameObject reveal = null;
+            if(i == 0)
+            {
+                t = new SpawnTransform
+                {
+                    position = endPortal.transform.position,
+                    rotation = Quaternion.identity,
+                    halfExtents = Power.scalePhysical(spawnPower) * 0.5f * Vector3.one,
+                };
+                endPortal.SetActive(false);
+                reveal = endPortal;
+            }
+            else
+            {
+                int z = locations.RandomIndex();
+                t = locations[z];
+                locations.RemoveAt(z);
+            }
+            
 
-            spawnEncounter(e, t);
+            spawnEncounter(e, t, reveal);
             yield return null;
         }
 
@@ -235,7 +252,7 @@ public class MonsterSpawn : NetworkBehaviour
         }
     }
 
-    void spawnEncounter(EncounterData encounterData, SpawnTransform spawn)
+    void spawnEncounter(EncounterData encounterData, SpawnTransform spawn, GameObject reveal)
     {
         float scale = Power.scalePhysical(spawnPower);
         Vector3 encounterPos = spawn.position;
@@ -249,6 +266,7 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         Encounter encounter = o.GetComponent<Encounter>();
         encounter.setScale(scale);
+        encounter.revealOnEnd = reveal;
 
         List<SpawnUnit> encounterUnits = createUnits(encounterData.difficulty);
 

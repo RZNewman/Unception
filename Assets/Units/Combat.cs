@@ -12,7 +12,10 @@ public class Combat : NetworkBehaviour
 
     private void Start()
     {
-        setUnitUI(false, false);
+        if (!inCombat)
+        {
+            setUnitUI(false, false);
+        }      
         if (isServer)
         {
             EventManager events = GetComponent<EventManager>();

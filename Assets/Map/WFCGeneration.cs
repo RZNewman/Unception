@@ -75,7 +75,14 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-    public static int walkableMask = (int)(TileConnection.Flat | TileConnection.RampTop | TileConnection.RampLeft | TileConnection.RampRight);
+    public static int walkableMask = (int)(
+        TileConnection.Flat 
+        | TileConnection.RampTop 
+        | TileConnection.RampLeft 
+        | TileConnection.RampRight
+        | TileConnection.WallLeft
+        | TileConnection.WallRight
+        );
     public List<TileDirection> walkableDirections(Vector3Int loc)
     {
         List<TileDirection> directions = new List<TileDirection>();

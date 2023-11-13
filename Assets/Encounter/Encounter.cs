@@ -10,6 +10,9 @@ public class Encounter : NetworkBehaviour
 {
     public GameObject activeInd;
 
+    [HideInInspector]
+    public GameObject revealOnEnd;
+
 
     List<Pack> packs = new List<Pack>();
     float scale;
@@ -23,6 +26,7 @@ public class Encounter : NetworkBehaviour
     public void addPack(Pack p)
     {
         packs.Add(p);
+        p.setEncounter(this);
     }
     public void setScale(float s)
     {
@@ -56,6 +60,15 @@ public class Encounter : NetworkBehaviour
         }
     }
 
+    public void trySetCombat(GameObject colliderBody) {
+        if (!combat.inCombat)
+        {
+            triggeringUnitBody = colliderBody;
+            triggeringUnit = triggeringUnitBody.GetComponentInParent<Combat>().gameObject;
+            combat.setFighting(triggeringUnit);
+        }
+    }
+
     [ClientRpc]
     void RpcClientActivate()
     {
@@ -67,10 +80,6 @@ public class Encounter : NetworkBehaviour
     {
         if (encounterRunning)
         {
-            if (!combat.inCombat)
-            {
-                Destroy(gameObject);
-            }
 
             if (!currentPack.packAlive())
             {
@@ -79,6 +88,10 @@ public class Encounter : NetworkBehaviour
                 {
                     encounterRunning = false;
                     combat.setHitBy(triggeringUnit);
+                    if (revealOnEnd)
+                    {
+                        revealOnEnd.SetActive(true);
+                    }
                     GetComponent<LifeManager>().die();
                 }
                 else

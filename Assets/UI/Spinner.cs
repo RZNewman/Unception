@@ -11,6 +11,7 @@ public class Spinner : MonoBehaviour
     {
         Forward,
         Up,
+        Right,
     }
     // Update is called once per frame
     void Update()
@@ -22,10 +23,12 @@ public class Spinner : MonoBehaviour
         switch (axis)
         {
             case SpinnerAxis.Forward:
-                return Vector3.forward;
+                return transform.forward;
+            case SpinnerAxis.Right:
+                return transform.right;
             case SpinnerAxis.Up:
             default:
-                return Vector3.up;
+                return transform.up;
         }
     }
 }

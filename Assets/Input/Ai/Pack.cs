@@ -16,6 +16,8 @@ public class Pack : NetworkBehaviour
 
     SoundManager sound;
 
+    Encounter encounter;
+
     //Server
     bool aggroed = false;
     bool enabledUnits = false;
@@ -31,6 +33,11 @@ public class Pack : NetworkBehaviour
         {
             return pack.Sum(u => u.GetComponent<Reward>().rewardPercent);
         }
+    }
+
+    public void setEncounter(Encounter e)
+    {
+        encounter = e;
     }
 
     List<GameObject> players = new List<GameObject>();
@@ -178,6 +185,10 @@ public class Pack : NetworkBehaviour
         {
             a.GetComponent<ControlManager>().spawnControl(); //spawn early so we can access aggro in encoutners
             a.GetComponentInChildren<AggroHandler>().addAggro(target);
+        }
+        if (encounter)
+        {
+            encounter.trySetCombat(target);
         }
     }
 

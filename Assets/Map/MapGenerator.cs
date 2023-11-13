@@ -145,8 +145,8 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(wfcFloor);
         yield return wfc.generate(wfcFloor);
 
-        GameObject p = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
-        p.GetComponent<NextLevel>().setGen(this);
+        GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
+        endPortal.GetComponent<NextLevel>().setGen(this);
         Vector3 tileDirection = wfc.generationData.end - wfc.generationData.start;
 
 
@@ -180,7 +180,7 @@ public class MapGenerator : NetworkBehaviour
         GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].sparseness, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters);
+        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].sparseness, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters, endPortal);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 

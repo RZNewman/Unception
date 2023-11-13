@@ -78,7 +78,7 @@ public class Mezmerize : NetworkBehaviour, BarValue
 
         maxFocus = props.maxFocus * scaleNum;
         passiveFocusRecover = props.maxFocus * scaleNum * 0.02f;
-        mezmerizeFocusRecover = props.maxFocus * scaleNum * 0.125f;
+        mezmerizeFocusRecover = props.maxFocus * scaleNum * 0.25f;
 
 
         float proportion = maxFocus / lastMax;

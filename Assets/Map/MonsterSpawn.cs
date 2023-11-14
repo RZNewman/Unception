@@ -373,12 +373,12 @@ public class MonsterSpawn : NetworkBehaviour
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         o.GetComponent<Power>().setPower(spawnUnit.power);
-        UnitChampInd ind = o.GetComponent<UnitChampInd>();
-        ind.colors.Clear();
-        foreach (Color color in spawnUnit.indicatorColors)
-        {
-            ind.colors.Add(color);
-        }
+        //UnitChampInd ind = o.GetComponent<UnitChampInd>();
+        //ind.colors.Clear();
+        //foreach (Color color in spawnUnit.indicatorColors)
+        //{
+        //    ind.colors.Add(color);
+        //}
 
         o.GetComponent<Reward>().setReward(spawnPower, spawnUnit.rewardMult, spawnUnit.rewardPercent);
         o.GetComponent<PackHeal>().percentHealKiller = spawnUnit.packPercent * spawnUnit.killerHealMult;
@@ -386,7 +386,6 @@ public class MonsterSpawn : NetworkBehaviour
         //Debug.Log(spawnUnit.power + " - " + spawnUnit.poolCost + " - " + weightedPool() + " - " + spawnPower + " - " + reward);
         p.addToPack(o);
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
-        holder.pack = p;
         holder.props = spawnUnit.props;
         holder.championHealthMultiplier = spawnUnit.championHealthMult;
         AbiltyManager al = o.GetComponent<AbiltyManager>();

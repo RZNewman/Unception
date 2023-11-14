@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static EventManager;
+using static UnityEngine.GraphicsBuffer;
 
 public class AggroHandler : MonoBehaviour
 {
@@ -8,20 +9,19 @@ public class AggroHandler : MonoBehaviour
     SphereCollider col;
 
 
-    List<GameObject> aggroList = new List<GameObject>();
-    List<GameObject> senseRadius = new List<GameObject>();
+    List<GameObject> aggroedEnemies = new List<GameObject>();
+    List<GameObject> sensedEnemies = new List<GameObject>();
+    List<GameObject> sensedAllies = new List<GameObject>();
 
     Combat combat;
-    Pack pack;
     bool started = false;
 
     private void Start()
     {
         col = GetComponent<SphereCollider>();
         setCombat();
-        pack = transform.parent.GetComponent<UnitPropsHolder>().pack;
         GetComponentInParent<Power>().subscribePower(setRadius);
-        transform.parent.GetComponent<EventManager>().HitEvent += aggroUnitParent;
+        transform.parent.GetComponent<EventManager>().HitEvent += aggroWhenHit;
         started = true;
     }
     void setCombat()
@@ -43,67 +43,74 @@ public class AggroHandler : MonoBehaviour
         uint myTeam = GetComponentInParent<TeamOwnership>().getTeam();
         if (myTeam != theirTeam)
         {
-            senseRadius.Add(other);
+            sensedEnemies.Add(other);
 
+        }
+        else
+        {
+            foreach(GameObject enemy in aggroedEnemies)
+            {
+                other.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(enemy);
+            }
+            sensedAllies.Add(other);
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        senseRadius.Remove(other.gameObject);
+        sensedEnemies.Remove(other.gameObject);
+        sensedAllies.Remove(other.gameObject);
     }
     private void Update()
     {
-        List<GameObject> sensed = new List<GameObject>(senseRadius);
+        List<GameObject> sensed = new List<GameObject>(sensedEnemies);
         foreach (GameObject o in sensed)
         {
 
             if (canSee(o))
             {
-                aggro(o);
-                senseRadius.Remove(o);
+                addAggro(o);
+                sensedEnemies.Remove(o);
             }
         }
     }
 
 
-    void aggroUnitParent(GetHitEventData data)
+    void aggroWhenHit(GetHitEventData data)
     {
         GameObject other = data.other.GetComponentInChildren<Size>().gameObject;
-        aggro(other);
+        addAggro(other);
     }
-    public void aggro(GameObject other)
-    {
-        if (pack)
-        {
-            if (!aggroList.Contains(other))
-            {
-                pack.packAggro(other);
-            }
-        }
-        else
-        {
-            addAggro(other);
-        }
-    }
+
     public void addAggro(GameObject target)
     {
-        if (!aggroList.Contains(target))
+        if (!aggroedEnemies.Contains(target))
         {
             setCombat();
-            aggroList.Add(target);
+            aggroedEnemies.Add(target);
             combat.setFighting(target.GetComponentInParent<Combat>().gameObject);
+            transform.parent.GetComponent<EventManager>().fireAggro(target);
+            aggroAllies(target);
         }
     }
+
+    void aggroAllies(GameObject target)
+    {
+        foreach(GameObject ally in sensedAllies)
+        {
+            ally.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(target);
+        }
+    }
+    
     public void removeTarget(GameObject target)
     {
-        aggroList.Remove(target);
+        aggroedEnemies.Remove(target);
     }
 
     public GameObject getTopTarget()
     {
-        if (started && aggroList.Count > 0)
+        if (started && aggroedEnemies.Count > 0)
         {
-            return aggroList[0];
+            return aggroedEnemies[0];
         }
         return null;
     }

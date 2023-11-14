@@ -17,6 +17,7 @@ public class EventManager : MonoBehaviour
     public delegate void OnTransition();
     public delegate void OnTick();
     public delegate void OnIndicator();
+    public delegate void OnAggro(GameObject collider);
 
 
 
@@ -26,6 +27,7 @@ public class EventManager : MonoBehaviour
     public event OnTransition TransitionEvent;
     public event OnTick TickEvent;
     public event OnIndicator IndicatorEvent;
+    public event OnAggro AggroEvent;
 
     bool deathFired = false;
 
@@ -73,5 +75,10 @@ public class EventManager : MonoBehaviour
     public void fireIndicator()
     {
         IndicatorEvent?.Invoke();
+    }
+
+    public void fireAggro(GameObject collider)
+    {
+        AggroEvent?.Invoke(collider);
     }
 }

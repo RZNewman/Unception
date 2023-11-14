@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static EventManager;
 
 public class Pack : NetworkBehaviour
 {
@@ -38,6 +39,12 @@ public class Pack : NetworkBehaviour
     public void setEncounter(Encounter e)
     {
         encounter = e;
+        List<Color> ind = new List<Color>() { Color.red };
+        foreach(GameObject u in pack)
+        {
+            u.GetComponent<EventManager>().AggroEvent += (GameObject col) => encounter.trySetCombat(col);
+            u.GetComponent<UnitChampInd>().setColors(ind);
+        }
     }
 
     List<GameObject> players = new List<GameObject>();
@@ -108,6 +115,7 @@ public class Pack : NetworkBehaviour
     {
         foreach (GameObject u in pack)
         {
+            u.GetComponent<EventManager>().suscribeDeath((bool _) => pack.Remove(u));
             u.SetActive(false);
         }
         RpcDisablePack(pack);
@@ -185,10 +193,6 @@ public class Pack : NetworkBehaviour
         {
             a.GetComponent<ControlManager>().spawnControl(); //spawn early so we can access aggro in encoutners
             a.GetComponentInChildren<AggroHandler>().addAggro(target);
-        }
-        if (encounter)
-        {
-            encounter.trySetCombat(target);
         }
     }
 

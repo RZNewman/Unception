@@ -8,8 +8,14 @@ public class UnitChampInd : NetworkBehaviour
 {
     public GameObject indicator;
 
-    public readonly SyncList<Color> colors = new SyncList<Color>();
-    void Start()
+
+    [Server]
+    public void setColors(List<Color> colors)
+    {
+        RpcSpawnColors(colors);
+    }
+    [ClientRpc]
+    void RpcSpawnColors(List<Color> colors)
     {
         float offset = 0;
         foreach (Color color in colors)

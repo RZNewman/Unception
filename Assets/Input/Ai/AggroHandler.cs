@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static EventManager;
 using static UnityEngine.GraphicsBuffer;
@@ -8,8 +9,14 @@ public class AggroHandler : MonoBehaviour
     public float aggroRadius = 15f;
     SphereCollider col;
 
+    struct AggroData
+    {
+        public GameObject target;
+        public float lastSeenTime;
+        public float lastLookTime;
+    }
 
-    List<GameObject> aggroedEnemies = new List<GameObject>();
+    List<AggroData> aggroedEnemies = new List<AggroData>();
     List<GameObject> sensedEnemies = new List<GameObject>();
     List<GameObject> sensedAllies = new List<GameObject>();
 
@@ -48,9 +55,9 @@ public class AggroHandler : MonoBehaviour
         }
         else
         {
-            foreach(GameObject enemy in aggroedEnemies)
+            foreach(AggroData enemy in aggroedEnemies)
             {
-                other.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(enemy);
+                other.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(enemy.target);
             }
             sensedAllies.Add(other);
         }
@@ -60,6 +67,9 @@ public class AggroHandler : MonoBehaviour
         sensedEnemies.Remove(other.gameObject);
         sensedAllies.Remove(other.gameObject);
     }
+
+    static readonly float LookUpdateTime = 0.5f;
+    static readonly float LooseAggroTime = 8f;
     private void Update()
     {
         List<GameObject> sensed = new List<GameObject>(sensedEnemies);
@@ -72,6 +82,36 @@ public class AggroHandler : MonoBehaviour
                 sensedEnemies.Remove(o);
             }
         }
+        for(int i =0; i< aggroedEnemies.Count; i++)
+        {
+            AggroData d = aggroedEnemies[i];
+            if(d.lastLookTime+LookUpdateTime < Time.time)
+            {
+                d.lastLookTime = Time.time;
+                if (canSee(d.target))
+                {
+                    d.lastSeenTime = Time.time;
+                }
+            }
+
+            if(d.lastSeenTime + LooseAggroTime < Time.time)
+            {
+                aggroedEnemies.RemoveAt(i);
+                combat.dropCombat(d.target.GetComponentInParent<Combat>().gameObject);
+                transform.parent.GetComponent<EventManager>().fireAggro(new AggroEventData
+                {
+                    lostAggro = true,
+                    targetCollider = d.target
+                });
+                i--;
+            }
+            else
+            {
+                aggroedEnemies[i] = d;
+            }
+
+            
+        }
     }
 
 
@@ -83,12 +123,21 @@ public class AggroHandler : MonoBehaviour
 
     public void addAggro(GameObject target)
     {
-        if (!aggroedEnemies.Contains(target))
+        if (!aggroedEnemies.Select((ag) => ag.target).Contains(target))
         {
             setCombat();
-            aggroedEnemies.Add(target);
+            aggroedEnemies.Add(new AggroData
+            {
+                target = target,
+                lastLookTime = Time.time,
+                lastSeenTime = Time.time,
+            });
             combat.setFighting(target.GetComponentInParent<Combat>().gameObject);
-            transform.parent.GetComponent<EventManager>().fireAggro(target);
+            transform.parent.GetComponent<EventManager>().fireAggro(new AggroEventData
+            {
+                lostAggro = false,
+                targetCollider = target
+            });
             aggroAllies(target);
         }
     }
@@ -97,20 +146,26 @@ public class AggroHandler : MonoBehaviour
     {
         foreach(GameObject ally in sensedAllies)
         {
+
+            //TODO why can this be null/destroyed?
+            if (ally == null)
+            {
+                continue;
+            }
             ally.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(target);
         }
     }
     
     public void removeTarget(GameObject target)
     {
-        aggroedEnemies.Remove(target);
+        aggroedEnemies.Remove(aggroedEnemies.Find((ag) =>ag.target == target));
     }
 
     public GameObject getTopTarget()
     {
         if (started && aggroedEnemies.Count > 0)
         {
-            return aggroedEnemies[0];
+            return aggroedEnemies[0].target;
         }
         return null;
     }

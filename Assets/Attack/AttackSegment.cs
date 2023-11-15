@@ -343,7 +343,7 @@ public class AttackSegment
                 }
 
 
-                Quaternion faceRot = Quaternion.LookRotation(flatDiff);
+                Quaternion faceRot = flatDiff.magnitude >0 ? Quaternion.LookRotation(flatDiff) : Quaternion.LookRotation(body.forward);
 
                 instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, faceRot);
                 instance.GetComponent<SpellSource>().offsetMult = 0;

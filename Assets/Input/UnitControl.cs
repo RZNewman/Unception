@@ -107,7 +107,13 @@ public interface UnitControl
             {
                 Vector3 flatLookDiff = Vector3.ProjectOnPlane(lookOffset, Vector3.up);
                 Vector3 cross = Vector3.Cross(flatLookDiff, lookOffset);
-                return Vector3.SignedAngle(flatLookDiff, lookOffset, cross);
+                //despite beign signed, the cross product will always be positive
+                float angle = Vector3.SignedAngle(flatLookDiff, lookOffset, cross);
+                if (lookOffset.y> flatLookDiff.y)
+                {
+                    angle = -angle;
+                }
+                return angle;
             }
         }
     }

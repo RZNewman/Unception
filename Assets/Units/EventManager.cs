@@ -11,13 +11,19 @@ public class EventManager : MonoBehaviour
         public float damage;
     }
 
+    public struct AggroEventData
+    {
+        public GameObject targetCollider;
+        public bool lostAggro;
+    }
+
     public delegate void OnDeath(bool natural);
     public delegate void OnHit(GetHitEventData data);
     public delegate void OnCast(Ability ability);
     public delegate void OnTransition();
     public delegate void OnTick();
     public delegate void OnIndicator();
-    public delegate void OnAggro(GameObject collider);
+    public delegate void OnAggro(AggroEventData collider);
 
 
 
@@ -77,8 +83,8 @@ public class EventManager : MonoBehaviour
         IndicatorEvent?.Invoke();
     }
 
-    public void fireAggro(GameObject collider)
+    public void fireAggro(AggroEventData aggro)
     {
-        AggroEvent?.Invoke(collider);
+        AggroEvent?.Invoke(aggro);
     }
 }

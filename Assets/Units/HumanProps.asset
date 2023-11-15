@@ -24,7 +24,7 @@ MonoBehaviour:
   backwardsMoveMultiplier: 0.7
   dashDistance: 5
   dashSpeed: 30
-  canFloat: 1
+  canFloat: 0
   maxHealthMult: 10
   maxPosture: 250
   maxFocus: 1750

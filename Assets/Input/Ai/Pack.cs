@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using static EventManager;
+using static UnityEngine.GraphicsBuffer;
 
 public class Pack : NetworkBehaviour
 {
@@ -42,7 +43,19 @@ public class Pack : NetworkBehaviour
         List<Color> ind = new List<Color>() { Color.red };
         foreach(GameObject u in pack)
         {
-            u.GetComponent<EventManager>().AggroEvent += (GameObject col) => encounter.trySetCombat(col);
+            u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
+                if (agg.lostAggro)
+                {
+                    u.transform.position = encounter.transform.position;
+                    u.GetComponentInChildren<AggroHandler>().addAggro(agg.targetCollider);
+                }
+                else
+                {
+                    aggroed = true;
+                    encounter.trySetCombat(agg.targetCollider);
+                }
+                
+            };
             u.GetComponent<UnitChampInd>().setColors(ind);
         }
     }

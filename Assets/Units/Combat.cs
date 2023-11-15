@@ -93,6 +93,19 @@ public class Combat : NetworkBehaviour
         }
         active.Clear();
     }
+
+    public void dropCombat(GameObject other)
+    {
+        if (active.Contains(other))
+        {
+            removeTarget(other);
+            other.GetComponent<Combat>().removeTarget(gameObject);
+
+        }
+
+    }
+
+
     void removeTarget(GameObject other)
     {
         active.Remove(other);

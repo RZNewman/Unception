@@ -22,7 +22,7 @@ public class Size : MonoBehaviour
         {
             get
             {
-                return distance * 0.85f;
+                return distance * 0.45f;
             }
         }
         public Vector3 indicatorPosition(Vector3 worldForward)

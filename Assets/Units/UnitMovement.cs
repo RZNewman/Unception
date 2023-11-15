@@ -538,7 +538,7 @@ public class UnitMovement : NetworkBehaviour
         }
 
         //verticalAngle
-        desiredAngle = inp.lookVerticalAngle;
+        desiredAngle = inp.lookVerticalAngle;     
         diff = desiredAngle - currentLookVerticalAngle;
         if (Mathf.Abs(diff) <= frameMagnitude)
         {

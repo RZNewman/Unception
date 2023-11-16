@@ -16,7 +16,6 @@ using UnityEditor;
 using System.Runtime.InteropServices;
 using static GenerateBuff;
 using static UnityEngine.Rendering.HableCurve;
-using Castle.Components.DictionaryAdapter;
 using static StatModLabel;
 using UnityEngine.UIElements;
 using static GenerateDefense;

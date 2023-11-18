@@ -26,6 +26,35 @@ public static class Utils
     }
 
 
+    public enum Rotation
+    {
+        None,
+        Quarter,
+        Half,
+        ThreeQuarters,
+
+    }
+    public static float degrees(this Rotation rot)
+    {
+        return rot switch
+        {
+            Rotation.Quarter => 90,
+            Rotation.Half => 180,
+            Rotation.ThreeQuarters => 270,
+            _ => 0,
+        };
+    }
+    public static Rotation rotate(this Rotation rot, int delta)
+    {
+        int rotations = 4;
+        int r = (int)(rot) + delta;
+        while (r < 0)
+        {
+            r += rotations;
+        }
+        return (Rotation)(r % rotations);
+    }
+
     public static Vector3 input2vec(Vector2 inp)
     {
         return new Vector3(inp.x, 0, inp.y);
@@ -33,6 +62,24 @@ public static class Utils
     public static Vector2 vec2input(Vector3 world)
     {
         return new Vector2(world.x, world.z);
+    }
+
+    public static Vector3 roundToInterval(this Vector3 vec, float interval)
+    {
+        return new Vector3(
+            vec.x.roundToInterval(interval),
+            vec.y.roundToInterval(interval),
+            vec.z.roundToInterval(interval)
+            );
+    }
+    public static float roundToInterval(this float number, float interval)
+    {
+        int count = Mathf.FloorToInt(number / interval);
+        if(number - (count* interval) >= interval * 0.5f)
+        {
+            count++;
+        }
+        return count * interval;
     }
 
     public static float normalizeAngle(float angle)

@@ -306,14 +306,7 @@ public class WFCGeneration : MonoBehaviour
 
         return newDomain;
     }
-    public enum Rotation
-    {
-        None,
-        Quarter,
-        Half,
-        ThreeQuarters,
-
-    }
+    
 
     struct ConnectionDomainMasks
     {
@@ -1440,13 +1433,7 @@ public class WFCGeneration : MonoBehaviour
                     prefab,
                     location,
                     Quaternion.AngleAxis(
-                        additionalRot + opt.rotation switch
-                        {
-                            Rotation.Quarter => 90,
-                            Rotation.Half => 180,
-                            Rotation.ThreeQuarters => 270,
-                            _ => 0,
-                        }
+                        additionalRot + opt.rotation.degrees()
                         , Vector3.up
                     ),
                     floorRoot.transform

@@ -17,6 +17,7 @@ public class MenuHandler : MonoBehaviour
     public GameObject quest;
     public GameObject blessing;
     public GameObject loading;
+    public GameObject grove;
 
     GlobalPlayer gp;
     // Start is called before the first frame update
@@ -34,6 +35,7 @@ public class MenuHandler : MonoBehaviour
         Quest,
         Blessing,
         Loading,
+        Grove,
     }
 
     GameObject menuObject(Menu m)
@@ -51,6 +53,7 @@ public class MenuHandler : MonoBehaviour
             Menu.Quest => quest,
             Menu.Blessing => blessing,
             Menu.Loading => loading,
+            Menu.Grove => grove,
             _ => main
         };
     }
@@ -60,6 +63,7 @@ public class MenuHandler : MonoBehaviour
         {
             menuObject(m).SetActive(false);
         }
+        FindObjectOfType<Grove>(true).gameObject.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
         switchMenu(Menu.Title);
 
@@ -71,6 +75,12 @@ public class MenuHandler : MonoBehaviour
         {
             case Menu.Gameplay:
                 FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
+                break;
+            case Menu.Grove:
+                Grove grove = FindObjectOfType<Grove>(true);
+                GroveCamera gc = FindObjectOfType<GroveCamera>(true);
+                grove.gameObject.SetActive(true);
+                gc.center();
                 break;
         }
     }
@@ -90,11 +100,22 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
+    void menuExitActions(Menu m)
+    {
+        switch (m)
+        {
+            case Menu.Grove:
+                FindObjectOfType<Grove>().gameObject.SetActive(false);
+                break;
+        }
+    }
+
     Menu activeMenu = Menu.Title;
     Menu prevoiusMenu;
 
     public void switchMenu(Menu m)
     {
+        menuExitActions(activeMenu);
         prevoiusMenu = activeMenu;
         menuObject(activeMenu).SetActive(false);
         activeMenu = m;

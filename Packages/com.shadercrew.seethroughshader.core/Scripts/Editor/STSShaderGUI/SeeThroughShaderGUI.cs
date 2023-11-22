@@ -1345,7 +1345,7 @@ namespace ShaderCrew.SeeThroughShader
             if (curveTexture != null)
             {
                 if (curveTexture.width != curveTextureResolution)
-                    curveTexture.Resize(curveTextureResolution, 1);
+                    curveTexture.Reinitialize(curveTextureResolution, 1);
 
                 curveTexture.wrapMode = TextureWrapMode.Clamp;
                 curveTexture.filterMode = FilterMode.Bilinear;

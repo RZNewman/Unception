@@ -44,6 +44,16 @@ public static class Utils
             _ => 0,
         };
     }
+    public static Vector2Int rotateIntVec(this Rotation rot, Vector2Int vec)
+    {
+        return rot switch
+        {
+            Rotation.Quarter => new Vector2Int(vec.y, -vec.x),
+            Rotation.Half => new Vector2Int(-vec.x, -vec.y),
+            Rotation.ThreeQuarters => new Vector2Int(-vec.y, vec.x),
+            _ => vec,
+        };
+    }
     public static Rotation rotate(this Rotation rot, int delta)
     {
         int rotations = 4;

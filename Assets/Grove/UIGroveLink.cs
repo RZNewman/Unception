@@ -6,21 +6,25 @@ using System.Linq;
 
 public class UIGroveLink : MonoBehaviour
 {
-    public GameObject colorTarget;
+    public GameObject mainTarget;
+    //public GameObject auraTarget;
 
-    public void setColor(Color c)
+    public void setVisuals(Color c, bool isNest)
     {
-        if (colorTarget)
+        Image i = mainTarget.GetComponent<Image>();
+        if (i)
         {
-            colorTarget.GetComponent<Image>().color = c;
+            i.color = c;
+            i.gameObject.SetActive(isNest);
+            return;
         }
-        else
+
+        foreach(ColorIndividual ind in GetComponentsInChildren<ColorIndividual>())
         {
-            foreach(ColorIndividual ind in GetComponentsInChildren<ColorIndividual>())
-            {
-                c.a = 0.3f;
-                ind.setColor(c);
-            }
+            c.a = 0.3f;
+            ind.setColor(c);
         }
+        mainTarget.SetActive(isNest);
+        
     }
 }

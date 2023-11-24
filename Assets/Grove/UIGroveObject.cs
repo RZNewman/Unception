@@ -24,10 +24,10 @@ public class UIGroveObject : MonoBehaviour, IPointerClickHandler
 
     void initShape()
     {
-        foreach(Vector2Int point in shape.hardPoints)
+        foreach(GroveSlotPosition slot in shape.points)
         {
-            Vector3 location = transform.position + new Vector3(point.x, point.y) * 10 *Grove.gridSpacing;
-            Instantiate(nestLinkIconPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setColor(shape.color);
+            Vector3 location = transform.position + new Vector3(slot.position.x, slot.position.y) * 10 *Grove.gridSpacing;
+            Instantiate(nestLinkIconPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(shape.color, slot.type == GroveSlotType.Hard);
         }
     }
 }

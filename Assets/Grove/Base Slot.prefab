@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4609278316237725144}
   - component: {fileID: 5813097046476158811}
   - component: {fileID: 8104180485651511997}
-  - component: {fileID: -4790814168815906151}
   m_Layer: 18
   m_Name: Base Slot
   m_TagString: Untagged
@@ -84,15 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-4790814168815906151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6662334180207740060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95aaa6b699c80e84ea8e4db0e770df04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

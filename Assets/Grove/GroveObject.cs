@@ -13,6 +13,8 @@ public class GroveObject : MonoBehaviour
 
     Rotation rot = Rotation.None;
 
+    Grove grove;
+
     public enum GroveSlotType
     {
         Hard,
@@ -107,27 +109,29 @@ public class GroveObject : MonoBehaviour
     void Start()
     {
         snap = GetComponent<SnapToGrid>();
-        snap.snapping = true;
-        snap.gridSize = Grove.gridSpacing;
         snap.cam = FindObjectOfType<GroveCamera>().GetComponent<Camera>();
+        snap.isSnapping = true;
+        snap.gridSize = Grove.gridSpacing;
+        
+        grove = FindObjectOfType<Grove>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(snap.snapping)
+        if(snap.isSnapping)
         {
-            if ( Input.GetMouseButton(0))
+            if ( Input.GetMouseButtonDown(0))
             {
                 if (snap.isOnGrid)
                 {
-                    snap.snapping = false;
+                    snap.isSnapping = false;
                     transform.position += Vector3.down;
+                    grove.AddShape(this);
                 }
                 else
                 {
-                    FindObjectOfType<UIGroveTray>().returnShape(shape);
-                    Destroy(gameObject);
+                    returnToTray();
                 }
                 
             }
@@ -141,6 +145,18 @@ public class GroveObject : MonoBehaviour
 
         
     }
+
+    public void setSnap()
+    {
+        snap.isSnapping = true;
+    }
+
+    public void returnToTray()
+    {
+        FindObjectOfType<UIGroveTray>().returnShape(shape);
+        Destroy(gameObject);
+    }
+
 
     void moveToRotation()
     {
@@ -165,9 +181,16 @@ public class GroveObject : MonoBehaviour
     public List<GroveSlotPosition> gridPoints()
     {
         SnapToGrid grid = GetComponent<SnapToGrid>();
-        return shape.points.Select(point => new GroveSlotPosition { 
-            type = point.type, 
-            position = rot.rotateIntVec(point.position) + grid.gridLocation
+        return shape.points.Select(point => {
+            Vector2Int relativePos = point.position;
+            Vector2Int rotatedPos = rot.rotateIntVec(point.position);
+            Vector2Int gridPos = grid.gridLocation.Abs();
+            Debug.Log("Relative: " + relativePos + ", Rotated: " + rotatedPos + ", Grid: " + gridPos);
+            return new GroveSlotPosition
+            {
+                type = point.type,
+                position = rotatedPos + gridPos
+            };
         }).ToList();
     }
 

@@ -5,12 +5,19 @@ using static Utils;
 
 public class SnapToGrid : MonoBehaviour
 {
-    public bool snapping = false;
+    bool snapping = false;
     public string hitLayer;
     public float gridSize;
     public Camera cam;
 
     bool onGrid = false;
+
+
+    public bool isSnapping
+    {
+        get { return snapping; }
+        set { snapping = value; snap(); }
+    }
 
     public bool isOnGrid
     {
@@ -24,18 +31,24 @@ public class SnapToGrid : MonoBehaviour
     {
         if (snapping)
         {
-            Ray r = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            onGrid = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask(hitLayer));
-
-            onGrid &= hit.normal.y > 0.1f;
-
-            if (onGrid)
-            {
-                transform.position = hit.point.roundToInterval(gridSize);
-            }
+            snap();
             
+        }
+    }
+
+
+    void snap()
+    {
+        Ray r = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        onGrid = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask(hitLayer));
+
+        onGrid &= hit.normal.y > 0.1f;
+
+        if (onGrid)
+        {
+            transform.position = hit.point.roundToInterval(gridSize);
         }
     }
 
@@ -43,7 +56,7 @@ public class SnapToGrid : MonoBehaviour
     {
         get
         {
-            return vec2input((transform.position / gridSize).roundToInterval(1)).roundToInt();
+            return vec2input(transform.position / gridSize).roundToInt();
         }
     }
 }

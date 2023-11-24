@@ -13,7 +13,7 @@ public class Grove : MonoBehaviour
 
 
     GroveSlot[,] map;
-    List<GroveObject> placed;
+    List<GroveObject> placed = new List<GroveObject>();
 
 
     public enum GroveDirection
@@ -45,22 +45,22 @@ public class Grove : MonoBehaviour
         public List<string> addOccupant(string id, GroveSlotType type)
         {
             List<string> kicked;
+            Debug.Log(occupants.Count);
             if (type == GroveSlotType.Hard) {
-                kicked = occupants.Keys.ToList();
-                occupants.Clear();
-                
+                kicked = occupants.Keys.ToList();               
             }
             else
             {
                 kicked = occupants.Where(pair => pair.Value == GroveSlotType.Hard).Select(pair => pair.Key).ToList();
-                foreach(string kickID in kicked)
-                {
-                    occupants.Remove(kickID);
-                }
-
             }
             occupants.Add(id, type);
             return kicked;
+        }
+
+        public void removeOccupant(string id)
+        {
+
+            occupants.Remove(id);
         }
     }
 
@@ -70,7 +70,7 @@ public class Grove : MonoBehaviour
 
 
         box.center = GridWorldSize / 2;
-        box.size = GridWorldSize + Vector3.up *3.5f;
+        box.size = GridWorldSize.Abs() + Vector3.up *3.5f;
         initGrid();
     }
     public Vector3 CameraCenter
@@ -134,12 +134,46 @@ public class Grove : MonoBehaviour
 
     public void AddShape(GroveObject obj)
     {
-        
+        HashSet<string> kickSet = new HashSet<string>();
         foreach(GroveSlotPosition slot in obj.gridPoints())
         {
             List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(obj.GetInstanceID().ToString(), slot.type);
-            //for id in kicked => add to cursor or remove from board
+            foreach(string id in kicked)
+            {
+                Debug.Log(id);
+                kickSet.AddIfNotExists(id);
+            }
         }
+        if(kickSet.Count == 1)
+        {
+            GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == kickSet.First());
+            placed.Remove(kick);
+            subtractShape(kick);
+            Debug.Log("Rebound");
+            kick.setSnap();
+
+        }
+        else if(kickSet.Count > 1)
+        {
+            foreach (string id in kickSet)
+            {
+                GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == kickSet.First());
+                placed.Remove(kick);
+                subtractShape(kick);
+                kick.returnToTray();
+            }
+            Debug.Log("Kick");
+        }
+        
+
         placed.Add(obj);
+    }
+
+    void subtractShape(GroveObject obj)
+    {
+        foreach (GroveSlotPosition slot in obj.gridPoints())
+        {
+            map[slot.position.x, slot.position.y].removeOccupant(obj.GetInstanceID().ToString());
+        }
     }
 }

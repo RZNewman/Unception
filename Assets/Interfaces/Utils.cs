@@ -78,6 +78,22 @@ public static class Utils
     {
         return new Vector2Int(Mathf.RoundToInt(vec.x), Mathf.RoundToInt(vec.y));
     }
+    public static Vector2Int Abs(this Vector2Int vec)
+    {
+        return new Vector2Int(Mathf.Abs(vec.x), Mathf.Abs(vec.y));
+    }
+    public static Vector3 Abs(this Vector3 vec)
+    {
+        return new Vector3(Mathf.Abs(vec.x), Mathf.Abs(vec.y), Mathf.Abs(vec.z));
+    }
+
+    public static void AddIfNotExists<T>(this HashSet<T> set, T item)
+    {
+        if (!set.Contains(item))
+        {
+            set.Add(item);
+        }
+    }
 
     public static Vector3 roundToInterval(this Vector3 vec, float interval)
     {

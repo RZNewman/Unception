@@ -161,8 +161,14 @@ public class GroveObject : MonoBehaviour
         }
     }
 
-    public List<GroveSlotPosition> rotatedPoints()
+
+    public List<GroveSlotPosition> gridPoints()
     {
-        return shape.points.Select(point => new GroveSlotPosition { type = point.type, position = rot.rotateIntVec(point.position) }).ToList();
+        SnapToGrid grid = GetComponent<SnapToGrid>();
+        return shape.points.Select(point => new GroveSlotPosition { 
+            type = point.type, 
+            position = rot.rotateIntVec(point.position) + grid.gridLocation
+        }).ToList();
     }
+
 }

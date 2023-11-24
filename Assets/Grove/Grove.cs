@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GroveObject;
+using System.Linq;
 
 public class Grove : MonoBehaviour
 {
@@ -12,13 +13,8 @@ public class Grove : MonoBehaviour
 
 
     GroveSlot[,] map;
-    List<GrovePlacement> placed;
+    List<GroveObject> placed;
 
-    public struct GrovePlacement
-    {
-        public GroveShape shape;
-        public Vector2Int position;
-    }
 
     public enum GroveDirection
     {
@@ -30,10 +26,41 @@ public class Grove : MonoBehaviour
 
     public struct GroveSlot
     {
-        public Dictionary<GroveDirection, GroveSlot> neighbors;
+        Dictionary<GroveDirection, GroveSlot> neighbors;
+        Dictionary<string, GroveSlotType> occupants;
+
+        public static GroveSlot empty()
+        {
+            return new GroveSlot
+            {
+                neighbors = new Dictionary<GroveDirection, GroveSlot>(),
+                occupants = new Dictionary<string, GroveSlotType>()
+            };
+        }
         public void addNeighbor(GroveDirection dir, GroveSlot slot)
         {
             neighbors[dir] = slot;
+        }
+
+        public List<string> addOccupant(string id, GroveSlotType type)
+        {
+            List<string> kicked;
+            if (type == GroveSlotType.Hard) {
+                kicked = occupants.Keys.ToList();
+                occupants.Clear();
+                
+            }
+            else
+            {
+                kicked = occupants.Where(pair => pair.Value == GroveSlotType.Hard).Select(pair => pair.Key).ToList();
+                foreach(string kickID in kicked)
+                {
+                    occupants.Remove(kickID);
+                }
+
+            }
+            occupants.Add(id, type);
+            return kicked;
         }
     }
 
@@ -72,10 +99,7 @@ public class Grove : MonoBehaviour
             {
                 Vector3 pos = transform.position + gridSpacing * x * Vector3.left + gridSpacing * y * Vector3.back;
                 Instantiate(slotPre, pos, Quaternion.identity, transform);
-                map[x, y] = new GroveSlot
-                {
-                    neighbors = new Dictionary<GroveDirection, GroveSlot>()
-                };
+                map[x, y] = GroveSlot.empty();
             }
         }
 
@@ -108,9 +132,14 @@ public class Grove : MonoBehaviour
         }
     }
 
-    public void AddShape(GrovePlacement place)
+    public void AddShape(GroveObject obj)
     {
-        placed.Add(place);
-
+        
+        foreach(GroveSlotPosition slot in obj.gridPoints())
+        {
+            List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(obj.GetInstanceID().ToString(), slot.type);
+            //for id in kicked => add to cursor or remove from board
+        }
+        placed.Add(obj);
     }
 }

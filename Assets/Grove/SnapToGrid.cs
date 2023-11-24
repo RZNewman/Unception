@@ -39,11 +39,11 @@ public class SnapToGrid : MonoBehaviour
         }
     }
 
-    public Vector2 gridLocation
+    public Vector2Int gridLocation
     {
         get
         {
-            return (transform.position / gridSize).roundToInterval(1);
+            return vec2input((transform.position / gridSize).roundToInterval(1)).roundToInt();
         }
     }
 }

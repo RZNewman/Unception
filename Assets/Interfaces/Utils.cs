@@ -74,6 +74,11 @@ public static class Utils
         return new Vector2(world.x, world.z);
     }
 
+    public static Vector2Int roundToInt(this Vector2 vec)
+    {
+        return new Vector2Int(Mathf.RoundToInt(vec.x), Mathf.RoundToInt(vec.y));
+    }
+
     public static Vector3 roundToInterval(this Vector3 vec, float interval)
     {
         return new Vector3(

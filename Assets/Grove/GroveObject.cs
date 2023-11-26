@@ -121,7 +121,7 @@ public class GroveObject : MonoBehaviour
     {
         if(snap.isSnapping)
         {
-            if ( Input.GetMouseButtonDown(0))
+            if ( Grove.consumeClick() == Grove.MouseClick.Primary)
             {
                 if (snap.isOnGrid)
                 {
@@ -184,8 +184,8 @@ public class GroveObject : MonoBehaviour
         return shape.points.Select(point => {
             Vector2Int relativePos = point.position;
             Vector2Int rotatedPos = rot.rotateIntVec(point.position);
-            Vector2Int gridPos = grid.gridLocation.Abs();
-            Debug.Log("Relative: " + relativePos + ", Rotated: " + rotatedPos + ", Grid: " + gridPos);
+            Vector2Int gridPos = grid.gridLocation(grove.transform.position).Abs();
+            //Debug.Log("Relative: " + relativePos + ", Rotated: " + rotatedPos + ", Grid: " + gridPos);
             return new GroveSlotPosition
             {
                 type = point.type,

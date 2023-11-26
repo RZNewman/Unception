@@ -45,7 +45,6 @@ public class Grove : MonoBehaviour
         public List<string> addOccupant(string id, GroveSlotType type)
         {
             List<string> kicked;
-            Debug.Log(occupants.Count);
             if (type == GroveSlotType.Hard) {
                 kicked = occupants.Keys.ToList();               
             }
@@ -69,15 +68,48 @@ public class Grove : MonoBehaviour
         BoxCollider box = GetComponent<BoxCollider>();
 
 
-        box.center = GridWorldSize / 2;
+        box.center = GridWorldSize / 2  - new Vector3(1,0,1) *0.5f;
         box.size = GridWorldSize.Abs() + Vector3.up *3.5f;
         initGrid();
     }
+
+    public enum MouseClick
+    {
+        None,
+        Primary,
+        //Secondary
+    }
+    static MouseClick click;
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            click = MouseClick.Primary;
+        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    click = MouseClick.Secondary;
+        //}
+        else
+        {
+            click = MouseClick.None;
+        }
+    }
+
+    public static MouseClick consumeClick()
+    {
+        MouseClick c = click;
+        click = MouseClick.None;
+        return c;
+        
+    }
+
     public Vector3 CameraCenter
     {
         get
         {
-            return new Vector3(-gridSize.x * 0.5f, 0, -gridSize.y *0.7f)* gridSpacing ;
+            return new Vector3(gridSize.x * 0.5f, 0, gridSize.y *0.3f)* gridSpacing ;
         }
     }
 
@@ -85,19 +117,20 @@ public class Grove : MonoBehaviour
     {
         get
         {
-            return new Vector3(-gridSize.x, 0, -gridSize.y) * gridSpacing + new Vector3(1,0,1) *gridSpacing *0.5f;
+            return new Vector3(gridSize.x, 0, gridSize.y) * gridSpacing ;
         }
     }
 
     void initGrid()
     {
+        transform.position = -GridWorldSize;
         map = new GroveSlot[gridSize.x,gridSize.y];
 
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-                Vector3 pos = transform.position + gridSpacing * x * Vector3.left + gridSpacing * y * Vector3.back;
+                Vector3 pos = transform.position + gridSpacing * x * Vector3.right + gridSpacing * y * Vector3.forward;
                 Instantiate(slotPre, pos, Quaternion.identity, transform);
                 map[x, y] = GroveSlot.empty();
             }
@@ -137,10 +170,10 @@ public class Grove : MonoBehaviour
         HashSet<string> kickSet = new HashSet<string>();
         foreach(GroveSlotPosition slot in obj.gridPoints())
         {
+            //drawMapPos(slot.position);
             List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(obj.GetInstanceID().ToString(), slot.type);
             foreach(string id in kicked)
             {
-                Debug.Log(id);
                 kickSet.AddIfNotExists(id);
             }
         }
@@ -157,7 +190,7 @@ public class Grove : MonoBehaviour
         {
             foreach (string id in kickSet)
             {
-                GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == kickSet.First());
+                GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == id);
                 placed.Remove(kick);
                 subtractShape(kick);
                 kick.returnToTray();
@@ -175,5 +208,13 @@ public class Grove : MonoBehaviour
         {
             map[slot.position.x, slot.position.y].removeOccupant(obj.GetInstanceID().ToString());
         }
+    }
+
+    void drawMapPos(Vector2Int vec)
+    {
+        Vector3 worldCell = transform.position + Utils.input2vec(vec) * gridSpacing;
+
+        Debug.DrawLine(worldCell, worldCell + Vector3.up, Color.green, 3f);
+        
     }
 }

@@ -841,7 +841,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0000756309}
+  m_AnchoredPosition: {x: 0, y: 0.000025349138}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &72755171
@@ -17843,7 +17843,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPre: {fileID: 6662334180207740060, guid: f0de43c3b0f45b849aa85d9d066d628e, type: 3}
-  gridSize: {x: 30, y: 20}
+  gridSize: {x: 12, y: 12}
 --- !u!65 &1823686830
 BoxCollider:
   m_ObjectHideFlags: 0

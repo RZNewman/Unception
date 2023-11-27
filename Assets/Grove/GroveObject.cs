@@ -104,6 +104,13 @@ public class GroveObject : MonoBehaviour
     }
 
     
+    public SnapToGrid gridSnap
+    {
+        get
+        {
+            return snap;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -121,20 +128,6 @@ public class GroveObject : MonoBehaviour
     {
         if(snap.isSnapping)
         {
-            if ( Grove.consumeClick() == Grove.MouseClick.Primary)
-            {
-                if (snap.isOnGrid)
-                {
-                    snap.isSnapping = false;
-                    transform.position += Vector3.down;
-                    grove.AddShape(this);
-                }
-                else
-                {
-                    returnToTray();
-                }
-                
-            }
             float scroll = Input.GetAxis("Mouse ScrollWheel") *-1;
             if (scroll != 0)
             {

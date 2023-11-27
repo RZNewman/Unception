@@ -18,7 +18,10 @@ public class UIGroveObject : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Instantiate(GroveObjectPre).GetComponent<GroveObject>().assignShape(shape);
+        GroveObject obj = Instantiate(GroveObjectPre).GetComponent<GroveObject>();
+        obj.assignShape(shape);
+        FindObjectOfType<Grove>().addCursor(obj);
+
         Destroy(gameObject);
     }
 

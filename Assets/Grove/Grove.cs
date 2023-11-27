@@ -15,6 +15,7 @@ public class Grove : MonoBehaviour
     GroveSlot[,] map;
     List<GroveObject> placed = new List<GroveObject>();
 
+    Camera groveCam;
 
     public enum GroveDirection
     {
@@ -66,44 +67,65 @@ public class Grove : MonoBehaviour
     private void Start()
     {
         BoxCollider box = GetComponent<BoxCollider>();
-
+        groveCam = FindObjectOfType<GroveCamera>().GetComponent<Camera>();
 
         box.center = GridWorldSize / 2  - new Vector3(1,0,1) *0.5f;
         box.size = GridWorldSize.Abs() + Vector3.up *3.5f;
         initGrid();
     }
 
-    public enum MouseClick
-    {
-        None,
-        Primary,
-        //Secondary
-    }
-    static MouseClick click;
+    GroveObject cursor = null;
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (cursor)
         {
-            click = MouseClick.Primary;
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
+                {
+                    cursor.gridSnap.isSnapping = false;
+                    cursor.transform.position += Vector3.down;
+                    cursor = AddShape(cursor);
+                }
+                else
+                {
+                    cursor.returnToTray();
+                    cursor = null;
+                }
+                
+            }
         }
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    click = MouseClick.Secondary;
-        //}
         else
         {
-            click = MouseClick.None;
+            Ray r = groveCam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            bool hoverObject = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask("GroveObject"));
+
+            if (hoverObject && Input.GetMouseButtonDown(0))
+            {
+                //Debug.Log("Pick Up: " + hit.collider.GetInstanceID());
+                cursor = hit.collider.GetComponentInParent<GroveObject>();
+                subtractShape(cursor);
+                cursor.setSnap();
+                
+            }
         }
+        
+
     }
 
-    public static MouseClick consumeClick()
+    public void addCursor(GroveObject obj)
     {
-        MouseClick c = click;
-        click = MouseClick.None;
-        return c;
-        
+        if (cursor)
+        {
+            cursor.returnToTray();
+        }
+        cursor = obj;
     }
+
+  
 
     public Vector3 CameraCenter
     {
@@ -165,10 +187,27 @@ public class Grove : MonoBehaviour
         }
     }
 
-    public void AddShape(GroveObject obj)
+    GroveObject AddShape(GroveObject obj)
     {
+        GroveObject returnCursor = null;
+        List<GroveSlotPosition> gridPoints = obj.gridPoints();
+        foreach (GroveSlotPosition slot in gridPoints)
+        {
+            if (
+                 slot.position.x < 0 ||
+                 slot.position.x >= map.GetLength(0) ||
+                 slot.position.y < 0 ||
+                 slot.position.y >= map.GetLength(1)
+
+                )
+            {
+                obj.returnToTray();
+                return returnCursor;
+            }
+        }
+
         HashSet<string> kickSet = new HashSet<string>();
-        foreach(GroveSlotPosition slot in obj.gridPoints())
+        foreach(GroveSlotPosition slot in gridPoints)
         {
             //drawMapPos(slot.position);
             List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(obj.GetInstanceID().ToString(), slot.type);
@@ -182,8 +221,9 @@ public class Grove : MonoBehaviour
             GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == kickSet.First());
             placed.Remove(kick);
             subtractShape(kick);
-            Debug.Log("Rebound");
+            //Debug.Log("Rebound: "+ kickSet.First());
             kick.setSnap();
+            returnCursor = kick;
 
         }
         else if(kickSet.Count > 1)
@@ -195,11 +235,12 @@ public class Grove : MonoBehaviour
                 subtractShape(kick);
                 kick.returnToTray();
             }
-            Debug.Log("Kick");
+            //Debug.Log("Kick");
         }
         
 
         placed.Add(obj);
+        return returnCursor;
     }
 
     void subtractShape(GroveObject obj)

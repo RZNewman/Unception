@@ -14,6 +14,11 @@ public static class SystemClassReaders
     {
         return (GenerateAttack.ItemSlot)reader.ReadByte();
     }
+
+    public static GroveObject.GroveSlotType ReadGroveSlotType(this NetworkReader reader)
+    {
+        return (GroveObject.GroveSlotType)reader.ReadByte();
+    }
     public static GenerateAttack.ItemSlot? ReadNullSlot(this NetworkReader reader)
     {
         if (reader.ReadBool())

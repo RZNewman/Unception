@@ -15,7 +15,7 @@ public class GroveObject : MonoBehaviour
 
     Grove grove;
 
-    public enum GroveSlotType
+    public enum GroveSlotType : byte
     {
         Hard,
         Aura,
@@ -29,7 +29,6 @@ public class GroveObject : MonoBehaviour
     public struct GroveShape
     {
         public List<GroveSlotPosition> points;
-        public Color color;
 
         public static GroveShape shape()
         {
@@ -97,7 +96,6 @@ public class GroveObject : MonoBehaviour
             return new GroveShape
             {
                 points = slots,
-                color = Color.HSVToRGB(Random.value, 1, 1),
             };
         }
 
@@ -166,7 +164,7 @@ public class GroveObject : MonoBehaviour
         foreach (GroveSlotPosition slot in shape.points)
         {
             Vector3 location = transform.position + new Vector3(slot.position.x, 0, slot.position.y) * 1 * Grove.gridSpacing;
-            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(shape.color,slot.type == GroveSlotType.Hard);
+            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(Color.red,slot.type == GroveSlotType.Hard);
         }
     }
 

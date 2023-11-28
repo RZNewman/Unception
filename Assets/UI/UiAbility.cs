@@ -2,12 +2,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GenerateAttack;
+using static GroveObject;
 using static RewardManager;
 using static UnitControl;
 
 public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
+
+    public GameObject ShapeLinkPre;
+    public GameObject shapeHolder;
 
     public GameObject gameplayView;
     public GameObject invView;
@@ -97,6 +101,12 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             identifierInv.color = partialColor;
             identifierInv.text = flair.identifier;
             slotInv.sprite = symbolSource.fromSlot(filled.slot ?? ItemSlot.Main);
+
+            foreach (GroveSlotPosition slot in filled.shape.points)
+            {
+                Vector3 location = transform.position + new Vector3(slot.position.x, slot.position.y) * 10 * shapeHolder.transform.lossyScale.x * Grove.gridSpacing;
+                Instantiate(ShapeLinkPre, location, Quaternion.identity, shapeHolder.transform).GetComponent<UIGroveLink>().setVisuals(flair.color, slot.type == GroveSlotType.Hard);
+            }
         }
 
 

@@ -7,6 +7,11 @@ public static class SystemClassWriters
     {
         writer.WriteByte((byte)slot);
     }
+
+    public static void WriteGroveSlotType(this NetworkWriter writer, GroveObject.GroveSlotType slot)
+    {
+        writer.WriteByte((byte)slot);
+    }
     public static void WriteNullSlot(this NetworkWriter writer, GenerateAttack.ItemSlot? slot)
     {
         bool value = slot != null;

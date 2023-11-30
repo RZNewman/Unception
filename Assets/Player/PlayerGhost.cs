@@ -9,8 +9,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 {
     public GameObject unitPre;
 
-    public int attacksToGenerate = 4;
-
     [SyncVar]
     GameObject currentSelf;
 

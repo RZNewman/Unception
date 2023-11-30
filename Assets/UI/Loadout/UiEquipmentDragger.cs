@@ -7,13 +7,13 @@ public class UiEquipmentDragger : MonoBehaviour
 {
 
     UiAbility hover;
-
+    UILoadoutMenu loadoutMenu;
 
     GameObject drag;
     UiDraggerTarget target;
 
-    UILoadoutMenu loadoutMenu;
-    public UiAbilityDetails deets;
+    
+    
 
 
 
@@ -30,30 +30,12 @@ public class UiEquipmentDragger : MonoBehaviour
         }
     }
 
-    public void setHover(UiAbility u)
-    {
-        if (!drag)
-        {
-            hover = u;
-            deets.setDetails(u.blockFilled, loadoutMenu.slotList.slotOfType(hover.blockFilled.slot.Value).slottedBlock());
-            deets.gameObject.SetActive(true);
-        }
-
-    }
-
-    public void unsetHover(UiAbility u)
-    {
-        if (hover == u)
-        {
-            hover = null;
-            deets.gameObject.SetActive(false);
-        }
-    }
+    
 
     private void Start()
     {
         loadoutMenu = GetComponent<UILoadoutMenu>();
-        deets.gameObject.SetActive(false);
+        
     }
 
     public void storageGrab(GameObject icon)
@@ -92,7 +74,7 @@ public class UiEquipmentDragger : MonoBehaviour
         {
             if (hover && !drag)
             {
-                loadoutMenu.slotList.slotOfType(hover.blockFilled.slot.Value).slotObject(hover.gameObject);
+                //loadoutMenu.slotList.slotOfType(hover.blockFilled.slot.Value).slotObject(hover.gameObject);
             }
         }
         if (drag)

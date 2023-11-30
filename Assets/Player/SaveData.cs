@@ -11,12 +11,14 @@ using System.Threading.Tasks;
 using System;
 using static GlobalSaveData;
 using static Atlas;
+using static Grove;
 
 public class SaveData : NetworkBehaviour
 {
 
     Auth auth;
     Inventory inv;
+    Grove grove;
     PlayerGhost player;
     PlayerPity pity;
     GlobalSaveData globalSave;
@@ -40,7 +42,7 @@ public class SaveData : NetworkBehaviour
         inv = GetComponent<Inventory>();
         pity = GetComponent<PlayerPity>();
         player = GetComponent<PlayerGhost>();
-
+        grove = GetComponent<Grove>();
 
     }
 
@@ -92,7 +94,7 @@ public class SaveData : NetworkBehaviour
 
         PlayerLoadTasks tasks = globalSave.getLoadTasks(auth.user);
         Task<DataSnapshot> storage = tasks.storageItems;
-        Task<DataSnapshot> equipped = tasks.equippedItems;
+        Task<DataSnapshot> placements = tasks.placements;
         Task<DataSnapshot> power = tasks.power;
         Task<DataSnapshot> pityData = tasks.pity;
         Task<DataSnapshot> quests = tasks.quests;
@@ -167,30 +169,31 @@ public class SaveData : NetworkBehaviour
             }
 
         }
+        
 
         while ((!storage.IsFaulted && !storage.IsCompleted && !storage.IsCanceled)
-            || (!equipped.IsFaulted && !equipped.IsCompleted && !equipped.IsCanceled))
+            || (!placements.IsFaulted && !placements.IsCompleted && !placements.IsCanceled))
         {
             yield return null;
         }
 
-        if (storage.IsFaulted || equipped.IsFaulted)
+        if (storage.IsFaulted || placements.IsFaulted)
         {
             Debug.LogError("Error loading inv");
         }
-        else if (storage.IsCompleted && equipped.IsCompleted)
+        else if (storage.IsCompleted && placements.IsCompleted)
         {
             DataSnapshot snapshotStorage = storage.Result;
-            DataSnapshot snapshotEquipped = equipped.Result;
-            if (snapshotEquipped.Exists)
+            DataSnapshot snapshotPlaced = placements.Result;
+            if (snapshotPlaced.Exists)
             {
                 CastData[] storageData = new CastData[0];
                 if (snapshotStorage.Exists)
                 {
                     storageData = globalSave.itemsFromSnapshot(snapshotStorage);
                 }
-                CastData[] equippedData = globalSave.itemsFromSnapshot(snapshotEquipped);
-                inv.reloadItems(storageData, equippedData);
+                Dictionary<string, GrovePlacement> placedData = JsonConvert.DeserializeObject<Dictionary<string, GrovePlacement>>(snapshotPlaced.GetRawJsonValue());
+                inv.reloadItems(storageData, placedData);
             }
             else
             {
@@ -254,7 +257,7 @@ public class SaveData : NetworkBehaviour
     //server
     public void saveItems()
     {
-        globalSave.savePlayerItems(auth.user, inv.exportEquipped(), inv.exportStorage());
+        globalSave.savePlayerItems(auth.user, grove.exportPlacements(), inv.exportStorage());
     }
 
     public void saveBlessings()

@@ -6,7 +6,7 @@ using static GroveObject;
 using static RewardManager;
 using static UnitControl;
 
-public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
 
@@ -37,8 +37,20 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     CastDataInstance filled;
 
     //menu only
-    UiEquipmentDragger dragger;
+    GroveWorld grove;
 
+    public enum UIAbilityMode
+    {
+        Game,
+        Inventory
+    }
+    UIAbilityMode mode;
+
+
+    private void Start()
+    {
+        grove = FindObjectOfType<GroveWorld>();
+    }
     private void Update()
     {
         if (target)
@@ -59,7 +71,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void setTarget(Ability ability)
     {
         target = ability;
-        setFill((CastDataInstance)ability.source(), true);
+        setFill((CastDataInstance)ability.source(), UIAbilityMode.Game);
     }
     public CastDataInstance blockFilled
     {
@@ -69,15 +81,16 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    public void setFill(CastDataInstance a, bool inGame = false)
+    public void setFill(CastDataInstance a, UIAbilityMode m)
     {
         filled = a;
+        mode = m;
         AttackFlair flair = filled.flair;
         background.sprite = bgFromQuality(filled.quality);
         Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = flair.color;
         partialColor.a = 0.4f;
-        if (inGame)
+        if (mode == UIAbilityMode.Game)
         {
             gameplayView.SetActive(true);
             invView.SetActive(false);
@@ -104,7 +117,7 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
             foreach (GroveSlotPosition slot in filled.shape.points)
             {
-                Vector3 location = transform.position + new Vector3(slot.position.x, slot.position.y) * 10 * shapeHolder.transform.lossyScale.x * Grove.gridSpacing;
+                Vector3 location = transform.position + new Vector3(slot.position.x, slot.position.y) * 10 * shapeHolder.transform.lossyScale.x * GroveWorld.gridSpacing;
                 Instantiate(ShapeLinkPre, location, Quaternion.identity, shapeHolder.transform).GetComponent<UIGroveLink>().setVisuals(flair.color, slot.type == GroveSlotType.Hard);
             }
         }
@@ -114,25 +127,25 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     }
 
-    public void setDragger(UiEquipmentDragger drag)
-    {
-        dragger = drag;
-    }
-
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (dragger)
-        {
-            dragger.setHover(this);
-        }
+         grove.setHover(this);
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (dragger)
+        grove.unsetHover(this);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if(mode == UIAbilityMode.Inventory)
         {
-            dragger.unsetHover(this);
+            FindObjectOfType<GroveWorld>().buildObject(filled);
+            grove.unsetHover(this);
+            Destroy(gameObject);
         }
+        
     }
 
     Sprite bgFromQuality(Quality q)
@@ -162,6 +175,8 @@ public class UiAbility : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
         return bg;
     }
+
+    
 
     public CastDataInstance ability
     {

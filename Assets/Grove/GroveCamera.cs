@@ -5,7 +5,7 @@ using UnityEngine;
 public class GroveCamera : MonoBehaviour
 {
     Keybinds keys;
-    Grove grove;
+    GroveWorld grove;
     public float panSens = 0.5f;
     // Start is called before the first frame update
     void Start()
@@ -28,7 +28,7 @@ public class GroveCamera : MonoBehaviour
     {
         if (!grove)
         {
-            grove = FindObjectOfType<Grove>();
+            grove = FindObjectOfType<GroveWorld>();
         }
         Vector3 center = grove.CameraCenter;
         transform.localPosition = new Vector3(center.x, transform.position.y, center.z);

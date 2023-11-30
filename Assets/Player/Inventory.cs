@@ -9,6 +9,7 @@ using static UnitControl;
 using static Keybinds;
 using static Utils;
 using static GenerateAttack;
+using static Grove;
 
 public class Inventory : NetworkBehaviour
 {
@@ -17,14 +18,13 @@ public class Inventory : NetworkBehaviour
 
     List<CastData> tempDrops = new List<CastData>();
 
-    List<CastData> storage = new List<CastData>();
-
-    Dictionary<ItemSlot, CastData> equipped = new Dictionary<ItemSlot, CastData>();
+    Dictionary<string, CastData> storage = new Dictionary<string, CastData>();
 
     TriggerData[] blessingsActive = new TriggerData[0];
     TriggerData blessingPotential;
 
     PlayerGhost player;
+    Grove grove;
     public PlayerPity pity;
 
 
@@ -36,6 +36,7 @@ public class Inventory : NetworkBehaviour
         player = GetComponent<PlayerGhost>();
         pity = GetComponent<PlayerPity>();
         itemPre = GameObject.FindObjectOfType<GlobalPrefab>().ItemDropPre;
+        grove = GetComponent<Grove>();
     }
 
     public delegate void OnInvUpdate(Inventory inv);
@@ -72,34 +73,13 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    CastData[] equipArray
-    {
-        get
-        {
-            return equipped.Values.ToArray();
-        }
-        set
-        {
-            equipped = new Dictionary<ItemSlot, CastData>();
-            int index = 0;
-            foreach (CastData block in value)
-            {
-                if (block != null && block.slot != null)
-                {
-                    equipped.Add(block.slot.Value, block);
-                }
-                index++;
 
-            }
-        }
-
-    }
 
     [Server]
-    public void reloadItems(CastData[] storageItems, CastData[] equippedItems)
+    public void reloadItems(CastData[] storageItems, Dictionary<string, GrovePlacement> placedData)
     {
-        equipArray = equippedItems;
-        storage = storageItems.ToList();
+        storage = storageItems.ToDictionary(i => i.id);
+        grove.importPlacements(placedData, storage);
 
         syncInventoryUpwards();
         RpcInvChange();
@@ -121,10 +101,26 @@ public class Inventory : NetworkBehaviour
     public void genMinItems()
     {
 
-        CastData item = generate(player.power, AttackGenerationType.IntroMain);
-        equipped.Add(ItemSlot.Main, item);
-        item = generate(player.power, AttackGenerationType.IntroOff);
-        equipped.Add(ItemSlot.OffHand, item);
+        CastData item1 = generate(player.power, AttackGenerationType.IntroMain);
+        CastData item2 = generate(player.power, AttackGenerationType.IntroOff);
+
+
+        storage.Add(item1.id, item1);
+        storage.Add(item2.id, item2);
+        Vector2Int center = grove.center;
+        Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
+        placements.Add(item1.id, new GrovePlacement
+        {
+            position = center,
+            rotation = Rotation.None,
+        });
+        placements.Add(item2.id, new GrovePlacement
+        {
+            position = center + Vector2Int.one,
+            rotation = Rotation.None,
+        });
+        grove.importPlacements(placements, storage);
+
 
     }
 
@@ -132,7 +128,7 @@ public class Inventory : NetworkBehaviour
     public void genMinBlessings()
     {
 
-        blessingsActive = new TriggerData[blessingLimit];
+        blessingsActive = new TriggerData[0];
         syncInventoryUpwards();
     }
 
@@ -142,7 +138,7 @@ public class Inventory : NetworkBehaviour
         for (int i = 0; i < 5; i++)
         {
             CastData item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
-            storage.Add(item);
+            storage.Add(item.id, item);
         }
         blessingsActive = new TriggerData[blessingLimit];
         blessingsActive[0] = GenerateTrigger.generate(player.power);
@@ -163,14 +159,11 @@ public class Inventory : NetworkBehaviour
     }
 
     //server
-    public CastData[] exportEquipped()
-    {
-        return equipArray;
-    }
     public CastData[] exportStorage()
     {
-        return storage.ToArray();
+        return storage.Values.ToArray();
     }
+    
 
     public TriggerData[] exportBlessings()
     {
@@ -184,14 +177,14 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return equipped;
+            return grove.slotted.Select(pair => (pair.Key, storage[pair.Value])).ToDictionary(tupe => tupe.Key, tupe => tupe.Item2);
         }
     }
-    public List<CastData> stored
+    public List<CastData> unequipped
     {
         get
         {
-            return storage;
+            return storage.Where(pair => !grove.isPlaced(pair.Key)).Select(pair => pair.Value).ToList();
         }
     }
     public List<CastData> dropped
@@ -206,7 +199,7 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return blessingsActive.Where(b => b).ToList();
+            return blessingsActive.ToList();
         }
     }
     public TriggerData potentialBlessing
@@ -230,6 +223,12 @@ public class Inventory : NetworkBehaviour
     {
         return block.populate(new FillBlockOptions { overridePower = player.power, addedStrength = triggerStrength, reduceWindValue = triggerStrength.HasValue });
     }
+
+    public CastDataInstance getFilledBlock(string id)
+    {
+        return (CastDataInstance)storage[id].populate(new FillBlockOptions { overridePower = player.power, addedStrength = null, reduceWindValue =false});
+    }
+
     [Client]
     public void syncInventory()
     {
@@ -244,14 +243,13 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void syncInventoryUpwards()
     {
-        TargetSyncInventory(connectionToClient, equipArray, storage.ToArray(), blessingsActive, blessingPotential);
+        TargetSyncInventory(connectionToClient, storage.Values.ToArray(), blessingsActive, blessingPotential);
     }
 
     [TargetRpc]
-    void TargetSyncInventory(NetworkConnection conn, CastData[] eq, CastData[] st, TriggerData[] bl, TriggerData blP)
+    void TargetSyncInventory(NetworkConnection conn,  CastData[] st, TriggerData[] bl, TriggerData blP)
     {
-        equipArray = eq;
-        storage = st.ToList();
+        storage = st.ToDictionary(i=>i.id);
         blessingsActive = bl;
         blessingPotential = blP;
 
@@ -268,106 +266,80 @@ public class Inventory : NetworkBehaviour
 
 
     [Command]
+    [System.Obsolete("Equipment through grove now")]
     public void CmdEquipAbility(string newId)
     {
-        int newIndex = -1;
-        List<CastData> source = storage;
-        bool fromDrops = false;
-        newIndex = tempDrops.FindIndex(item => item.id == newId);
-        if (newIndex >= 0)
-        {
-            fromDrops = true;
-            source = tempDrops;
-        }
-        else
-        {
-            newIndex = storage.FindIndex(item => item.id == newId);
-        }
+        //int newIndex = -1;
+        //List<CastData> source = storage;
+        //bool fromDrops = false;
+        //newIndex = tempDrops.FindIndex(item => item.id == newId);
+        //if (newIndex >= 0)
+        //{
+        //    fromDrops = true;
+        //    source = tempDrops;
+        //}
+        //else
+        //{
+        //    newIndex = storage.FindIndex(item => item.id == newId);
+        //}
 
 
-        if (newIndex >= 0)
-        {
-            if (fromDrops)
-            {
+        //if (newIndex >= 0)
+        //{
+        //    if (fromDrops)
+        //    {
 
-                CastData nowEquipped = tempDrops[newIndex];
-                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
-                equipped[nowEquipped.slot.Value] = nowEquipped;
-                tempDrops.Remove(nowEquipped);
-                if (previous)
-                {
-                    storage.Add(unequipped);
-                }
-                RpcInvChange();
-            }
-            else
-            {
-                CastData nowEquipped = storage[newIndex];
-                bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
-                equipped[nowEquipped.slot.Value] = nowEquipped;
-                storage.Remove(nowEquipped);
-                if (previous)
-                {
-                    storage.Add(unequipped);
-                }
-                RpcInvChange();
-            }
+        //        CastData nowEquipped = tempDrops[newIndex];
+        //        bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
+        //        equipped[nowEquipped.slot.Value] = nowEquipped;
+        //        tempDrops.Remove(nowEquipped);
+        //        if (previous)
+        //        {
+        //            storage.Add(unequipped);
+        //        }
+        //        RpcInvChange();
+        //    }
+        //    else
+        //    {
+        //        CastData nowEquipped = storage[newIndex];
+        //        bool previous = equipped.TryGetValue(nowEquipped.slot.Value, out CastData unequipped);
+        //        equipped[nowEquipped.slot.Value] = nowEquipped;
+        //        storage.Remove(nowEquipped);
+        //        if (previous)
+        //        {
+        //            storage.Add(unequipped);
+        //        }
+        //        RpcInvChange();
+        //    }
 
-        }
+        //}
     }
 
     [Command]
     public void CmdSendStorage(string id)
     {
-        int index;
-        index = storage.FindIndex(item => item.id == id);
-        if (index >= 0)
+        CastData moved = tempDrops.Find(item => item.id == id);
+        if (!moved)
         {
             return;
         }
-        index = tempDrops.FindIndex(item => item.id == id);
-        CastData moved;
-        if (index >= 0)
-        {
-            moved = tempDrops[index];
-            tempDrops.RemoveAt(index);
-            storage.Add(moved);
-            RpcInvChange();
-            return;
-        }
-        KeyValuePair<ItemSlot, CastData> pair = equipped.First(pair => pair.Value.id == id);
-        moved = equipped[pair.Key];
-        equipped.Remove(pair.Key);
-        storage.Add(moved);
+        tempDrops.Remove(moved);
+        storage.Add(moved.id, moved);
+
+
         RpcInvChange();
-
-
-
     }
     [Command]
     public void CmdSendTrash(string id)
     {
-        int index;
-        index = tempDrops.FindIndex(item => item.id == id);
-        if (index >= 0)
-        {
-            return;
-        }
-        index = storage.FindIndex(item => item.id == id);
         CastData moved;
-        if (index >= 0)
+        if (!storage.TryGetValue(id, out moved))
         {
-            moved = storage[index];
-            storage.RemoveAt(index);
-            tempDrops.Add(moved);
-            RpcInvChange();
             return;
         }
-        KeyValuePair<ItemSlot, CastData> pair = equipped.First(pair => pair.Value.id == id);
-        moved = equipped[pair.Key];
-        equipped.Remove(pair.Key);
+        storage.Remove(id);
         tempDrops.Add(moved);
-
+        RpcInvChange();
     }
     [Command]
     public void CmdEquipBlessing(int blessingSlot)

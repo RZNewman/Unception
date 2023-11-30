@@ -89,7 +89,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             dragger.storageGrab(uiaCurrent);
         }
-        gp.player.GetComponent<Inventory>().CmdEquipAbility(newUI.blockFilled.id);
+        //gp.player.GetComponent<Inventory>().CmdEquipAbility(newUI.blockFilled.id);
         FindObjectOfType<SoundManager>().playSound(SoundManager.SoundClip.Equip);
 
         uiaCurrent = uiAbil;

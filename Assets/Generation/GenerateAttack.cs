@@ -20,6 +20,7 @@ using static StatModLabel;
 using UnityEngine.UIElements;
 using static GenerateDefense;
 using static GroveObject;
+using static Grove;
 
 public static class GenerateAttack
 {
@@ -810,6 +811,7 @@ public static class GenerateAttack
     {
 
         ItemSlot? slot = null;
+        bool basicShape = false;
         switch (type)
         {
             case AttackGenerationType.Player:
@@ -817,9 +819,11 @@ public static class GenerateAttack
                 break;
             case AttackGenerationType.IntroMain:
                 slot = ItemSlot.Main;
+                basicShape = true;
                 break;
             case AttackGenerationType.IntroOff:
                 slot = ItemSlot.OffHand;
+                basicShape = true;
                 break;
         }
 
@@ -847,7 +851,7 @@ public static class GenerateAttack
         block.id = System.Guid.NewGuid().ToString();
         block.quality = quality;
         block.stars = starCount;
-        block.shape = GroveShape.shape();
+        block.shape = GroveShape.shape(basicShape);
         return block;
 
     }

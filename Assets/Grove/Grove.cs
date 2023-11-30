@@ -3,44 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GroveObject;
 using System.Linq;
+using static GenerateAttack;
+using static Utils;
+using static UnityEngine.Rendering.DebugUI.Table;
+using UnityEngine.UIElements;
+using Mirror;
 
-public class Grove : MonoBehaviour
+public class Grove : NetworkBehaviour
 {
-    public GameObject slotPre;
-
     public Vector2Int gridSize;
-    public static readonly float gridSpacing = 1.1f;
 
 
     GroveSlot[,] map;
-    List<GroveObject> placed = new List<GroveObject>();
+    //List<GroveObject> placedLocal = new List<GroveObject>();
+    Dictionary<ItemSlot, string> slotAllocations = new Dictionary<ItemSlot, string>();
+    Dictionary<string, GrovePlacedObject> placedServer = new Dictionary<string, GrovePlacedObject>();
 
-    Camera groveCam;
+    GroveWorld groveWorld;
 
-    public enum GroveDirection
-    {
-        Forward,
-        Right,
-        Back,
-        Left,
-    }
+ 
 
     public struct GroveSlot
     {
-        Dictionary<GroveDirection, GroveSlot> neighbors;
         Dictionary<string, GroveSlotType> occupants;
 
         public static GroveSlot empty()
         {
             return new GroveSlot
             {
-                neighbors = new Dictionary<GroveDirection, GroveSlot>(),
                 occupants = new Dictionary<string, GroveSlotType>()
             };
-        }
-        public void addNeighbor(GroveDirection dir, GroveSlot slot)
-        {
-            neighbors[dir] = slot;
         }
 
         public List<string> addOccupant(string id, GroveSlotType type)
@@ -64,133 +56,233 @@ public class Grove : MonoBehaviour
         }
     }
 
-    private void Start()
+    public struct GrovePlacedObject
     {
-        BoxCollider box = GetComponent<BoxCollider>();
-        groveCam = FindObjectOfType<GroveCamera>().GetComponent<Camera>();
-
-        box.center = GridWorldSize / 2  - new Vector3(1,0,1) *0.5f;
-        box.size = GridWorldSize.Abs() + Vector3.up *3.5f;
-        initGrid();
+        public GrovePlacement placement;
+        public GroveShape shape;
+        public ItemSlot? slot;
+        public List<GroveSlotPosition> gridPoints()
+        {
+            Rotation rot = placement.rotation;
+            Vector2Int pos = placement.position;
+            return shape.points.Select(point =>
+            {
+                Vector2Int relativePos = point.position;
+                Vector2Int rotatedPos = rot.rotateIntVec(point.position);
+                Vector2Int gridPos = pos;
+                //Debug.Log("Relative: " + relativePos + ", Rotated: " + rotatedPos + ", Grid: " + gridPos);
+                return new GroveSlotPosition
+                {
+                    type = point.type,
+                    position = rotatedPos + gridPos
+                };
+            }).ToList();
+        }
     }
 
-    GroveObject cursor = null;
-
-    private void Update()
+    public struct GrovePlacement
     {
-        if (cursor)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
-                {
-                    cursor.gridSnap.isSnapping = false;
-                    cursor.transform.position += Vector3.down;
-                    cursor = AddShape(cursor);
-                }
-                else
-                {
-                    cursor.returnToTray();
-                    cursor = null;
-                }
-                
-            }
-        }
-        else
-        {
-            Ray r = groveCam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+        public Vector2Int position;
+        public Rotation rotation;
 
-            bool hoverObject = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask("GroveObject"));
-
-            if (hoverObject && Input.GetMouseButtonDown(0))
-            {
-                //Debug.Log("Pick Up: " + hit.collider.GetInstanceID());
-                cursor = hit.collider.GetComponentInParent<GroveObject>();
-                subtractShape(cursor);
-                cursor.setSnap();
-                
-            }
-        }
         
 
     }
-
-    public void addCursor(GroveObject obj)
+    public struct GroveShape
     {
-        if (cursor)
+        public List<GroveSlotPosition> points;
+
+        public static GroveShape shape(bool basic)
         {
-            cursor.returnToTray();
+            if (basic)
+            {
+                return new GroveShape
+                {
+                    points = new List<GroveSlotPosition>() { new GroveSlotPosition { position = Vector2Int.zero, type = GroveSlotType.Hard } },
+                };
+            }
+
+            HashSet<Vector2Int> pointsUsed = new HashSet<Vector2Int>();
+            List<GroveSlotPosition> slots = new List<GroveSlotPosition>();
+            Dictionary<Vector2Int, int> potentials = new Dictionary<Vector2Int, int>();
+
+            System.Action<Vector2Int> addPotential = (point) =>
+            {
+                if (!pointsUsed.Contains(point))
+                {
+                    if (potentials.ContainsKey(point))
+                    {
+                        potentials[point] += 1;
+                    }
+                    else
+                    {
+                        potentials.Add(point, 1);
+                    }
+                }
+            };
+
+            System.Action<Vector2Int, GroveSlotType> confirmPoint = (point, type) =>
+            {
+                potentials.Remove(point);
+                pointsUsed.Add(point);
+                slots.Add(new GroveSlotPosition
+                {
+                    position = point,
+                    type = type
+
+                });
+                addPotential(point + Vector2Int.up);
+                addPotential(point + Vector2Int.down);
+                addPotential(point + Vector2Int.left);
+                addPotential(point + Vector2Int.right);
+            };
+
+            confirmPoint(Vector2Int.zero, GroveSlotType.Hard);
+
+            int additionalPoints = Mathf.RoundToInt(GaussRandomDecline(1.5f).asRange(1, 7));
+            for (int i = 0; i < additionalPoints; i++)
+            {
+                Vector2Int selection = potentials.RandomItemWeighted((pair) => pair.Value).Key;
+                confirmPoint(selection, GroveSlotType.Hard);
+            }
+
+            //double the weights for direct adjacantcies
+            foreach (Vector2Int pos in potentials.Keys.ToList())
+            {
+                potentials[pos] *= 10;
+            }
+
+            int minSoft = 5 + additionalPoints;
+            int maxSoft = minSoft + additionalPoints * 1;
+            int softCount = Mathf.RoundToInt(GaussRandomDecline(1.5f).asRange(minSoft, maxSoft));
+            //Debug.Log("Hard: " + 1 + additionalPoints + " Soft: " + softCount);
+            for (int i = 0; i < softCount; i++)
+            {
+                Vector2Int selection = potentials.RandomItemWeighted((pair) => pair.Value).Key;
+                confirmPoint(selection, GroveSlotType.Aura);
+            }
+
+
+            return new GroveShape
+            {
+                points = slots,
+            };
         }
-        cursor = obj;
+
     }
 
-  
-
-    public Vector3 CameraCenter
+    enum SideEffectType
     {
-        get
-        {
-            return new Vector3(gridSize.x * 0.5f, 0, gridSize.y *0.3f)* gridSpacing ;
-        }
+        ReturnToTray,
+        AddToCursor,
+    }
+    struct GroveSideEffect
+    {
+        public string targetID;
+        public SideEffectType type;
     }
 
-    public Vector3 GridWorldSize
+    private void Start()
     {
-        get
-        {
-            return new Vector3(gridSize.x, 0, gridSize.y) * gridSpacing ;
-        }
+        groveWorld = FindObjectOfType<GroveWorld>(true);
+        initGrid();
     }
-
     void initGrid()
     {
-        transform.position = -GridWorldSize;
-        map = new GroveSlot[gridSize.x,gridSize.y];
+        map = new GroveSlot[gridSize.x, gridSize.y];
 
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-                Vector3 pos = transform.position + gridSpacing * x * Vector3.right + gridSpacing * y * Vector3.forward;
-                Instantiate(slotPre, pos, Quaternion.identity, transform);
                 map[x, y] = GroveSlot.empty();
             }
         }
 
-        for (int x = 0; x < gridSize.x; x++)
+
+    }
+
+    public Vector2Int center
+    {
+        get
         {
-            for (int y = 0; y < gridSize.y; y++)
+            return gridSize / 2;
+        }
+    }
+    public bool isPlaced(string id)
+    {
+        return placedServer.ContainsKey(id);
+    }
+
+    public Dictionary<ItemSlot, string> slotted
+    {
+        get
+        {
+            return slotAllocations;
+        }
+    }
+
+    public float powerOfSlot(ItemSlot slot)
+    {
+        //TODO Grove Keeps track of slots
+        return 1000;
+    }
+
+    public CastDataInstance dataOfSlot(ItemSlot slot)
+    {
+        //TODO Grove Keeps track of slots
+        return null;
+    }
+
+    public Dictionary<string, GrovePlacement> exportPlacements()
+    {
+        return placedServer.Keys.ToDictionary(key => key, key => placedServer[key].placement);
+    }
+
+    [Server]
+    public void importPlacements(Dictionary<string, GrovePlacement> placements, Dictionary<string, CastData> items)
+    {
+        placedServer.Clear();
+        foreach(string id in placements.Keys)
+        {
+            AddPlace(id, new GrovePlacedObject {placement = placements[id], shape = items[id].shape, slot = items[id].slot });
+        }
+    }
+
+    [Command]
+    public void CmdPlaceGrove(string placedID, GrovePlacedObject placedObj)
+    {
+        GroveSideEffect[] effects = AddPlace(placedID, placedObj);
+        TargetReplaySideEffects(connectionToClient, effects);
+    }
+
+    [Command]
+    public void CmdPickGrove(string pickID, GrovePlacedObject pickObj)
+    {
+        SubtractPlace(pickID, pickObj);
+    }
+
+    [TargetRpc]
+    void TargetReplaySideEffects(NetworkConnection conn ,GroveSideEffect[] effects)
+    {
+        foreach(GroveSideEffect effect in effects)
+        {
+            switch (effect.type)
             {
-                initSlot(x, y);
+                case SideEffectType.ReturnToTray:
+                    groveWorld.returnToTray(effect.targetID);
+                    break;
+                case SideEffectType.AddToCursor:
+                    groveWorld.addCursor(effect.targetID);
+                    break;
             }
         }
     }
 
-    void initSlot(int x, int y)
-    {
-        if (x > 0)
-        {
-            map[x,y].addNeighbor(GroveDirection.Right,map[x-1,y]);
-        }
-        if (y > 0)
-        {
-            map[x, y].addNeighbor(GroveDirection.Back, map[x, y - 1]);
-        }
-        if (x < gridSize.x -1)
-        {
-            map[x, y].addNeighbor(GroveDirection.Left, map[x + 1, y]);
-        }
-        if (y < gridSize.y - 1)
-        {
-            map[x, y].addNeighbor(GroveDirection.Forward, map[x, y + 1]);
-        }
-    }
 
-    GroveObject AddShape(GroveObject obj)
+    GroveSideEffect[] AddPlace(string placedID, GrovePlacedObject placedObj)
     {
-        GroveObject returnCursor = null;
-        List<GroveSlotPosition> gridPoints = obj.gridPoints();
+        List<GroveSlotPosition> gridPoints = placedObj.gridPoints();
         foreach (GroveSlotPosition slot in gridPoints)
         {
             if (
@@ -201,61 +293,69 @@ public class Grove : MonoBehaviour
 
                 )
             {
-                obj.returnToTray();
-                return returnCursor;
+                return new GroveSideEffect[] {new GroveSideEffect { targetID = placedID, type = SideEffectType.ReturnToTray} };
             }
         }
 
         HashSet<string> kickSet = new HashSet<string>();
-        foreach(GroveSlotPosition slot in gridPoints)
+        foreach (GroveSlotPosition slot in gridPoints)
         {
             //drawMapPos(slot.position);
-            List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(obj.GetInstanceID().ToString(), slot.type);
-            foreach(string id in kicked)
+            List<string> kicked = map[slot.position.x, slot.position.y].addOccupant(placedID, slot.type);
+            foreach (string id in kicked)
             {
                 kickSet.AddIfNotExists(id);
             }
         }
-        if(kickSet.Count == 1)
+        if(placedObj.slot.HasValue && slotAllocations.ContainsKey(placedObj.slot.Value))
         {
-            GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == kickSet.First());
-            placed.Remove(kick);
-            subtractShape(kick);
+            kickSet.AddIfNotExists(slotAllocations[placedObj.slot.Value]);
+        }
+        placedServer.Add(placedID, placedObj);
+        if (placedObj.slot.HasValue)
+        {
+            slotAllocations[placedObj.slot.Value] = placedID;
+        }
+
+
+        if (kickSet.Count == 1)
+        {
+            string kickID = kickSet.First();
+            SubtractPlace(kickID, placedServer[kickID]);           
             //Debug.Log("Rebound: "+ kickSet.First());
-            kick.setSnap();
-            returnCursor = kick;
+            return new GroveSideEffect[] { new GroveSideEffect { targetID = kickID, type = SideEffectType.AddToCursor } };
 
         }
         else if(kickSet.Count > 1)
         {
-            foreach (string id in kickSet)
+            List<GroveSideEffect> effects = new List<GroveSideEffect>();
+            foreach (string kickID in kickSet)
             {
-                GroveObject kick = placed.Find(obj => obj.GetInstanceID().ToString() == id);
-                placed.Remove(kick);
-                subtractShape(kick);
-                kick.returnToTray();
+                SubtractPlace(kickID, placedServer[kickID]);            
+                //Debug.Log("Rebound: "+ kickSet.First());
+                effects.Add( new GroveSideEffect { targetID = kickID, type = SideEffectType.ReturnToTray } );
             }
             //Debug.Log("Kick");
+            return effects.ToArray();
         }
         
 
-        placed.Add(obj);
-        return returnCursor;
+
+        return new GroveSideEffect[0];
     }
 
-    void subtractShape(GroveObject obj)
+    void SubtractPlace(string placedID, GrovePlacedObject placed)
     {
-        foreach (GroveSlotPosition slot in obj.gridPoints())
+        foreach (GroveSlotPosition slot in placed.gridPoints())
         {
-            map[slot.position.x, slot.position.y].removeOccupant(obj.GetInstanceID().ToString());
+            map[slot.position.x, slot.position.y].removeOccupant(placedID);
         }
+        if (placedServer[placedID].slot.HasValue && slotAllocations[placedServer[placedID].slot.Value] == placedID)
+        {
+            slotAllocations.Remove(placedServer[placedID].slot.Value);
+        }
+        placedServer.Remove(placedID);
     }
 
-    void drawMapPos(Vector2Int vec)
-    {
-        Vector3 worldCell = transform.position + Utils.input2vec(vec) * gridSpacing;
 
-        Debug.DrawLine(worldCell, worldCell + Vector3.up, Color.green, 3f);
-        
-    }
 }

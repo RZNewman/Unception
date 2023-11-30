@@ -4,6 +4,7 @@ using static GenerateAttack;
 using static GenerateHit;
 using static GenerateRepeating;
 using static GenerateWind;
+using static Grove;
 using static GroveObject;
 using static RewardManager;
 using static StatModLabel;

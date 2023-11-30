@@ -32,13 +32,17 @@ public class SnapToGrid : MonoBehaviour
         if (snapping)
         {
             snap();
-            
+
         }
     }
 
 
     void snap()
     {
+        if (!cam)
+        {
+            return;
+        }
         Ray r = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -59,6 +63,13 @@ public class SnapToGrid : MonoBehaviour
 
     public Vector2Int gridLocation(Vector3 center)
     {
-        return vec2input((transform.position -center) / gridSize).roundToInt();
+        return vec2input((transform.position - center) / gridSize).roundToInt();
+    }
+
+    public void setGridLocation(Vector3 center, Vector2Int pos)
+    {
+        Vector3 newPos = center + new Vector3(pos.x,0, pos.y) * gridSize;
+        newPos.y = transform.position.y;
+        transform.position = newPos;
     }
 }

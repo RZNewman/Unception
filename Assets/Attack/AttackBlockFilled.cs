@@ -9,6 +9,7 @@ using static AttackUtils;
 using static StatTypes;
 using static RewardManager;
 using static GroveObject;
+using static Grove;
 
 public class CastDataInstance : AbilityDataInstance
 {

@@ -9,24 +9,28 @@ public class UILoadoutMenu : MonoBehaviour
 {
     public ItemList storageList;
     public ItemList dropsList;
-    public UiSlotList slotList;
 
     public void loadInvMode()
     {
-        slotList.clear();
         UiEquipmentDragger dragger = GetComponent<UiEquipmentDragger>();
-        Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
+        PlayerGhost player = FindObjectOfType<GlobalPlayer>().player;
+        Grove grove = player.GetComponent<Grove>();
+        Inventory inv = player.GetComponent<Inventory>();
         storageList.setInventory(inv);
         dropsList.setInventory(inv);
 
-        List<(ItemSlot, GameObject)> iconList = inv.equippedAbilities.Select(pair => (pair.Key, storageList.createIcon(pair.Value))).ToList();
-        Dictionary<ItemSlot, GameObject> icons = new Dictionary<ItemSlot, GameObject>();
-        iconList.ForEach((item) => icons.Add(item.Item1, item.Item2));
-        slotList.fillSlots(icons, dragger);
+        GroveWorld groveW = FindObjectOfType<GroveWorld>(true);
+        groveW.reset();
+        grove.exportPlacements().ToList().ForEach(pair => groveW.buildPlacedObject(inv.getFilledBlock(pair.Key), pair.Value));
 
         storageList.fillAbilities();
         dropsList.fillAbilities();
 
+    }
+
+    public void returnObject(CastDataInstance data)
+    {
+        storageList.createIcon(data);
     }
 
     public void displayUpgrades()

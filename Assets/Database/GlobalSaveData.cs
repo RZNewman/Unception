@@ -6,6 +6,7 @@ using Firebase.Database;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Linq;
+using static Grove;
 
 public class GlobalSaveData : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class GlobalSaveData : MonoBehaviour
     public struct PlayerLoadTasks
     {
         public Task<DataSnapshot> storageItems;
-        public Task<DataSnapshot> equippedItems;
+        public Task<DataSnapshot> placements;
         public Task<DataSnapshot> blessings;
         public Task<DataSnapshot> power;
         public Task<DataSnapshot> pity;
@@ -45,7 +46,7 @@ public class GlobalSaveData : MonoBehaviour
         return new PlayerLoadTasks
         {
             storageItems = db.Child("Characters").Child(playerName).Child("items").GetValueAsync(),
-            equippedItems = db.Child("Characters").Child(playerName).Child("equipped").GetValueAsync(),
+            placements = db.Child("Characters").Child(playerName).Child("placements").GetValueAsync(),
             power = db.Child("Characters").Child(playerName).Child("power").GetValueAsync(),
             pity = db.Child("Characters").Child(playerName).Child("pity").GetValueAsync(),
             quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
@@ -112,12 +113,12 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
     }
 
-    public void savePlayerItems(string playerName, CastData[] equipped, CastData[] storage)
+    public void savePlayerItems(string playerName, Dictionary<string, GrovePlacement> placements, CastData[] storage)
     {
         string json = santitizeJson(JsonConvert.SerializeObject(storage, Formatting.None, JSONsettings));
         db.Child("Characters").Child(playerName).Child("items").SetRawJsonValueAsync(json);
-        json = santitizeJson(JsonConvert.SerializeObject(equipped, Formatting.None, JSONsettings));
-        db.Child("Characters").Child(playerName).Child("equipped").SetRawJsonValueAsync(json);
+        json = JsonConvert.SerializeObject(placements, Formatting.None, JSONsettings);
+        db.Child("Characters").Child(playerName).Child("placements").SetRawJsonValueAsync(json);
     }
 
     public void savePlayerBlessings(string playerName, TriggerData[] blessings)

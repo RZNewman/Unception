@@ -7,11 +7,11 @@ using UnityEngine.UI;
 using static GenerateAttack;
 using static UnitControl;
 
-public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IPointerExitHandler
+public class ItemList : MonoBehaviour, UiDraggerTarget
 {
     public GameObject abilityIconPre;
 
-    UiEquipmentDragger dragger;
+
 
     Inventory inv;
     public InventoryMode mode;
@@ -20,7 +20,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
     private void Start()
     {
         gp = FindObjectOfType<GlobalPlayer>(true);
-        dragger = FindObjectOfType<UiEquipmentDragger>(true);
+
     }
     public enum InventoryMode
     {
@@ -28,15 +28,6 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         Drops,
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        dragger.setTarget(this);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        dragger.unsetTarget(this);
-    }
     public void setInventory(Inventory i)
     {
         inv = i;
@@ -44,7 +35,6 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
 
     public void fillAbilities()
     {
-        dragger = FindObjectOfType<UiEquipmentDragger>(true);
 
 
 
@@ -62,7 +52,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
                 break;
             case InventoryMode.Storage:
             default:
-                source = inv.stored;
+                source = inv.unequipped;
                 break;
         }
 
@@ -77,25 +67,25 @@ public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IP
         foreach (Transform icon in transform)
         {
             UiAbility uia = icon.GetComponent<UiAbility>();
-            UiSlotList slotList = dragger.GetComponent<UILoadoutMenu>().slotList;
-            float slotPower = slotList.slotOfType(uia.blockFilled.slot.Value).actingPower;
+            float slotPower = FindObjectOfType<Grove>().powerOfSlot(uia.blockFilled.slot.Value);
             float abPower = uia.blockFilled.actingPower;
             uia.setUpgrade(slotPower < abPower);
         }
     }
     public GameObject createIcon(CastData ability)
     {
-        if (!dragger)
-        {
-            dragger = FindObjectOfType<UiEquipmentDragger>(true);
-        }
+        return createIcon((CastDataInstance)inv.fillBlock(ability));
+    }
+    public GameObject createIcon(CastDataInstance ability)
+    {
         GameObject icon = Instantiate(abilityIconPre, transform);
         icon.transform.localScale = Vector3.one * 0.6f;
         UiAbility uia = icon.GetComponent<UiAbility>();
-        uia.setFill((CastDataInstance)inv.fillBlock(ability));
-        uia.setDragger(dragger);
+        uia.setFill(ability, UiAbility.UIAbilityMode.Inventory);
         return icon;
     }
+
+
     void sort()
     {
         transform.SortChildren(sortFunction(), !reverse);

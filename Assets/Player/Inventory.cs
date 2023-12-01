@@ -281,7 +281,7 @@ public class Inventory : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcInvChange()
+    public void RpcInvChange()
     {
         foreach (OnInvUpdate callback in OnInvUpdateCallbacks)
         {

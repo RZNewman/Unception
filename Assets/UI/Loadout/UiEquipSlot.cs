@@ -64,7 +64,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         uiaCurrent = uiAbil;
         uiaCurrent.transform.SetParent(transform);
         uiaCurrent.transform.localPosition = Vector3.zero;
-        slotPower = uiaCurrent.GetComponent<UiAbility>().blockFilled.actingPower;
+        slotPower = uiaCurrent.GetComponent<UiAbility>().blockFilled.actingPower();
     }
 
     public CastDataInstance slottedBlock()
@@ -95,7 +95,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         uiaCurrent = uiAbil;
         uiaCurrent.transform.SetParent(transform);
         uiaCurrent.transform.localPosition = Vector3.zero;
-        slotPower = newUI.blockFilled.actingPower;
+        slotPower = newUI.blockFilled.actingPower();
         newUI.setUpgrade(true);
         dragger.GetComponent<UILoadoutMenu>().displayUpgrades();
     }

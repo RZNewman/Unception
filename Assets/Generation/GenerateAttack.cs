@@ -522,7 +522,7 @@ public static class GenerateAttack
     public struct PopulateAttackOptions
     {
         public float power;
-        public float enhancementStrength;
+        public float multipliedStrength;
         public float? addedStrength;
         public bool? reduceWindValue;
         public Ability? statLinkAbility;
@@ -546,7 +546,7 @@ public static class GenerateAttack
         {
             addedBaseStrength += opts.addedStrength.Value;
         }
-        float multBaseStrength = opts.enhancementStrength;
+        float multBaseStrength = opts.multipliedStrength;
         float windStrength = (1 + addedBaseStrength) * multBaseStrength;
 
         List<SegmentGenerationData> segmentsGen = atk.segments.ToList();

@@ -21,6 +21,7 @@ public class Grove : NetworkBehaviour
 
     GroveWorld groveWorld;
 
+    Inventory inv;
  
 
     public struct GroveSlot
@@ -169,6 +170,10 @@ public class Grove : NetworkBehaviour
             };
         }
 
+        public float power(Dictionary<GroveSlotType, float> values)
+        {
+            return points!= null ? points.Sum(point => values[point.type]) : 0;
+        }
     }
 
     enum SideEffectType
@@ -185,6 +190,7 @@ public class Grove : NetworkBehaviour
     private void Start()
     {
         groveWorld = FindObjectOfType<GroveWorld>(true);
+        inv = GetComponent<Inventory>();
         initGrid();
     }
     void initGrid()
@@ -253,6 +259,7 @@ public class Grove : NetworkBehaviour
     public void CmdPlaceGrove(string placedID, GrovePlacedObject placedObj)
     {
         GroveSideEffect[] effects = AddPlace(placedID, placedObj);
+        inv.RpcInvChange();
         TargetReplaySideEffects(connectionToClient, effects);
     }
 

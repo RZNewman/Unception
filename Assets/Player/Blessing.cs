@@ -41,9 +41,9 @@ public abstract class AbilityData : AbilityIdentifiers
         instance.effect = populateAttack(effectGeneration, new PopulateAttackOptions
         {
             power = power,
-            enhancementStrength = instance.enhancementStrength(),
+            multipliedStrength = instance.multipliedStrength(),
             statLinkAbility = opts.statLinkAbility,
-            addedStrength = opts.addedStrength,
+            addedStrength = instance.addedStrength(),
             reduceWindValue = opts.reduceWindValue,
         });
     }
@@ -76,15 +76,12 @@ public abstract class AbilityDataInstance : AbilityIdentifiers
     public AttackInstanceData effect;
     public float powerInstance;
 
-    public float actingPower
-    {
-        get
-        {
-            return powerInstance * enhancementStrength();
-        }
-    }
+    public abstract float actingPower();
+ 
 
-    public abstract float enhancementStrength();
+    public abstract float multipliedStrength();
+
+    public abstract float addedStrength();
 
     //float modPercentValue
     //{

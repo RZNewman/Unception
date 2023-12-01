@@ -51,7 +51,6 @@ public class TriggerData : AbilityData
     {
 
         TriggerDataInstance filled = ScriptableObject.CreateInstance<TriggerDataInstance>();
-        opts.addedStrength = conditions.triggerStrength;
         opts.reduceWindValue = true;
         populate(filled, opts);
         filled.conditions = conditions;
@@ -66,12 +65,19 @@ public class TriggerDataInstance : AbilityDataInstance
     public TriggerConditions conditions;
     public float difficultyTotal;
 
-    public override float enhancementStrength()
+    public override float multipliedStrength()
     {
         return 1 + difficultyTotal * 0.25f;
     }
+    public override float addedStrength()
+    {
+        return conditions.triggerStrength;
+    }
 
-
+    public override float actingPower()
+    {
+        return powerInstance * (1+ addedStrength())* multipliedStrength();
+    }
 }
 
 

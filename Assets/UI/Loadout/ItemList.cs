@@ -68,7 +68,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
         {
             UiAbility uia = icon.GetComponent<UiAbility>();
             float slotPower = FindObjectOfType<Grove>().powerOfSlot(uia.blockFilled.slot.Value);
-            float abPower = uia.blockFilled.actingPower;
+            float abPower = uia.blockFilled.actingPower();
             uia.setUpgrade(slotPower < abPower);
         }
     }
@@ -123,7 +123,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
                 return (t1) => t1.GetComponent<UiAbility>().blockFilled.effect.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:
             default:
-                return (t1) => t1.GetComponent<UiAbility>().blockFilled.actingPower;
+                return (t1) => t1.GetComponent<UiAbility>().blockFilled.actingPower();
 
         }
     }

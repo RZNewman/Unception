@@ -18,10 +18,24 @@ public class CastDataInstance : AbilityDataInstance
     public int stars;
     public GroveShape shape;
 
-    public override float enhancementStrength()
+    static readonly Dictionary<GroveSlotType, float> shapeValues = new Dictionary<GroveSlotType, float>()
+    {
+        { GroveSlotType.Hard,0.15f },
+        { GroveSlotType.Aura,0.07f },
+    };
+    public override float addedStrength()
+    {
+        return shape.power(shapeValues);
+    }
+
+    public override float multipliedStrength()
     {
         return qualityPercent(quality) + 0.03f * stars;
     }
 
+    public override float actingPower()
+    {
+        return powerInstance * multipliedStrength();
+    }
 }
 

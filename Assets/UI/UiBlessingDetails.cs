@@ -31,7 +31,7 @@ public class UiBlessingDetails : MonoBehaviour
 
         description.text = descriptionText(trigger.conditions, trigger.flair);
         power.text = Power.displayExaggertatedPower(trigger.powerInstance);
-        powerTotal.text = Power.displayExaggertatedPower(trigger.actingPower);
+        powerTotal.text = Power.displayExaggertatedPower(trigger.actingPower());
         shape.text = trigger.effect.shapeDisplay();
 
 

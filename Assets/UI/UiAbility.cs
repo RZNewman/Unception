@@ -34,10 +34,11 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public Sprite Legendary;
 
     Ability target;
-    CastDataInstance filled;
 
     //menu only
     GroveWorld grove;
+    string abilityID;
+    Inventory inv;
 
     public enum UIAbilityMode
     {
@@ -46,6 +47,21 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     }
     UIAbilityMode mode;
 
+
+    public CastDataInstance blockFilled
+    {
+        get
+        {
+            if (target)
+            {
+                return (CastDataInstance)target.source();
+            }
+            else
+            {
+                return (CastDataInstance)inv.getAbilityInstance(abilityID);
+            }
+        }
+    }
 
     private void Start()
     {
@@ -73,17 +89,16 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         target = ability;
         setFill((CastDataInstance)ability.source(), UIAbilityMode.Game);
     }
-    public CastDataInstance blockFilled
+
+    public void setAbilityID(string id, Inventory i)
     {
-        get
-        {
-            return filled;
-        }
+        abilityID = id;
+        inv = i;
+        setFill((CastDataInstance)inv.getAbilityInstance(abilityID), UIAbilityMode.Inventory);
     }
 
-    public void setFill(CastDataInstance a, UIAbilityMode m)
+    void setFill(CastDataInstance filled, UIAbilityMode m)
     {
-        filled = a;
         mode = m;
         AttackFlair flair = filled.flair;
         background.sprite = bgFromQuality(filled.quality);
@@ -99,7 +114,7 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             identifierGamplay.color = partialColor;
             identifierGamplay.text = flair.identifier;
             UIKeyDisplay keyDisplay = GetComponentInChildren<UIKeyDisplay>();
-            keyDisplay.key = toKeyName(a.slot.Value);
+            keyDisplay.key = toKeyName(filled.slot.Value);
             keyDisplay.sync();
             target.GetComponent<BuffManager>().subscribe(buffBarGameplay.displayBuffs);
 
@@ -130,19 +145,21 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-         grove.setHover(this);
+         grove.setHover(abilityID);
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        grove.unsetHover(this);
+        grove.unsetHover(abilityID);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if(mode == UIAbilityMode.Inventory)
         {
-            FindObjectOfType<GroveWorld>().buildObject(filled);
-            grove.unsetHover(this);
+            Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
+            FindObjectOfType<GroveWorld>().buildObject(abilityID);
+            inv.CmdSendStorage(abilityID);
+            grove.unsetHover(abilityID);
             Destroy(gameObject);
         }
         
@@ -174,16 +191,6 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         }
         return bg;
-    }
-
-    
-
-    public CastDataInstance ability
-    {
-        get
-        {
-            return filled;
-        }
     }
 
 }

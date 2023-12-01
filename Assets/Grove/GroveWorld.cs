@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static Atlas;
 using static GenerateAttack;
 using static Grove;
@@ -48,7 +49,7 @@ public class GroveWorld : MonoBehaviour
     {
         if (cursor)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
                 {
@@ -145,11 +146,12 @@ public class GroveWorld : MonoBehaviour
     }
 
     Dictionary<string, GroveObject> instances = new Dictionary<string, GroveObject>();
-    public GroveObject buildObject(CastDataInstance data)
+    public GroveObject buildObject(string id)
     {
-        GroveObject obj = Instantiate(groveObjPre).GetComponent<GroveObject>();
-        obj.assignFill(data);
-        instances.Add(data.id, obj);
+        Inventory inv = gp.player.GetComponent<Inventory>();
+        GroveObject obj = Instantiate(groveObjPre, transform).GetComponent<GroveObject>();
+        obj.assignFill(id, inv);
+        instances.Add(id, obj);
         addCursor(obj);
         obj.GetComponent<SnapToGrid>().isSnapping = true;
         obj.GetComponent<SnapToGrid>().gridSize = gridSpacing;
@@ -166,12 +168,13 @@ public class GroveWorld : MonoBehaviour
         initGrid();
     }
 
-    public void buildPlacedObject(CastDataInstance data, GrovePlacement place)
+    public void buildPlacedObject(string id, GrovePlacement place)
     {
+        Inventory inv = gp.player.GetComponent<Inventory>();
         //Debug.Log(place.position);
-        GroveObject obj = Instantiate(groveObjPre).GetComponent<GroveObject>();
-        obj.assignFill(data);
-        instances.Add(data.id, obj);
+        GroveObject obj = Instantiate(groveObjPre, transform).GetComponent<GroveObject>();
+        obj.assignFill(id, inv);
+        instances.Add(id, obj);
         obj.GetComponent<SnapToGrid>().gridSize = gridSpacing;
         Vector3 pos = obj.transform.position;
         obj.transform.position = new Vector3(pos.x,heightPlaced, pos.z);
@@ -185,10 +188,23 @@ public class GroveWorld : MonoBehaviour
 
     void returnToTray(GroveObject obj)
     {
-        //TODO pick tray
-        loadoutMenu.returnObject(obj.castData);
+        loadoutMenu.returnObject(obj.id);
         instances.Remove(obj.id);
         Destroy(obj.gameObject);
+    }
+
+    public void sendCursorToTrash()
+    {
+        if (!cursor)
+        {
+            return;
+        }
+        loadoutMenu.trashObject(cursor.id);
+        instances.Remove(cursor.id);
+        gp.player.GetComponent<Inventory>().CmdSendTrash(cursor.id);
+        Destroy(cursor.gameObject);
+        cursor = null;
+
     }
 
 
@@ -213,21 +229,24 @@ public class GroveWorld : MonoBehaviour
     }
 
     #region Icon mgmt
-    UiAbility hover;
+    string hoverId;
 
-    public void setHover(UiAbility u)
+    public void setHover(string id)
     {
-        hover = u;
-        deets.setDetails(u.blockFilled, gp.player.GetComponent<Grove>().dataOfSlot(hover.blockFilled.slot.Value));
+        PlayerGhost player = gp.player;
+        CastDataInstance inst = (CastDataInstance)player.GetComponent<Inventory>().getAbilityInstance(id);
+
+        hoverId = id;
+        deets.setDetails(inst, player.GetComponent<Grove>().dataOfSlot(inst.slot.Value));
         deets.gameObject.SetActive(true);
 
     }
 
-    public void unsetHover(UiAbility u)
+    public void unsetHover(string id)
     {
-        if (hover == u)
+        if (hoverId == id)
         {
-            hover = null;
+            hoverId = null;
             deets.gameObject.SetActive(false);
         }
     }

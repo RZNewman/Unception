@@ -18,10 +18,6 @@ public class Ability : NetworkBehaviour
     AbilityData format;
 
 
-
-    [SyncVar]
-    float? triggerStrength;
-
     [SyncVar]
     public ItemSlot? clientSyncKey;
 
@@ -163,10 +159,9 @@ public class Ability : NetworkBehaviour
         }
     }
     [Server]
-    public void setFormat(AbilityData a, float? tStrength = null)
+    public void setFormat(AbilityData a)
     {
         format = a;
-        triggerStrength = tStrength;
         fillFormat();
         charges = chargeMax;
         if (format.scales)
@@ -180,8 +175,6 @@ public class Ability : NetworkBehaviour
             new FillBlockOptions
             {
                 statLinkAbility = this,
-                addedStrength = triggerStrength,
-                reduceWindValue = triggerStrength.HasValue
             }
             );
 
@@ -195,8 +188,6 @@ public class Ability : NetworkBehaviour
             new FillBlockOptions
             {
                 statLinkAbility = this,
-                addedStrength = triggerStrength,
-                reduceWindValue = triggerStrength.HasValue,
                 overridePower = p.power,
                 forceScaling = true,
             }
@@ -213,8 +204,6 @@ public class Ability : NetworkBehaviour
             new FillBlockOptions
             {
                 statLinkAbility = this,
-                addedStrength = triggerStrength,
-                reduceWindValue = triggerStrength.HasValue,
                 overridePower = p.power
             }
             );

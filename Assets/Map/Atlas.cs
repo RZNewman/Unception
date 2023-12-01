@@ -239,7 +239,7 @@ public class Atlas : NetworkBehaviour
     {
         float power = tier switch
         {
-            int i when i == 0 => playerStartingPower * 0.8f,
+            int i when i == 0 => playerStartingPower * 0.5f,
             int i when i == 1 => playerStartingPower,
             int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
         };

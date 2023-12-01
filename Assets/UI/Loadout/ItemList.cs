@@ -56,7 +56,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
                 break;
         }
 
-        source.ForEach(a => createIcon(a));
+        source.ForEach(a => createIcon(a.id));
         sort();
 
         displayUpgrades();
@@ -72,16 +72,13 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
             uia.setUpgrade(slotPower < abPower);
         }
     }
-    public GameObject createIcon(CastData ability)
-    {
-        return createIcon((CastDataInstance)inv.fillBlock(ability));
-    }
-    public GameObject createIcon(CastDataInstance ability)
+
+    public GameObject createIcon(string id)
     {
         GameObject icon = Instantiate(abilityIconPre, transform);
         icon.transform.localScale = Vector3.one * 0.6f;
         UiAbility uia = icon.GetComponent<UiAbility>();
-        uia.setFill(ability, UiAbility.UIAbilityMode.Inventory);
+        uia.setAbilityID(id, inv);
         return icon;
     }
 
@@ -119,14 +116,14 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
         switch (sortMode)
         {
             case SortMode.DPS:
-                return (t1) => t1.GetComponent<UiAbility>().ability.effect.dps(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().blockFilled.effect.dps(gp.player.power);
             case SortMode.Cooldown:
-                return (t1) => t1.GetComponent<UiAbility>().ability.effect.cooldownDisplay(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().blockFilled.effect.cooldownDisplay(gp.player.power);
             case SortMode.CastTime:
-                return (t1) => t1.GetComponent<UiAbility>().ability.effect.castTimeDisplay(gp.player.power);
+                return (t1) => t1.GetComponent<UiAbility>().blockFilled.effect.castTimeDisplay(gp.player.power);
             case SortMode.ActingPower:
             default:
-                return (t1) => t1.GetComponent<UiAbility>().ability.actingPower;
+                return (t1) => t1.GetComponent<UiAbility>().blockFilled.actingPower;
 
         }
     }
@@ -135,22 +132,22 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
     public void grabAbility(GameObject icon)
     {
 
-        icon.transform.SetParent(transform);
-        sort();
+        //icon.transform.SetParent(transform);
+        //sort();
     }
 
     public void slotObject(GameObject uiAbil)
     {
-        UiAbility newUI = uiAbil.GetComponent<UiAbility>();
-        grabAbility(uiAbil);
-        switch (mode)
-        {
-            case InventoryMode.Storage:
-                gp.player.GetComponent<Inventory>().CmdSendStorage(newUI.blockFilled.id);
-                break;
-            case InventoryMode.Drops:
-                gp.player.GetComponent<Inventory>().CmdSendTrash(newUI.blockFilled.id);
-                break;
-        }
+        //UiAbility newUI = uiAbil.GetComponent<UiAbility>();
+        //grabAbility(uiAbil);
+        //switch (mode)
+        //{
+        //    case InventoryMode.Storage:
+        //        gp.player.GetComponent<Inventory>().CmdSendStorage(newUI.blockFilled.id);
+        //        break;
+        //    case InventoryMode.Drops:
+        //        gp.player.GetComponent<Inventory>().CmdSendTrash(newUI.blockFilled.id);
+        //        break;
+        //}
     }
 }

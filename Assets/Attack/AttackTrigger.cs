@@ -51,6 +51,8 @@ public class TriggerData : AbilityData
     {
 
         TriggerDataInstance filled = ScriptableObject.CreateInstance<TriggerDataInstance>();
+        opts.addedStrength = conditions.triggerStrength;
+        opts.reduceWindValue = true;
         populate(filled, opts);
         filled.conditions = conditions;
         filled.difficultyTotal = difficultyTotal;

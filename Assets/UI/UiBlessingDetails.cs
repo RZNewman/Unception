@@ -20,13 +20,14 @@ public class UiBlessingDetails : MonoBehaviour
 
     public void setDetails(UiBlessingIcon icon)
     {
-        TriggerDataInstance trigger = icon.triggerInstance;
+
 
 
         if (!player)
         {
-            player = FindObjectOfType<PlayerGhost>();
+            player = FindObjectOfType<GlobalPlayer>().player;
         }
+        TriggerDataInstance trigger = (TriggerDataInstance)player.GetComponent<Inventory>().getAbilityInstance( icon.id);
 
         description.text = descriptionText(trigger.conditions, trigger.flair);
         power.text = Power.displayExaggertatedPower(trigger.powerInstance);

@@ -35,9 +35,9 @@ public class AbiltyManager : NetworkBehaviour
 
 
     }
-    public Ability addTriggeredAbility(TriggerData block, float strength)
+    public Ability addTriggeredAbility(TriggerData block)
     {
-        return instanceTriggeredAbility(block, strength);
+        return instanceTriggeredAbility(block);
 
     }
     void instanceAbility(ItemSlot key, CastData block)
@@ -50,11 +50,11 @@ public class AbiltyManager : NetworkBehaviour
         o.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(o);
     }
-    Ability instanceTriggeredAbility(TriggerData block, float strength)
+    Ability instanceTriggeredAbility(TriggerData block)
     {
         GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
-        a.setFormat(block, strength);
+        a.setFormat(block);
         instancedAbilitites.Add(a.GetInstanceID(), a);
         o.GetComponent<ClientAdoption>().parent = gameObject;
         NetworkServer.Spawn(o);

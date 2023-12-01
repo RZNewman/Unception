@@ -39,7 +39,7 @@ public class TriggerManager : NetworkBehaviour
     {
         AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
 
-        Ability a = abiltyManager.addTriggeredAbility(trig, trig.conditions.triggerStrength);
+        Ability a = abiltyManager.addTriggeredAbility(trig);
         CastingLocationData castData = new CastingLocationData
         {
             hardCast = false,

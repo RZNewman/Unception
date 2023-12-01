@@ -72,7 +72,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   unitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
-  attacksToGenerate: 4
 --- !u!114 &4895931606778664107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  gridSize: {x: 12, y: 12}
+  gridSize: {x: 10, y: 10}
 --- !u!1 &9029700415815540146
 GameObject:
   m_ObjectHideFlags: 0

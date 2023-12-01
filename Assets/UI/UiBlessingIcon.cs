@@ -9,7 +9,8 @@ public class UiBlessingIcon : MonoBehaviour
     public Text identifier;
     public Image symbol;
 
-    TriggerDataInstance triggerDataInstance;
+    string triggerID;
+
     // Start is called before the first frame update
     public void setFill(TriggerData t, Inventory inv)
     {
@@ -22,13 +23,13 @@ public class UiBlessingIcon : MonoBehaviour
         identifier.color = partialColor;
         identifier.text = t.flair.identifier;
 
-        triggerDataInstance = (TriggerDataInstance)inv.fillBlock(t, t.conditions.triggerStrength);
+        triggerID = t.id;
     }
-    public TriggerDataInstance triggerInstance
+    public string id
     {
         get
         {
-            return triggerDataInstance;
+            return triggerID;
         }
     }
 }

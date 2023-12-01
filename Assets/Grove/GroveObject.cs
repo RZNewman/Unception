@@ -9,7 +9,8 @@ using static Utils;
 public class GroveObject : MonoBehaviour
 {
     public GameObject nestLinkPre;
-    CastDataInstance filled;
+    string abilityID;
+    Inventory inv;
     SnapToGrid snap;
 
     Rotation rot = Rotation.None;
@@ -38,11 +39,11 @@ public class GroveObject : MonoBehaviour
         }
     }
 
-    public CastDataInstance castData
+    CastDataInstance castData
     {
         get
         {
-            return filled;
+            return (CastDataInstance)inv.getAbilityInstance(abilityID);
         }
     }
 
@@ -50,7 +51,7 @@ public class GroveObject : MonoBehaviour
     {
         get
         {
-            return filled.id;
+            return abilityID;
         }
     }
 
@@ -61,6 +62,7 @@ public class GroveObject : MonoBehaviour
         snap.cam = FindObjectOfType<GroveCamera>(true).GetComponent<Camera>();
 
         grove = FindObjectOfType<GroveWorld>(true);
+        initShape();
     }
 
     // Update is called once per frame
@@ -90,17 +92,18 @@ public class GroveObject : MonoBehaviour
         transform.rotation = Quaternion.AngleAxis(rot.degrees(), Vector3.up);
     }
 
-    public void assignFill(CastDataInstance cast)
+    public void assignFill(string id, Inventory i)
     {
-        filled = cast;
-        initShape();
+        abilityID = id;
+        inv = i;
+        
     }
     void initShape()
     {
-        foreach (GroveSlotPosition slot in filled.shape.points)
+        foreach (GroveSlotPosition slot in castData.shape.points)
         {
-            Vector3 location = transform.position + new Vector3(slot.position.x, 0, slot.position.y) * 1 * GroveWorld.gridSpacing;
-            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(Color.red, slot.type == GroveSlotType.Hard);
+            Vector3 location = transform.position + transform.rotation * new Vector3(slot.position.x, 0, slot.position.y) * 1 * GroveWorld.gridSpacing;
+            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(castData.flair.color, slot.type == GroveSlotType.Hard);
         }
     }
 
@@ -115,7 +118,8 @@ public class GroveObject : MonoBehaviour
                 rotation = rot,
                 position = grid.gridLocation(grove.transform.position).Abs(),
             },
-            shape = filled.shape,
+            shape = castData.shape,
+            slot = castData.slot
         };
 
     }

@@ -21,16 +21,21 @@ public class UILoadoutMenu : MonoBehaviour
 
         GroveWorld groveW = FindObjectOfType<GroveWorld>(true);
         groveW.reset();
-        grove.exportPlacements().ToList().ForEach(pair => groveW.buildPlacedObject(inv.getFilledBlock(pair.Key), pair.Value));
+        grove.exportPlacements().ToList().ForEach(pair => groveW.buildPlacedObject(pair.Key, pair.Value));
 
         storageList.fillAbilities();
         dropsList.fillAbilities();
 
     }
 
-    public void returnObject(CastDataInstance data)
+    public void returnObject(string id)
     {
-        storageList.createIcon(data);
+        storageList.createIcon(id);
+    }
+
+    public void trashObject(string id)
+    {
+        dropsList.createIcon(id);
     }
 
     public void displayUpgrades()

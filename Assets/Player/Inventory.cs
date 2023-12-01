@@ -10,6 +10,7 @@ using static Keybinds;
 using static Utils;
 using static GenerateAttack;
 using static Grove;
+using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {
@@ -19,6 +20,8 @@ public class Inventory : NetworkBehaviour
     List<CastData> tempDrops = new List<CastData>();
 
     Dictionary<string, CastData> storage = new Dictionary<string, CastData>();
+
+    Dictionary<string, AbilityDataInstance> filledCache = new Dictionary<string, AbilityDataInstance>();
 
     TriggerData[] blessingsActive = new TriggerData[0];
     TriggerData blessingPotential;
@@ -58,18 +61,27 @@ public class Inventory : NetworkBehaviour
     }
 
 
+    float unusedItems
+    {
+        get
+        {
+            return storage.Where(pair => !grove.isPlaced(pair.Key)).Count();
+        }
+    }
+
+
     public bool overburdened
     {
         get
         {
-            return storage.Count > inventoryLimit;
+            return unusedItems > inventoryLimit;
         }
     }
     public string inventoryCount
     {
         get
         {
-            return storage.Count + " /" + inventoryLimit;
+            return unusedItems + " /" + inventoryLimit;
         }
     }
 
@@ -79,6 +91,7 @@ public class Inventory : NetworkBehaviour
     public void reloadItems(CastData[] storageItems, Dictionary<string, GrovePlacement> placedData)
     {
         storage = storageItems.ToDictionary(i => i.id);
+        storage.ToList().ForEach(pair => fillInstanceCache(pair.Value));
         grove.importPlacements(placedData, storage);
 
         syncInventoryUpwards();
@@ -93,6 +106,7 @@ public class Inventory : NetworkBehaviour
         {
             blessingsActive[i] = bless[i];
         }
+        blessingsActive.ToList().ForEach(bless => fillInstanceCache(bless));
         syncInventoryUpwards();
     }
 
@@ -107,6 +121,8 @@ public class Inventory : NetworkBehaviour
 
         storage.Add(item1.id, item1);
         storage.Add(item2.id, item2);
+        fillInstanceCache(item1);
+        fillInstanceCache(item2);
         Vector2Int center = grove.center;
         Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
         placements.Add(item1.id, new GrovePlacement
@@ -139,6 +155,7 @@ public class Inventory : NetworkBehaviour
         {
             CastData item = GenerateAttack.generate(player.power, AttackGenerationType.Player);
             storage.Add(item.id, item);
+            fillInstanceCache(item);
         }
         blessingsActive = new TriggerData[blessingLimit];
         blessingsActive[0] = GenerateTrigger.generate(player.power);
@@ -149,6 +166,7 @@ public class Inventory : NetworkBehaviour
     public void AddItem(CastData item, Vector3 otherPosition)
     {
         tempDrops.Add(item);
+        fillInstanceCache(item);
         TargetDropItem(connectionToClient, item, otherPosition);
     }
 
@@ -156,6 +174,7 @@ public class Inventory : NetworkBehaviour
     public void addBlessing(float power, float difficulty)
     {
         blessingPotential = GenerateTrigger.generate(power, difficulty);
+        fillInstanceCache(blessingPotential);
     }
 
     //server
@@ -213,20 +232,19 @@ public class Inventory : NetworkBehaviour
     [TargetRpc]
     void TargetDropItem(NetworkConnection conn, CastData item, Vector3 location)
     {
-        CastDataInstance filled = (CastDataInstance)fillBlock(item);
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(player.power, player.unit, filled.quality);
+        i.GetComponent<ItemDrop>().init(player.power, player.unit, item.quality);
 
     }
 
-    public AbilityDataInstance fillBlock(AbilityData block, float? triggerStrength = null)
+    void fillInstanceCache(AbilityData block)
     {
-        return block.populate(new FillBlockOptions { overridePower = player.power, addedStrength = triggerStrength, reduceWindValue = triggerStrength.HasValue });
+        filledCache.TryAdd(block.id, block.populate(new FillBlockOptions { overridePower = player.power }));
     }
 
-    public CastDataInstance getFilledBlock(string id)
+    public AbilityDataInstance getAbilityInstance(string id)
     {
-        return (CastDataInstance)storage[id].populate(new FillBlockOptions { overridePower = player.power, addedStrength = null, reduceWindValue =false});
+        return filledCache[id];
     }
 
     [Client]
@@ -252,6 +270,13 @@ public class Inventory : NetworkBehaviour
         storage = st.ToDictionary(i=>i.id);
         blessingsActive = bl;
         blessingPotential = blP;
+        st.ToList().ForEach(item => fillInstanceCache(item));
+        bl.ToList().ForEach(item => fillInstanceCache(item));
+        if(blP)
+        {
+            fillInstanceCache(blP);
+        }
+        
 
     }
 

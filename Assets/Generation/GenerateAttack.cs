@@ -851,7 +851,7 @@ public static class GenerateAttack
         block.id = System.Guid.NewGuid().ToString();
         block.quality = quality;
         block.stars = starCount;
-        block.shape = GroveShape.shape(basicShape);
+        block.shape = basicShape ? GroveShape.basic() : GroveShape.shape();
         return block;
 
     }

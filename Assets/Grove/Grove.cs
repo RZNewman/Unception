@@ -93,15 +93,8 @@ public class Grove : NetworkBehaviour
     {
         public List<GroveSlotPosition> points;
 
-        public static GroveShape shape(bool basic)
+        public static GroveShape shape()
         {
-            if (basic)
-            {
-                return new GroveShape
-                {
-                    points = new List<GroveSlotPosition>() { new GroveSlotPosition { position = Vector2Int.zero, type = GroveSlotType.Hard } },
-                };
-            }
 
             HashSet<Vector2Int> pointsUsed = new HashSet<Vector2Int>();
             List<GroveSlotPosition> slots = new List<GroveSlotPosition>();
@@ -168,6 +161,29 @@ public class Grove : NetworkBehaviour
             {
                 points = slots,
             };
+        }
+
+        public static GroveShape basic()
+        {
+            List<GroveSlotPosition> points = new List<GroveSlotPosition>();
+
+            for(int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    points.Add(new GroveSlotPosition
+                    {
+                        position = new Vector2Int(x, y),
+                        type = GroveSlotType.Hard,
+                    });
+                }
+            }
+
+            return new GroveShape
+            {
+                points = points,
+            };
+
         }
 
         public float power(Dictionary<GroveSlotType, float> values)

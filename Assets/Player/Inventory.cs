@@ -127,12 +127,12 @@ public class Inventory : NetworkBehaviour
         Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
         placements.Add(item1.id, new GrovePlacement
         {
-            position = center,
+            position = center - Vector2Int.one * 2 ,
             rotation = Rotation.None,
         });
         placements.Add(item2.id, new GrovePlacement
         {
-            position = center + Vector2Int.one,
+            position = center + Vector2Int.one * 2,
             rotation = Rotation.None,
         });
         grove.importPlacements(placements, storage);

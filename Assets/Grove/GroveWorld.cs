@@ -45,6 +45,7 @@ public class GroveWorld : MonoBehaviour
     }
 
     GroveObject cursor = null;
+    GroveObject lastHovered = null;
     private void Update()
     {
         if (cursor)
@@ -74,13 +75,34 @@ public class GroveWorld : MonoBehaviour
             bool hoverObject = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask("GroveObject"));
 
             //TODO hover board details
-            if (hoverObject && Input.GetMouseButtonDown(0))
+            if (hoverObject)
             {
-                //Debug.Log("Pick Up: " + hit.collider.GetInstanceID());
-                cursor = hit.collider.GetComponentInParent<GroveObject>();
-                SubtractShape(cursor);
-                cursor.setSnap();
-
+                GroveObject obj = hit.collider.GetComponentInParent<GroveObject>();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //Debug.Log("Pick Up: " + hit.collider.GetInstanceID());
+                    cursor = obj;
+                    SubtractShape(cursor);
+                    cursor.setSnap();
+                    if (lastHovered)
+                    {
+                        unsetHover(lastHovered.id);
+                        lastHovered = null;
+                    }
+                }
+                else
+                {
+                    lastHovered = obj;
+                    setHover(obj.id);
+                }
+            }
+            else
+            {
+                if (lastHovered)
+                {
+                    unsetHover(lastHovered.id);
+                    lastHovered = null;
+                }
             }
         }
 
@@ -233,6 +255,8 @@ public class GroveWorld : MonoBehaviour
 
     public void setHover(string id)
     {
+        if(hoverId == id) return;
+
         PlayerGhost player = gp.player;
         CastDataInstance inst = (CastDataInstance)player.GetComponent<Inventory>().getAbilityInstance(id);
 

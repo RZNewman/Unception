@@ -146,9 +146,9 @@ public class Grove : NetworkBehaviour
                 potentials[pos] *= 10;
             }
 
-            int minSoft = 5 + additionalPoints;
-            int maxSoft = minSoft + additionalPoints * 1;
-            int softCount = Mathf.RoundToInt(GaussRandomDecline(1.5f).asRange(minSoft, maxSoft));
+            int minSoft = 0;
+            int maxSoft = 5 + additionalPoints * 2;
+            int softCount = Mathf.RoundToInt(GaussRandomCentered(1.5f).asRange(minSoft, maxSoft));
             //Debug.Log("Hard: " + 1 + additionalPoints + " Soft: " + softCount);
             for (int i = 0; i < softCount; i++)
             {

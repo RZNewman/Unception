@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using static EventManager;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.InputManagerEntry;
 
 public class Pack : NetworkBehaviour
 {
@@ -26,6 +27,15 @@ public class Pack : NetworkBehaviour
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
+        foreach (GameObject u in pack)
+        {
+            u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
+                if (!agg.lostAggro)
+                {
+                    aggroed = true;
+                }
+            };
+        }
         disableUnits();
     }
 
@@ -51,7 +61,6 @@ public class Pack : NetworkBehaviour
                 }
                 else
                 {
-                    aggroed = true;
                     encounter.trySetCombat(agg.targetCollider);
                 }
                 
@@ -201,7 +210,6 @@ public class Pack : NetworkBehaviour
 
     public void packAggro(GameObject target)
     {
-        aggroed = true;
         foreach (GameObject a in pack)
         {
             a.GetComponent<ControlManager>().spawnControl(); //spawn early so we can access aggro in encoutners

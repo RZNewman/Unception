@@ -16,8 +16,8 @@ public class Grove : NetworkBehaviour
 
     GroveSlot[,] map;
     //List<GroveObject> placedLocal = new List<GroveObject>();
-    Dictionary<ItemSlot, string> slotAllocations = new Dictionary<ItemSlot, string>();
-    Dictionary<string, GrovePlacedObject> placedServer = new Dictionary<string, GrovePlacedObject>();
+    SyncDictionary<ItemSlot, string> slotAllocations = new SyncDictionary<ItemSlot, string>();
+    SyncDictionary<string, GrovePlacedObject> placedItems = new SyncDictionary<string, GrovePlacedObject>();
 
     GroveWorld groveWorld;
 
@@ -233,41 +233,39 @@ public class Grove : NetworkBehaviour
     }
     public bool isPlaced(string id)
     {
-        return placedServer.ContainsKey(id);
+        return placedItems.ContainsKey(id);
     }
 
-    public Dictionary<ItemSlot, string> slotted
+    public IEnumerable<KeyValuePair<ItemSlot, string>> slotted
     {
         get
         {
-            return slotAllocations;
+            return slotAllocations.ToArray();
         }
     }
 
     public float powerOfSlot(ItemSlot slot)
     {
-        //TODO Grove Keeps track of slots
-        return 1000;
+        return dataOfSlot(slot).actingPower();
     }
 
     public CastDataInstance dataOfSlot(ItemSlot slot)
     {
-        //TODO Grove Keeps track of slots
-        return null;
+        return (CastDataInstance)inv.getAbilityInstance(slotAllocations[slot]);
     }
 
     public Dictionary<string, GrovePlacement> exportPlacements()
     {
-        return placedServer.Keys.ToDictionary(key => key, key => placedServer[key].placement);
+        return placedItems.Keys.ToDictionary(key => key, key => placedItems[key].placement);
     }
 
     [Server]
     public void importPlacements(Dictionary<string, GrovePlacement> placements, Dictionary<string, CastData> items)
     {
-        placedServer.Clear();
-        foreach(string id in placements.Keys)
+        placedItems.Clear();
+        foreach (string id in placements.Keys)
         {
-            AddPlace(id, new GrovePlacedObject {placement = placements[id], shape = items[id].shape, slot = items[id].slot });
+            AddPlace(id, new GrovePlacedObject { placement = placements[id], shape = items[id].shape, slot = items[id].slot });
         }
     }
 
@@ -334,7 +332,7 @@ public class Grove : NetworkBehaviour
         {
             kickSet.AddIfNotExists(slotAllocations[placedObj.slot.Value]);
         }
-        placedServer.Add(placedID, placedObj);
+        placedItems.Add(placedID, placedObj);
         if (placedObj.slot.HasValue)
         {
             slotAllocations[placedObj.slot.Value] = placedID;
@@ -344,7 +342,7 @@ public class Grove : NetworkBehaviour
         if (kickSet.Count == 1)
         {
             string kickID = kickSet.First();
-            SubtractPlace(kickID, placedServer[kickID]);           
+            SubtractPlace(kickID, placedItems[kickID]);           
             //Debug.Log("Rebound: "+ kickSet.First());
             return new GroveSideEffect[] { new GroveSideEffect { targetID = kickID, type = SideEffectType.AddToCursor } };
 
@@ -354,7 +352,7 @@ public class Grove : NetworkBehaviour
             List<GroveSideEffect> effects = new List<GroveSideEffect>();
             foreach (string kickID in kickSet)
             {
-                SubtractPlace(kickID, placedServer[kickID]);            
+                SubtractPlace(kickID, placedItems[kickID]);            
                 //Debug.Log("Rebound: "+ kickSet.First());
                 effects.Add( new GroveSideEffect { targetID = kickID, type = SideEffectType.ReturnToTray } );
             }
@@ -373,11 +371,11 @@ public class Grove : NetworkBehaviour
         {
             map[slot.position.x, slot.position.y].removeOccupant(placedID);
         }
-        if (placedServer[placedID].slot.HasValue && slotAllocations[placedServer[placedID].slot.Value] == placedID)
+        if (placedItems[placedID].slot.HasValue && slotAllocations[placedItems[placedID].slot.Value] == placedID)
         {
-            slotAllocations.Remove(placedServer[placedID].slot.Value);
+            slotAllocations.Remove(placedItems[placedID].slot.Value);
         }
-        placedServer.Remove(placedID);
+        placedItems.Remove(placedID);
     }
 
 

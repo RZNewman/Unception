@@ -74,7 +74,6 @@ public class GroveWorld : MonoBehaviour
 
             bool hoverObject = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask("GroveObject"));
 
-            //TODO hover board details
             if (hoverObject)
             {
                 GroveObject obj = hit.collider.GetComponentInParent<GroveObject>();

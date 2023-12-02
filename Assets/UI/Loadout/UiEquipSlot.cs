@@ -97,7 +97,7 @@ public class UiEquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         uiaCurrent.transform.localPosition = Vector3.zero;
         slotPower = newUI.blockFilled.actingPower();
         newUI.setUpgrade(true);
-        dragger.GetComponent<UILoadoutMenu>().displayUpgrades();
+        //dragger.GetComponent<UILoadoutMenu>().displayUpgrades();
     }
     public void unslotObject()
     {

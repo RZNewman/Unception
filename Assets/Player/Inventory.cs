@@ -137,7 +137,7 @@ public class Inventory : NetworkBehaviour
         });
         grove.importPlacements(placements, storage);
 
-
+        syncInventoryUpwards();
     }
 
     [Server]
@@ -175,6 +175,7 @@ public class Inventory : NetworkBehaviour
     {
         blessingPotential = GenerateTrigger.generate(power, difficulty);
         fillInstanceCache(blessingPotential);
+        syncInventoryUpwards();
     }
 
     //server
@@ -247,17 +248,6 @@ public class Inventory : NetworkBehaviour
         return filledCache[id];
     }
 
-    [Client]
-    public void syncInventory()
-    {
-        CmdSyncInventory();
-
-    }
-    [Command]
-    void CmdSyncInventory()
-    {
-        syncInventoryUpwards();
-    }
     [Server]
     public void syncInventoryUpwards()
     {
@@ -276,7 +266,6 @@ public class Inventory : NetworkBehaviour
         {
             fillInstanceCache(blP);
         }
-        
 
     }
 

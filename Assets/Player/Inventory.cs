@@ -106,7 +106,7 @@ public class Inventory : NetworkBehaviour
         {
             blessingsActive[i] = bless[i];
         }
-        blessingsActive.ToList().ForEach(bless => fillInstanceCache(bless));
+        blessingsActive.Where(b => b!= null).ToList().ForEach(bless => fillInstanceCache(bless));
         syncInventoryUpwards();
     }
 
@@ -144,7 +144,7 @@ public class Inventory : NetworkBehaviour
     public void genMinBlessings()
     {
 
-        blessingsActive = new TriggerData[0];
+        blessingsActive = new TriggerData[maxBlessings];
         syncInventoryUpwards();
     }
 
@@ -219,7 +219,7 @@ public class Inventory : NetworkBehaviour
     {
         get
         {
-            return blessingsActive.ToList();
+            return blessingsActive.Where(b => b!= null).ToList();
         }
     }
     public TriggerData potentialBlessing
@@ -261,12 +261,12 @@ public class Inventory : NetworkBehaviour
         blessingsActive = bl;
         blessingPotential = blP;
         st.ToList().ForEach(item => fillInstanceCache(item));
-        bl.ToList().ForEach(item => fillInstanceCache(item));
+        bl.Where(b => b != null).ToList().ForEach(item => fillInstanceCache(item));
         if(blP)
         {
             fillInstanceCache(blP);
         }
-
+        FindObjectOfType<UILoadoutMenu>(true).displayUpgrades();
     }
 
     [ClientRpc]

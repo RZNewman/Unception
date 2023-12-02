@@ -145,11 +145,19 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-         grove.setHover(abilityID);
+        if (mode == UIAbilityMode.Inventory)
+        {
+            grove.setHover(abilityID);
+        }
+        
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        grove.unsetHover(abilityID);
+        if (mode == UIAbilityMode.Inventory)
+        {
+            grove.unsetHover(abilityID);
+        }
+        
     }
 
     public void OnPointerClick(PointerEventData eventData)

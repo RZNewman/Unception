@@ -246,12 +246,13 @@ public class Grove : NetworkBehaviour
 
     public float powerOfSlot(ItemSlot slot)
     {
-        return dataOfSlot(slot).actingPower();
+        CastDataInstance abil = dataOfSlot(slot);
+        return abil != null ? abil.actingPower(): 0;
     }
 
     public CastDataInstance dataOfSlot(ItemSlot slot)
     {
-        return (CastDataInstance)inv.getAbilityInstance(slotAllocations[slot]);
+        return slotAllocations.ContainsKey(slot) ? (CastDataInstance)inv.getAbilityInstance(slotAllocations[slot]) : null;
     }
 
     public Dictionary<string, GrovePlacement> exportPlacements()
@@ -273,6 +274,7 @@ public class Grove : NetworkBehaviour
     public void CmdPlaceGrove(string placedID, GrovePlacedObject placedObj)
     {
         GroveSideEffect[] effects = AddPlace(placedID, placedObj);
+        inv.syncInventoryUpwards();
         inv.RpcInvChange();
         TargetReplaySideEffects(connectionToClient, effects);
     }

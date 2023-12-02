@@ -67,10 +67,15 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
         foreach (Transform icon in transform)
         {
             UiAbility uia = icon.GetComponent<UiAbility>();
-            float slotPower = FindObjectOfType<Grove>().powerOfSlot(uia.blockFilled.slot.Value);
-            float abPower = uia.blockFilled.actingPower();
-            uia.setUpgrade(slotPower < abPower);
+            setUpgrade(uia);
         }
+    }
+
+    void setUpgrade(UiAbility uia)
+    {
+        float slotPower = FindObjectOfType<Grove>().powerOfSlot(uia.blockFilled.slot.Value);
+        float abPower = uia.blockFilled.actingPower();
+        uia.setUpgrade(slotPower < abPower);
     }
 
     public GameObject createIcon(string id)
@@ -79,6 +84,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
         icon.transform.localScale = Vector3.one * 0.6f;
         UiAbility uia = icon.GetComponent<UiAbility>();
         uia.setAbilityID(id, inv);
+        setUpgrade(uia);
         return icon;
     }
 

@@ -103,7 +103,7 @@ public class GroveObject : MonoBehaviour
         foreach (GroveSlotPosition slot in castData.shape.points)
         {
             Vector3 location = transform.position + transform.rotation * new Vector3(slot.position.x, 0, slot.position.y) * 1 * GroveWorld.gridSpacing;
-            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(castData.flair.color, slot.type == GroveSlotType.Hard);
+            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(castData.flair, slot.type == GroveSlotType.Hard);
         }
     }
 

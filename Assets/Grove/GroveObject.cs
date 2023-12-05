@@ -16,6 +16,7 @@ public class GroveObject : MonoBehaviour
     Rotation rot = Rotation.None;
 
     GroveWorld grove;
+    List<UIGroveLink> shapeNodes = new List<UIGroveLink>();
 
     public enum GroveSlotType : byte
     {
@@ -103,7 +104,17 @@ public class GroveObject : MonoBehaviour
         foreach (GroveSlotPosition slot in castData.shape.points)
         {
             Vector3 location = transform.position + transform.rotation * new Vector3(slot.position.x, 0, slot.position.y) * 1 * GroveWorld.gridSpacing;
-            Instantiate(nestLinkPre, location, Quaternion.identity, transform).GetComponent<UIGroveLink>().setVisuals(castData.flair, slot.type == GroveSlotType.Hard);
+            UIGroveLink l = Instantiate(nestLinkPre, location, transform.rotation, transform).GetComponent<UIGroveLink>();
+            l.setVisuals(castData.flair, slot.type == GroveSlotType.Hard);
+            shapeNodes.Add(l);
+        }
+    }
+
+    public void hightlight(bool isHighlighted)
+    {
+        foreach(UIGroveLink link in shapeNodes)
+        {
+            link.highlight(isHighlighted);
         }
     }
 

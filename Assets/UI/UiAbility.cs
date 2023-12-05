@@ -167,7 +167,6 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
             FindObjectOfType<GroveWorld>().buildObject(abilityID);
             inv.CmdSendStorage(abilityID);
-            grove.unsetHover(abilityID);
             Destroy(gameObject);
         }
         

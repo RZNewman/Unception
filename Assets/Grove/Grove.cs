@@ -16,8 +16,8 @@ public class Grove : NetworkBehaviour
 
     GroveSlot[,] map;
     //List<GroveObject> placedLocal = new List<GroveObject>();
-    SyncDictionary<ItemSlot, string> slotAllocations = new SyncDictionary<ItemSlot, string>();
-    SyncDictionary<string, GrovePlacedObject> placedItems = new SyncDictionary<string, GrovePlacedObject>();
+    readonly SyncDictionary<ItemSlot, string> slotAllocations = new SyncDictionary<ItemSlot, string>();
+    readonly SyncDictionary<string, GrovePlacedObject> placedItems = new SyncDictionary<string, GrovePlacedObject>();
 
     GroveWorld groveWorld;
 

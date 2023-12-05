@@ -22,6 +22,8 @@ public class GroveWorld : MonoBehaviour
     UILoadoutMenu loadoutMenu;
     GlobalPlayer gp;
     List<GameObject> slotVis = new List<GameObject>();
+    Dictionary<string, GroveObject> instances = new Dictionary<string, GroveObject>();
+    GroveObject highlight = null;
 
     private void Start()
     {
@@ -57,11 +59,13 @@ public class GroveWorld : MonoBehaviour
                     cursor.gridSnap.isSnapping = false;
                     cursor.transform.position += Vector3.down * hoverHeight * 1.5f;
                     AddShape(cursor);
+                    setRelatedSlotHighlight(cursor.id, false);
                     cursor = null;
                 }
                 else
                 {
                     returnToTray(cursor);
+                    unsetHighlightAlways();
                     cursor = null;
                 }
 
@@ -83,6 +87,7 @@ public class GroveWorld : MonoBehaviour
                     cursor = obj;
                     SubtractShape(cursor);
                     cursor.setSnap();
+                    unsetHighlightAlways();
                     if (lastHovered)
                     {
                         unsetHover(lastHovered.id);
@@ -121,6 +126,8 @@ public class GroveWorld : MonoBehaviour
         }
         cursor = obj;
         cursor.GetComponent<SnapToGrid>().isSnapping = true;
+        unsetHighlightAlways();
+        setRelatedSlotHighlight(obj.id, true);
     }
 
 
@@ -166,11 +173,12 @@ public class GroveWorld : MonoBehaviour
 
     }
 
-    Dictionary<string, GroveObject> instances = new Dictionary<string, GroveObject>();
+    
     public GroveObject buildObject(string id)
     {
         Inventory inv = gp.player.GetComponent<Inventory>();
         GroveObject obj = Instantiate(groveObjPre, transform).GetComponent<GroveObject>();
+        unsetHover(id);
         obj.assignFill(id, inv);
         instances.Add(id, obj);
         addCursor(obj);
@@ -249,19 +257,70 @@ public class GroveWorld : MonoBehaviour
 
     }
 
+    void setRelatedSlotHighlight(string id, bool isSet)
+    {
+        PlayerGhost player = gp.player;
+        CastDataInstance inst = (CastDataInstance)player.GetComponent<Inventory>().getAbilityInstance(id);
+        CastDataInstance slotCompare = player.GetComponent<Grove>().dataOfSlot(inst.slot.Value);
+
+        if (!slotCompare)
+        {
+            return;
+        }
+
+        if (isSet)
+        {
+            setHighlight(slotCompare.id);
+        }
+        else
+        {
+            unsetHighlight(slotCompare.id);
+        }
+    }
+
+    void setHighlight(string id)
+    {
+        if (highlight)
+        {
+            highlight.hightlight(false);
+        }
+        highlight = instances[id];
+        highlight.hightlight(true);
+
+    }
+
+    void unsetHighlight(string id)
+    {
+        if (highlight && highlight.id == id)
+        {
+            highlight.hightlight(false);
+        }
+    }
+    void unsetHighlightAlways()
+    {
+        if (highlight)
+        {
+            highlight.hightlight(false);
+        }
+    }
+
     #region Icon mgmt
     string hoverId;
 
     public void setHover(string id)
     {
         if(hoverId == id) return;
+        if (cursor) return;
 
         PlayerGhost player = gp.player;
         CastDataInstance inst = (CastDataInstance)player.GetComponent<Inventory>().getAbilityInstance(id);
 
         hoverId = id;
-        deets.setDetails(inst, player.GetComponent<Grove>().dataOfSlot(inst.slot.Value));
+        CastDataInstance slotCompare = player.GetComponent<Grove>().dataOfSlot(inst.slot.Value);
+        deets.setDetails(inst, slotCompare);
         deets.gameObject.SetActive(true);
+        
+        setRelatedSlotHighlight(id, true);
 
     }
 
@@ -271,7 +330,10 @@ public class GroveWorld : MonoBehaviour
         {
             hoverId = null;
             deets.gameObject.SetActive(false);
+            setRelatedSlotHighlight(id, false);
         }
     }
+
+
     #endregion
 }

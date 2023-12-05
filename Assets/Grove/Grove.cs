@@ -89,11 +89,27 @@ public class Grove : NetworkBehaviour
         
 
     }
+    public enum GroveShapeGenType
+    {
+        Normal,
+        Basic,
+        Npc
+    }
     public struct GroveShape
     {
         public List<GroveSlotPosition> points;
 
-        public static GroveShape shape()
+
+        public static GroveShape makeShape(GroveShapeGenType type)
+        {
+            return type switch
+            {
+                GroveShapeGenType.Basic => basic(),
+                GroveShapeGenType.Npc => ai(),
+                _ => shape()
+            };
+        }
+        static GroveShape shape()
         {
 
             HashSet<Vector2Int> pointsUsed = new HashSet<Vector2Int>();
@@ -163,11 +179,11 @@ public class Grove : NetworkBehaviour
             };
         }
 
-        public static GroveShape basic()
+        static GroveShape basic()
         {
             List<GroveSlotPosition> points = new List<GroveSlotPosition>();
 
-            for(int x = -1; x <= 1; x++)
+            for (int x = -1; x <= 1; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {
@@ -177,6 +193,27 @@ public class Grove : NetworkBehaviour
                         type = GroveSlotType.Hard,
                     });
                 }
+            }
+
+            return new GroveShape
+            {
+                points = points,
+            };
+
+        }
+        static GroveShape ai()
+        {
+            List<GroveSlotPosition> points = new List<GroveSlotPosition>();
+
+            for (int x = -1; x <= 1; x++)
+            {
+
+                points.Add(new GroveSlotPosition
+                {
+                    position = new Vector2Int(x, 0),
+                    type = GroveSlotType.Hard,
+                });
+
             }
 
             return new GroveShape

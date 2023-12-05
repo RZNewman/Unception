@@ -811,7 +811,7 @@ public static class GenerateAttack
     {
 
         ItemSlot? slot = null;
-        bool basicShape = false;
+        GroveShapeGenType shapeGenType = GroveShapeGenType.Normal;
         switch (type)
         {
             case AttackGenerationType.Player:
@@ -819,11 +819,15 @@ public static class GenerateAttack
                 break;
             case AttackGenerationType.IntroMain:
                 slot = ItemSlot.Main;
-                basicShape = true;
+                shapeGenType = GroveShapeGenType.Basic;
                 break;
             case AttackGenerationType.IntroOff:
                 slot = ItemSlot.OffHand;
-                basicShape = true;
+                shapeGenType = GroveShapeGenType.Basic;
+                break;
+            case AttackGenerationType.Monster:
+            case AttackGenerationType.MonsterStrong:
+                shapeGenType = GroveShapeGenType.Npc;
                 break;
         }
 
@@ -851,7 +855,7 @@ public static class GenerateAttack
         block.id = System.Guid.NewGuid().ToString();
         block.quality = quality;
         block.stars = starCount;
-        block.shape = basicShape ? GroveShape.basic() : GroveShape.shape();
+        block.shape = GroveShape.makeShape(shapeGenType);
         return block;
 
     }

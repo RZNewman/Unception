@@ -25,7 +25,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     {
         get
         {
-            return isClient && hasAuthority;
+            return isClient && isOwned;
         }
     }
 

@@ -94,7 +94,7 @@ public class Health : NetworkBehaviour, BarValue
     void RpcDisplayDamage(float damage)
     {
         //Not the local player
-        if (!hasAuthority)
+        if (!isOwned)
         {
             Vector3 offset = Random.insideUnitSphere * 4;
             GameObject o = Instantiate(damageDisplayPre, transform.position + offset, Quaternion.identity);

@@ -25,7 +25,7 @@ public class LocalPlayer : NetworkBehaviour
     {
         get
         {
-            return isClient && hasAuthority;
+            return isClient && isOwned;
         }
     }
 

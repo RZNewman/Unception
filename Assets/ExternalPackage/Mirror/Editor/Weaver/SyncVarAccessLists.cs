@@ -1,7 +1,7 @@
 // tracks SyncVar read/write access when processing NetworkBehaviour,
 // to later be replaced by SyncVarAccessReplacer.
-using Mono.CecilX;
 using System.Collections.Generic;
+using Mono.CecilX;
 
 namespace Mirror.Weaver
 {

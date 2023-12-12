@@ -1,9 +1,11 @@
 // Android NetworkDiscovery Multicast fix
 // https://github.com/vis2k/Mirror/pull/2887
-using System.Xml;
 using UnityEditor;
+using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using System.Xml;
+using System.IO;
 #if UNITY_ANDROID
 using UnityEditor.Android;
 #endif
@@ -22,7 +24,7 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
 	{
         string manifestFolder = Path.Combine(path, "src/main");
         string sourceFile = manifestFolder + "/AndroidManifest.xml";
-        // Load android manfiest file
+        // Load android manifest file
         XmlDocument doc = new XmlDocument();
         doc.Load(sourceFile);
 
@@ -59,7 +61,7 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
     }
 #endif
 
-    static void AddOrRemoveTag(XmlDocument doc, string @namespace, string path, string elementName, string name, bool required, bool modifyIfFound, params string[] attrs) // name, value pairs	
+    static void AddOrRemoveTag(XmlDocument doc, string @namespace, string path, string elementName, string name, bool required, bool modifyIfFound, params string[] attrs) // name, value pairs
     {
         var nodes = doc.SelectNodes(path + "/" + elementName);
         XmlElement element = null;
@@ -106,6 +108,6 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
         }
     }
 
-    public void OnPostprocessBuild(BuildReport report) { }
-    public void OnPreprocessBuild(BuildReport report) { }
+    public void OnPostprocessBuild(BuildReport report) {}
+	public void OnPreprocessBuild(BuildReport report) {}
 }

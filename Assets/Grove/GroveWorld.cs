@@ -29,7 +29,7 @@ public class GroveWorld : MonoBehaviour
     {
         
         groveCam = FindObjectOfType<GroveCamera>().GetComponent<Camera>();
-        loadoutMenu = FindObjectOfType<UILoadoutMenu>();
+        loadoutMenu = FindObjectOfType<UILoadoutMenu>(true);
         deets.gameObject.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
 

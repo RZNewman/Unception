@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 // to use Mono.CecilX.Rocks here, we need to 'override references' in the
 // Unity.Mirror.CodeGen assembly definition file in the Editor, and add CecilX.Rocks.
 // otherwise we get an unknown import exception.
 using Mono.CecilX.Rocks;
-using System;
-using System.Collections.Generic;
 
 namespace Mirror.Weaver
 {
@@ -115,7 +115,9 @@ namespace Mirror.Weaver
                 return GenerateCollectionWriter(variableReference, elementType, nameof(NetworkWriterExtensions.WriteList), ref WeavingFailed);
             }
 
-            if (variableReference.IsDerivedFrom<NetworkBehaviour>())
+            // handle both NetworkBehaviour and inheritors.
+            // fixes: https://github.com/MirrorNetworking/Mirror/issues/2939
+            if (variableReference.IsDerivedFrom<NetworkBehaviour>() || variableReference.Is<NetworkBehaviour>())
             {
                 return GetNetworkBehaviourWriter(variableReference);
             }

@@ -47,7 +47,7 @@ public class Ability : NetworkBehaviour
             }
 
         }
-        if (p.isClient && p.hasAuthority && clientSyncKey.HasValue)
+        if (p.isClient && p.isOwned && clientSyncKey.HasValue)
         {
             GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
             icon = Instantiate(abilityIconPrefab, bar.transform);

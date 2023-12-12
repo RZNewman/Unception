@@ -13,6 +13,8 @@ public class UiBar : MonoBehaviour
     public BarValue source;
 
     public TMP_Text label;
+
+    string textCache = "";
     // Start is called before the first frame update
     void Start()
     {
@@ -33,7 +35,26 @@ public class UiBar : MonoBehaviour
         if (useBasic)
         {
             basicBar.gameObject.SetActive(data.active);
-            basicBar.set(data.segments);
+            if (data.active)
+            {
+                if(data.segments != null)
+                {
+                    basicBar.set(data.segments);
+                }
+                else
+                {
+                    basicBar.set(new UiBarBasic.BarSegment[]
+                    {
+                        new UiBarBasic.BarSegment
+                        {
+                            color = data.color,
+                            percent = data.fillPercent
+                        }
+                    });
+                }
+                
+            }
+            
         }
         else
         {
@@ -42,6 +63,11 @@ public class UiBar : MonoBehaviour
             bar.SetPercent(data.fillPercent);
         }
 
-        label.text = data.text;
+        if(data.text != textCache)
+        {
+            textCache = data.text;
+            label.text = data.text;
+        }
+        
     }
 }

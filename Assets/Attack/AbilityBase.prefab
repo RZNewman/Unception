@@ -49,8 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
-  clientSyncKey: 0
+  syncInterval: 0.2
   abilityIconPrefab: {fileID: 7976420225584091790, guid: 8c1e5a10627054e4db75c73e7b7d16e0, type: 3}
   charges: 1
   cooldownTicking: 0
@@ -113,3 +112,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b033ebd8b1769e14c9f1297595969a64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1

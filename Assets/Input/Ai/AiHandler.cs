@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
-using static AbiltyManager;
+using static AbilityManager;
 using static GenerateAttack;
 using static UnitControl;
 using static Utils;
@@ -163,7 +163,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
                 bool canSee = aggro.canSee(target);
                 Optional<Ability> currentAttack = mover.currentAttackingAbility();
-                AbilityPair bestNext = GetComponentInParent<AbiltyManager>().getBestAbility();
+                AbilityPair bestNext = GetComponentInParent<AbilityManager>().getBestAbility();
                 EffectiveDistance eff = currentAttack.HasValue ? currentAttack.Value.GetEffectiveDistance(mySize.scaledHalfHeight) : bestNext.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
                 DistanceType dist = DistanceType.WayTooFar;
                 bool canAttack = false;

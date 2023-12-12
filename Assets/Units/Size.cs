@@ -64,9 +64,11 @@ public class Size : MonoBehaviour
         GetComponentInParent<Power>().subscribePower(updateSize);
     }
 
+    Vector3 cachedSize = Vector3.one;
     void updateSize(Power p)
     {
-        transform.localScale = baseSize * p.scalePhysical();
+        cachedSize = baseSize * p.scalePhysical();
+        transform.localScale = cachedSize;
     }
 
     public void setBaseSize(Vector3 size)
@@ -82,7 +84,7 @@ public class Size : MonoBehaviour
     {
         get
         {
-            return colliderHalfHeight * transform.lossyScale.y;
+            return colliderHalfHeight * cachedSize.y;
         }
     }
 
@@ -119,7 +121,7 @@ public class Size : MonoBehaviour
         get
         {
 
-            return colliderWidth * transform.lossyScale.z;
+            return colliderWidth * cachedSize.z;
         }
     }
 }

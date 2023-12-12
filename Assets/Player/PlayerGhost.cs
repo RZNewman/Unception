@@ -128,7 +128,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         u.GetComponent<Reward>().setInventory(inv);
         u.GetComponent<EventManager>().suscribeDeath(onUnitDeath);
         NetworkServer.Spawn(u, connectionToClient);
-        u.GetComponent<AbiltyManager>().addAbility(inv.equippedAbilities);
+        u.GetComponent<AbilityManager>().addAbility(inv.equippedAbilities);
         u.GetComponent<TriggerManager>().addTrigger(inv.blessings);
         currentSelf = u;
         RpcSetAudio(false);

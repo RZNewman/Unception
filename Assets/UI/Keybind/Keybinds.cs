@@ -54,6 +54,11 @@ public class Keybinds : MonoBehaviour
             //Debug.Log(sprite.name + " - " + code);
             keyLookup.Add(code, sprite);
         }
+        StartCoroutine(buildKeyObjects());
+    }
+
+    IEnumerator buildKeyObjects()
+    {
         foreach (KeyName name in EnumValues<KeyName>())
         {
             GameObject o = Instantiate(keyPre, keyPanel.transform);
@@ -66,6 +71,7 @@ public class Keybinds : MonoBehaviour
             setter.setLabel(name, code, this);
             setters.Add(name, setter);
             binds.Add(name, code);
+            yield return null;
         }
     }
 

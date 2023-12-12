@@ -388,7 +388,7 @@ public class MonsterSpawn : NetworkBehaviour
         UnitPropsHolder holder = o.GetComponent<UnitPropsHolder>();
         holder.props = spawnUnit.props;
         holder.championHealthMultiplier = spawnUnit.championHealthMult;
-        AbiltyManager al = o.GetComponent<AbiltyManager>();
+        AbilityManager al = o.GetComponent<AbilityManager>();
         //al.clear();
         NetworkServer.Spawn(o);
         al.addAbility(spawnUnit.abilitites);

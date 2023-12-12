@@ -18,7 +18,7 @@ public class Demo : MonoBehaviour
 
     public void scaleItems()
     {
-        GetComponent<GlobalPlayer>().serverPlayer.unit.GetComponent<AbiltyManager>().allAbilities().ForEach(a => a.demoForceScale());
+        GetComponent<GlobalPlayer>().serverPlayer.unit.GetComponent<AbilityManager>().allAbilities().ForEach(a => a.demoForceScale());
     }
 
     public void PowerTrickle()

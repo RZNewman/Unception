@@ -177,7 +177,7 @@ public class MapGenerator : NetworkBehaviour
         linkGenerator.m_PhysicsMask = LayerMask.GetMask("Terrain");
         linkGenerator.m_AgentRadius = agent.agentRadius;
         linkGenerator.m_AgentHeight = agent.agentHeight;
-        GenerateLinks(linkGenerator);
+        yield return GenerateLinks(linkGenerator);
         yield return null;
 
         yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].sparseness, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters, endPortal);
@@ -189,7 +189,8 @@ public class MapGenerator : NetworkBehaviour
 
     // Nav link Gen Editor code
     #region NavLinkGenerator
-    void GenerateLinks(NavLinkGenerator gen)
+    static readonly int linksPerFrame = 100;
+    IEnumerator GenerateLinks(NavLinkGenerator gen)
     {
         var tri = NavMesh.CalculateTriangulation();
         var edge_list = CreateEdges(tri);
@@ -199,7 +200,7 @@ public class MapGenerator : NetworkBehaviour
         }
         if (edge_list.Count() == 0)
         {
-            return;
+            yield break;
         }
 
         edge_list = edge_list.SelectMany((e) => e.split(gen.m_MaxHorizontalJump * 1.0f));
@@ -208,6 +209,8 @@ public class MapGenerator : NetworkBehaviour
         navLinks.Clear();
         Transform parent = currentFloor.transform;
 
+
+        int linkCount = 0;
         foreach (var edge in edge_list)
         {
             var mid = edge.GetMidpoint();
@@ -216,6 +219,12 @@ public class MapGenerator : NetworkBehaviour
             if (link != null)
             {
                 navLinks.Add(link);
+                linkCount++;
+            }
+            if(linkCount >= linksPerFrame)
+            {
+                linkCount = 0;
+                yield return null;
             }
         }
     }

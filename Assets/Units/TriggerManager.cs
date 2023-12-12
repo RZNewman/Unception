@@ -37,7 +37,7 @@ public class TriggerManager : NetworkBehaviour
 
     void instanceTrigger(TriggerData trig)
     {
-        AbiltyManager abiltyManager = GetComponent<AbiltyManager>();
+        AbilityManager abiltyManager = GetComponent<AbilityManager>();
 
         Ability a = abiltyManager.addTriggeredAbility(trig);
         CastingLocationData castData = new CastingLocationData

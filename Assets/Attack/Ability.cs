@@ -43,7 +43,7 @@ public class Ability : NetworkBehaviour
             fillFormat();
             if (clientSyncKey.HasValue)
             {
-                GetComponentInParent<AbiltyManager>().registerAbility(clientSyncKey.Value, this);
+                GetComponentInParent<AbilityManager>().registerAbility(clientSyncKey.Value, this);
             }
 
         }

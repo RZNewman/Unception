@@ -5,7 +5,7 @@ using static UnitControl;
 using System.Linq;
 using static GenerateAttack;
 
-public class AbiltyManager : NetworkBehaviour
+public class AbilityManager : NetworkBehaviour
 {
 
     Dictionary<int, Ability> instancedAbilitites = new Dictionary<int, Ability>();

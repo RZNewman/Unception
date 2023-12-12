@@ -144,7 +144,7 @@ public static class AttackUtils
         GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
         if (buff.slot.HasValue)
         {
-            target = target.GetComponent<AbiltyManager>().getAbility(buff.slot.Value).transform;
+            target = target.GetComponent<AbilityManager>().getAbility(buff.slot.Value).transform;
         }
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;

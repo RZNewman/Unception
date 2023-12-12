@@ -8,12 +8,17 @@ public class PackHeal : NetworkBehaviour, BarValue
 {
     public float percentHealKiller = 0;
     Combat combat;
+    LifeManager life;
+    Health health;
 
     float currentHealPercent = 0;
 
     private void Start()
     {
         combat = GetComponent<Combat>();
+        life = GetComponent<LifeManager>();
+        health = GetComponent<Health>();
+
     }
 
 
@@ -28,18 +33,18 @@ public class PackHeal : NetworkBehaviour, BarValue
         {
             return;
         }
-        if (!GetComponent<LifeManager>().IsDead)
+        if (!life.IsDead)
         {
             float percentPerFrame = 0.1f * Time.fixedDeltaTime;
             float percentThisFrame = Mathf.Min(percentPerFrame, currentHealPercent);
             currentHealPercent -= percentThisFrame;
             if (!combat.inCombat)
             {
-                GetComponent<Health>().healPercent(percentPerFrame * 0.8f);
+                health.healPercent(percentPerFrame * 0.8f);
             }
             else if (percentThisFrame > 0)
             {
-                GetComponent<Health>().healPercent(percentThisFrame * 0.8f);
+                health.healPercent(percentThisFrame * 0.8f);
             }
 
         }

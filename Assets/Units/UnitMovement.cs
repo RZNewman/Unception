@@ -331,6 +331,16 @@ public class UnitMovement : NetworkBehaviour
 
     public void move(UnitInput inp, float speedStateMultiplier = 1.0f, float additionalMovement = 0)
     {
+        //early escape. prevents cycles on idle movers
+        if(grounded && rb.velocity.magnitude < 0.001f && inp.move == Vector2.zero)
+        {
+            if(rb.velocity.magnitude!= 0)
+            {
+                rb.velocity = Vector3.zero;
+            }
+            return;
+        }
+
         float scaleSpeed = power.scaleSpeed();
 
 
@@ -563,20 +573,28 @@ public class UnitMovement : NetworkBehaviour
     void setGround()
     {
         ground.setGround(size.sizeC);
+        _setGroundInternal();
     }
 
+    void _setGroundInternal()
+    {
+        if (ground && ground.hasGround)
+        {
+            float mag = Vector3.Dot(rb.velocity, ground.normal);
+            _groundedInternal = mag <= 0.05f * power.scalePhysical();
+        }
+        else
+        {
+            _groundedInternal = false;
+        }
+    }
+
+    bool _groundedInternal = false;
     public bool grounded
     {
         get
         {
-
-            if (ground && ground.hasGround)
-            {
-                float mag = Vector3.Dot(rb.velocity, ground.normal);
-                return mag <= 0.05f * power.scalePhysical();
-            }
-            return false;
-
+            return _groundedInternal;
         }
     }
 

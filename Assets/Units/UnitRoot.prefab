@@ -874,7 +874,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.5
+  syncInterval: 0.1
   syncAngleHard: 20
   currentLookAngle: 0
   currentLookVerticalAngle: 0
@@ -950,7 +950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.2
+  syncInterval: 0.1
 --- !u!114 &6759729760156447077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,7 +990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0
+  syncInterval: 1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
   championHealthMultiplier: 1
 --- !u!114 &973865255900791963
@@ -1019,7 +1019,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0
+  syncInterval: 1
   parent: {fileID: 0}
   useSubBody: 0
 --- !u!114 &607599770095163043

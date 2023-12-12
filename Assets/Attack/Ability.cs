@@ -115,7 +115,8 @@ public class Ability : NetworkBehaviour
         }
     }
 
-    float chargeMax
+    float chargeMax=0;
+    float chargeMaxCalculated
     {
         get
         {
@@ -177,6 +178,8 @@ public class Ability : NetworkBehaviour
                 statLinkAbility = this,
             }
             );
+        //TODO id like this to be dynamic, eventual callback from stat handler change
+        chargeMax = chargeMaxCalculated;
 
     }
 

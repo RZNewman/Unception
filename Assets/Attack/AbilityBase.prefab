@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.2
+  syncInterval: 0.1
   abilityIconPrefab: {fileID: 7976420225584091790, guid: 8c1e5a10627054e4db75c73e7b7d16e0, type: 3}
   charges: 1
   cooldownTicking: 0

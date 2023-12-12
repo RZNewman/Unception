@@ -129,7 +129,7 @@ public static class AttackUtils
     public static void SpawnProjectile(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, AudioDistances dists)
     {
         FloorNormal floor = source.GetComponent<FloorNormal>();
-        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().ProjectilePre;
+        GameObject prefab = GlobalPrefab.gPre.ProjectilePre;
         Quaternion aim = source.aimRotation(AimType.Normal);
         GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
         Projectile p = instance.GetComponent<Projectile>();
@@ -141,7 +141,7 @@ public static class AttackUtils
 
     public static void SpawnBuff(BuffInstanceData buff, Transform target)
     {
-        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
+        GameObject prefab = GlobalPrefab.gPre.BuffPre;
         if (buff.slot.HasValue)
         {
             target = target.GetComponent<AbilityManager>().getAbility(buff.slot.Value).transform;
@@ -155,7 +155,7 @@ public static class AttackUtils
 
     public static void SpawnBuff(Transform target, BuffMode buffMode, float powerAtGen, float duration, float value, float regen = 0)
     {
-        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().BuffPre;
+        GameObject prefab = GlobalPrefab.gPre.BuffPre;
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
         instance.GetComponent<Buff>().setup(buffMode, powerAtGen, duration, value, regen);
@@ -242,7 +242,7 @@ public static class AttackUtils
 
     public static void LineParticle(LineInfo info, HitFlair flair, AudioDistances dists)
     {
-        GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
+        GlobalPrefab gp = GlobalPrefab.gPre;
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
         i.transform.localScale = info.boxHalfs * 2;
@@ -275,7 +275,7 @@ public static class AttackUtils
 
     public static void GroundParticle(Vector3 origin, float radius, Quaternion aim, HitFlair flair, AudioDistances dists)
     {
-        GlobalPrefab gp = GameObject.FindObjectOfType<GlobalPrefab>();
+        GlobalPrefab gp = GlobalPrefab.gPre;
         GameObject prefab = gp.ParticlePre;
         GameObject i = GameObject.Instantiate(prefab, origin, aim);
         i.transform.localScale = Vector3.one * radius * 2;

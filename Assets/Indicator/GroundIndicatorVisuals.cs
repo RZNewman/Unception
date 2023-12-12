@@ -40,11 +40,11 @@ public class GroundIndicatorVisuals : HitIndicatorInstance
 
     protected override float getThreat()
     {
-        return data.powerByStrength / FindObjectOfType<GlobalPlayer>().localPowerThreat;
+        return data.powerByStrength / GlobalPlayer.gPlay.localPowerThreat;
     }
 
     protected override bool willStagger()
     {
-        return data.stagger >= FindObjectOfType<GlobalPlayer>().localStunThreat;
+        return data.stagger >= GlobalPlayer.gPlay.localStunThreat;
     }
 }

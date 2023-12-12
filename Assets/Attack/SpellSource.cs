@@ -42,7 +42,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     {
         rb = GetComponent<Rigidbody>();
         ground = GetComponent<FloorNormal>();
-        global = FindObjectOfType<GlobalPrefab>();
+        global = GlobalPrefab.gPre;
     }
     private void Start()
     {

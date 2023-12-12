@@ -38,7 +38,7 @@ public class Inventory : NetworkBehaviour
     {
         player = GetComponent<PlayerGhost>();
         pity = GetComponent<PlayerPity>();
-        itemPre = GameObject.FindObjectOfType<GlobalPrefab>().ItemDropPre;
+        itemPre = GlobalPrefab.gPre.ItemDropPre;
         grove = GetComponent<Grove>();
     }
 

@@ -22,4 +22,12 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject[] projectileAssetsPre;
     public GameObject[] lineAssetsPre;
     public GameObject[] groundAssetsPre;
+
+
+    public static GlobalPrefab gPre = null;
+
+    private void Start()
+    {
+        gPre = this;
+    }
 }

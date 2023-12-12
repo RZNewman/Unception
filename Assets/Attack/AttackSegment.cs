@@ -304,7 +304,7 @@ public class AttackSegment
         {
             moveType = MoveMode.World;
         }
-        GameObject prefab = GameObject.FindObjectOfType<GlobalPrefab>().GroundTargetPre;
+        GameObject prefab = GlobalPrefab.gPre.GroundTargetPre;
         Vector3 eyeForward = eye.transform.forward;
         Vector3 bodyFocus = body.position + eyeForward * size.scaledRadius;
         Vector3 targetDiff = target - bodyFocus;

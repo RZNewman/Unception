@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class GlobalPlayer : MonoBehaviour
 {
+    public static GlobalPlayer gPlay;
+    private void Start()
+    {
+        gPlay = this;
+    }
     PlayerGhost serverOwnerPlayer;
 
     public void setServerPlayer(PlayerGhost player)

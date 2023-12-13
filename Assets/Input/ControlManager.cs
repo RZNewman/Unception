@@ -109,7 +109,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             localInput.merge(currentInput);
         }
 
-        if (checkSendtime(localInput))
+        if (NetworkServer.connections.Count > 1 && checkSendtime(localInput))
         {
             localInput.cleanButtons();
         }

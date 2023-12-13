@@ -15,8 +15,16 @@ public class UiBarBasic : MonoBehaviour
     }
 
     List<GameObject> instances = new List<GameObject>();
+    BarSegment[] segmentsCached =null;
+
     public void set(params BarSegment[] segments)
     {
+        if(segments == segmentsCached)
+        {
+            return;
+        }
+        segmentsCached = segments;
+
         for (int i = 0; i < segments.Length; i++)
         {
 

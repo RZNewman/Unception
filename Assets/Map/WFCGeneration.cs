@@ -1054,7 +1054,7 @@ public class WFCGeneration : MonoBehaviour
     }
 
     bool generationBroken = false;
-    public IEnumerator generate(GameObject floor)
+    public IEnumerator generate(GameObject floor, int segments)
     {
         floorRoot = floor;
         floorRoot.transform.localScale = tileScale;
@@ -1063,7 +1063,7 @@ public class WFCGeneration : MonoBehaviour
         {
 
             generationBroken = false;
-            yield return collapseCells(makePath());
+            yield return collapseCells(makePath(segments));
 
             if (generationBroken)
             {
@@ -1478,7 +1478,7 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-    List<Vector3Int> makePath()
+    List<Vector3Int> makePath(int segments)
     {
         Vector3Int point = Vector3Int.zero;
         List<Vector3Int> path = new List<Vector3Int>();
@@ -1486,7 +1486,7 @@ public class WFCGeneration : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = 6;
+        int points = segments +1;
         for (int i = 0; i < points; i++)
         {
             Vector2 dir2d = Random.insideUnitCircle.normalized;

@@ -13,7 +13,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     GameObject currentSelf;
 
     [SyncVar]
-    float playerPower = Power.playerStartingPower;
+    float playerPower = Atlas.playerStartingPower;
 
     [SyncVar]
     int extraLives = 1;

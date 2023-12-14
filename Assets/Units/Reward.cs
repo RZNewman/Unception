@@ -80,13 +80,15 @@ public class Reward : MonoBehaviour
     {
         if (inventory)
         {
+            float itemBasePower = Mathf.Max(other.rewardBasePower, Atlas.playerStartingPower);
+
             gatheredPower += other.power;
             float packPerItem = 1 / RewardManager.itemsPerPack;
-            float powerPerItem = other.rewardBasePower * packPerItem;
+            float powerPerItem = itemBasePower * packPerItem;
             while (gatheredPower > powerPerItem * other.qualityMultiplier)
             {
                 gatheredPower -= powerPerItem * other.qualityMultiplier;
-                inventory.AddItem(GenerateAttack.generate(other.rewardBasePower, GenerateAttack.AttackGenerationType.Player, other.qualityMultiplier, inventory.pity), other.transform.position);
+                inventory.AddItem(GenerateAttack.generate(itemBasePower, GenerateAttack.AttackGenerationType.Player, other.qualityMultiplier, inventory.pity), other.transform.position);
             }
         }
     }

@@ -143,7 +143,7 @@ public class MapGenerator : NetworkBehaviour
         GameObject wfcFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, currentFloor.transform);
         wfcFloor.GetComponent<ClientAdoption>().parent = currentFloor;
         NetworkServer.Spawn(wfcFloor);
-        yield return wfc.generate(wfcFloor);
+        yield return wfc.generate(wfcFloor, currentMap.floors[currentFloorIndex].segments);
 
         GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
         endPortal.GetComponent<NextLevel>().setGen(this);

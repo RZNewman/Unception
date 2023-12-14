@@ -15,8 +15,6 @@ public class Power : NetworkBehaviour, TextValue
     public readonly static float exponentDownscale = 1.5f;
     public readonly static float basePower = 100;
 
-    public readonly static float playerStartingPower = 1000;
-
     public delegate void OnPowerUpdate(Power p);
 
     List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();

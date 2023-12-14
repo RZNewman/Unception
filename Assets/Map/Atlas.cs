@@ -13,7 +13,8 @@ public class Atlas : NetworkBehaviour
 {
     public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 1f;
-    public readonly static float softcap = 12_000f;
+    public readonly static float softcap = 6_000f;
+    public readonly static float playerStartingPower = 1000;
     public static readonly float sparsness = 5f;
 
     public RectTransform mapImage;
@@ -115,6 +116,7 @@ public class Atlas : NetworkBehaviour
     public struct Floor
     {
         public float sparseness;
+        public int segments;
         public EncounterData[] encounters;
     }
     public struct EncounterData
@@ -240,10 +242,21 @@ public class Atlas : NetworkBehaviour
         float power = tier switch
         {
             int i when i == 0 => playerStartingPower * 0.5f,
-            int i when i == 1 => playerStartingPower,
+            int i when i == 1 => playerStartingPower * 0.8f,
+            int i when i == 2 => playerStartingPower,
             int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
         };
         return Mathf.Min(power, softcap);
+    }
+
+    int segmentsAtTier(int tier)
+    {
+        return tier switch
+        {
+            int i when i == 0 => 1,
+            int i when i == 1 => 3,
+            _ => Mathf.RoundToInt(Random.value.asRange(4, 6)),
+        };
     }
     float mapClearsToTier(int tier)
     {
@@ -361,6 +374,7 @@ public class Atlas : NetworkBehaviour
                         {
                             encounters = floorEncounters(q.difficulty, q.encounters),
                             sparseness = sparsness,
+                            segments = segmentsAtTier(q.tier)
 
                         }
                     , q.floors).ToArray(),
@@ -404,6 +418,7 @@ public class Atlas : NetworkBehaviour
             floors[j] = new Floor
             {
                 sparseness = sparsness,
+                segments = Mathf.RoundToInt(Random.value.asRange(4, 6)),
                 encounters = floorEncounters(difficulty),
             };
         }

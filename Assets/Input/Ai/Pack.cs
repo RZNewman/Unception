@@ -80,7 +80,7 @@ public class Pack : NetworkBehaviour
                 if (!enabledUnits)
                 {
                     enabledUnits = true;
-                    enableUnits();
+                    StartCoroutine(enableUnits());
                 }
 
             }
@@ -157,11 +157,12 @@ public class Pack : NetworkBehaviour
     }
 
     [Server]
-    public void enableUnits()
+    IEnumerator enableUnits()
     {
         foreach (GameObject u in pack)
         {
             u.SetActive(true);
+            yield return null;
         }
         RpcEnablePack(pack);
     }

@@ -137,6 +137,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     [TargetRpc]
     void TargetGameplayMenu(NetworkConnection conn)
     {
+        Shader.WarmupAllShaders();
         music.Game();
 
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
@@ -190,7 +191,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     //server
     void onUnitDeath(bool natural)
     {
-        RpcSetAudio(true);
+        if (gameObject) //is destroyed
+        {
+            RpcSetAudio(true);
+        }   
         currentSelf = null;
         Atlas atlas = FindObjectOfType<Atlas>();
         if (atlas && atlas.embarked)

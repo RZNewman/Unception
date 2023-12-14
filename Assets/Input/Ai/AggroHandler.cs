@@ -11,7 +11,8 @@ public class AggroHandler : MonoBehaviour
 
     struct AggroData
     {
-        public GameObject target;
+        public GameObject targetCollider;
+        public GameObject targetParent;
         public float lastSeenTime;
         public float lastLookTime;
     }
@@ -57,7 +58,7 @@ public class AggroHandler : MonoBehaviour
         {
             foreach(AggroData enemy in aggroedEnemies)
             {
-                other.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(enemy.target);
+                other.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(enemy.targetCollider);
             }
             sensedAllies.Add(other);
         }
@@ -88,7 +89,7 @@ public class AggroHandler : MonoBehaviour
             if(d.lastLookTime+LookUpdateTime < Time.time)
             {
                 d.lastLookTime = Time.time;
-                if (canSee(d.target))
+                if (canSee(d.targetCollider))
                 {
                     d.lastSeenTime = Time.time;
                 }
@@ -97,11 +98,11 @@ public class AggroHandler : MonoBehaviour
             if(d.lastSeenTime + LooseAggroTime < Time.time)
             {
                 aggroedEnemies.RemoveAt(i);
-                combat.dropCombat(d.target.GetComponentInParent<Combat>().gameObject);
+                combat.dropCombat(d.targetParent);
                 transform.parent.GetComponent<EventManager>().fireAggro(new AggroEventData
                 {
                     lostAggro = true,
-                    targetCollider = d.target
+                    targetCollider = d.targetCollider
                 });
                 i--;
             }
@@ -123,16 +124,18 @@ public class AggroHandler : MonoBehaviour
 
     public void addAggro(GameObject target)
     {
-        if (!aggroedEnemies.Select((ag) => ag.target).Contains(target))
+        if (!aggroedEnemies.Select((ag) => ag.targetCollider).Contains(target))
         {
             setCombat();
+            GameObject targetParent = target.GetComponentInParent<Combat>().gameObject;
             aggroedEnemies.Add(new AggroData
             {
-                target = target,
+                targetCollider = target,
+                targetParent = targetParent,
                 lastLookTime = Time.time,
                 lastSeenTime = Time.time,
             });
-            combat.setFighting(target.GetComponentInParent<Combat>().gameObject);
+            combat.setFighting(targetParent);
             transform.parent.GetComponent<EventManager>().fireAggro(new AggroEventData
             {
                 lostAggro = false,
@@ -158,14 +161,14 @@ public class AggroHandler : MonoBehaviour
     
     public void removeTarget(GameObject target)
     {
-        aggroedEnemies.Remove(aggroedEnemies.Find((ag) =>ag.target == target));
+        aggroedEnemies.Remove(aggroedEnemies.Find((ag) =>ag.targetCollider == target));
     }
 
     public GameObject getTopTarget()
     {
         if (started && aggroedEnemies.Count > 0)
         {
-            return aggroedEnemies[0].target;
+            return aggroedEnemies[0].targetCollider;
         }
         return null;
     }

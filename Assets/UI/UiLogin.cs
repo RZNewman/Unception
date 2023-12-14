@@ -9,7 +9,7 @@ public class UiLogin : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.HasKey("username"))
+        if (username && PlayerPrefs.HasKey("username"))
         {
             username.text = PlayerPrefs.GetString("username");
         }
@@ -30,5 +30,10 @@ public class UiLogin : MonoBehaviour
       FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signInOffline("local");
         
 
+    }
+
+    public void logout()
+    {
+        FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signOut();
     }
 }

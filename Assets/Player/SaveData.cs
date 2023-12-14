@@ -240,18 +240,23 @@ public class SaveData : NetworkBehaviour
     }
     private void OnDestroy()
     {
-        if (isServer)
+        if (isServer && dataSource == DataSource.Online)
         {
-            globalSave.savePlayerData(auth.user, new PlayerSaveData
-            {
-                power = player.power,
-                pitySave = pity.save(),
-                worldProgress = worldProgress,
-            });
-            saveItems();
-            saveBlessings();
+            saveAll();
         }
 
+    }
+
+    public void saveAll()
+    {
+        globalSave.savePlayerData(auth.user, new PlayerSaveData
+        {
+            power = player.power,
+            pitySave = pity.save(),
+            worldProgress = worldProgress,
+        });
+        saveItems();
+        saveBlessings();
     }
 
     //server

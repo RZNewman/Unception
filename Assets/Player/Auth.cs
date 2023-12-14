@@ -52,4 +52,17 @@ public class Auth : NetworkBehaviour
 
 
     }
+    [Client]
+    public void signOut()
+    {
+        CmdSignOut();
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Login);
+    }
+    [Command]
+    void CmdSignOut()
+    {
+        save.saveAll();
+        //only unset after
+        username = null;
+    }
 }

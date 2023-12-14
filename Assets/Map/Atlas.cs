@@ -279,6 +279,7 @@ public class Atlas : NetworkBehaviour
 
     void createMapMarkers()
     {
+        clearMapMarkers();
         foreach (Map m in list.maps)
         {
             GameObject marker = Instantiate(mapMarkerPre, mapImage.transform);
@@ -577,7 +578,6 @@ public class Atlas : NetworkBehaviour
             FindObjectOfType<MapGenerator>().destroyFloor();
         }
         setScaleServer(1, 1);
-        clearMapMarkers();
         makeMaps();
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {

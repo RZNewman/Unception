@@ -244,9 +244,9 @@ public class Grove : NetworkBehaviour
     {
         groveWorld = FindObjectOfType<GroveWorld>(true);
         inv = GetComponent<Inventory>();
-        initGrid();
+        
     }
-    void initGrid()
+    void resetGrid()
     {
         map = new GroveSlot[gridSize.x, gridSize.y];
 
@@ -300,7 +300,9 @@ public class Grove : NetworkBehaviour
     [Server]
     public void importPlacements(Dictionary<string, GrovePlacement> placements, Dictionary<string, CastData> items)
     {
+        slotAllocations.Clear();
         placedItems.Clear();
+        resetGrid();
         foreach (string id in placements.Keys)
         {
             AddPlace(id, new GrovePlacedObject { placement = placements[id], shape = items[id].shape, slot = items[id].slot });

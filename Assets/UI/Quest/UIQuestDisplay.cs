@@ -33,18 +33,28 @@ public class UIQuestDisplay : MonoBehaviour
         displayWorld();
     }
 
+    List<GameObject> questMarks = new List<GameObject>();
+
     void displayWorld()
     {
         if (!worldData || !progressSet)
         {
             return;
         }
+
+        foreach(GameObject o in questMarks)
+        {
+            Destroy(o);
+        }
+        questMarks.Clear();
+
         float offset = 0;
         RectTransform rect;
         int worldMaxTier = 0;
         foreach (Location loc in worldData.locations)
         {
             GameObject l = Instantiate(LocationPre, transform);
+            questMarks.Add(l);
             rect = l.GetComponent<RectTransform>();
             int maxTier = loc.verticals.Length == 0 ? loc.overrideTier : loc.verticals.Max(v => v.quests[v.quests.Length - 1].tier);
             int minTier = loc.verticals.Length == 0 ? loc.overrideTier : loc.verticals.Min(v => v.quests[0].tier);

@@ -332,4 +332,27 @@ public class PlayerInfo : NetworkBehaviour
         openWindow = tutorial.stages[currentProgress];
         popups.createTutorial(openWindow.sections);
     }
+
+    public struct NotificationsData
+    {
+        public int tutorialStage;
+    }
+
+    public NotificationsData save()
+    {
+        return new NotificationsData
+        {
+            tutorialStage = currentProgress
+        };
+    }
+
+    public void load(NotificationsData data)
+    {
+        if(isOpen && data.tutorialStage > currentProgress)
+        {
+            closeStage();
+        }
+        currentProgress = data.tutorialStage;
+    }
+
 }

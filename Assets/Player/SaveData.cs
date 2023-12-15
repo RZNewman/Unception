@@ -12,6 +12,7 @@ using System;
 using static GlobalSaveData;
 using static Atlas;
 using static Grove;
+using static PlayerInfo;
 
 public class SaveData : NetworkBehaviour
 {
@@ -21,6 +22,7 @@ public class SaveData : NetworkBehaviour
     Grove grove;
     PlayerGhost player;
     PlayerPity pity;
+    PlayerInfo playerInfo;
     GlobalSaveData globalSave;
     // Start is called before the first frame update
 
@@ -43,7 +45,7 @@ public class SaveData : NetworkBehaviour
         pity = GetComponent<PlayerPity>();
         player = GetComponent<PlayerGhost>();
         grove = GetComponent<Grove>();
-
+        playerInfo = GetComponent<PlayerInfo>();
     }
 
 
@@ -99,6 +101,28 @@ public class SaveData : NetworkBehaviour
         Task<DataSnapshot> pityData = tasks.pity;
         Task<DataSnapshot> quests = tasks.quests;
         Task<DataSnapshot> blessings = tasks.blessings;
+        Task<DataSnapshot> notifications = tasks.notifications;
+
+        while (!notifications.IsFaulted && !notifications.IsCompleted && !notifications.IsCanceled)
+        {
+            yield return null;
+        }
+
+
+        if (notifications.IsFaulted)
+        {
+            Debug.LogError("Error loading notifications");
+        }
+        else if (notifications.IsCompleted)
+        {
+            DataSnapshot snapshot = notifications.Result;
+            if (snapshot.Exists)
+            {
+                NotificationsData nd = JsonConvert.DeserializeObject<NotificationsData>(snapshot.GetRawJsonValue());
+                playerInfo.load(nd);
+            }
+
+        }
 
         while (!quests.IsFaulted && !quests.IsCompleted && !quests.IsCanceled)
         {
@@ -254,6 +278,7 @@ public class SaveData : NetworkBehaviour
             power = player.power,
             pitySave = pity.save(),
             worldProgress = worldProgress,
+            notifSave = playerInfo.save(),
         });
         saveItems();
         saveBlessings();

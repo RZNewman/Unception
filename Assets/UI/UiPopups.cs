@@ -21,6 +21,10 @@ public class UiPopups : MonoBehaviour
 
     public void closePopup()
     {
-        Destroy(instancedPopup);
+        if (instancedPopup)
+        {
+            Destroy(instancedPopup);
+        }
+        
     }
 }

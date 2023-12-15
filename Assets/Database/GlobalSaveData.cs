@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Linq;
 using static Grove;
+using static PlayerInfo;
 
 public class GlobalSaveData : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class GlobalSaveData : MonoBehaviour
         public Task<DataSnapshot> power;
         public Task<DataSnapshot> pity;
         public Task<DataSnapshot> quests;
+        public Task<DataSnapshot> notifications;
     }
     public PlayerLoadTasks getLoadTasks(string playerName)
     {
@@ -51,6 +53,7 @@ public class GlobalSaveData : MonoBehaviour
             pity = db.Child("Characters").Child(playerName).Child("pity").GetValueAsync(),
             quests = db.Child("Characters").Child(playerName).Child("quests").GetValueAsync(),
             blessings = db.Child("Characters").Child(playerName).Child("blessings").GetValueAsync(),
+            notifications= db.Child("Characters").Child(playerName).Child("notifications").GetValueAsync(),
         };
     }
 
@@ -96,6 +99,7 @@ public class GlobalSaveData : MonoBehaviour
         public float power;
         public PitySaveData pitySave;
         public WorldProgress worldProgress;
+        public NotificationsData notifSave;
     }
 
     public struct PitySaveData
@@ -111,6 +115,7 @@ public class GlobalSaveData : MonoBehaviour
         db.Child("Characters").Child(playerName).Child("power").SetValueAsync(data.power);
         db.Child("Characters").Child(playerName).Child("pity").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.pitySave));
         db.Child("Characters").Child(playerName).Child("quests").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.worldProgress));
+        db.Child("Characters").Child(playerName).Child("notifications").SetRawJsonValueAsync(JsonConvert.SerializeObject(data.notifSave));
     }
 
     public void savePlayerItems(string playerName, Dictionary<string, GrovePlacement> placements, CastData[] storage)

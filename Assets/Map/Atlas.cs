@@ -254,6 +254,7 @@ public class Atlas : NetworkBehaviour
         return tier switch
         {
             int i when i == 0 => 1,
+            int i when i == 1 => 2,
             int i when i == 1 => 3,
             _ => Mathf.RoundToInt(Random.value.asRange(4, 6)),
         };

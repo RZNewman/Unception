@@ -62,6 +62,7 @@ public class Auth : NetworkBehaviour
     void CmdSignOut()
     {
         save.saveAll();
+        FindObjectOfType<UiPopups>().closePopup();
         //only unset after
         username = null;
     }

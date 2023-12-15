@@ -68,7 +68,7 @@ public class PlayerInfo : NetworkBehaviour
                 {
                     new TutorialSection
                     {
-                        displayText = "Select a Map, then Embark!"
+                        displayText = "Select a Map Marker, then Embark!"
                     }
                 },
                 stop = new FinishCondtions

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static EventManager;
 using static Utils;
 
 public class MenuHandler : MonoBehaviour
@@ -119,6 +121,7 @@ public class MenuHandler : MonoBehaviour
         menuPreActions(activeMenu);
         menuObject(activeMenu).SetActive(true);
         menuPostActions(activeMenu);
+        MenuEvent?.Invoke(activeMenu);
     }
 
     public void switchTargeted(MenuTargetID id)
@@ -142,4 +145,7 @@ public class MenuHandler : MonoBehaviour
             switchMenu(Menu.Loadout);
         }
     }
+    public delegate void OnMenu(Menu m);
+
+    public event OnMenu MenuEvent;
 }

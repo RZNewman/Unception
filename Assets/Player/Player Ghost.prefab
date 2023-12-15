@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7570928996243422619}
   - component: {fileID: 4705131740171159774}
   - component: {fileID: -8850450211041986613}
+  - component: {fileID: 1044069960532321318}
   m_Layer: 0
   m_Name: Player Ghost
   m_TagString: Untagged
@@ -52,10 +53,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientStarted: 0
   sceneId: 0
+  _assetId: 3147635070
   serverOnly: 0
   visible: 0
-  m_AssetId: e1fa44a4ba5328847bfa86ccf21d65be
   hasSpawned: 0
 --- !u!114 &5828234847383484892
 MonoBehaviour:
@@ -69,6 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2bc174da323e5d4e89472bd48699c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   unitPre: {fileID: 563495925269500109, guid: 25b930c10f0f37f48b5e02cfb3fe38cd, type: 3}
@@ -84,6 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a20640efc91eb488cb49c843805350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   pity: {fileID: 0}
@@ -99,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96a0cbdc89ad41b489bc976135980b2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &2971244993083978270
@@ -113,6 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77088b2772ead14ca45311a42b4f9df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &7570928996243422619
@@ -139,6 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab476582e885ab49ae19bfde4317b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &-8850450211041986613
@@ -153,9 +160,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44148c05f67826e4aa2e66c22364e654, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   gridSize: {x: 10, y: 10}
+--- !u!114 &1044069960532321318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8767541107825051027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d768460410e09b49a9e803c552e009e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &9029700415815540146
 GameObject:
   m_ObjectHideFlags: 0

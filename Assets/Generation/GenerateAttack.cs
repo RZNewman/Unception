@@ -723,6 +723,11 @@ public static class GenerateAttack
             cooldownMin = 0.3f;
             cooldownMax = 0.5f;
         }
+        if (type == AttackGenerationType.IntroOff)
+        {
+            cooldownMin = 0.4f;
+            cooldownMax = 0.6f;
+        }   
         if (slot == ItemSlot.Gloves)
         {
             cooldownMin = 0.4f;
@@ -743,7 +748,7 @@ public static class GenerateAttack
             }
 
         }
-        float charges = noCooldown ? 0 : GaussRandomDecline(4);
+        float charges = noCooldown ? 0 : GaussRandomDecline(2);
         float chargeBaseStats = charges.asRange(0, itemMax(Stat.Charges));
 
         int segmentCount = 1;
@@ -762,9 +767,17 @@ public static class GenerateAttack
         }
         else if (type == AttackGenerationType.IntroMain)
         {
-            windUpMax = 0.2f;
+            windUpMin = 0.3f;
+            windUpMax = 0.4f;
+            windDownMax = 0.4f;
+            windDownMin = 0.1f;
+        }
+        else if (type == AttackGenerationType.IntroOff)
+        {
+            windUpMax = 0.3f;
             windDownMax = 0.5f;
             windDownMin = 0.1f;
+
         }
         else if (type == AttackGenerationType.PlayerTrigger)
         {
@@ -833,11 +846,21 @@ public static class GenerateAttack
 
         Quality quality = Quality.Common;
         int starCount = 0;
-        if (pity)
+        switch (type)
         {
-            quality = pity.rollQuality(qualityMultiplier);
-            starCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
+            case AttackGenerationType.IntroMain:
+            case AttackGenerationType.IntroOff:
+                quality = Quality.Rare;
+                break;
+            default:
+                if (pity)
+                {
+                    quality = pity.rollQuality(qualityMultiplier);
+                    starCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
+                }
+                break;
         }
+        
 
 
         CastData block = ScriptableObject.CreateInstance<CastData>();

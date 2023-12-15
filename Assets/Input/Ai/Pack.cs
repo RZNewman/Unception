@@ -5,8 +5,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using static EventManager;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.InputManagerEntry;
 
 public class Pack : NetworkBehaviour
 {

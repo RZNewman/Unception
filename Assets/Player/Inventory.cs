@@ -10,7 +10,6 @@ using static Keybinds;
 using static Utils;
 using static GenerateAttack;
 using static Grove;
-using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {

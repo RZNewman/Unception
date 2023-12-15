@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GlobalCache;
 
-public class Power : NetworkBehaviour, TextValue
+public class Power : NetworkBehaviour, TextValue, BarValue
 {
     [SyncVar(hook = nameof(callbackPower))]
     float currentPower = 100;
@@ -258,8 +258,16 @@ public class Power : NetworkBehaviour, TextValue
         }
     }
 
+    public BarValue.BarData getBarFill()
+    {
+        return new BarValue.BarData
+        {
+            active = currentPower< softcap,
+            color = new Color(1, 0.8f, 0),
+            fillPercent = (currentPower - Atlas.playerStartingPower) / (softcap- Atlas.playerStartingPower),
 
-
+        };
+    }
 
     public enum MetricPrefix
     {

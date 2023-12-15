@@ -200,8 +200,8 @@ public class Atlas : NetworkBehaviour
         float totalDifficutly = Mathf.Max(0, tier - 2) * 0.2f;
         int encounters = tier switch
         {
-            int i when i > 4 && i < 10 => 1,
-            int i when i >= 10 => 2,
+            int i when i > 4 => 1,
+            //int i when i >= 10 => 2,
             _ => 0
         };
         int floors = Mathf.Max(Mathf.CeilToInt(tier / 7f), 1);
@@ -426,7 +426,8 @@ public class Atlas : NetworkBehaviour
     }
     public static EncounterData[] floorEncounters(Difficulty difficulty)
     {
-        int encounterCount = Mathf.RoundToInt(GaussRandomDecline().asRange(1, 2));
+        //int encounterCount = Mathf.RoundToInt(GaussRandomDecline().asRange(1, 2));
+        int encounterCount = 1;
         return floorEncounters(difficulty, encounterCount);
     }
     public static EncounterData[] floorEncounters(Difficulty difficulty, int encounterCount)
@@ -594,14 +595,19 @@ public class Atlas : NetworkBehaviour
         }
         setScaleServer(1, 1);
         makeMaps();
+        bool grantBlessing = mapSuccess && embarkedMap.quest && embarkedMap.tier > 4;
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {
             if (mapSuccess)
             {
-                inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
+                if(grantBlessing)
+                {
+                    inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
+                }
+                
             }
             
-            inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, mapSuccess);
+            inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, grantBlessing);
         }
 
     }

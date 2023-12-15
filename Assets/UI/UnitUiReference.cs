@@ -9,7 +9,8 @@ public class UnitUiReference : MonoBehaviour
     public UiBar castbar;
     public UiBar staminaBar;
     public UiBar packHealBar;
-    public UiText powerDisplay;
+    public UiText powerDisplayText;
+    public UiBar powerDisplayBar;
     public UiBuffBar buffBar;
     public GameObject unitTarget;
 
@@ -34,9 +35,13 @@ public class UnitUiReference : MonoBehaviour
         {
             staminaBar.source = unitTarget.GetComponentInParent<Stamina>();
         }
-        if (powerDisplay)
+        if (powerDisplayText)
         {
-            powerDisplay.source = unitTarget.GetComponentInParent<Power>();
+            powerDisplayText.source = unitTarget.GetComponentInParent<Power>();
+        }
+        if (powerDisplayBar)
+        {
+            powerDisplayBar.source = unitTarget.GetComponentInParent<Power>();
         }
         if (packHealBar)
         {

@@ -143,10 +143,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
     }
     [TargetRpc]
-    public void TargetMenuFinish(NetworkConnection conn, bool success)
+    public void TargetMenuFinish(NetworkConnection conn, bool blessing)
     {
         music.Menu();
-        MenuHandler.Menu target = success switch
+        MenuHandler.Menu target = blessing switch
         {
             true => MenuHandler.Menu.Blessing,
             _ => MenuHandler.Menu.Loadout,

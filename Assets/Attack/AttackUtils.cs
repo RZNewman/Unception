@@ -55,7 +55,7 @@ public static class AttackUtils
                 h.takeDamageHit(damage.instant);
                 if (damage.expose > 0)
                 {
-                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.powerAtGen, 10f / mover.GetComponent<Power>().scaleTime(), damage.expose);
+                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.powerAtGen, 10f / Power.scaleTime(hitData.powerAtGen), damage.expose);
                 }
             }
 

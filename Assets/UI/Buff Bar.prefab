@@ -51,22 +51,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BuffIconPre: {fileID: 4490788446404796487, guid: 37bb0d4a1f6a31d468578cc9b4fd8ce5, type: 3}
-  length: {fileID: 21300000, guid: 23fc88a4dade4644bbf53139af25ecc0, type: 3}
-  width: {fileID: 21300000, guid: 0ccb2afb59c78cd47ba04202f76b2ca0, type: 3}
-  range: {fileID: 21300000, guid: 34591a19bee5ac543a0016d496b6c667, type: 3}
-  turn: {fileID: 21300000, guid: 495a2876b9b2460479c77cefef684594, type: 3}
-  cooldown: {fileID: 21300000, guid: 9a375be01c44d784bbe799e52253e2a0, type: 3}
-  haste: {fileID: 21300000, guid: 7769da2d4e79b2a428305ede28f4db11, type: 3}
-  charges: {fileID: 21300000, guid: f0f2e1d22d2e5ed4393c2ed5bc92f450, type: 3}
-  devotion: {fileID: 21300000, guid: a0b75b1dcbf992741bd503ae73edfb98, type: 3}
-  knockback: {fileID: 21300000, guid: c7ea806ad78d640478c9955c0faec581, type: 3}
-  knockup: {fileID: 21300000, guid: 64d514bb319451a48a8607f7ad69e201, type: 3}
-  stagger: {fileID: 21300000, guid: 584f4c8dd81a71e48ba2fcf39035780c, type: 3}
-  persist: {fileID: 21300000, guid: 72987a9aa0e030740b25d828e9a94acf, type: 3}
-  move: {fileID: 21300000, guid: 523b27ff7b451dc4c9100c7442ee336c, type: 3}
-  chain: {fileID: 21300000, guid: d0b05676d77b65d4ba6eead0503a478c, type: 3}
-  splash: {fileID: 21300000, guid: 114a5555796f1324cad71fbae516d001, type: 3}
-  armor: {fileID: 21300000, guid: 59e6f4884dcd03f4e82307f62075a9dd, type: 3}
 --- !u!114 &5913610990010159303
 MonoBehaviour:
   m_ObjectHideFlags: 0

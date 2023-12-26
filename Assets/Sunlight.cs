@@ -32,7 +32,7 @@ public class Sunlight : MonoBehaviour
     }
     void setLights()
     {
-        daylight.enabled = cycle == LightCycle.Day;
+        //daylight.enabled = cycle == LightCycle.Day;
         daylight.GetComponent<Spinner>().rotationSpeed = cycle == LightCycle.Day ? daySpeedDegrees : daySpeedDegrees * 2;
     }
 }

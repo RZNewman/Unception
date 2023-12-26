@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class MaterialScaling : MonoBehaviour
 {
-    public List<Material> materials = new List<Material>();
+
 
     public void scale(float scale)
     {
-        foreach (Material mat in materials)
-        {
-            mat.SetFloat("_DefaultEffectRadius", 100 * scale);
-            mat.SetFloat("_ConeObstructionDestroyRadius", 22 * scale);
-        }
+
+        Shader.SetGlobalFloat("_Target_Distance", 22 * scale);
+    }
+
+    private void OnDestroy()
+    {
+        Shader.SetGlobalFloat("_Target_Distance", 0);
     }
 
 

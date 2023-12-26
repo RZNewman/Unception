@@ -21,35 +21,32 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Vol_46_2_Tiles
-  m_Shader: {fileID: 4800000, guid: 3ac22b44724c41d47a708470cf6cd76e, type: 3}
-  m_ValidKeywords:
-  - _METALLICSPECGLOSSMAP
-  - _NORMALMAP
-  - _OCCLUSIONMAP
-  - _PARALLAXMAP
-  - _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-  - _SPECULAR_SETUP
-  m_InvalidKeywords:
-  - _ANIMATIONENABLED_ON
-  - _FLOOR_ON
-  - _SPECGLOSSMAP
-  - _TEXTUREDEMISSIONEDGE_ON
+  m_Shader: {fileID: -6465566751694194690, guid: a75612a97bc55504f90d596aeeaf7a23, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AO:
+        m_Texture: {fileID: 2800000, guid: 0bde6e27f85fd544d894b8997034c8ab, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: a88ee9ed9af4fc946a99eb6839565475, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 76f51ee2128be8340950cc15ba9695dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Color:
+        m_Texture: {fileID: 2800000, guid: a88ee9ed9af4fc946a99eb6839565475, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -80,8 +77,16 @@ Material:
         m_Texture: {fileID: 2800000, guid: a88ee9ed9af4fc946a99eb6839565475, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Metallic:
+        m_Texture: {fileID: 2800000, guid: e41a9730ec799ea4b85b9157bdc73a44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 76f51ee2128be8340950cc15ba9695dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ObstructionCurve:
@@ -98,6 +103,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 2800000, guid: a88ee9ed9af4fc946a99eb6839565475, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ToonSub_70893179d9f84d38b7f12321d62c8b99_EmissionMap_1684467723:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -163,6 +172,7 @@ Material:
     - _IsometricExclusion: 0
     - _IsometricExclusionDistance: 0
     - _IsometricExclusionGradientLength: 0.1
+    - _Lightness: 3
     - _Metallic: 0
     - _Mode: 0
     - _Obstruction: 2
@@ -171,10 +181,11 @@ Material:
     - _PlayerPosYOffset: 0
     - _PreviewIndicatorLineThickness: 0.04
     - _PreviewMode: 0
-    - _QueueControl: -1
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _RaycastMode: 0
     - _ReceiveShadows: 1
+    - _Saturation: 0.7
     - _ShowContentAnimationArea: 0
     - _ShowContentDebugArea: 1
     - _ShowContentDissolveArea: 1
@@ -190,8 +201,12 @@ Material:
     - _SyncCullMode: 0
     - _SyncZonesFloorYOffset: 0
     - _SyncZonesWithFloorY: 0
+    - _Target_Distance: 0
     - _TexturedEmissionEdge: 1
     - _TexturedEmissionEdgeStrength: 0.3
+    - _Toon_Cutoff: 0.2
+    - _Toon_Rim_Str: 0.02
+    - _Toon_Shadow_Floor: 0.6
     - _TransitionDuration: 2
     - _TriggerMode: 0
     - _UVSec: 0

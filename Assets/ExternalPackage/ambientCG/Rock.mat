@@ -8,24 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Rock
-  m_Shader: {fileID: 4800000, guid: 3ac22b44724c41d47a708470cf6cd76e, type: 3}
-  m_ValidKeywords:
-  - _METALLICSPECGLOSSMAP
-  - _NORMALMAP
-  - _OCCLUSIONMAP
-  - _PARALLAXMAP
-  - _SPECULAR_SETUP
-  m_InvalidKeywords:
-  - _ANIMATIONENABLED_ON
-  - _FLOOR_ON
-  - _SPECGLOSSMAP
-  - _TEXTUREDEMISSIONEDGE_ON
+  m_Shader: {fileID: -6465566751694194690, guid: a75612a97bc55504f90d596aeeaf7a23, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -36,6 +26,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 09b11143955b5de4bb7ed66be266e1ee, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Color:
+        m_Texture: {fileID: 2800000, guid: 64ec2aea77cc2154192b49938abd550e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -70,6 +64,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 09b11143955b5de4bb7ed66be266e1ee, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 09b11143955b5de4bb7ed66be266e1ee, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ObstructionCurve:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -86,6 +88,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 64ec2aea77cc2154192b49938abd550e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ToonSub_70893179d9f84d38b7f12321d62c8b99_EmissionMap_1684467723:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -100,6 +106,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AdditionalLightCutoffPoint: 1
     - _AlphaClip: 0
     - _AngleStrength: 1
     - _AnimationEnabled: 1
@@ -134,6 +141,7 @@ Material:
     - _DissolveMaskEnabled: 0
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _ExtraBandThickness: 0.3
     - _Floor: 1
     - _FloorMode: 1
     - _FloorY: 1
@@ -149,18 +157,24 @@ Material:
     - _IsometricExclusion: 0
     - _IsometricExclusionDistance: 0
     - _IsometricExclusionGradientLength: 0.1
+    - _Lightness: 2
     - _Metallic: 0
     - _Mode: 0
     - _Obstruction: 2
     - _OcclusionStrength: 0.722
+    - _PaintbrushStrokesAngle: 43
+    - _PaintbrushStrokesSize: 1.15
     - _Parallax: 0.0191
     - _PlayerPosYOffset: 0
     - _PreviewIndicatorLineThickness: 0.04
     - _PreviewMode: 0
-    - _QueueControl: -1
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _RaycastMode: 0
     - _ReceiveShadows: 1
+    - _SHADING_STYLE: 0
+    - _Saturation: 0.7
+    - _ShadowsFloor: 0.34
     - _ShowContentAnimationArea: 0
     - _ShowContentDebugArea: 1
     - _ShowContentDissolveArea: 1
@@ -168,20 +182,28 @@ Material:
     - _ShowContentObstructionOptionsArea: 1
     - _ShowContentReplacementOptionsArea: 1
     - _ShowContentZoningArea: 1
-    - _Smoothness: 0.175
+    - _Smoothness: 0.435
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SpecularNoiseSize: 1
     - _SrcBlend: 1
+    - _StrongRimStrength: 0.176
     - _Surface: 0
     - _SyncCullMode: 0
     - _SyncZonesFloorYOffset: 0
     - _SyncZonesWithFloorY: 0
+    - _Target_Distance: 0
     - _TexturedEmissionEdge: 1
     - _TexturedEmissionEdgeStrength: 0.3
+    - _ToonCutoffPoint: 0.2
+    - _Toon_Cutoff: 0.2
+    - _Toon_Rim_Str: 0.3
+    - _Toon_Shadow_Floor: 0.6
     - _TransitionDuration: 2
     - _TriggerMode: 0
     - _UVSec: 0
     - _UVs: 1
+    - _UseEmission: 0
     - _WorkflowMode: 0
     - _ZWrite: 1
     - _Zoning: 0
@@ -199,6 +221,7 @@ Material:
     - _DissolveColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2755859567370806047
 MonoBehaviour:

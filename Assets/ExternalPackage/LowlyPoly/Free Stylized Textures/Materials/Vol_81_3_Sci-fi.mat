@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Vol_81_3_Sci-fi
-  m_Shader: {fileID: 4800000, guid: 3ac22b44724c41d47a708470cf6cd76e, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
   - _METALLICSPECGLOSSMAP
@@ -17,12 +17,7 @@ Material:
   - _PARALLAXMAP
   - _SPECULAR_SETUP
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords:
-  - _ANIMATIONENABLED_ON
-  - _FLOOR_ON
-  - _METALLICGLOSSMAP
-  - _SPECGLOSSMAP
-  - _TEXTUREDEMISSIONEDGE_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

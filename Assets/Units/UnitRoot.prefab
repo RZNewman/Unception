@@ -739,10 +739,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientStarted: 0
   sceneId: 0
+  _assetId: 276275190
   serverOnly: 0
   visible: 0
-  m_AssetId: 25b930c10f0f37f48b5e02cfb3fe38cd
   hasSpawned: 0
 --- !u!54 &1811929964521193652
 Rigidbody:
@@ -772,6 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83392ae5c1b731446909f252fd494ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   target: {fileID: 1811929964521193652}
@@ -794,28 +796,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  clientAuthority: 0
-  sendInterval: 0.05
+  target: {fileID: 3461676556350138276}
   syncPosition: 1
   syncRotation: 0
   syncScale: 0
   interpolatePosition: 1
   interpolateRotation: 0
   interpolateScale: 0
-  bufferTimeMultiplier: 1
-  bufferSizeLimit: 64
-  catchupThreshold: 4
-  catchupMultiplier: 0.1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   onlySyncOnChange: 1
+  compressRotation: 1
   bufferResetMultiplier: 5
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &2082401580106628794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -828,6 +830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a07823205c895fc4fb06677d7fb16be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   playerControlPre: {fileID: 8128567364782770289, guid: fc470eec306071949b1fed933eee5fe7, type: 3}
@@ -845,6 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 845232b2c44ed07458669e984f1e899c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &3406968442906714346
@@ -859,6 +863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa34f8f4c364d8a4cba593fe8d602ffa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &7963422172281450304
@@ -873,6 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d0b69b9419c25d41a8cddbb350b1b56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   syncAngleHard: 20
@@ -891,6 +897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd01abb590fe0e40bc677b83fe8ac8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   localCameraPre: {fileID: 1085608404565328798, guid: 0e0a730e57a36a34f89848cef4d625b2, type: 3}
@@ -921,6 +928,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea157aa0d32b2441bab0cde941cdef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &4552042485861014661
@@ -935,6 +943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fccc154a4bc4bc14faac391ea4c07057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &-6925277854275121742
@@ -949,6 +958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59b03d1dbc98855458092ce56cd2d7b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &6759729760156447077
@@ -975,6 +985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9158bf0da701264885c7b5cfb841bca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &7926023165869227859
@@ -989,6 +1000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246bda10cdaa5aa4594221f499d9b8e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
@@ -1018,6 +1030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd9624e78be07345b4ba33954b33d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 1
   parent: {fileID: 0}
@@ -1034,6 +1047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39478e86f3a8b4844a85be719f2828ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &4692492075476485180
@@ -1048,6 +1062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 265c1d91b2e24bc43a96d8930b9ebc77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &1580379773725722553
@@ -1062,6 +1077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ec72d4ad18cb844eab69d9a70fd5ad9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 1
 --- !u!114 &692628121752326469
@@ -1228,6 +1244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c87062bfa696648bddbbbb9d37d293, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   percentHealKiller: 0
@@ -1243,6 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc7de65fa9e5b7845b8372c2acd329fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   indicator: {fileID: 850273678588588332, guid: f3aaab817cc87e14897c2e64e6d569e5, type: 3}
@@ -1258,6 +1276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10ad50b48b365914390cc9407cee7c29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &5733708509411565909
@@ -1272,6 +1291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b033ebd8b1769e14c9f1297595969a64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &7100706352000281430
@@ -1298,6 +1318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f909d6328a7f0334ca14f0f4119d7754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!114 &-1604190383048565517
@@ -1312,6 +1333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b8e67033e81994da020d78af30d06d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
 --- !u!1 &566532740388109760
@@ -9485,7 +9507,8 @@ MonoBehaviour:
   castbar: {fileID: 9193841722235240491}
   staminaBar: {fileID: 0}
   packHealBar: {fileID: 0}
-  powerDisplay: {fileID: 0}
+  powerDisplayText: {fileID: 0}
+  powerDisplayBar: {fileID: 0}
   buffBar: {fileID: 6714114782617600999}
   unitTarget: {fileID: 563495925269500109}
 --- !u!114 &4939385002557404499
@@ -9664,7 +9687,6 @@ GameObject:
   - component: {fileID: 5871496200434499440}
   - component: {fileID: 3777008976460641681}
   - component: {fileID: 4305547671956299647}
-  - component: {fileID: 8543824011006254974}
   m_Layer: 11
   m_Name: UnitStopper
   m_TagString: Untagged
@@ -9729,25 +9751,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4f1803fd6018341932b5d778010d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8543824011006254974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6505587943681716918}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a5d5e910565a9c42a415916bbe57bc7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  triggerZoneEventOnDisable: 0
-  OnEnterZoneEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  OnExitZoneEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &6561925454558761235
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,3 @@
-using ShaderCrew.SeeThroughShader;
 using UnityEngine;
 using static IndicatorHolder;
 
@@ -55,12 +54,6 @@ public class Size : MonoBehaviour
         stopper.transform.localScale = Vector3.one;
         stopper.radius = colliderWidth + 0.01f;
         stopper.height = colliderHalfHeight * 2 + 0.01f;
-
-        if (GetComponentInParent<UnitPropsHolder>().props.isPlayer)
-        {
-            FindObjectOfType<PlayersPositionManager>().AddPlayerAtRuntime(stopper.gameObject);
-            stopper.GetComponent<SeeThroughShaderPlayer>().enabled = true;
-        }
         GetComponentInParent<Power>().subscribePower(updateSize);
     }
 

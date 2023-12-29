@@ -12562,7 +12562,6 @@ GameObject:
   - component: {fileID: 1202127502}
   - component: {fileID: 1202127504}
   - component: {fileID: 1202127505}
-  - component: {fileID: 1202127506}
   - component: {fileID: 1202127507}
   m_Layer: 0
   m_Name: UpdateManager
@@ -13100,21 +13099,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e5b48e1f1d7ae947b8b82f7ce82d340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1202127506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1202127495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 064469f931de6cf41a579753ac53affd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playableCharacters: []
-  isInitialized: 0
-  effectOffIfPlayerDisabled: 0
 --- !u!114 &1202127507
 MonoBehaviour:
   m_ObjectHideFlags: 0

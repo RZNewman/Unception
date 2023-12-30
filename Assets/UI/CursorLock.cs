@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CursorLock : MonoBehaviour
 {
-
+    public float xOffset = 0;
     public bool syncX;
     public bool syncY;
     public bool flip;
@@ -19,9 +19,9 @@ public class CursorLock : MonoBehaviour
     void Update()
     {
         Vector2 tempPos = transform.position;
-        if (syncX) { tempPos.x = Input.mousePosition.x; }
-        if (syncY) { tempPos.y = Input.mousePosition.y; }
-        transform.position = tempPos;
+        float signedXOffset = xOffset;
+        
+        
 
         if (flip)
         {
@@ -29,6 +29,7 @@ public class CursorLock : MonoBehaviour
             if(Input.mousePosition.x > Screen.width / 2)
             {
                 tempPivot.x = 1;
+                signedXOffset *= -1;
             }
             else
             {
@@ -36,5 +37,9 @@ public class CursorLock : MonoBehaviour
             }
             myRect.pivot = tempPivot;
         }
+
+        if (syncX) { tempPos.x = Input.mousePosition.x + signedXOffset; }
+        if (syncY) { tempPos.y = Input.mousePosition.y; }
+        transform.position = tempPos;
     }
 }

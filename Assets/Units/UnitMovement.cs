@@ -548,7 +548,12 @@ public class UnitMovement : NetworkBehaviour
         }
 
         //verticalAngle
-        desiredAngle = inp.lookVerticalAngle;     
+        desiredAngle = inp.lookVerticalAngle;
+        if (grounded && inp.lookObstructed(transform.position))
+        {
+            //While on the ground, prevent our aiming from going into the floor
+            desiredAngle = Mathf.Min(desiredAngle, 0);
+        }
         diff = desiredAngle - currentLookVerticalAngle;
         if (Mathf.Abs(diff) <= frameMagnitude)
         {

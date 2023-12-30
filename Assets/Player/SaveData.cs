@@ -121,6 +121,10 @@ public class SaveData : NetworkBehaviour
                 NotificationsData nd = JsonConvert.DeserializeObject<NotificationsData>(snapshot.GetRawJsonValue());
                 playerInfo.load(nd);
             }
+            else
+            {
+                playerInfo.clear();
+            }
 
         }
 
@@ -142,6 +146,10 @@ public class SaveData : NetworkBehaviour
                 worldProgress = JsonConvert.DeserializeObject<WorldProgress>(snapshot.GetRawJsonValue());
                 questDisplay.displayWorld(worldProgress);
             }
+            else
+            {
+                questDisplay.clear();
+            }
 
         }
 
@@ -161,6 +169,10 @@ public class SaveData : NetworkBehaviour
             if (snapshot.Exists)
             {
                 player.setPower(Convert.ToSingle(snapshot.Value));
+            }
+            else
+            {
+                player.setPower(Atlas.playerStartingPower);
             }
 
             if (FindObjectOfType<GlobalPlayer>().serverPlayer == player)

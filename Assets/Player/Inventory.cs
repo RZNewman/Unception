@@ -137,6 +137,7 @@ public class Inventory : NetworkBehaviour
         grove.importPlacements(placements, storage);
 
         syncInventoryUpwards();
+        RpcInvChange();
     }
 
     [Server]

@@ -163,11 +163,14 @@ public static class Utils
         return Mathf.Round(value * 1000) / 10 + "%";
     }
 
-    public static void scaleToFit(this Image image)
+    public static void scaleToFit(this Image image, float targetHeight = 35f)
     {
         Sprite s = image.sprite;
+        float imagePixels = 1000;
         float ratio = s.bounds.size.x / s.bounds.size.y;
-        image.rectTransform.sizeDelta = new Vector2(image.rectTransform.sizeDelta.y * ratio, image.rectTransform.sizeDelta.y);
+        image.rectTransform.sizeDelta = new Vector2(imagePixels * ratio, imagePixels);
+        float scaleFactor = targetHeight / imagePixels;
+        image.rectTransform.localScale = new Vector2(scaleFactor, scaleFactor);
     }
     public static Dictionary<T, float> invert<T>(this IDictionary<T, float> dict)
     {

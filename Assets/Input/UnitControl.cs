@@ -116,6 +116,11 @@ public interface UnitControl
                 return angle;
             }
         }
+
+        public bool lookObstructed(Vector3 position)
+        {
+            return Physics.Raycast(position,lookOffset,lookOffset.magnitude, LayerMask.GetMask("Terrain")) ;
+        }
     }
 
     public static KeyName toKeyName(ItemSlot slot)

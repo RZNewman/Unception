@@ -56,7 +56,7 @@ public class LocalCamera : MonoBehaviour
             cameraClipScale = p.scalePhysical();
 
         }
-        FindObjectOfType<MaterialScaling>().scale(cameraClipScale);
+        
     }
     private void OnDestroy()
     {
@@ -94,7 +94,7 @@ public class LocalCamera : MonoBehaviour
         }
 
         //cam.nearClipPlane = 1.0f * p.scale();
-
+        FindObjectOfType<MaterialScaling>().scale(targetPosition.magnitude);
     }
     Vector3 lastMousePosition = Vector3.zero;
     private void Update()

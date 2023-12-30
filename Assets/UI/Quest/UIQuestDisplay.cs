@@ -33,6 +33,13 @@ public class UIQuestDisplay : MonoBehaviour
         displayWorld();
     }
 
+    public void clear()
+    {
+        worldProgress = new WorldProgress { locations = new Dictionary<string, Dictionary<string, QuestVerticalProgress>>() };
+        progressSet = true;
+        displayWorld();
+    }
+
     List<GameObject> questMarks = new List<GameObject>();
 
     void displayWorld()

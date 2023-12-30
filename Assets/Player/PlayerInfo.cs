@@ -355,4 +355,9 @@ public class PlayerInfo : NetworkBehaviour
         currentProgress = data.tutorialStage;
     }
 
+    public void clear()
+    {
+        currentProgress = 0;
+    }
+
 }

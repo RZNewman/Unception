@@ -33,6 +33,7 @@ public class PlayerInfo : NetworkBehaviour
         public List<Keybinds.KeyName> keyPress;
         public MenuHandler.Menu? menuScreen;
         public float timer;
+        public bool timerIsFallback;
     }
 
     TutorialState tutorial = new TutorialState
@@ -131,7 +132,9 @@ public class PlayerInfo : NetworkBehaviour
                         Keybinds.KeyName.Right,
                         Keybinds.KeyName.Jump,
                         Keybinds.KeyName.Dash,
-                    }
+                    },
+                    timer = 60f,
+                    timerIsFallback = true,
                 }
             },
             //attack
@@ -159,7 +162,9 @@ public class PlayerInfo : NetworkBehaviour
                     {
                         Keybinds.KeyName.Attack1,
                         Keybinds.KeyName.Attack2,
-                    }
+                    },
+                    timer = 45f,
+                    timerIsFallback = true,
                 }
             },
             //goal
@@ -200,7 +205,9 @@ public class PlayerInfo : NetworkBehaviour
                 },
                 stop = new FinishCondtions
                 {
-                    timer = 30f
+                    menuScreen = MenuHandler.Menu.MainMenu,
+                    timer = 30f,
+                    timerIsFallback = true,
                 }
             }
         }
@@ -308,11 +315,17 @@ public class PlayerInfo : NetworkBehaviour
 
     void tryCloseStage()
     {
-        if (!openWindow.stop.menuScreen.HasValue 
-            && 
-            (openWindow.stop.keyPress == null || openWindow.stop.keyPress.Count == 0)
-            &&
-            openWindow.stop.timer <= 0
+        bool menuDone = !openWindow.stop.menuScreen.HasValue;
+        bool buttonsDone = openWindow.stop.keyPress == null || openWindow.stop.keyPress.Count == 0;
+        bool timerDone = openWindow.stop.timer <= 0;
+        bool timerFallback = openWindow.stop.timerIsFallback;
+
+        if (
+            (menuDone && buttonsDone && timerDone)
+            ||
+            (timerFallback && menuDone && buttonsDone)
+            ||
+            (timerFallback && timerDone)
             )
         {
             closeStage();

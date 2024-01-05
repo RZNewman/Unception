@@ -168,13 +168,13 @@ public class Keybinds : MonoBehaviour
             case KeyName.Attack2:
                 return KeyCode.Mouse1;
             case KeyName.Attack3:
-                return KeyCode.Q;
+                return KeyCode.Alpha1;
             case KeyName.Attack4:
-                return KeyCode.E;
+                return KeyCode.Alpha2;
             case KeyName.Attack5:
-                return KeyCode.R;
+                return KeyCode.Alpha3;
             case KeyName.Attack6:
-                return KeyCode.T;
+                return KeyCode.Alpha4;
             default:
                 return KeyCode.None;
         }

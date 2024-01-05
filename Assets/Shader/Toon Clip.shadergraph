@@ -146,6 +146,9 @@
         },
         {
             "m_Id": "bb54e1bb223845018a3bfcb360a7bf7b"
+        },
+        {
+            "m_Id": "b79b2b3fe5574fe295ef215ad2fa58f3"
         }
     ],
     "m_GroupDatas": [],
@@ -485,6 +488,20 @@
                     "m_Id": "70893179d9f84d38b7f12321d62c8b99"
                 },
                 "m_SlotId": 1245810126
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "b79b2b3fe5574fe295ef215ad2fa58f3"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "d23a72b316054ef592fbe0299545557f"
+                },
+                "m_SlotId": -190430336
             }
         },
         {
@@ -1995,6 +2012,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "53e55c8b7dfd4644ac3cc2ec7ed4f645",
+    "m_Id": 0,
+    "m_DisplayName": "Clip Top Percent",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "54c6ad2fa48741649510b4707f29d6e7",
     "m_Id": 0,
@@ -3266,6 +3298,41 @@
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "b79b2b3fe5574fe295ef215ad2fa58f3",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -2283.0,
+            "y": -798.0,
+            "width": 152.0,
+            "height": 34.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "53e55c8b7dfd4644ac3cc2ec7ed4f645"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "9fc50732409248b09748cdde1a44ece6"
     }
 }
 

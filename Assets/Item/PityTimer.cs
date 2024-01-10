@@ -107,146 +107,138 @@ public class PityTimerContinuous
 
     List<PityRecord> records;
     System.Random rng;
+
+    struct Range
+    {
+        public float min;
+        public float max;
+    }
+
     struct PityRecord
     {
         public int count;
-        public double value;
-        public double chance
+        public int powerOfTwoValue;
+
+
+        float percent
         {
             get
             {
-                return 1 - value;
+                return percentForPower(powerOfTwoValue);
             }
         }
-        public double cost
+
+        public int afterHit()
+        {
+            return count - Mathf.RoundToInt(Mathf.Pow(2, powerOfTwoValue));
+        }
+        static float percentForPower(int power)
+        {
+            return 1f / Mathf.Pow(2, power);
+        }
+
+
+        public Range resultRange
+        {
+            get {
+                float max = percent;
+                return new Range
+                {
+                    max = max,
+                    min = max - percentForPower(powerOfTwoValue+1),
+                }; 
+            }
+        }
+        public float chance
         {
             get
             {
-                return -1 / (chance * 1.3d);
+                return percent * count;
             }
         }
+
     }
     public PityTimerContinuous()
     {
         records = new List<PityRecord>();
-        records.Add(new PityRecord()
+
+        for(int i = 1; i< 12; i++)
         {
-            count = 0,
-            value = 0.5f,
-        });
+            records.Add(new PityRecord()
+            {
+                count = 1,
+                powerOfTwoValue = i,
+            });
+        }    
         rng = new System.Random();
     }
 
-    public double roll(int rarityFactor = 1, double fedValue = -1)
+    public float roll(int rarityFactor = 1, float fedValue = -1)
     {
-        double n = fedValue;
+        float n = fedValue;
         if (n < 0)
         {
-            n = rng.NextDouble();
+            n = (float)rng.NextDouble();
         }
-        double cap = 1;
-        PityRecord newRecord;
-        //if (records.Count > 0)
-        //{
-        int bonus = 1 * rarityFactor;
-        for (int k = 0; k < records.Count; k++)
+        float cap = 0;
+
+
+        int i;
+        float chanceMax = 1;
+        for(i = records.Count -1; i >= 0; i--)
         {
-            PityRecord record = records[k];
-            record.count += bonus;
-            records[k] = record;
-        }
-        int j;
-        for (j = 0; j < records.Count; j++)
-        {
-            PityRecord record = records[j];
-            if (record.count + record.cost < 0)
+            float chance = records[i].chance;
+            if (n <= chance)
             {
-                cap = record.value;
+                chanceMax = chance;
                 break;
             }
-        }
-        //Debug.Log("Records: " + records.Count + ", Sum: " + sum);
-        int i = -1;
-        //n = n.asRange(0, cap);
-        double hit = -1;
-        int count = bonus;
-        if (j > 0)
-        {
-            for (i = j - 1; i >= 0; i--)
+            else
             {
-                PityRecord r = records[i];
-                double weight = r.cost + r.count;
-                double weightedChance = weight * r.chance;
-                double nChance = 1 - n;
-                if (nChance <= weightedChance)
+                if (chance > cap)
                 {
-                    double percentOfRange = 1 - nChance / weightedChance;
-                    hit = percentOfRange.asRange(r.value, cap);
-                    count = (int)(weight);
-                    break;
+                    cap = chance;
                 }
-
-                //float chanceCost = -1 / (chance);
-                //float weight = chanceCost + sum - r.allCount + r.selfCount;
-                //float nChance = 1 - n;
-                //float weightedChance = chance * weight;
-                //if (weight <= 0)
-                //{
-                //    cap = r.value;
-                //}
-                //else if (nChance <= weightedChance)
-                //{
-                //    float percentOfRange = 1 - nChance / weightedChance;
-                //    hit = percentOfRange.asRange(r.value, cap);
-                //    cost = chanceCost;
-                //    break;
-                //}
-
-
-
             }
         }
+        PityRecord r;
 
-        if (hit < 0)
+
+        Range ToRange = i < 0 ? new Range { max = 1, min = 0.5f } : records[i].resultRange;
+        Range FromRange = new Range { max = chanceMax, min = cap };
+
+        float percent = Mathf.InverseLerp(FromRange.min, FromRange.max, n);
+        float result = Mathf.Lerp(ToRange.min, ToRange.max, percent);
+
+
+
+        for (int j = 0; j < records.Count; j++)
         {
-            hit = n.asRange(0, cap);
-            //hit = n;
+            r = records[j];
+            if (j > i)
+            {
+                r.count++;
+            }
+            else
+            {
+                r.count = r.afterHit();
+            }
+            records[j] = r;
         }
-        if (i >= 0)
-        {
-            records.RemoveRange(0, i + 1);
-        }
 
-        newRecord.value = hit;
-        newRecord.count = count;
-
-        //if (newRecord.value < 0.5f)
-        //{
-        //    newRecord.value = records[0].value;
-        //    newRecord.count += records[0].count;
-        //    records[0] = newRecord;
-        //}
-        //else
-        //{
-
-        //    records.Add(newRecord);
-        //    records.Sort((r1, r2) => r1.value.CompareTo(r2.value));
-        //}
-
-        records.Add(newRecord);
-        records.Sort((r1, r2) => r1.value.CompareTo(r2.value));
+        return result;
 
 
-        return newRecord.value;
+
 
     }
-    public Dictionary<double, int> export()
+    public Dictionary<float, int> export()
     {
-        Dictionary<double, int> dict = new Dictionary<double, int>();
+        Dictionary<float, int> dict = new Dictionary<float, int>();
         foreach (PityRecord p in records)
         {
             //Debug.Log(p.value + ":" + p.count);
-            dict.Add(p.value, p.count);
+            dict.Add(p.powerOfTwoValue, p.count);
         }
         return dict;
     }

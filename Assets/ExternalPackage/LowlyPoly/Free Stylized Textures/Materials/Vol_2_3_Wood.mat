@@ -8,20 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Vol_2_3_Wood
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ValidKeywords:
-  - _METALLICSPECGLOSSMAP
-  - _NORMALMAP
-  - _OCCLUSIONMAP
-  - _PARALLAXMAP
-  - _SPECULAR_SETUP
+  m_Shader: {fileID: -6465566751694194690, guid: a75612a97bc55504f90d596aeeaf7a23, type: 3}
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -32,6 +26,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: daa033572df9d20419e6c927ff2c2c91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Color:
+        m_Texture: {fileID: 2800000, guid: 9c4040e552b4ecf4c80b8f1c96d2aca2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -66,6 +64,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: daa033572df9d20419e6c927ff2c2c91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ObstructionCurve:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -80,6 +82,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 2800000, guid: 9c4040e552b4ecf4c80b8f1c96d2aca2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ToonSub_70893179d9f84d38b7f12321d62c8b99_EmissionMap_1684467723:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -145,6 +151,7 @@ Material:
     - _IsometricExclusion: 0
     - _IsometricExclusionDistance: 0
     - _IsometricExclusionGradientLength: 0.1
+    - _Lightness: 2
     - _Metallic: 0
     - _Mode: 0
     - _Obstruction: 2
@@ -153,10 +160,11 @@ Material:
     - _PlayerPosYOffset: 0
     - _PreviewIndicatorLineThickness: 0.04
     - _PreviewMode: 0
-    - _QueueControl: -1
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _RaycastMode: 0
     - _ReceiveShadows: 1
+    - _Saturation: 0.7
     - _ShowContentAnimationArea: 0
     - _ShowContentDebugArea: 1
     - _ShowContentDissolveArea: 1
@@ -174,6 +182,9 @@ Material:
     - _SyncZonesWithFloorY: 0
     - _TexturedEmissionEdge: 1
     - _TexturedEmissionEdgeStrength: 0.3
+    - _Toon_Cutoff: 0.2
+    - _Toon_Rim_Str: 0.07
+    - _Toon_Shadow_Floor: 0.6
     - _TransitionDuration: 2
     - _TriggerMode: 0
     - _UVSec: 0
@@ -195,6 +206,7 @@ Material:
     - _DissolveColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Tiling: {r: 5, g: 5, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2755859567370806047
 MonoBehaviour:

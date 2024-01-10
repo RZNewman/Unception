@@ -155,7 +155,7 @@ public class AggroHandler : MonoBehaviour
             {
                 continue;
             }
-            ally.GetComponentInParent<UnitPropsHolder>().GetComponentInChildren<AggroHandler>().addAggro(target);
+            ally.GetComponentInParent<UnitPropsHolder>(true).GetComponentInChildren<AggroHandler>(true).addAggro(target);
         }
     }
     

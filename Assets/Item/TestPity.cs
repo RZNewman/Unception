@@ -20,7 +20,7 @@ public static class TestPity
 
         for (int i = 0; i < testCount; i++)
         {
-            double value = rng.NextDouble();
+            float value = (float)rng.NextDouble();
             int normal = percent(value);
             int pitied = percent(pity.roll(1, value));
             normalCounts[normal] += 1;
@@ -43,7 +43,7 @@ public static class TestPity
         Debug.Log(output);
 
         output = "";
-        foreach (KeyValuePair<double, int> p in pity.export())
+        foreach (KeyValuePair<float, int> p in pity.export())
         {
             output += p.Key + ":" + p.Value + '\n';
         }

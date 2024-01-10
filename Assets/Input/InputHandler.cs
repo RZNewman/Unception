@@ -16,7 +16,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     Power power;
     UnitMovement mover;
     Keybinds keys;
-
+    LocalCamera localCam;
 
     public UnitInput getUnitInuput()
     {
@@ -35,6 +35,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         mover = GetComponentInParent<UnitMovement>();
         power = GetComponentInParent<Power>();
         keys = FindObjectOfType<Keybinds>(true);
+        localCam = FindObjectOfType<LocalCamera>();
     }
     // Update is called once per frame
     void Update()
@@ -74,7 +75,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         move.Normalize();
         if (Camera.main)
         {
-            move = move.Rotate(-Camera.main.GetComponent<LocalCamera>().currentLookAngle);
+            move = move.Rotate(-localCam.currentLookAngle);
         }
 
         currentInput.move = move;

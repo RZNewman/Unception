@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ public class GroveWorld : MonoBehaviour
     Vector2Int gridSize;
     public static readonly float gridSpacing = 1.1f;
 
-    Camera groveCam;
+
     UILoadoutMenu loadoutMenu;
     GlobalPlayer gp;
     List<GameObject> slotVis = new List<GameObject>();
@@ -27,8 +28,7 @@ public class GroveWorld : MonoBehaviour
 
     private void Start()
     {
-        
-        groveCam = FindObjectOfType<GroveCamera>().GetComponent<Camera>();
+
         loadoutMenu = FindObjectOfType<UILoadoutMenu>(true);
         deets.gameObject.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
@@ -73,7 +73,7 @@ public class GroveWorld : MonoBehaviour
         }
         else
         {
-            Ray r = groveCam.ScreenPointToRay(Input.mousePosition);
+            Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             bool hoverObject = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask("GroveObject"));
@@ -150,6 +150,7 @@ public class GroveWorld : MonoBehaviour
 
     public void initGrid()
     {
+        gp = FindObjectOfType<GlobalPlayer>(true);
         gridSize = gp.player.GetComponent<Grove>().gridSize;
         foreach(GameObject child in slotVis)
         {

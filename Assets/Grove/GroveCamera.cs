@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,5 +33,8 @@ public class GroveCamera : MonoBehaviour
         }
         Vector3 center = grove.CameraCenter;
         transform.localPosition = new Vector3(center.x, transform.position.y, center.z);
+
+        //GetComponent<CinemachineVirtualCamera>().
     }
+
 }

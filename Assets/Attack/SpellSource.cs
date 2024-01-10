@@ -49,8 +49,8 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         switch (moveType)
         {
             case MoveMode.Parent:
-                GetComponent<NetworkTransform>().enabled = false;
-                GetComponent<Mirror.Experimental.NetworkRigidbody>().enabled = false;
+                GetComponent<NetworkTransformUnreliable>().enabled = false;
+                GetComponent<NetworkRigidbodyUnreliable>().enabled = false;
                 Destroy(rb);
                 break;
         }

@@ -18,7 +18,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     [SyncVar]
     int extraLives = 1;
 
-    AudioListener listener;
+
     MusicBox music;
     SaveData save;
     Inventory inv;
@@ -31,7 +31,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         save = GetComponent<SaveData>();
         music = FindObjectOfType<MusicBox>(true);
         atlas = FindObjectOfType<Atlas>();
-        listener = music.GetComponent<AudioListener>();
+
         if (isLocalPlayer)
         {
             FindObjectOfType<GlobalPlayer>().setLocalPlayer(this);
@@ -44,10 +44,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
 
         }
-        else
-        {
-            listener.enabled = false;
-        }
+
         if (isServer)
         {
             FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
@@ -131,7 +128,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         u.GetComponent<AbilityManager>().addAbility(inv.equippedAbilities);
         u.GetComponent<TriggerManager>().addTrigger(inv.blessings);
         currentSelf = u;
-        RpcSetAudio(false);
     }
 
     [TargetRpc]
@@ -170,31 +166,9 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     }
 
 
-    [ClientRpc]
-    public void RpcSetAudio(bool audio)
-    {
-        setAudio(audio);
-    }
-    void setAudio(bool audio)
-    {
-        if (isLocalPlayer)
-        {
-            listener.enabled = audio;
-            if (audio)
-            {
-                listener.gameObject.transform.position = transform.position;
-            }
-        }
-    }
-
-
     //server
     void onUnitDeath(bool natural)
-    {
-        if (gameObject) //is destroyed
-        {
-            RpcSetAudio(true);
-        }   
+    {   
         currentSelf = null;
         Atlas atlas = FindObjectOfType<Atlas>();
         if (atlas && atlas.embarked)

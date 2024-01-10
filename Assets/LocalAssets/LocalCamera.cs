@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using UnityEngine;
 using static Utils;
@@ -9,7 +10,7 @@ public class LocalCamera : MonoBehaviour
     float oldPowerMag = 0;
     readonly float transitionTime = 1f;
     float currentTransition = 1f;
-    Camera cam;
+    CinemachineVirtualCamera cam;
     Keybinds keys;
 
     public Vector3 lockedOffset = new Vector3(0, 20, -7);
@@ -33,12 +34,12 @@ public class LocalCamera : MonoBehaviour
 
     private void Awake()
     {
-        cam = GetComponent<Camera>();
+        cam = GetComponent<CinemachineVirtualCamera>();
     }
     // Start is called before the first frame update
     void Start()
     {
-        localClip = cam.nearClipPlane;
+        localClip = cam.m_Lens.NearClipPlane;
         oldPowerMag = transform.localPosition.magnitude;
         keys = FindObjectOfType<Keybinds>(true);
         Power p = GetComponentInParent<Power>();
@@ -83,7 +84,7 @@ public class LocalCamera : MonoBehaviour
     {
         float scalePhys = p.scalePhysical();
         targetPosition = cameraOffset() * scalePhys;
-        cam.nearClipPlane = localClip * scalePhys;
+        cam.m_Lens.NearClipPlane = localClip * scalePhys;
         currentTransition = 0;
         oldPowerMag = transform.localPosition.magnitude;
         if (initial)

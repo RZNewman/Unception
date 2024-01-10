@@ -11,7 +11,7 @@ public class MaterialScaling : MonoBehaviour
 
         Shader.SetGlobalFloat("_Target_Distance", distance);
         Shader.SetGlobalFloat("_Clip_Min_Percent", 0.25f);
-        Shader.SetGlobalFloat("_Clip_Top_Percent", 1.05f);
+        Shader.SetGlobalFloat("_Clip_Top_Percent", 0.95f);
         Shader.SetGlobalFloat("_Clip_Max_Percent", 0.95f);
         
         

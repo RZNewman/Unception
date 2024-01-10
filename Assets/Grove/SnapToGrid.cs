@@ -8,7 +8,6 @@ public class SnapToGrid : MonoBehaviour
     bool snapping = false;
     public string hitLayer;
     public float gridSize;
-    public Camera cam;
 
     bool onGrid = false;
 
@@ -39,11 +38,7 @@ public class SnapToGrid : MonoBehaviour
 
     void snap()
     {
-        if (!cam)
-        {
-            return;
-        }
-        Ray r = cam.ScreenPointToRay(Input.mousePosition);
+        Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         onGrid = Physics.Raycast(r, out hit, 100f, LayerMask.GetMask(hitLayer));

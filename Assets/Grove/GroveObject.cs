@@ -59,7 +59,6 @@ public class GroveObject : MonoBehaviour
     void Start()
     {
         snap = GetComponent<SnapToGrid>();
-        snap.cam = FindObjectOfType<GroveCamera>(true).GetComponent<Camera>();
 
         grove = FindObjectOfType<GroveWorld>(true);
         initShape();

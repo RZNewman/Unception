@@ -82,8 +82,7 @@ public class MapGenerator : NetworkBehaviour
         }
         foreach (PlayerGhost ghost in ghosts)
         {
-            ghost.RpcSetAudio(true);
-            ghost.transform.position = position;
+
         }
 
         yield return new WaitForSecondsRealtime(portalTime);
@@ -99,8 +98,6 @@ public class MapGenerator : NetworkBehaviour
         {
             foreach (PlayerGhost ghost in ghosts)
             {
-                ghost.transform.position = transform.position;
-                ghost.RpcSetAudio(false);
                 ghost.refreshLives();
             }
             yield return buildGridRoutine();

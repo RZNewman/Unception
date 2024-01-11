@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class KillPlane : MonoBehaviour
 {
+    Atlas atlas;
+    GameObject spawn;
+    private void Start()
+    {
+        atlas = FindObjectOfType<Atlas>(true);
+        spawn = GameObject.FindWithTag("Spawn");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         FloorNormal norm = other.GetComponentInParent<FloorNormal>();
@@ -15,10 +23,20 @@ public class KillPlane : MonoBehaviour
 
         if (props && props.props.isPlayer)
         {
-            hp.takePercentDamage(0.15f);
-            mover.stop(true);
-            mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
-            norm.transform.position = norm.nav + Vector3.up * s.scaledHalfHeight;
+            if (atlas.embarked)
+            {
+                hp.takePercentDamage(0.15f);
+                mover.stop(true);
+                mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
+                norm.transform.position = norm.nav + Vector3.up * s.scaledHalfHeight;
+            }
+            else
+            {
+                mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
+                mover.transform.position = spawn.transform.position;
+            }
+            
+            
         }
         else
         {

@@ -115,10 +115,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     }
 
     [Server]
-    void buildUnit()
+    public void buildUnit()
     {
-
-        GameObject u = Instantiate(unitPre, atlas.playerSpawn, Quaternion.identity);
+        Vector3 spawn = GameObject.FindWithTag("Spawn").transform.position;
+        GameObject u = Instantiate(unitPre, spawn, Quaternion.identity);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
         p.subscribePower(syncPower);

@@ -95,8 +95,17 @@ public class LocalCamera : MonoBehaviour
         }
 
         //cam.nearClipPlane = 1.0f * p.scale();
-        FindObjectOfType<MaterialScaling>().scale(targetPosition.magnitude);
+        
     }
+    public float cameraMagnitude
+    {
+        get
+        {
+            return targetPosition.magnitude;
+        }
+    }
+
+
     Vector3 lastMousePosition = Vector3.zero;
     private void Update()
     {
@@ -108,17 +117,17 @@ public class LocalCamera : MonoBehaviour
             targetMag = hit.distance;
         }
 
-        if (currentTransition < transitionTime)
-        {
-            float frameMag = Mathf.SmoothStep(oldPowerMag, targetMag, currentTransition / transitionTime);
-            transform.localPosition = cameraOffset().normalized * frameMag;
+        //if (currentTransition < transitionTime)
+        //{
+        //    float frameMag = Mathf.SmoothStep(oldPowerMag, targetMag, currentTransition / transitionTime);
+        //    transform.localPosition = cameraOffset().normalized * frameMag;
 
-            currentTransition += Time.deltaTime;
-        }
-        else
-        {
-            transform.localPosition = cameraOffset().normalized * targetMag;
-        }
+        //    currentTransition += Time.deltaTime;
+        //}
+        //else
+        //{
+        transform.localPosition = cameraOffset().normalized * targetMag;
+        //}
 
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         if (mode == CameraMode.Turn)

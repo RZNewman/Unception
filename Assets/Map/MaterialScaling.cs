@@ -6,7 +6,7 @@ public class MaterialScaling : MonoBehaviour
 {
 
 
-    public void scale(float distance)
+    public void game(float distance)
     {
 
         Shader.SetGlobalFloat("_Target_Distance", distance);
@@ -15,6 +15,15 @@ public class MaterialScaling : MonoBehaviour
         Shader.SetGlobalFloat("_Clip_Max_Percent", 0.95f);
         
         
+
+
+    }
+    public void none()
+    {
+
+        Shader.SetGlobalFloat("_Target_Distance", 0);
+
+
 
 
     }

@@ -557,6 +557,7 @@ public class Atlas : NetworkBehaviour
         embarkedMap = m;
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
         setScaleServer(Power.scaleNumerical(m.power), Power.scaleNumerical(gp.serverPlayer.power));
+        FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
         yield return gen.buildMap();
     }
     public Vector3 playerSpawn
@@ -594,7 +595,8 @@ public class Atlas : NetworkBehaviour
             //floor wasnt cleaned up by next floor routine
             FindObjectOfType<MapGenerator>().destroyFloor();
         }
-        setScaleServer(1, 1);
+        setScaleServer(1, Power.scaleNumerical(gp.serverPlayer.power));
+        FindObjectOfType<MaterialScaling>().none();
         makeMaps();
         bool grantBlessing = mapSuccess && embarkedMap.quest && embarkedMap.tier > 4;
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
@@ -613,7 +615,7 @@ public class Atlas : NetworkBehaviour
 
     }
     [Server]
-    void setScaleServer(float scalePhys, float scaleTime)
+    public void setScaleServer(float scalePhys, float scaleTime)
     {
 
         Power.setPhysicalScale(scalePhys);

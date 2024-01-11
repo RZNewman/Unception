@@ -24,6 +24,8 @@ public class SaveData : NetworkBehaviour
     PlayerPity pity;
     PlayerInfo playerInfo;
     GlobalSaveData globalSave;
+    GlobalPlayer gp;
+    Atlas atlas;
     // Start is called before the first frame update
 
     WorldProgress worldProgress;
@@ -40,6 +42,8 @@ public class SaveData : NetworkBehaviour
     {
         globalSave = FindObjectOfType<GlobalSaveData>();
         questDisplay = FindObjectOfType<UIQuestDisplay>(true);
+        atlas = FindObjectOfType<Atlas>(true);
+        gp = FindObjectOfType<GlobalPlayer>(true);
         auth = GetComponent<Auth>();
         inv = GetComponent<Inventory>();
         pity = GetComponent<PlayerPity>();
@@ -260,7 +264,7 @@ public class SaveData : NetworkBehaviour
             }
         }
 
-
+        doneLoading();
 
     }
 
@@ -273,7 +277,27 @@ public class SaveData : NetworkBehaviour
         pity.create();
         inv.genMinItems();
         inv.genRandomItems();
+        doneLoading();
     }
+
+    [Server]
+    void doneLoading()
+    {  
+        if(gp.serverPlayer == player)
+        {
+            atlas.setScaleServer(1, Power.scaleNumerical(player.power));
+        }
+        player.buildUnit();
+
+        TargetDoneLoading(connectionToClient);
+    }
+
+    [TargetRpc]
+    void TargetDoneLoading(NetworkConnection conn)
+    {
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
+    }
+
     private void OnDestroy()
     {
         if (isServer && dataSource == DataSource.Online)

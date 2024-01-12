@@ -28,6 +28,14 @@ public class UiBar : MonoBehaviour
         {
             fill(source.getBarFill());
         }
+        else
+        {
+            fill(new BarData
+            {
+                active = false,
+                text = ""
+            });
+        }
     }
 
     void fill(BarData data)

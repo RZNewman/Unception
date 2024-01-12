@@ -51,7 +51,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     void setLocalInput()
     {
-        if (Pause.isPaused)
+        if (Pause.isPaused || !keys)
         {
             return;
         }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2561893591346987176}
   - component: {fileID: 6887165116036763616}
+  - component: {fileID: 4269343644315987835}
   m_Layer: 0
   m_Name: LocalAudio
   m_TagString: Untagged
@@ -39,4 +40,16 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4571265780046948321}
-  m_Enabled: 0
+  m_Enabled: 1
+--- !u!114 &4269343644315987835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4571265780046948321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e430afc272ccc044babe75ff75b20b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

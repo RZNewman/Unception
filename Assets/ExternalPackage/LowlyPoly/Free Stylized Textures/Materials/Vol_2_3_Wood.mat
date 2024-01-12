@@ -151,7 +151,7 @@ Material:
     - _IsometricExclusion: 0
     - _IsometricExclusionDistance: 0
     - _IsometricExclusionGradientLength: 0.1
-    - _Lightness: 2
+    - _Lightness: 1.8
     - _Metallic: 0
     - _Mode: 0
     - _Obstruction: 2
@@ -189,6 +189,7 @@ Material:
     - _TriggerMode: 0
     - _UVSec: 0
     - _UVs: 1
+    - _UseColorOverride: 0
     - _WorkflowMode: 0
     - _ZWrite: 1
     - _Zoning: 0
@@ -203,6 +204,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_Override: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}

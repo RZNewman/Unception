@@ -109,15 +109,14 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         {
             yield break;
         }
-        buildUnit();
+        buildUnit(GameObject.FindWithTag("Spawn").transform.position);
 
         TargetGameplayMenu(connectionToClient);
     }
 
     [Server]
-    public void buildUnit()
+    public void buildUnit(Vector3 spawn)
     {
-        Vector3 spawn = GameObject.FindWithTag("Spawn").transform.position;
         GameObject u = Instantiate(unitPre, spawn, Quaternion.identity);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
@@ -191,7 +190,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         if (extraLives > 0)
         {
             extraLives--;
-            buildUnit();
+            buildUnit(GameObject.FindWithTag("Spawn").transform.position);
         }
         else
         {

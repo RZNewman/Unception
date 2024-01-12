@@ -287,9 +287,14 @@ public class SaveData : NetworkBehaviour
         {
             atlas.setScaleServer(1, Power.scaleNumerical(player.power));
         }
-        player.buildUnit();
-
         TargetDoneLoading(connectionToClient);
+        FindObjectOfType<Flower>().shoot(buildPlayer);
+    }
+
+    [Server]
+    void buildPlayer(Vector3 position)
+    {
+        player.buildUnit(position);      
     }
 
     [TargetRpc]

@@ -77,6 +77,14 @@ Material:
         m_Texture: {fileID: 2800000, guid: 6b502e3c6998c5f4aa65a78062d10628, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ToonSub_b686c182c5e7432ab52e206a44b3eb11_EmissionMap_1684467723:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ToonSub_b686c182c5e7432ab52e206a44b3eb11_NormalMap_3501161693:
+        m_Texture: {fileID: 2800000, guid: 62fa88ed33cebf8439a2b8ece0a8a139, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}

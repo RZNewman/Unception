@@ -47,7 +47,15 @@ public class SnapToGrid : MonoBehaviour
 
         if (onGrid)
         {
-            transform.position = hit.point.roundToInterval(gridSize);
+            Vector3 point = hit.point;
+            Vector3 reference = Vector3.zero;
+            if (transform.parent)
+            {
+                reference = transform.parent.position;
+                point = point - reference;
+            }
+
+            transform.position = reference + point.roundToInterval(gridSize);
         }
     }
 

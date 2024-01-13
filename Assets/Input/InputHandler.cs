@@ -83,6 +83,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         currentInput.jump = Input.GetKeyDown(keys.binding(KeyName.Jump));
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
+        currentInput.interact = Input.GetKeyDown(keys.binding(KeyName.Interact));
 
         HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
         int attackCount = EnumValues<ItemSlot>().Count();

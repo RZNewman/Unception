@@ -73,4 +73,10 @@ public class GlobalPlayer : MonoBehaviour
     {
         clientLocalPlayer.stuck();
     }
+
+    [Client]
+    public void clientPlayerGroveLeave()
+    {
+        clientLocalPlayer.GroveLeave();
+    }
 }

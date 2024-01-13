@@ -62,7 +62,6 @@ public class MenuHandler : MonoBehaviour
         {
             menuObject(m).SetActive(false);
         }
-        FindObjectOfType<GroveWorld>(true).gameObject.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
         switchMenu(Menu.Title);
 
@@ -76,9 +75,9 @@ public class MenuHandler : MonoBehaviour
                 FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
                 break;
             case Menu.Loadout:
-                GroveWorld grove = FindObjectOfType<GroveWorld>(true);
+                FindObjectOfType<GroveWorld>().inGrove = true;
                 GroveCamera gc = FindObjectOfType<GroveCamera>(true);
-                grove.gameObject.SetActive(true);
+                gc.gameObject.SetActive(true);
                 gc.center();
                 break;
         }
@@ -90,9 +89,7 @@ public class MenuHandler : MonoBehaviour
             case Menu.Map:
                 menuObject(m).GetComponent<UiStageSelect>().powerDisplay.GetComponent<UiText>().source = gp.player;
                 break;
-            case Menu.Loadout:
-                menuObject(m).GetComponent<UILoadoutMenu>().loadInvMode();
-                break;
+
             case Menu.Blessing:
                 menuObject(m).GetComponent<UiBlessingMenu>().activate();
                 break;
@@ -104,7 +101,8 @@ public class MenuHandler : MonoBehaviour
         switch (m)
         {
             case Menu.Loadout:
-                FindObjectOfType<GroveWorld>().gameObject.SetActive(false);
+                FindObjectOfType<GroveCamera>().gameObject.SetActive(false);
+                FindObjectOfType<GroveWorld>().inGrove = false;
                 break;
         }
     }

@@ -15,6 +15,7 @@ public interface UnitControl
         public bool jump;
         public bool dash;
         public bool cancel;
+        public bool interact;
         public ItemSlot[] attacks;
 
 
@@ -25,6 +26,7 @@ public interface UnitControl
             jump = false;
             dash = false;
             cancel = false;
+            interact = false;
             attacks = new ItemSlot[0];
         }
 
@@ -40,6 +42,7 @@ public interface UnitControl
             jump = false;
             dash = false;
             cancel = false;
+            interact=false;
             attacks = new ItemSlot[0];
         }
         public Optional<ItemSlot> popKey()
@@ -69,6 +72,7 @@ public interface UnitControl
                 jump = false,
                 dash = false,
                 cancel = false,
+                interact = false,
                 attacks = new ItemSlot[0],
             };
         }
@@ -79,6 +83,7 @@ public interface UnitControl
             jump = jump || newer.jump;
             dash = dash || newer.dash;
             cancel = cancel || newer.cancel;
+            interact = interact || newer.interact;
             HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
             foreach (ItemSlot k in attacks)
             {

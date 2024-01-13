@@ -30,6 +30,7 @@ public class Keybinds : MonoBehaviour
         Attack6,
         //Attack7,
         CameraRotate,
+        Interact,
     }
 
     Dictionary<KeyName, KeyCode> binds = new Dictionary<KeyName, KeyCode>();
@@ -163,6 +164,8 @@ public class Keybinds : MonoBehaviour
                 return KeyCode.LeftControl;
             case KeyName.CameraRotate:
                 return KeyCode.Mouse2;
+            case KeyName.Interact:
+                return KeyCode.E;
             case KeyName.Attack1:
                 return KeyCode.Mouse0;
             case KeyName.Attack2:

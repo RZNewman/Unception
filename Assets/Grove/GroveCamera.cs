@@ -32,7 +32,7 @@ public class GroveCamera : MonoBehaviour
             grove = FindObjectOfType<GroveWorld>();
         }
         Vector3 center = grove.CameraCenter;
-        transform.localPosition = new Vector3(center.x, transform.position.y, center.z);
+        transform.localPosition = new Vector3(center.x, transform.localPosition.y, center.z);
 
         //GetComponent<CinemachineVirtualCamera>().
     }

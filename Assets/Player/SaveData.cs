@@ -287,15 +287,11 @@ public class SaveData : NetworkBehaviour
         {
             atlas.setScaleServer(1, Power.scaleNumerical(player.power));
         }
+        FindObjectOfType<UILoadoutMenu>(true).loadInvMode();
         TargetDoneLoading(connectionToClient);
-        FindObjectOfType<Flower>().shoot(buildPlayer);
+        player.doneLoading();
     }
 
-    [Server]
-    void buildPlayer(Vector3 position)
-    {
-        player.buildUnit(position);      
-    }
 
     [TargetRpc]
     void TargetDoneLoading(NetworkConnection conn)

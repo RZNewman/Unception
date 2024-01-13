@@ -32,7 +32,6 @@ public class GroveWorld : MonoBehaviour
         loadoutMenu = FindObjectOfType<UILoadoutMenu>(true);
         deets.gameObject.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
-
       
     }
 
@@ -46,18 +45,25 @@ public class GroveWorld : MonoBehaviour
         }
     }
 
+    public bool inGrove = false;
     GroveObject cursor = null;
     GroveObject lastHovered = null;
     private void Update()
     {
+        if (!inGrove)
+        {
+            return;
+        }
         if (cursor)
         {
-            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+            if (Input.GetMouseButtonDown(0))
             {
                 if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
                 {
                     cursor.gridSnap.isSnapping = false;
-                    cursor.transform.position += Vector3.down * hoverHeight * 1.5f;
+                    Vector3 newPos = cursor.transform.position;
+                    newPos.y = heightPlaced;
+                    cursor.transform.position = newPos;
                     AddShape(cursor);
                     setRelatedSlotHighlight(cursor.id, false);
                     cursor = null;
@@ -144,7 +150,7 @@ public class GroveWorld : MonoBehaviour
     {
         get
         {
-            return new Vector3(gridSize.x, 0, gridSize.y) * gridSpacing;
+            return new Vector3(gridSize.x, 0, gridSize.y)* gridSpacing;
         }
     }
 
@@ -159,15 +165,18 @@ public class GroveWorld : MonoBehaviour
         BoxCollider box = GetComponent<BoxCollider>();
         box.center = GridWorldSize / 2 - new Vector3(1, 0, 1) * 0.5f;
         box.size = GridWorldSize.Abs() + Vector3.up * (height + hoverHeight) *2;
-        transform.position = -GridWorldSize;
+        transform.localPosition = -GridWorldSize.scale(transform.lossyScale) / 2;
 
         slotVis.Clear();
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-                Vector3 pos = transform.position + gridSpacing * x * Vector3.right + gridSpacing * y * Vector3.forward;
-                slotVis.Add(Instantiate(slotPre, pos, Quaternion.identity, transform));
+                Vector3 pos = gridSpacing * x * Vector3.right + gridSpacing * y * Vector3.forward;
+                GameObject s = Instantiate(slotPre, Vector3.zero, Quaternion.identity, transform);
+                s.transform.localPosition = pos;
+                slotVis.Add(s);
+                
             }
         }
 
@@ -184,7 +193,7 @@ public class GroveWorld : MonoBehaviour
         instances.Add(id, obj);
         addCursor(obj);
         obj.GetComponent<SnapToGrid>().isSnapping = true;
-        obj.GetComponent<SnapToGrid>().gridSize = gridSpacing;
+        obj.GetComponent<SnapToGrid>().gridSize = gridSpacing * transform.lossyScale.x;
         return obj;
     }
 
@@ -205,7 +214,7 @@ public class GroveWorld : MonoBehaviour
         GroveObject obj = Instantiate(groveObjPre, transform).GetComponent<GroveObject>();
         obj.assignFill(id, inv);
         instances.Add(id, obj);
-        obj.GetComponent<SnapToGrid>().gridSize = gridSpacing;
+        obj.GetComponent<SnapToGrid>().gridSize = gridSpacing *transform.lossyScale.x;
         Vector3 pos = obj.transform.position;
         obj.transform.position = new Vector3(pos.x,heightPlaced, pos.z);
         obj.setPlacement(place);

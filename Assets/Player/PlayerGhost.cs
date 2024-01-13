@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using static GlobalSaveData;
 using static Power;
+using static Interaction;
 
 public class PlayerGhost : NetworkBehaviour, TextValue
 {
@@ -48,6 +49,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         if (isServer)
         {
             FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
+            //TODO multiplayer fix
+            FindObjectOfType<GroveWorld>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(GroveInteract);
         }
         if (isClient)
         {
@@ -111,11 +114,29 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         }
         buildUnit(GameObject.FindWithTag("Spawn").transform.position);
 
-        TargetGameplayMenu(connectionToClient);
+        TargetMenu(connectionToClient,MenuHandler.Menu.Gameplay);
     }
 
+    public void doneLoading()
+    {
+        TargetWarmup(connectionToClient);
+        shootUnit();
+    }
+
+    void shootUnit()
+    {
+        FindObjectOfType<Flower>().shoot(buildUnit);
+    }
+
+    [TargetRpc]
+    void TargetWarmup(NetworkConnection conn)
+    {
+        Shader.WarmupAllShaders();
+    }
+
+
     [Server]
-    public void buildUnit(Vector3 spawn)
+    void buildUnit(Vector3 spawn)
     {
         GameObject u = Instantiate(unitPre, spawn, Quaternion.identity);
         Power p = u.GetComponent<Power>();
@@ -129,13 +150,27 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         currentSelf = u;
     }
 
-    [TargetRpc]
-    void TargetGameplayMenu(NetworkConnection conn)
+    [Server]
+    void GroveInteract(Interactor i)
     {
-        Shader.WarmupAllShaders();
-        music.Game();
-
+        if(i.gameObject == currentSelf)
+        {
+            Destroy(i.gameObject);
+            TargetMenu(connectionToClient, MenuHandler.Menu.Loadout);
+        }
+    }
+    [Client]
+    public void GroveLeave()
+    {
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
+        shootUnit();
+    }
+
+
+    [TargetRpc]
+    void TargetMenu(NetworkConnection conn, MenuHandler.Menu m)
+    {
+        FindObjectOfType<MenuHandler>().switchMenu(m);
     }
     [TargetRpc]
     public void TargetMenuFinish(NetworkConnection conn, bool blessing)

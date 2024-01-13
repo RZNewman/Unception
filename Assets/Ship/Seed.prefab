@@ -232,4 +232,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c52ae49ccfe564eb25dd410b85124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: -60
+  gravity: -140

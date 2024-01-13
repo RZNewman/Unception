@@ -33,7 +33,7 @@ public class Flower : MonoBehaviour
     void spawnSeed(Action<Vector3> callback)
     {
         GameObject o = Instantiate(seedPre, transform.position + transform.up * 20, Quaternion.identity);
-        o.GetComponent<Arc>().init(transform.up, 45f, callback);
+        o.GetComponent<Arc>().init(transform.up, 70f, callback);
         NetworkServer.Spawn(o);
     }
 }

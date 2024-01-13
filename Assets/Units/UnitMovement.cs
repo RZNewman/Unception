@@ -130,7 +130,7 @@ public class UnitMovement : NetworkBehaviour
     {
         return movement.state();
     }
-
+    #region float
     public bool floating()
     {
         return legMode == LegMode.Float;
@@ -160,6 +160,7 @@ public class UnitMovement : NetworkBehaviour
             _ => LegMode.Float,
         };
     }
+    #endregion
     public string currentAbilityName()
     {
         if (currentState() is AttackingState)

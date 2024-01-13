@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MaterialScaling : MonoBehaviour
 {
-
+    float distance = 0;
 
     public void game(float distance)
     {
@@ -28,9 +28,16 @@ public class MaterialScaling : MonoBehaviour
 
     }
 
+    public void  addDistance(float d)
+    {
+        distance += d;
+        Shader.SetGlobalFloat("_DistanceTraveled", distance);
+    }
+
     private void OnDestroy()
     {
-        Shader.SetGlobalFloat("_Target_Distance", 0);
+        Shader.SetGlobalFloat("_Target_Distance", 0);       
+        Shader.SetGlobalFloat("_DistanceTraveled", 0);
     }
 
 

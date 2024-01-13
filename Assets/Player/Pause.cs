@@ -33,10 +33,8 @@ public class Pause : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (atlas.embarked)
-            {
-                togglePause();
-            }
+
+            togglePause();
 
         }
     }
@@ -45,12 +43,14 @@ public class Pause : MonoBehaviour
         if (paused)
         {
             menu.switchMenu(MenuHandler.Menu.Gameplay);
+            paused = !paused;
         }
-        else
+        else if(menu.canPause)
         {
             menu.switchMenu(MenuHandler.Menu.Pause);
+            paused = !paused;
         }
-        paused = !paused;
+        
 
         //cursor unlock in 3rd person
         player.pause(paused);

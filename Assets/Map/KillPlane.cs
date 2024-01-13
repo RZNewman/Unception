@@ -23,7 +23,8 @@ public class KillPlane : MonoBehaviour
 
         if (props && props.props.isPlayer)
         {
-            if (atlas.embarked)
+            //TODO atlas clean
+            if (atlas.canLaunch)
             {
                 hp.takePercentDamage(0.15f);
                 mover.stop(true);

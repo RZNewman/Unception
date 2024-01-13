@@ -23,11 +23,13 @@ public class Atlas : NetworkBehaviour
     public Button embarkButton;
     public UiServerMap serverMap;
     public WorldData worldData;
+    public GameObject mapPodium;
 
     PlayerGhost owner;
     GlobalPlayer gp;
     SoundManager sound;
     MapGenerator gen;
+    MaterialScaling scaling;
 
     [SyncVar(hook = nameof(hookMaps))]
     MapListing list;
@@ -133,8 +135,18 @@ public class Atlas : NetworkBehaviour
     {
         sound = FindObjectOfType<SoundManager>();
         gen = FindObjectOfType<MapGenerator>();
+        scaling = FindObjectOfType<MaterialScaling>();
         serverMap.gameObject.SetActive(false);
     }
+
+    private void Update()
+    {
+        if(missionStatus == MissionStatus.Loading)
+        {
+            scaling.addDistance(Time.deltaTime * 0.2f);
+        }
+    }
+
     void makeWorld()
     {
         if (worldData.locations != null && worldData.locations.Count > 0)
@@ -527,23 +539,32 @@ public class Atlas : NetworkBehaviour
         gp.player.embark(-1);
     }
     //Server
-    bool onMission = false;
-    public bool embarked
+
+    enum MissionStatus
+    {
+        None,
+        Loading,
+        Arrived,
+        Success,
+    }
+    [SyncVar]
+    MissionStatus missionStatus = MissionStatus.None;
+    public bool canLaunch
     {
         get
         {
-            return onMission;
+            return missionStatus == MissionStatus.Arrived || missionStatus == MissionStatus.Success;
         }
     }
     [Server]
     public IEnumerator embarkServer(int index)
     {
-        bool success = !onMission && !isBurdened();
+        bool success = (missionStatus == MissionStatus.None || missionStatus == MissionStatus.Success) && !isBurdened();
         if (!success)
         {
             yield break;
         }
-        onMission = true;
+        missionStatus = MissionStatus.Loading;
 
         Map m;
         if (index >= 0)
@@ -559,6 +580,7 @@ public class Atlas : NetworkBehaviour
         setScaleServer(Power.scaleNumerical(m.power), Power.scaleNumerical(gp.serverPlayer.power));
         FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
         yield return gen.buildMap();
+        missionStatus = MissionStatus.Arrived;
     }
     public Vector3 playerSpawn
     {
@@ -571,7 +593,8 @@ public class Atlas : NetworkBehaviour
     [Server]
     public void disembark(bool mapSuccess = true)
     {
-        onMission = false;
+        //TODO Atlas clean
+        missionStatus = mapSuccess ? MissionStatus.Success : MissionStatus.None;
         foreach (GameObject unit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit))
         {
             Destroy(unit);

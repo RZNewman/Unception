@@ -51,6 +51,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
             //TODO multiplayer fix
             FindObjectOfType<GroveWorld>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(GroveInteract);
+            FindObjectOfType<Atlas>().mapPodium.GetComponentInChildren<Interaction>().setInteraction(AtlasInteract);
         }
         if (isClient)
         {
@@ -88,7 +89,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     public void embark(int mapIndex)
     {
-        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Loading);
+        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
         CmdEmbark(mapIndex);
     }
 
@@ -107,14 +108,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     IEnumerator embarkRoutine(int mapIndex)
     {
         yield return atlas.embarkServer(mapIndex);
-
-        if (!atlas.embarked)
-        {
-            yield break;
-        }
-        buildUnit(GameObject.FindWithTag("Spawn").transform.position);
-
-        TargetMenu(connectionToClient,MenuHandler.Menu.Gameplay);
     }
 
     public void doneLoading()
@@ -157,6 +150,14 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         {
             Destroy(i.gameObject);
             TargetMenu(connectionToClient, MenuHandler.Menu.Loadout);
+        }
+    }
+    [Server]
+    void AtlasInteract(Interactor i)
+    {
+        if (i.gameObject == currentSelf)
+        {
+            TargetMenu(connectionToClient, MenuHandler.Menu.Map);
         }
     }
     [Client]
@@ -205,7 +206,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     {   
         currentSelf = null;
         Atlas atlas = FindObjectOfType<Atlas>();
-        if (atlas && atlas.embarked)
+        if (natural)
         {
             StartCoroutine(onDeathRoutine(atlas));
 
@@ -224,13 +225,13 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         yield return new WaitForSecondsRealtime(1.5f);
         if (extraLives > 0)
         {
-            extraLives--;
-            buildUnit(GameObject.FindWithTag("Spawn").transform.position);
+            extraLives--;        
         }
         else
         {
             atlas.disembark(false);
         }
+        shootUnit();
 
     }
 

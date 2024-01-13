@@ -21,6 +21,15 @@ public class MenuHandler : MonoBehaviour
     public GameObject loading;
 
     GlobalPlayer gp;
+
+    static bool controlCharacter = false;
+    public static bool canInput
+    {
+        get
+        {
+            return controlCharacter;
+        }
+    }
     // Start is called before the first frame update
 
     public enum Menu
@@ -119,6 +128,7 @@ public class MenuHandler : MonoBehaviour
         menuPreActions(activeMenu);
         menuObject(activeMenu).SetActive(true);
         menuPostActions(activeMenu);
+        controlCharacter = activeMenu == Menu.Gameplay;
         MenuEvent?.Invoke(activeMenu);
     }
 
@@ -130,6 +140,14 @@ public class MenuHandler : MonoBehaviour
     public void returnPrevious()
     {
         switchMenu(prevoiusMenu);
+    }
+
+    public bool canPause
+    {
+        get
+        {
+            return activeMenu == Menu.Gameplay;
+        }
     }
 
     public void blessingDone()

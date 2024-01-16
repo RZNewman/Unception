@@ -53,6 +53,7 @@ public class InputHandler : MonoBehaviour, UnitControl
     {
         if (!MenuHandler.canInput || !keys)
         {
+            currentInput.reset();
             return;
         }
         Vector2 move = Vector2.zero;

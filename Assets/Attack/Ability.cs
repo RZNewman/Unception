@@ -6,6 +6,7 @@ using static AttackMachine;
 using static AttackSegment;
 using static AttackUtils;
 using static GenerateAttack;
+using static Power;
 using static StatTypes;
 using static UnitControl;
 using static Utils;
@@ -38,9 +39,10 @@ public class Ability : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         LocalPlayer p = GetComponentInParent<LocalPlayer>();
+        Power power = GetComponentInParent<Power>();
         if (isClientOnly)
         {
-            fillFormat();
+            fillFormat(power);
             if (clientSyncKey.HasValue)
             {
                 GetComponentInParent<AbilityManager>().registerAbility(clientSyncKey.Value, this);
@@ -162,55 +164,31 @@ public class Ability : NetworkBehaviour
     [Server]
     public void setFormat(AbilityData a)
     {
-        format = a;
-        fillFormat();
+        format = a;      
+        GetComponentInParent<Power>().subscribePower(fillFormat);
         charges = chargeMax;
-        if (format.scales)
-        {
-            subscribeScale();
-        }
     }
-    void fillFormat()
-    {
-        formatInstance = format.populate(
-            new FillBlockOptions
-            {
-                statLinkAbility = this,
-            }
-            );
-        //TODO id like this to be dynamic, eventual callback from stat handler change
-        chargeMax = chargeMaxCalculated;
+    BaseScales cachedBaseScales;
 
-    }
-
-    public void demoForceScale()
+    void fillFormat(Power p)
     {
-        GetComponentInParent<Power>().subscribePower(p =>
+        if(format.scales || !cachedBaseScales.Equals(currentBaseScales))
         {
+            cachedBaseScales = currentBaseScales;
             formatInstance = format.populate(
-            new FillBlockOptions
-            {
-                statLinkAbility = this,
-                overridePower = p.power,
-                forceScaling = true,
-            }
-            );
-        });
+                new FillBlockOptions
+                {
+                    statLinkAbility = this,
+                    overridePower = p.power
+                }
+                );
+            //TODO id like this to be dynamic, eventual callback from stat handler change
+            chargeMax = chargeMaxCalculated;
+        }
+        
+
     }
-    void subscribeScale()
-    {
-        GetComponentInParent<Power>().subscribePower(scaleAbility);
-    }
-    void scaleAbility(Power p)
-    {
-        formatInstance = format.populate(
-            new FillBlockOptions
-            {
-                statLinkAbility = this,
-                overridePower = p.power
-            }
-            );
-    }
+
 
 
     public EffectiveDistance GetEffectiveDistance(float halfHeight)

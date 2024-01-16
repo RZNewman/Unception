@@ -115,7 +115,7 @@ public class MapGenerator : NetworkBehaviour
         //currentFloorScale = Power.scalePhysical(currentMap.power);
         currentFloorScale = 1; // server scale is set to the map, so this should always be 1
         currentFloorIndex = 0;
-        spawner.setSpawnPower(currentMap.power);
+        spawner.setSpawnPower(currentMap.power, currentFloorScale);
         yield return buildGridRoutine();
     }
 

@@ -29,6 +29,7 @@ public class MonsterSpawn : NetworkBehaviour
 
     float lastPowerAdded = 100;
     float spawnPower = 100;
+    float mapScale = 1;
 
     public static float Ai2PlayerPowerFactor = 1.2f;
     static float maxSingleUnitFactor = 0.8f;
@@ -157,7 +158,7 @@ public class MonsterSpawn : NetworkBehaviour
             float packPercent = poolPower / weightedPool();
             float veteranMult = (1 + difficulty.veteran) / (1 + difficulty.pack);
             poolPower *= veteranMult;
-            float spawnPower = inverseWeightedPower(poolPower);
+            float unitPower = inverseWeightedPower(poolPower);
             float championMult = (1 + difficulty.champion) / (1 + difficulty.pack + difficulty.veteran);
             poolPower *= championMult;
             int championTiers = Mathf.FloorToInt(championMult / championTotalPercent);
@@ -176,7 +177,7 @@ public class MonsterSpawn : NetworkBehaviour
             SpawnUnit unit = new SpawnUnit()
             {
                 props = template.props,
-                power = spawnPower,
+                power = unitPower,
                 abilitites = abilities,
                 championHealthMult = healthMult,
                 indicatorColors = abilities.Count > 1 ? abilities.Skip(1).Select(a => a.flair.color).ToList() : new List<Color>(),
@@ -205,7 +206,7 @@ public class MonsterSpawn : NetworkBehaviour
                 t = new SpawnTransform
                 {
                     position = endPortal.transform.position,
-                    halfExtents = Power.scalePhysical(spawnPower) * 0.5f * Vector3.one,
+                    halfExtents = mapScale * 0.5f * Vector3.one,
                 };
                 endPortal.SetActive(false);
                 reveal = endPortal;
@@ -260,18 +261,17 @@ public class MonsterSpawn : NetworkBehaviour
 
     void spawnEncounter(EncounterData encounterData, SpawnTransform spawn, GameObject reveal)
     {
-        float scale = Power.scalePhysical(spawnPower);
         Vector3 encounterPos = spawn.position;
         RaycastHit hit;
-        if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * scale, LayerMask.GetMask("Terrain")))
+        if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * mapScale, LayerMask.GetMask("Terrain")))
         {
-            encounterPos = hit.point + Vector3.up * scale;
+            encounterPos = hit.point + Vector3.up * mapScale;
         }
         GameObject o = Instantiate(EncounterPre, encounterPos, Quaternion.identity, floor);
-        o.transform.localScale = Vector3.one * scale;
+        o.transform.localScale = Vector3.one * mapScale;
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;
         Encounter encounter = o.GetComponent<Encounter>();
-        encounter.setScale(scale);
+        encounter.setScale(mapScale);
         encounter.revealOnEnd = reveal;
 
         List<SpawnUnit> encounterUnits = createUnits(encounterData.difficulty);
@@ -305,7 +305,7 @@ public class MonsterSpawn : NetworkBehaviour
         {
 
             GameObject o = Instantiate(UrnPre, numBreakables <= 1 ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
-            o.transform.localScale = Vector3.one * Power.scalePhysical(spawnPower);
+            o.transform.localScale = Vector3.one * mapScale;
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
             o.GetComponent<Gravity>().gravity *= Power.scaleSpeed(spawnPower);
             o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, qualityMult(type));
@@ -320,7 +320,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
 
         Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
-        p.scale = Power.scalePhysical(spawnPower);
+        p.scale = mapScale;
         p.transform.position = spawnData.spawnTransform.position;
         if (spawnData.ignoreWakeup)
         {
@@ -362,12 +362,11 @@ public class MonsterSpawn : NetworkBehaviour
     void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Pack p)
     {
 
-        float scale = Power.scalePhysical(spawnPower);
         Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
         RaycastHit hit;
         if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 2, LayerMask.GetMask("Terrain")))
         {
-            unitPos = hit.point + Vector3.up * scale;
+            unitPos = hit.point + Vector3.up * mapScale;
         }
         GameObject o = Instantiate(UnitPre, unitPos, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
@@ -395,9 +394,10 @@ public class MonsterSpawn : NetworkBehaviour
 
     }
 
-    public void setSpawnPower(float power)
+    public void setSpawnPower(float power, float scale)
     {
         spawnPower = power;
+        mapScale = scale;
         float powerMultDiff = 1.2f;
         //clear data
         monsterTemplates.Clear();

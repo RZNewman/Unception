@@ -48,6 +48,15 @@ public class Power : NetworkBehaviour, TextValue, BarValue
         powerUpdates();
 
     }
+
+    public void rescale()
+    {
+        cachedNumerical.recalc();
+        cachedSpeed.recalc();
+        cachedPhysical.recalc();
+        cachedTime.recalc();
+        powerUpdates();
+    }
     void callbackPower(float old, float newPower)
     {
         powerUpdates();
@@ -196,6 +205,24 @@ public class Power : NetworkBehaviour, TextValue, BarValue
             return baseTimeScale;
         }
     }
+
+    public struct BaseScales
+    {
+        public float world;
+        public float time;
+    }
+    public static BaseScales currentBaseScales
+    {
+        get
+        {
+            return new BaseScales
+            {
+                world = baseWorldScale,
+                time = baseTimeScale,
+            };
+        }
+    }
+
     public static void setPhysicalScale(float scale)
     {
         baseWorldScale = scale;

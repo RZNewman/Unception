@@ -577,8 +577,7 @@ public class Atlas : NetworkBehaviour
         }
         embarkedMap = m;
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
-        setScaleServer(Power.scaleNumerical(m.power), Power.scaleNumerical(gp.serverPlayer.power));
-        FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
+        
         yield return gen.buildMap();
         missionStatus = MissionStatus.Arrived;
     }

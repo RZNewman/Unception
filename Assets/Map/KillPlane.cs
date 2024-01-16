@@ -6,10 +6,12 @@ public class KillPlane : MonoBehaviour
 {
     Atlas atlas;
     GameObject spawn;
+    GlobalPlayer gp;
     private void Start()
     {
         atlas = FindObjectOfType<Atlas>(true);
         spawn = GameObject.FindWithTag("Spawn");
+        gp = FindObjectOfType<GlobalPlayer>(true);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -18,6 +20,7 @@ public class KillPlane : MonoBehaviour
         UnitPropsHolder props = other.GetComponentInParent<UnitPropsHolder>();
         LifeManager life = other.GetComponentInParent<LifeManager>();
         UnitMovement mover = other.GetComponentInParent<UnitMovement>();
+        MusicBox music = FindObjectOfType<MusicBox>();
         Health hp = other.GetComponentInParent<Health>();
         Size s = other.GetComponent<Size>();
 
@@ -26,10 +29,24 @@ public class KillPlane : MonoBehaviour
             //TODO atlas clean
             if (atlas.canLaunch)
             {
-                hp.takePercentDamage(0.15f);
-                mover.stop(true);
-                mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
-                norm.transform.position = norm.nav + Vector3.up * s.scaledHalfHeight;
+                if (props.launchedPlayer)
+                {
+                    hp.takePercentDamage(0.15f);
+                    mover.stop(true);
+                    mover.sound.playSound(UnitSound.UnitSoundClip.Fall);
+                    norm.transform.position = norm.nav + Vector3.up * s.scaledHalfHeight;
+                }
+                else
+                {
+                    atlas.setScaleServer(Power.scaleNumerical(atlas.currentMap.power), Power.scaleNumerical(gp.serverPlayer.power));
+                    mover.GetComponent<Power>().rescale();
+                    FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
+                    music.Game();
+                    props.launchedPlayer = true;
+                    mover.transform.position = atlas.playerSpawn;
+                    
+                }
+                
             }
             else
             {

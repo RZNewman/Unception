@@ -31,6 +31,11 @@ public static class GlobalCache
             return cachedValue;
         }
 
+        public void recalc()
+        {
+            cachedValue = getValue(cachedInput);
+        }
+
     }
 
 

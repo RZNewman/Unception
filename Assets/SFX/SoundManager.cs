@@ -8,8 +8,7 @@ public class SoundManager : NetworkBehaviour
 {
     public GameObject soundPre;
 
-    public AudioClip portalStart;
-    public AudioClip portalEnd;
+
     public AudioClip select;
     public AudioClip embark;
     public AudioClip equip;
@@ -33,8 +32,7 @@ public class SoundManager : NetworkBehaviour
 
     public enum SoundClip : byte
     {
-        PortalStart,
-        PortalEnd,
+
         Select,
         Embark,
         Equip,
@@ -91,10 +89,6 @@ public class SoundManager : NetworkBehaviour
     {
         switch (clip)
         {
-            case SoundClip.PortalStart:
-                return portalStart;
-            case SoundClip.PortalEnd:
-                return portalEnd;
             case SoundClip.Select:
                 return select;
             case SoundClip.Embark:

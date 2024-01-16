@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static RewardManager;
 
 public class ItemDrop : MonoBehaviour
@@ -19,10 +20,10 @@ public class ItemDrop : MonoBehaviour
     Rigidbody rb;
 
     float targetSpeed = 0;
-    public void init(float power, GameObject t, Quality q)
+    public void init(Scales scales, GameObject t, Quality q)
     {
-        float scalePhys = Power.scalePhysical(power);
-        float scaleSpeed = Power.scaleSpeed(power);
+        float scalePhys = scales.world;
+        float scaleSpeed = scales.speed;
 
         transform.localScale = Vector3.one * scalePhys;
         grav = GetComponent<Gravity>();

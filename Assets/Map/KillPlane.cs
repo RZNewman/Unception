@@ -26,7 +26,6 @@ public class KillPlane : MonoBehaviour
 
         if (props && props.props.isPlayer)
         {
-            //TODO atlas clean
             if (atlas.canLaunch)
             {
                 if (props.launchedPlayer)
@@ -38,10 +37,12 @@ public class KillPlane : MonoBehaviour
                 }
                 else
                 {
-                    atlas.setScaleServer(Power.scaleNumerical(atlas.currentMap.power), Power.scaleNumerical(gp.serverPlayer.power));
-                    mover.GetComponent<Power>().rescale();
+                    mover.GetComponent<Power>().setOverrideNull();
+
+                    //TODO move to RPC
                     FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
                     music.Game();
+
                     props.launchedPlayer = true;
                     mover.transform.position = atlas.playerSpawn;
                     

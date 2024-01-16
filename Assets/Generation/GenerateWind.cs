@@ -16,7 +16,7 @@ public static class GenerateWind
         public float moveMult;
         public float turnMult;
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             float moveMag = this.moveMult.asRange(-5.0f, 0.3f);
             bool moveDir = moveMag >= 0;
@@ -31,14 +31,14 @@ public static class GenerateWind
             {
                 strength = strength,
 
-                duration = baseDuration / Power.scaleTime(power),
+                duration = baseDuration / scalesStart.time,
                 moveMult = moveMult,
                 turnMult = turnMult,
                 baseDuration = baseDuration,
                 stream = new StatStream(),
 
                 powerAtGen = power,
-                scaleAtGen = Power.scaleNumerical(power),
+                scales = scalesStart,
                 percentOfEffect = percentOfEffect,
             };
         }
@@ -56,7 +56,7 @@ public static class GenerateWind
 
         public float durationDisplay(float power)
         {
-            return durationHastened * Power.scaleTime(power);
+            return durationHastened * scales.time;
         }
 
         public float durationHastened
@@ -76,7 +76,7 @@ public static class GenerateWind
         }
         float getStat(Stat stat)
         {
-            return stream.getValue(stat, scaleAtGen) * strength;
+            return stream.getValue(stat, scales) * strength;
 
         }
         float haste

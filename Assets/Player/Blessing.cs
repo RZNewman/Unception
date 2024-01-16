@@ -7,6 +7,7 @@ using static GenerateAttack;
 using static GenerateHit;
 using static GenerateRepeating;
 using static GenerateWind;
+using static Power;
 using static RewardManager;
 using static StatModLabel;
 using static StatTypes;
@@ -32,6 +33,8 @@ public abstract class AbilityData : AbilityIdentifiers
             && (opts.forceScaling.GetValueOrDefault(false) || scales)
             ? opts.overridePower.Value : powerAtGeneration;
 
+        float numericScale = Power.scaleNumerical(power);
+
         instance.flair = flair;
         instance.id = id;
         instance.scales = scales;
@@ -41,6 +44,13 @@ public abstract class AbilityData : AbilityIdentifiers
         instance.effect = populateAttack(effectGeneration, new PopulateAttackOptions
         {
             power = power,
+            scales = new Scales
+            {
+                numeric = numericScale,
+                world = numericScale/opts.baseScales.world,
+                time = numericScale/ opts.baseScales.time,
+                bases = opts.baseScales,
+            },
             multipliedStrength = instance.multipliedStrength(),
             statLinkAbility = opts.statLinkAbility,
             addedStrength = instance.addedStrength(),
@@ -63,6 +73,7 @@ public abstract class AbilityData : AbilityIdentifiers
 #nullable enable
 public struct FillBlockOptions
 {
+    public BaseScales baseScales;
     public float? overridePower;
     public float? addedStrength;
     public bool? reduceWindValue;

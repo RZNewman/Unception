@@ -71,9 +71,9 @@ public static class StatTypes
         }
     }
 
-    public static float statToValue(Stat stat, float amount, float scale, HitType type)
+    public static float statToValue(Stat stat, float amount, Scales scales, HitType type)
     {
-        float value = statToValue(stat, amount, scale);
+        float value = statToValue(stat, amount, scales);
         Dictionary<Stat, float> multLookup;
         if (hitStatModifiers.TryGetValue(type, out multLookup))
         {
@@ -85,7 +85,7 @@ public static class StatTypes
         }
         return value;
     }
-    public static float statToValue(Stat stat, float amount, float scale)
+    public static float statToValue(Stat stat, float amount, Scales scales)
     {
         float value = statValues[stat] * amount;
         switch (stat)
@@ -93,7 +93,7 @@ public static class StatTypes
             case Stat.Length:
             case Stat.Width:
             case Stat.Range:
-                value /= Power.worldScale;
+                value /= scales.bases.world;
                 break;
             case Stat.Knockback:
             case Stat.Knockup:
@@ -104,16 +104,16 @@ public static class StatTypes
             case Stat.TurnspeedCast:
             case Stat.Turnspeed:
                 //speed stats need to be scale-squared to scale on both dimentions
-                value *= scale;
-                value /= Power.worldScale;
-                value /= Power.timeScale;
+                value *= scales.numeric;
+                value /= scales.bases.world;
+                value /= scales.bases.time;
                 break;
             case Stat.DamageMult:
             case Stat.Charges:
             case Stat.Cooldown:
             case Stat.Haste:
                 //these values are of a constant scale; since the stat is already scaled, we need to unscale the value here
-                value /= scale;
+                value /= scales.numeric;
                 break;
         }
         switch (stat)

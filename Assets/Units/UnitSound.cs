@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static SoundManager;
+using static UnitSound;
 
 public class UnitSound : MonoBehaviour
 {
@@ -10,6 +13,8 @@ public class UnitSound : MonoBehaviour
 
     public AudioClip stun;
     public AudioClip dash;
+    public AudioClip portalStart;
+    public AudioClip portalEnd;
 
     public struct AudioDistances
     {
@@ -57,33 +62,57 @@ public class UnitSound : MonoBehaviour
         LocalStun,
         Fall,
         Dash,
+        PortalStart,
+        PortalEnd,
     }
 
-    public void playSound(UnitSoundClip sound)
+    public void playSound(UnitSoundClip sound, float? forcedDuration = null)
     {
-        AudioClip clip = null;
-        switch (sound)
+        AudioClip clip = getClip(sound);
+        source.clip = clip;
+        if (forcedDuration.HasValue)
         {
-            case UnitSoundClip.Spawn:
-                clip = spawn;
-                break;
-            case UnitSoundClip.Stun:
-                clip = stun;
-                break;
-            case UnitSoundClip.Dash:
-                clip = dash;
-                break;
-            case UnitSoundClip.Fall:
-                clip = fall;
-                break;
-            case UnitSoundClip.LocalStun:
-                clip = localStun;
-                break;
+            source.pitch = clip.length / forcedDuration.Value;
+        }
+        else
+        {
+            source.pitch = 1;
         }
 
-        source.clip = clip;
         source.Play();
 
+    }
+
+    AudioClip getClip(UnitSoundClip clip)
+    {
+        switch (clip)
+        {
+            case UnitSoundClip.Spawn:
+                return  spawn;
+            case UnitSoundClip.Stun:
+                return  stun;
+            case UnitSoundClip.Dash:
+                return  dash;
+            case UnitSoundClip.Fall:
+                return  fall;
+            case UnitSoundClip.LocalStun:
+                return  localStun;
+            case UnitSoundClip.PortalStart:
+                return  portalStart;
+            case UnitSoundClip.PortalEnd:
+                return  portalEnd;
+            default:
+                return null;
+        }
+
+    }
+
+    float portalTime = 1.5f;
+    IEnumerator RoutineRecall()
+    {
+        playSound(UnitSoundClip.PortalStart, portalTime);
+        yield return new WaitForSecondsRealtime(portalTime);
+        playSound(UnitSoundClip.PortalEnd);
     }
 
 

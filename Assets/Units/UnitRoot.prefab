@@ -1016,6 +1016,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
+  launchedPlayer: 0
   championHealthMultiplier: 1
 --- !u!114 &973865255900791963
 MonoBehaviour:
@@ -1148,6 +1149,8 @@ MonoBehaviour:
   fall: {fileID: 8300000, guid: 646f6236e0c22404fabe3a7c0cf432ed, type: 3}
   stun: {fileID: 8300000, guid: ec94d567e75cef945b3159eba24780c3, type: 3}
   dash: {fileID: 8300000, guid: d1675c28d6f05aa47ab50c7bb538b0c3, type: 3}
+  portalStart: {fileID: 8300000, guid: 40686fa15159ce642901deb76799d02d, type: 3}
+  portalEnd: {fileID: 8300000, guid: 52d56703085b3f04f99c5bb9823f0a44, type: 3}
 --- !u!82 &3160391284218651226
 AudioSource:
   m_ObjectHideFlags: 0

@@ -25,9 +25,7 @@ public class MapGenerator : NetworkBehaviour
     Atlas atlas;
     NavMeshDataInstance navData = new NavMeshDataInstance();
     List<NavMeshLink> navLinks = new List<NavMeshLink>();
-    int currentFloorIndex;
 
-    bool ending = false;
 
     MonsterSpawn spawner;
     SoundManager sound;
@@ -53,69 +51,21 @@ public class MapGenerator : NetworkBehaviour
         }
     }
 
-
-    public void endFloor(Vector3 position)
-    {
-        if (!ending)
-        {
-            ending = true;
-            StartCoroutine(endFloorRoutine(position));
-        }
-
-    }
     public void destroyFloor()
     {
         Destroy(currentFloor);
     }
-    float portalTime = 1.5f;
-    IEnumerator endFloorRoutine(Vector3 position)
-    {
-        sound.sendSoundDuration(SoundManager.SoundClip.PortalStart, position, portalTime);
-        yield return new WaitForSecondsRealtime(portalTime);
-        sound.sendSound(SoundManager.SoundClip.PortalEnd, position);
-        PlayerGhost[] ghosts = FindObjectsOfType<PlayerGhost>();
-        GameObject[] units = ghosts.Select(g => g.unit).ToArray();
-        foreach (GameObject playerUnit in units)
-        {
-            playerUnit.transform.position = transform.position + Vector3.up * 5;
-            playerUnit.SetActive(false);
-        }
-        foreach (PlayerGhost ghost in ghosts)
-        {
-
-        }
-
-        yield return new WaitForSecondsRealtime(portalTime);
-        Destroy(currentFloor);
-        yield return null;
-        currentFloorIndex++;
-
-        if (currentFloorIndex >= currentMap.floors.Length)
-        {
-            FindObjectOfType<Atlas>().disembark();
-        }
-        else
-        {
-            foreach (PlayerGhost ghost in ghosts)
-            {
-                ghost.refreshLives();
-            }
-            yield return buildGridRoutine();
-            foreach (GameObject playerUnit in units)
-            {
-                playerUnit.SetActive(true);
-            }
-        }
-
-
-    }
-
     public IEnumerator buildMap()
     {
+        Destroy(currentFloor);
         //currentFloorScale = Power.scalePhysical(currentMap.power);
         currentFloorScale = 1; // server scale is set to the map, so this should always be 1
-        currentFloorIndex = 0;
-        spawner.setSpawnPower(currentMap.power, currentFloorScale);
+        spawner.setSpawnPower(currentMap.power, new GenerateAttack.Scales
+        {
+            numeric =1,
+            world =1,
+            time = Power.currentBaseScales.time,
+        });
         yield return buildGridRoutine();
     }
 
@@ -129,8 +79,6 @@ public class MapGenerator : NetworkBehaviour
 
     IEnumerator buildGridRoutine()
     {
-        ending = false;
-
         currentFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, transform);
         spawner.setFloor(currentFloor.transform);
         currentFloor.GetComponent<ClientAdoption>().parent = gameObject;
@@ -141,10 +89,9 @@ public class MapGenerator : NetworkBehaviour
         GameObject wfcFloor = Instantiate(floorRootPre, transform.position, Quaternion.identity, currentFloor.transform);
         wfcFloor.GetComponent<ClientAdoption>().parent = currentFloor;
         NetworkServer.Spawn(wfcFloor);
-        yield return wfc.generate(wfcFloor, currentMap.floors[currentFloorIndex].segments);
+        yield return wfc.generate(wfcFloor, currentMap.floor.segments);
 
         GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
-        endPortal.GetComponent<NextLevel>().setGen(this);
         Vector3 tileDirection = wfc.generationData.end - wfc.generationData.start;
 
 
@@ -178,7 +125,7 @@ public class MapGenerator : NetworkBehaviour
         yield return GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floors[currentFloorIndex].sparseness, currentMap.difficulty, currentMap.floors[currentFloorIndex].encounters, endPortal);
+        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floor.sparseness, currentMap.difficulty, currentMap.floor.encounters, endPortal);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassDirection(tileDirection));
     }
 

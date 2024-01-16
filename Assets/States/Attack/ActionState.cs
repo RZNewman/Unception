@@ -125,7 +125,7 @@ public class ActionState : AttackStageState
 
         if (defData != null)
         {
-            SpawnBuff(mover.transform, BuffMode.Shield, defData.powerAtGen, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
+            SpawnBuff(mover.transform, BuffMode.Shield, defData.scales, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
         }
     }
 

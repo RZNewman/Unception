@@ -12,7 +12,7 @@ public static class GenerateRepeating
     public class RepeatingGenerationData : GenerationData
     {
         public int repeatCount;
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             return new RepeatingInstanceData
             {

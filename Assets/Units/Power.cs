@@ -2,6 +2,7 @@ using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateAttack;
 using static GlobalCache;
 
 public class Power : NetworkBehaviour, TextValue, BarValue
@@ -19,8 +20,6 @@ public class Power : NetworkBehaviour, TextValue, BarValue
 
     List<OnPowerUpdate> OnPowerUpdateCallbacks = new List<OnPowerUpdate>();
 
-    static float baseWorldScale = 1;
-    static float baseTimeScale = 1;
 
     public void subscribePower(OnPowerUpdate callback)
     {
@@ -136,6 +135,23 @@ public class Power : NetworkBehaviour, TextValue, BarValue
             return downscalePower(currentPower);
         }
     }
+
+    BaseScales? overrideScales = null;
+    public void setOverrideDefault()
+    {
+        overrideScales = new BaseScales
+        {
+            world = 1,
+            time = Power.scaleNumerical(currentPower),
+        };
+        rescale();
+    }
+    public void setOverrideNull()
+    {
+        overrideScales = null;
+        rescale();
+    }
+
     public float scaleNumerical()
     {
         return cachedNumerical.get(currentPower);
@@ -155,6 +171,16 @@ public class Power : NetworkBehaviour, TextValue, BarValue
         return cachedTime.get(currentPower);
     }
 
+    public Scales getScales()
+    {
+        return new Scales
+        {
+            numeric = scaleNumerical(),
+            world = scalePhysical(),
+            time = scaleTime(),
+        };
+    }
+
     CacheValue<float, float> cachedNumerical;
     CacheValue<float, float> cachedSpeed;
     CacheValue<float, float> cachedPhysical;
@@ -162,19 +188,31 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     private void Awake()
     {
         cachedNumerical = new CacheValue<float, float>(scaleNumerical, currentPower);
-        cachedSpeed = new CacheValue<float, float>(scaleSpeed, currentPower);
-        cachedPhysical = new CacheValue<float, float>(scalePhysical, currentPower);
-        cachedTime = new CacheValue<float, float>(scaleTime, currentPower);
+        cachedSpeed = new CacheValue<float, float>(_scaleSpeedInstance, currentPower);
+        cachedPhysical = new CacheValue<float, float>(_scalePhysicalInstance, currentPower);
+        cachedTime = new CacheValue<float, float>(_scaleTimeInstance, currentPower);
     }
 
-
-
-
-
-    public static float scaleSpeed(float power)
+    float _scalePhysicalInstance(float power)
     {
-        return scalePhysical(power) * scaleTime(power);
+        return downscalePower(power) / baseDownscale / (overrideScales.HasValue ? overrideScales.Value.world : baseScales.world);
     }
+
+    float _scaleTimeInstance(float power)
+    {
+        return downscalePower(power) / baseDownscale / (overrideScales.HasValue ? overrideScales.Value.time : baseScales.time);
+    }
+    float _scaleSpeedInstance(float power)
+    {
+        return _scalePhysicalInstance(power) * _scaleTimeInstance(power);
+    }
+
+
+
+
+
+
+
 
     public static float scaleNumerical(float power)
     {
@@ -182,28 +220,28 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     }
 
 
-    public static float scalePhysical(float power)
+    static float scalePhysical(float power)
     {
-        return downscalePower(power) / baseDownscale / baseWorldScale;
+        return downscalePower(power) / baseDownscale / baseScales.world;
     }
 
-    public static float scaleTime(float power)
+    static float scaleTime(float power)
     {
-        return downscalePower(power) / baseDownscale / baseTimeScale;
+        return downscalePower(power) / baseDownscale / baseScales.time;
     }
-    public static float worldScale
+    static float scaleSpeed(float power)
     {
-        get
-        {
-            return baseWorldScale;
-        }
+        return scalePhysical(power) * scaleTime(power);
     }
-    public static float timeScale
+
+    public static Scales getScales(float power)
     {
-        get
+        return new Scales
         {
-            return baseTimeScale;
-        }
+            numeric = scaleNumerical(power),
+            world = scalePhysical(power),
+            time = scaleTime(power),
+        };
     }
 
     public struct BaseScales
@@ -215,22 +253,32 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         get
         {
-            return new BaseScales
-            {
-                world = baseWorldScale,
-                time = baseTimeScale,
-            };
+            return baseScales;
         }
     }
 
-    public static void setPhysicalScale(float scale)
+    public BaseScales instanceBaseScales
     {
-        baseWorldScale = scale;
+        get
+        {
+            return overrideScales.HasValue ? overrideScales.Value : Power.baseScales;
+        }
     }
-    public static void setTimeScale(float scale)
+
+    static BaseScales baseScales = new BaseScales
     {
-        baseTimeScale = scale;
+        world = 1,
+        time = 1,
+    };
+    
+
+    public static void setScales(BaseScales scales)
+    {
+        baseScales = scales;
     }
+
+    
+
 
     public static float downscalePower(float power)
     {

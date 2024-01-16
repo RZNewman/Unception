@@ -172,14 +172,16 @@ public class Ability : NetworkBehaviour
 
     void fillFormat(Power p)
     {
-        if(format.scales || !cachedBaseScales.Equals(currentBaseScales))
+        if(format.scales || !cachedBaseScales.Equals(p.instanceBaseScales))
         {
-            cachedBaseScales = currentBaseScales;
+            cachedBaseScales = p.instanceBaseScales;
+            //Debug.Log(cachedBaseScales.world + " - " + cachedBaseScales.time);
             formatInstance = format.populate(
                 new FillBlockOptions
                 {
                     statLinkAbility = this,
-                    overridePower = p.power
+                    overridePower = p.power,
+                    baseScales = cachedBaseScales
                 }
                 );
             //TODO id like this to be dynamic, eventual callback from stat handler change

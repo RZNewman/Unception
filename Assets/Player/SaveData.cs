@@ -13,6 +13,7 @@ using static GlobalSaveData;
 using static Atlas;
 using static Grove;
 using static PlayerInfo;
+using static Power;
 
 public class SaveData : NetworkBehaviour
 {
@@ -285,7 +286,11 @@ public class SaveData : NetworkBehaviour
     {  
         if(gp.serverPlayer == player)
         {
-            atlas.setScaleServer(1, Power.scaleNumerical(player.power));
+            atlas.setScaleServer(new BaseScales
+            {
+                world = 1,
+                time = scaleNumerical(gp.serverPlayer.power)
+            });
         }
         FindObjectOfType<UILoadoutMenu>(true).loadInvMode();
         TargetDoneLoading(connectionToClient);

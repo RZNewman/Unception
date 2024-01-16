@@ -33,18 +33,17 @@ public static class GenerateDash
         public DashControl control;
 
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             strength *= this.percentOfEffect;
-            float scale = Power.scalePhysical(power);
-            float scaleSpeed = Power.scaleSpeed(power);
 
-            float speed = this.speed.asRange(15f, 30f) * scaleSpeed * strength;
-            float distance = this.distance.asRange(2f, 6f) * scale * strength;
+            float speed = this.speed.asRange(15f, 30f) * scalesStart.speed * strength;
+            float distance = this.distance.asRange(2f, 6f) * scalesStart.world * strength;
 
             return new DashInstanceData
             {
                 powerByStrength = power * strength,
+                scales =scalesStart,
                 percentOfEffect = percentOfEffect,
 
                 speed = speed,

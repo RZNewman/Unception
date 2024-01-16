@@ -36,12 +36,9 @@ public static class GenerateBuff
 
         public static float buffStatsBase = 45;
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             strength *= this.percentOfEffect;
-            float scaleNum = Power.scaleNumerical(power);
-            float scaleTime = Power.scaleTime(power);
-
 
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
@@ -54,7 +51,7 @@ public static class GenerateBuff
             if (mode == BuffMode.Timed)
             {
                 float baseDuration = this.duration.asRange(6, 20);
-                duration = baseDuration / scaleTime;
+                duration = baseDuration / scalesStart.time;
                 float portion = 0.2f;
                 float scale = portion + (1 - portion) * (1 - this.duration);
                 stats = stats.scale(scale);
@@ -70,7 +67,7 @@ public static class GenerateBuff
 
                 stats = stats.scale(1.9f);
                 castCount = Mathf.RoundToInt(this.duration.asRange(1, 3));
-                duration = (5f + 5f * castCount) / scaleTime;
+                duration = (5f + 5f * castCount) / scalesStart.time;
                 stats = stats.scale(1f / castCount);
 
                 if (slot.HasValue)
@@ -84,7 +81,7 @@ public static class GenerateBuff
 
             stats = stats.scale(buffStatsBase);
             stats = stats.scale(strength);
-            stats = stats.scale(scaleNum);
+            stats = stats.scale(scalesStart.numeric);
             if (type == BuffType.Debuff)
             {
                 stats = stats.invert();
@@ -93,6 +90,7 @@ public static class GenerateBuff
             BuffInstanceData baseData = new BuffInstanceData
             {
                 percentOfEffect = percentOfEffect,
+                scales = scalesStart,
                 durration = duration,
                 _baseStats = stats,
                 type = type,
@@ -116,7 +114,7 @@ public static class GenerateBuff
 
         public float durationDisplay(float power)
         {
-            return durration * Power.scaleTime(power);
+            return durration * scales.time;
         }
         public Dictionary<Stat, float> stats
         {

@@ -21,19 +21,20 @@ using UnityEngine.UIElements;
 using static GenerateDefense;
 using static GroveObject;
 using static Grove;
+using static Power;
 
 public static class GenerateAttack
 {
     public abstract class GenerationData : ScriptableObject
     {
         public float percentOfEffect = 1;
-        public abstract InstanceData populate(float power, float strength);
+        public abstract InstanceData populate(float power, float strength, Scales scalesStart);
     }
     public abstract class InstanceData
     {
         public StatStream stream;
         public float powerAtGen;
-        public float scaleAtGen;
+        public Scales scales;
         public float percentOfEffect;
         public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
         {
@@ -100,6 +101,7 @@ public static class GenerateAttack
         public WindInstanceData windRepeat;
         public BuffInstanceData buff;
         public DefenseInstanceData defense;
+        public Scales scales;
         public bool dashAfter;
         public bool dashInside;
 
@@ -128,7 +130,7 @@ public static class GenerateAttack
         public float castTimeDisplay(float power)
         {
 
-            return castTime() * Power.scaleTime(power);
+            return castTime() * scales.time;
 
         }
         public string shapeDisplay()
@@ -384,11 +386,11 @@ public static class GenerateAttack
         public SegmentInstanceData[] segments;
         public float cooldown;
         public StatStream stream;
-        public float _scale;
+        public Scales scales;
 
         public float getStat(Stat stat)
         {
-            return stream.getValue(stat, _scale) * strength;
+            return stream.getValue(stat, scales) * strength;
         }
 
 
@@ -408,7 +410,6 @@ public static class GenerateAttack
         {
             EffectiveDistance saved = EffectiveDistance.empty;
 
-            //TODO take highest
             SegmentInstanceData prime = segments[0];
             if (prime.dash != null && !prime.dashAfter)
             {
@@ -431,7 +432,7 @@ public static class GenerateAttack
 
         public float cooldownDisplay(float powerPlayer)
         {
-            return cooldown * Power.scaleTime(powerPlayer) / getCooldownMult();
+            return cooldown * scales.time / getCooldownMult();
         }
         public string shapeDisplay()
         {
@@ -522,24 +523,39 @@ public static class GenerateAttack
     public struct PopulateAttackOptions
     {
         public float power;
+        public Scales scales;
         public float multipliedStrength;
         public float? addedStrength;
         public bool? reduceWindValue;
         public Ability? statLinkAbility;
     }
+
+    public struct Scales
+    {
+        public BaseScales bases;
+        public float numeric;
+        public float world;
+        public float time;
+        public float speed
+        {
+            get
+            {
+                return world * time;
+            }
+        }
+    }
 #nullable disable
     public static AttackInstanceData populateAttack(AttackGenerationData atk, PopulateAttackOptions opts)
     {
         float power = opts.power;
-        float scaleNum = Power.scaleNumerical(power);
 
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 5 + 1), 2f);
-        cooldownTime /= Power.scaleTime(power);
+        cooldownTime /= opts.scales.time;
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
-        stats = stats.scale(scaleNum);
+        stats = stats.scale(opts.scales.numeric);
 
         float addedBaseStrength = 0;
         if (opts.addedStrength.HasValue)
@@ -563,13 +579,13 @@ public static class GenerateAttack
         for (int i = 0; i < segmentsGen.Count; i++)
         {
             SegmentGenerationData segment = segmentsGen[i];
-            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, windStrength);
+            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, windStrength, opts.scales);
             parent(up);
             List<WindInstanceData> windList = new List<WindInstanceData> { up };
             WindInstanceData down = null;
             if (segment.winddown)
             {
-                down = (WindInstanceData)segment.winddown.populate(power, windStrength);
+                down = (WindInstanceData)segment.winddown.populate(power, windStrength, opts.scales);
                 parent(down);
                 windList.Add(down);
             }
@@ -586,8 +602,8 @@ public static class GenerateAttack
             int repeatCount = 1;
             if (segment.repeat != null)
             {
-                repeat = (RepeatingInstanceData)segment.repeat.populate(power, windStrength);
-                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, windStrength);
+                repeat = (RepeatingInstanceData)segment.repeat.populate(power, windStrength, opts.scales);
+                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, windStrength, opts.scales);
                 parent(windRepeat);
                 repeatCount = repeat.repeatCount;
                 for (int j = 0; j < segment.repeat.repeatCount; j++)
@@ -603,27 +619,29 @@ public static class GenerateAttack
             strength *= multBaseStrength;
             float repeatStrength = strength / repeatCount;
 
-            HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength);
+            HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength, opts.scales);
             parent(hit);
 
             BuffInstanceData buff = null;
             if (segment.buff != null)
             {
-                buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength);
+                buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength, opts.scales);
             }
 
             DefenseInstanceData defense = null;
             if (segment.defense != null)
             {
-                defense = (DefenseInstanceData)segment.defense.populate(power, repeatStrength);
+                defense = (DefenseInstanceData)segment.defense.populate(power, repeatStrength, opts.scales);
             }
 
             segmentsInst[i] = new SegmentInstanceData
             {
+                scales =opts.scales,
+
                 windup = up,
                 winddown = down,
                 hit = hit,
-                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength),
+                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength, opts.scales),
                 buff = buff,
                 defense = defense,
                 repeat = repeat,
@@ -648,7 +666,7 @@ public static class GenerateAttack
             cooldown = cooldownTime,
             stream = stream,
             segments = segmentsInst,
-            _scale = scaleNum,
+            scales = opts.scales,
         };
 
         foreach (InstanceStreamInfo info in stagesToParent)

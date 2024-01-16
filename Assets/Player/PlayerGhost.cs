@@ -5,6 +5,7 @@ using Mirror;
 using static GlobalSaveData;
 using static Power;
 using static Interaction;
+using static GenerateAttack;
 
 public class PlayerGhost : NetworkBehaviour, TextValue
 {
@@ -66,6 +67,20 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             return playerPower;
         }
     }
+
+    public Scales scales
+    {
+        get
+        {
+            return currentSelf ? currentSelf.GetComponent<Power>().getScales() : new Scales
+            {
+                numeric =1,
+                world =1,
+                time =1,
+            };
+        }
+    }
+
     public WorldProgress progress
     {
         get
@@ -134,6 +149,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         GameObject u = Instantiate(unitPre, spawn, Quaternion.identity);
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
+        p.setOverrideDefault();
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
         u.GetComponent<EventManager>().suscribeDeath(onUnitDeath);
@@ -189,6 +205,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     public void stuck()
     {
         CmdStuck();
+        FindObjectOfType<MaterialScaling>().none();
+        music.Menu();
     }
 
     [Command]
@@ -196,7 +214,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     {
         if (currentSelf)
         {
-            currentSelf.transform.position = atlas.playerSpawn;
+            Power p = currentSelf.GetComponent<Power>();
+            p.setOverrideDefault();
+            currentSelf.transform.position = GameObject.FindWithTag("Spawn").transform.position;
+            currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = false;
         }
     }
 
@@ -229,7 +250,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         }
         else
         {
-            atlas.disembark(false);
+            //TODO lock player out instead of atlas
+            atlas.disembarkFailure();
         }
         shootUnit();
 

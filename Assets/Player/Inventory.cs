@@ -234,13 +234,21 @@ public class Inventory : NetworkBehaviour
     void TargetDropItem(NetworkConnection conn, CastData item, Vector3 location)
     {
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(player.power, player.unit, item.quality);
+        i.GetComponent<ItemDrop>().init(player.scales, player.unit, item.quality);
 
     }
 
     void fillInstanceCache(AbilityData block)
     {
-        filledCache.TryAdd(block.id, block.populate(new FillBlockOptions { overridePower = player.power }));
+        float numericScale = Power.scaleNumerical(player.power);
+        filledCache.TryAdd(block.id, block.populate(new FillBlockOptions { 
+            overridePower = player.power,
+            baseScales = new BaseScales
+            {
+                world = numericScale,
+                time = numericScale,
+            }
+        }));;
     }
 
     public AbilityDataInstance getAbilityInstance(string id)

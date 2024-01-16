@@ -93,7 +93,6 @@ public class Atlas : NetworkBehaviour
     {
         public int tier;
         public Difficulty difficulty;
-        public int floors;
         public int encounters;
     }
 
@@ -111,7 +110,7 @@ public class Atlas : NetworkBehaviour
         public QuestIds ids;
         public float power;
         public Difficulty difficulty;
-        public Floor[] floors;
+        public Floor floor;
         public Vector2 visualLocation;
         public float difficultyRangePercent;
     }
@@ -216,12 +215,10 @@ public class Atlas : NetworkBehaviour
             //int i when i >= 10 => 2,
             _ => 0
         };
-        int floors = Mathf.Max(Mathf.CeilToInt(tier / 7f), 1);
         return new Quest
         {
             tier = tier,
             difficulty = Difficulty.fromTotal(totalDifficutly),
-            floors = floors,
             encounters = encounters,
         };
     }
@@ -382,15 +379,13 @@ public class Atlas : NetworkBehaviour
                     },
                     power = powerAtTier(q.tier),
                     difficulty = q.difficulty,
-                    floors = Enumerable.Repeat(
-                        new Floor
+                    floor = new Floor
                         {
                             encounters = floorEncounters(q.difficulty, q.encounters),
                             sparseness = sparsness,
                             segments = segmentsAtTier(q.tier)
 
-                        }
-                    , q.floors).ToArray(),
+                        },
                     visualLocation = location.visualLocation,
                 });
             }
@@ -405,7 +400,7 @@ public class Atlas : NetworkBehaviour
                     index = mapIndex,
                     power = gp.serverPlayer.power,
                     difficulty = difficulty,
-                    floors = mapRandomFloors(difficulty, Mathf.RoundToInt(avgFloorsPerMap)),
+                    floor = mapRandomFloor(difficulty),
                     visualLocation = location.visualLocation,
                     difficultyRangePercent = difficultyRangePercent,
                 });
@@ -419,23 +414,14 @@ public class Atlas : NetworkBehaviour
         return mapsGen.ToArray();
     }
 
-    public static Floor[] mapFloors(Difficulty difficulty)
+    public static Floor mapRandomFloor(Difficulty difficulty)
     {
-        return mapRandomFloors(difficulty, Mathf.RoundToInt(avgFloorsPerMap));
-    }
-    public static Floor[] mapRandomFloors(Difficulty difficulty, int floorCount)
-    {
-        Floor[] floors = new Floor[floorCount];
-        for (int j = 0; j < floorCount; j++)
+        return new Floor
         {
-            floors[j] = new Floor
-            {
-                sparseness = sparsness,
-                segments = Mathf.RoundToInt(Random.value.asRange(4, 6)),
-                encounters = floorEncounters(difficulty),
-            };
-        }
-        return floors;
+            sparseness = sparsness,
+            segments = Mathf.RoundToInt(Random.value.asRange(4, 6)),
+            encounters = floorEncounters(difficulty),
+        };
     }
     public static EncounterData[] floorEncounters(Difficulty difficulty)
     {
@@ -576,8 +562,13 @@ public class Atlas : NetworkBehaviour
             m = serverMap.getMap(gp.serverPlayer.power);
         }
         embarkedMap = m;
+
+        setScaleServer(new BaseScales{
+            world = scaleNumerical(embarkedMap.power), 
+            time = scaleNumerical(gp.serverPlayer.power) 
+        });
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
-        
+
         yield return gen.buildMap();
         missionStatus = MissionStatus.Arrived;
     }
@@ -590,65 +581,53 @@ public class Atlas : NetworkBehaviour
     }
 
     [Server]
-    public void disembark(bool mapSuccess = true)
+    public void disembarkFailure()
     {
-        //TODO Atlas clean
-        missionStatus = mapSuccess ? MissionStatus.Success : MissionStatus.None;
-        foreach (GameObject unit in FindObjectsOfType<PlayerGhost>().Select(g => g.unit))
-        {
-            Destroy(unit);
-        }
+        missionStatus = MissionStatus.None;
         if (Pause.isPaused)
         {
             FindObjectOfType<Pause>().togglePause();
         }
-        if (mapSuccess)
+        
+        makeMaps();
+        
+
+    }
+
+    public void missionSucceed()
+    {
+        missionStatus = MissionStatus.Success;
+        makeMaps();
+        if (embarkedMap.quest)
         {
-            if (embarkedMap.quest)
+            foreach (SaveData save in FindObjectsOfType<SaveData>())
             {
-                foreach (SaveData save in FindObjectsOfType<SaveData>())
-                {
-                    save.saveQuestProgress(embarkedMap.ids);
-                }
+                save.saveQuestProgress(embarkedMap.ids);
             }
         }
-        else
-        {
-            //floor wasnt cleaned up by next floor routine
-            FindObjectOfType<MapGenerator>().destroyFloor();
-        }
-        setScaleServer(1, Power.scaleNumerical(gp.serverPlayer.power));
-        FindObjectOfType<MaterialScaling>().none();
-        makeMaps();
-        bool grantBlessing = mapSuccess && embarkedMap.quest && embarkedMap.tier > 4;
+        bool grantBlessing = embarkedMap.quest && embarkedMap.tier > 4;
         foreach (Inventory inv in FindObjectsOfType<Inventory>())
         {
-            if (mapSuccess)
+            if (grantBlessing)
             {
-                if(grantBlessing)
-                {
-                    inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
-                }
-                
+                inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
-            
+
             inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, grantBlessing);
         }
-
     }
+
     [Server]
-    public void setScaleServer(float scalePhys, float scaleTime)
+    public void setScaleServer(BaseScales scales)
     {
 
-        Power.setPhysicalScale(scalePhys);
-        Power.setTimeScale(scaleTime);
-        RpcSetScale(scalePhys, scaleTime);
+        Power.setScales(scales);
+        RpcSetScale(scales);
     }
     [ClientRpc]
-    void RpcSetScale(float scalePhys, float scaleTime)
+    void RpcSetScale(BaseScales scales)
     {
-        Power.setTimeScale(scaleTime);
-        Power.setPhysicalScale(scalePhys);
+        Power.setScales(scales);
     }
     #endregion
 

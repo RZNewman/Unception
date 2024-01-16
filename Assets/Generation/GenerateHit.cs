@@ -47,10 +47,9 @@ public static class GenerateHit
         public float dotTime;
         public float exposePercent;
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             strength *= this.percentOfEffect;
-            float scaleNum = Power.scaleNumerical(power);
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
             foreach (Stat s in statValues.Keys)
@@ -58,7 +57,7 @@ public static class GenerateHit
                 stats[s] = statValues[s].asRange(0, itemMax(s));
             }
             stats = stats.sum(itemStatBase);
-            stats = stats.scale(scaleNum);
+            stats = stats.scale(scalesStart.numeric);
 
             StatStream stream = new StatStream();
             stream.setStats(stats);
@@ -68,7 +67,7 @@ public static class GenerateHit
             {
                 strength = strength,
                 powerAtGen = power,
-                scaleAtGen = Power.scaleNumerical(power),
+                scales = scalesStart,
                 percentOfEffect = percentOfEffect,
 
                 flair = flair,
@@ -78,7 +77,7 @@ public static class GenerateHit
                 knockBackDirection = this.knockBackDirection,
                 type = this.type,
                 dotPercent = dotPercent,
-                dotTime = dotBaseTime / Power.scaleTime(power),
+                dotTime = dotBaseTime / scalesStart.time,
                 dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
                 exposePercent = exposePercent,
             };
@@ -166,7 +165,7 @@ public static class GenerateHit
 
         float getStat(Stat stat)
         {
-            return stream.getValue(stat, scaleAtGen, type) * strength;
+            return stream.getValue(stat, scales, type) * strength;
 
         }
 

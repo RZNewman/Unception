@@ -13,15 +13,14 @@ public static class GenerateDefense
         public float duration;
         public float regen;
 
-        public override InstanceData populate(float power, float strength)
+        public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
             strength *= this.percentOfEffect;
 
             float shieldValue = 2.1f * strength;
-            float scaleTime = Power.scaleTime(power);
 
             float baseDuration = this.duration.asRange(0.25f, 8);
-            float duration = baseDuration / scaleTime;
+            float duration = baseDuration / scalesStart.time;
             float portion = 0.2f;
             float scale = portion + (1 - portion) * (1 - this.duration);
             shieldValue *= scale;
@@ -35,6 +34,7 @@ public static class GenerateDefense
             DefenseInstanceData baseData = new DefenseInstanceData
             {
                 percentOfEffect = percentOfEffect,
+                scales = scalesStart,
                 powerAtGen = power,
 
                 duration = duration,

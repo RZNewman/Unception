@@ -347,7 +347,7 @@ public class UnitMovement : NetworkBehaviour
 
         Vector3 planarVelocity = planarVelocityCalculated;
         Vector3 desiredDirection = input2vec(inp.move);
-        float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0);
+        float movespeed = Mathf.Max(props.maxSpeed + additionalMovement + statHandler.getValue(Stat.Movespeed, power.getScales()), 0);
         float movespeedMult = speedStateMultiplier * (isIncapacitated ? knockdown.knockedDown ? 0 : 0.2f : 1.0f) * (grounded ? 1.0f : 0.8f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 0.7f : 1.0f);
         float frictionMult = (grounded ? 1.0f : 0.3f) * (floating() ? 6.0f : 1.0f) * (isIncapacitated ? 0.6f : 1.0f);
         float stoppingMult = speedStateMultiplier * (isIncapacitated ? knockdown.knockedDown ? 0 : 0.2f : 1.0f) * (grounded ? 1.0f : 0.3f) * (combat.inCombat ? 1.0f : 1.5f) * (floating() ? 6.0f : 1.0f);
@@ -481,7 +481,7 @@ public class UnitMovement : NetworkBehaviour
             airMultiplier = 0.6f;
         };
 
-        float potentialSpeed = Mathf.Max(props.maxSpeed + statHandler.getValue(Stat.Movespeed, power.scaleNumerical()), 0) * lookMultiplier * airMultiplier * combatMultiplier * power.scaleSpeed();
+        float potentialSpeed = Mathf.Max(props.maxSpeed + statHandler.getValue(Stat.Movespeed, power.getScales()), 0) * lookMultiplier * airMultiplier * combatMultiplier * power.scaleSpeed();
 
         planarVelocityCalculated = planarVelocity.normalized * potentialSpeed;
     }
@@ -532,7 +532,7 @@ public class UnitMovement : NetworkBehaviour
         //degrees in proportial to the world right now, but if the player is bigger, we need to reduce it
         additionalRotationDegrees /= power.scalePhysical();
         canSnap &= props.isPlayer;
-        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : Mathf.Max(props.lookSpeedDegrees + additionalRotationDegrees + statHandler.getValue(Stat.Turnspeed, power.scaleNumerical()), 0);
+        float turnSpeed = canSnap ? 180f / Time.fixedDeltaTime : Mathf.Max(props.lookSpeedDegrees + additionalRotationDegrees + statHandler.getValue(Stat.Turnspeed, power.getScales()), 0);
 
         //horizontal angle
         float desiredAngle = -Vector2.SignedAngle(Vector2.up, inp.look);

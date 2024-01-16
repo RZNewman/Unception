@@ -142,7 +142,7 @@ public class Buff : NetworkBehaviour
     {
         durationMax = buff.durration;
         duration = buff.durration;
-        timeScale = Power.scaleTime(buff.powerAtGen);
+        timeScale = buff.scales.time;
         castCount = buff.castCount;
         slot = buff.slot;
         if (castCount > 0)
@@ -151,11 +151,11 @@ public class Buff : NetworkBehaviour
         }
     }
 
-    public void setup(BuffMode buffMode, float powerAtGen, float durationBegin, float valueBegin, float regenBegin = 0)
+    public void setup(BuffMode buffMode, Scales scales, float durationBegin, float valueBegin, float regenBegin = 0)
     {
         durationMax = durationBegin;
         duration = durationBegin;
-        timeScale = Power.scaleTime(powerAtGen);
+        timeScale = scales.time;
         mode = buffMode;
         valueMax = valueBegin;
         value = valueBegin;

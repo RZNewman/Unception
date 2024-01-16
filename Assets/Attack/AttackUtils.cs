@@ -50,12 +50,12 @@ public static class AttackUtils
 
                 if (damage.dot > 0)
                 {
-                    SpawnBuff(otherMover.transform, BuffMode.Dot, hitData.powerAtGen, damage.dotTime, damage.dot);
+                    SpawnBuff(otherMover.transform, BuffMode.Dot, hitData.scales, damage.dotTime, damage.dot);
                 }
                 h.takeDamageHit(damage.instant);
                 if (damage.expose > 0)
                 {
-                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.powerAtGen, 10f / Power.scaleTime(hitData.powerAtGen), damage.expose);
+                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.scales, 10f / hitData.scales.time, damage.expose);
                 }
             }
 
@@ -153,12 +153,12 @@ public static class AttackUtils
         NetworkServer.Spawn(instance);
     }
 
-    public static void SpawnBuff(Transform target, BuffMode buffMode, float powerAtGen, float duration, float value, float regen = 0)
+    public static void SpawnBuff(Transform target, BuffMode buffMode, Scales scales, float duration, float value, float regen = 0)
     {
         GameObject prefab = GlobalPrefab.gPre.BuffPre;
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
-        instance.GetComponent<Buff>().setup(buffMode, powerAtGen, duration, value, regen);
+        instance.GetComponent<Buff>().setup(buffMode, scales, duration, value, regen);
         NetworkServer.Spawn(instance);
     }
 

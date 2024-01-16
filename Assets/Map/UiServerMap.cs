@@ -41,7 +41,7 @@ public class UiServerMap : MonoBehaviour
         {
             visualLocation = Vector2.zero,
             difficultyRangePercent = 0,
-            floors = mapFloors(d),
+            floor = mapRandomFloor(d),
             index = -1,
             power = power,
             difficulty = d

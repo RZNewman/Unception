@@ -4,6 +4,7 @@ using UnityEngine;
 using static StatTypes;
 using Mirror;
 using static GenerateHit;
+using static GenerateAttack;
 
 public class StatHandler : NetworkBehaviour
 {
@@ -34,7 +35,7 @@ public class StatHandler : NetworkBehaviour
         }
     }
 
-    public float getValue(Stat stat, float scale)
+    public float getValue(Stat stat, Scales scale)
     {
         return stream.getValue(stat, scale);
     }
@@ -125,15 +126,15 @@ public class StatStream
         objectStats = objectStats.sum(delta);
         updateExpression(delta);
     }
-    public float getValue(Stat stat, float scale, HitType hitType)
+    public float getValue(Stat stat, Scales scales, HitType hitType)
     {
         float value;
-        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scale, hitType) : 0;
+        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scales, hitType) : 0;
     }
-    public float getValue(Stat stat, float scale)
+    public float getValue(Stat stat, Scales scales)
     {
         float value;
-        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scale) : 0;
+        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scales) : 0;
     }
 
     #region streams

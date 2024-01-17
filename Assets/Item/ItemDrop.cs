@@ -11,7 +11,8 @@ public class ItemDrop : MonoBehaviour
     GameObject target;
     SoundManager sound;
 
-    public float waitTime = 3f;
+    public float waitTimeStart = 3f;
+    public float waitTime;
 
     public float accel = 1f;
     float catchDistance = 1f;
@@ -42,6 +43,7 @@ public class ItemDrop : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         sound = FindObjectOfType<SoundManager>();
+        waitTime = waitTimeStart;
     }
 
     private void Update()
@@ -60,13 +62,18 @@ public class ItemDrop : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        Vector3 dir = target.transform.position - transform.position;
         if (waitTime <= 0)
         {
             grav.gravity = 0;
-            Vector3 dir = target.transform.position - transform.position;
+            
 
             targetSpeed += accel * Time.fixedDeltaTime;
             rb.velocity = targetSpeed * dir.normalized;
+            
+        }
+        if(waitTime < waitTimeStart - 1f)
+        {
             if (dir.magnitude < catchDistance)
             {
                 sound.playSound(SoundManager.SoundClip.Slurp, transform.position);

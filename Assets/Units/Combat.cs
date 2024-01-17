@@ -80,7 +80,7 @@ public class Combat : NetworkBehaviour
 
         }
     }
-    void clearFighting()
+    public void clearFighting()
     {
         foreach (GameObject other in active)
         {

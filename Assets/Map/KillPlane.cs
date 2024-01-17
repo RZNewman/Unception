@@ -37,15 +37,8 @@ public class KillPlane : MonoBehaviour
                 }
                 else
                 {
-                    mover.GetComponent<Power>().setOverrideNull();
+                    props.owningPlayer.GetComponent<PlayerGhost>().toggleShip(false);
 
-                    //TODO move to RPC
-                    FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
-                    music.Game();
-
-                    props.launchedPlayer = true;
-                    mover.transform.position = atlas.playerSpawn;
-                    
                 }
                 
             }

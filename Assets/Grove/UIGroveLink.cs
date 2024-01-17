@@ -34,7 +34,6 @@ public class UIGroveLink : MonoBehaviour
             img.sprite = symbolSource.symbols[f.symbol];
         }
         Color c = color;
-        c.a = 0.3f;
         foreach (ColorIndividual ind in GetComponentsInChildren<ColorIndividual>())
         {
             ind.setColor(c);

@@ -84,6 +84,7 @@ public class MenuHandler : MonoBehaviour
                 FindObjectsOfType<UIKeyDisplay>().ToList().ForEach(k => k.sync());
                 break;
             case Menu.Loadout:
+                menuObject(m).GetComponent<UILoadoutMenu>().loadInvMode();
                 FindObjectOfType<GroveWorld>().inGrove = true;
                 GroveCamera gc = FindObjectOfType<GroveCamera>(true);
                 gc.gameObject.SetActive(true);

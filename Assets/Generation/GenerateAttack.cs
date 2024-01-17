@@ -130,7 +130,7 @@ public static class GenerateAttack
         public float castTimeDisplay(float power)
         {
 
-            return castTime() * scales.time;
+            return castTime() * Power.scaleNumerical(power);
 
         }
         public string shapeDisplay()
@@ -432,7 +432,7 @@ public static class GenerateAttack
 
         public float cooldownDisplay(float powerPlayer)
         {
-            return cooldown * scales.time / getCooldownMult();
+            return cooldown * scaleNumerical(powerPlayer) / getCooldownMult();
         }
         public string shapeDisplay()
         {

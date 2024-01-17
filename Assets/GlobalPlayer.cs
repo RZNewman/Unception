@@ -68,11 +68,6 @@ public class GlobalPlayer : MonoBehaviour
         }
     }
 
-    [Client]
-    public void clientPlayerStuck()
-    {
-        clientLocalPlayer.stuck();
-    }
 
     [Client]
     public void clientPlayerGroveLeave()

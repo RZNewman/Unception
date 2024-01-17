@@ -55,7 +55,24 @@ public class Power : NetworkBehaviour, TextValue, BarValue
         cachedPhysical.recalc();
         cachedTime.recalc();
         powerUpdates();
+        if (isServer)
+        {
+            RpcRescale();
+        }
     }
+
+    [ClientRpc]
+    void RpcRescale()
+    {
+        if (isClientOnly)
+        {
+            rescale();
+        }
+        
+    }
+
+
+
     void callbackPower(float old, float newPower)
     {
         powerUpdates();
@@ -135,8 +152,8 @@ public class Power : NetworkBehaviour, TextValue, BarValue
             return downscalePower(currentPower);
         }
     }
-
     BaseScales? overrideScales = null;
+    [Server]
     public void setOverrideDefault()
     {
         overrideScales = new BaseScales
@@ -144,12 +161,25 @@ public class Power : NetworkBehaviour, TextValue, BarValue
             world = 1,
             time = Power.scaleNumerical(currentPower),
         };
+        RpcSyncOverride(overrideScales.HasValue, overrideScales ?? new BaseScales() );
         rescale();
     }
+    [Server]
     public void setOverrideNull()
     {
         overrideScales = null;
+        RpcSyncOverride(overrideScales.HasValue, overrideScales ?? new BaseScales());
         rescale();
+    }
+
+    [ClientRpc]
+    void RpcSyncOverride(bool hasValue, BaseScales scales)
+    {
+        if (isClientOnly)
+        {
+            overrideScales = hasValue ? scales : null;
+            rescale();
+        }  
     }
 
     public float scaleNumerical()

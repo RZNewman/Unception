@@ -147,6 +147,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     void buildUnit(Vector3 spawn)
     {
         GameObject u = Instantiate(unitPre, spawn, Quaternion.identity);
+        u.GetComponent<UnitPropsHolder>().owningPlayer = gameObject;
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
         p.setOverrideDefault();
@@ -202,23 +203,47 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     }
     [Client]
 
-    public void stuck()
-    {
-        CmdStuck();
-        FindObjectOfType<MaterialScaling>().none();
-        music.Menu();
-    }
 
-    [Command]
-    void CmdStuck()
+    [Server]
+    public void toggleShip(bool toShip)
     {
         if (currentSelf)
         {
             Power p = currentSelf.GetComponent<Power>();
-            p.setOverrideDefault();
-            currentSelf.transform.position = GameObject.FindWithTag("Spawn").transform.position;
-            currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = false;
+            if (toShip)
+            {
+                
+                p.setOverrideDefault();
+                currentSelf.transform.position = GameObject.FindWithTag("Spawn").transform.position;
+                currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = false;
+                currentSelf.GetComponent<Combat>().clearFighting();
+                
+            }
+            else
+            {
+                p.setOverrideNull();
+                currentSelf.transform.position = atlas.playerSpawn;
+                currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = true;
+            }
+            currentSelf.GetComponent<UnitMovement>().stop(true);
+            TargetToggleShip(connectionToClient, toShip);
         }
+    }
+
+    [TargetRpc]
+    void TargetToggleShip(NetworkConnection conn, bool toShip)
+    {
+        if (toShip)
+        {
+            FindObjectOfType<MaterialScaling>().none();
+            music.Menu();
+        }
+        else
+        {
+            FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
+            music.Game();
+        }
+        
     }
 
 

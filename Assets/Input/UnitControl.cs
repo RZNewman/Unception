@@ -16,6 +16,7 @@ public interface UnitControl
         public bool dash;
         public bool cancel;
         public bool interact;
+        public bool recall;
         public ItemSlot[] attacks;
 
 
@@ -27,6 +28,7 @@ public interface UnitControl
             dash = false;
             cancel = false;
             interact = false;
+            recall = false;
             attacks = new ItemSlot[0];
         }
 
@@ -43,6 +45,7 @@ public interface UnitControl
             dash = false;
             cancel = false;
             interact=false;
+            recall = false;
             attacks = new ItemSlot[0];
         }
         public Optional<ItemSlot> popKey()
@@ -73,6 +76,7 @@ public interface UnitControl
                 dash = false,
                 cancel = false,
                 interact = false,
+                recall = false,
                 attacks = new ItemSlot[0],
             };
         }
@@ -84,6 +88,7 @@ public interface UnitControl
             dash = dash || newer.dash;
             cancel = cancel || newer.cancel;
             interact = interact || newer.interact;
+            recall = recall || newer.recall;
             HashSet<ItemSlot> atks = new HashSet<ItemSlot>();
             foreach (ItemSlot k in attacks)
             {

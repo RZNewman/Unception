@@ -37,7 +37,7 @@ public class KillPlane : MonoBehaviour
                 }
                 else
                 {
-                    props.owningPlayer.GetComponent<PlayerGhost>().toggleShip(false);
+                    props.owningPlayer.GetComponent<PlayerGhost>().transitionShip(false);
 
                 }
                 

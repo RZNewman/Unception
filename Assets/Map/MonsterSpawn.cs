@@ -218,10 +218,9 @@ public class MonsterSpawn : NetworkBehaviour
                 t = locations[z];
                 locations.RemoveAt(z);
             }
-            
 
-            spawnEncounter(e, t, reveal);
-            yield return null;
+
+            yield return spawnEncounter(e, t, reveal);
         }
 
         int zoneCount = locations.Count;
@@ -253,14 +252,14 @@ public class MonsterSpawn : NetworkBehaviour
                     packMult = 1 + baseDiff.pack,
                     ignoreWakeup = false,
                 };
-
-                spawnCreatures(packData, monsterUnits);
-                yield return null;
+                Pack pack = Instantiate(PackPre, floor).GetComponent<Pack>();
+                yield return spawnCreatures(packData, monsterUnits, pack);
+                pack.init();
             }           
         }
     }
 
-    void spawnEncounter(EncounterData encounterData, SpawnTransform spawn, GameObject reveal)
+    IEnumerator spawnEncounter(EncounterData encounterData, SpawnTransform spawn, GameObject reveal)
     {
         Vector3 encounterPos = spawn.position;
         RaycastHit hit;
@@ -288,12 +287,14 @@ public class MonsterSpawn : NetworkBehaviour
                 packMult = 1 + encounterData.difficulty.pack,
                 ignoreWakeup = true,
             };
-            pack = spawnCreatures(packData, encounterUnits);
+            pack = Instantiate(PackPre, floor).GetComponent<Pack>();
+            yield return spawnCreatures(packData, encounterUnits, pack);
+            pack.init();
             encounter.addPack(pack);
 
         }
-
         o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, encounter.rewardPercent, 2);
+        encounter.init();
     }
 
     void spawnBreakables(SpawnTransform spawn, BreakableType type, float totalDifficulty)
@@ -317,10 +318,8 @@ public class MonsterSpawn : NetworkBehaviour
     }
 
 
-    Pack spawnCreatures(SpawnPack spawnData, List<SpawnUnit> unitsToSpawn)
+    IEnumerator spawnCreatures(SpawnPack spawnData, List<SpawnUnit> unitsToSpawn, Pack p)
     {
-
-        Pack p = Instantiate(PackPre, floor).GetComponent<Pack>();
         p.scale = mapScales.world;
         p.transform.position = spawnData.spawnTransform.position;
         if (spawnData.ignoreWakeup)
@@ -332,11 +331,11 @@ public class MonsterSpawn : NetworkBehaviour
         foreach (SpawnUnit unit in toCreate)
         {
             InstanceCreature(spawnData, unit, p);
+            yield return null;
         }
 
 
         NetworkServer.Spawn(p.gameObject);
-        return p;
     }
     float weightedPool()
     {

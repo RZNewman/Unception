@@ -205,25 +205,26 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
 
     [Server]
-    public void toggleShip(bool toShip)
+    public void transitionShip(bool toShip)
     {
         if (currentSelf)
         {
+            UnitPropsHolder props = currentSelf.GetComponent<UnitPropsHolder>();
             Power p = currentSelf.GetComponent<Power>();
-            if (toShip)
+            if (toShip && props.launchedPlayer)
             {
                 
                 p.setOverrideDefault();
                 currentSelf.transform.position = GameObject.FindWithTag("Spawn").transform.position;
-                currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = false;
+                props.launchedPlayer = false;
                 currentSelf.GetComponent<Combat>().clearFighting();
                 
             }
-            else
+            else if(!toShip)
             {
                 p.setOverrideNull();
                 currentSelf.transform.position = atlas.playerSpawn;
-                currentSelf.GetComponent<UnitPropsHolder>().launchedPlayer = true;
+                props.launchedPlayer = true;
             }
             currentSelf.GetComponent<UnitMovement>().stop(true);
             TargetToggleShip(connectionToClient, toShip);

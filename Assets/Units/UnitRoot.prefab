@@ -1017,6 +1017,7 @@ MonoBehaviour:
   syncInterval: 1
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
   launchedPlayer: 0
+  owningPlayer: {fileID: 0}
   championHealthMultiplier: 1
 --- !u!114 &973865255900791963
 MonoBehaviour:

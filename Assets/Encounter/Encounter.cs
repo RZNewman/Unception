@@ -121,6 +121,13 @@ public class Encounter : NetworkBehaviour
     readonly float ambushRadius = 30;
     private void Start()
     {
+        
+
+
+        
+    }
+    public void init()
+    {
         combat = GetComponent<Combat>();
         float scaledAmbushRadius = scale * ambushRadius;
         NavMeshHit hit;
@@ -135,8 +142,6 @@ public class Encounter : NetworkBehaviour
         {
             rootPos = transform.position;
         }
-
-
         //server
         foreach (Pack p in packs)
         {

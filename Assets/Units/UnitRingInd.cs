@@ -4,23 +4,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class UnitChampInd : NetworkBehaviour
+public class UnitRingInd : NetworkBehaviour
 {
     public GameObject indicator;
 
 
-    [Server]
-    public void setColors(List<Color> colors)
+    List<Color> colorList = new List<Color>();
+
+    public void addColor(Color c)
     {
-        RpcSpawnColors(colors);
+        colorList.Add(c);
+        RpcSpawnColors(colorList);
     }
+    public void removeColor(Color c)
+    {
+        colorList.Remove(c);
+        RpcSpawnColors(colorList);
+    }
+
+
+    List<GameObject> instances = new List<GameObject> ();
     [ClientRpc]
     void RpcSpawnColors(List<Color> colors)
     {
+        foreach(GameObject instance in instances)
+        {
+            Destroy(instance);
+        }
         float offset = 0;
         foreach (Color color in colors)
         {
             GameObject o = Instantiate(indicator, GetComponentInChildren<Size>().transform);
+            instances.Add(o);
             o.transform.localPosition += offset * Vector3.up;
             Color colorAlpha = color;
             colorAlpha.a = 0.7f;

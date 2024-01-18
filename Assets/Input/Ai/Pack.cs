@@ -25,6 +25,11 @@ public class Pack : NetworkBehaviour
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();
+        
+    }
+
+    public void init()
+    {
         foreach (GameObject u in pack)
         {
             u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
@@ -37,6 +42,7 @@ public class Pack : NetworkBehaviour
         disableUnits();
     }
 
+
     public float rewardPercent
     {
         get
@@ -48,7 +54,6 @@ public class Pack : NetworkBehaviour
     public void setEncounter(Encounter e)
     {
         encounter = e;
-        List<Color> ind = new List<Color>() { Color.red };
         foreach(GameObject u in pack)
         {
             u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
@@ -63,7 +68,7 @@ public class Pack : NetworkBehaviour
                 }
                 
             };
-            u.GetComponent<UnitChampInd>().setColors(ind);
+            u.GetComponent<UnitRingInd>().addColor(Color.red);
         }
     }
 

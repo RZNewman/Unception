@@ -29,7 +29,6 @@ public class FreeState : PlayerMovementState
     }
     public override StateTransition transition()
     {
-        //Only hit on server, bc damage is dealt there
         if (mover.isIncapacitated)
         {
             return new StateTransition(new StunnedState(mover), true);
@@ -49,6 +48,14 @@ public class FreeState : PlayerMovementState
                 return new StateTransition(new AttackingState(mover, a), true);
             }
             key = inp.popKey();
+        }
+
+        if(inp.recall && mover.grounded)
+        {
+            return new StateTransition(new ChannelState(mover, 3f, "Returning...", () =>
+            {
+                mover.GetComponent<UnitPropsHolder>().owningPlayer.GetComponent<PlayerGhost>().transitionShip(true);
+            } ), true);
         }
 
 

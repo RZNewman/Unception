@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -14,8 +15,14 @@ public class UnitUiReference : MonoBehaviour
     public UiBuffBar buffBar;
     public GameObject unitTarget;
 
+    public List<GameObject> flatDisplays;
+
     private void Start()
     {
+        foreach(GameObject d in flatDisplays)
+        {
+            d.SetActive(false);
+        }
         if (unitTarget)
         {
             setSources();
@@ -24,6 +31,15 @@ public class UnitUiReference : MonoBehaviour
     }
     void setSources()
     {
+        foreach (GameObject d in flatDisplays)
+        {
+            d.SetActive(true);
+            UIKeyDisplay kdis = d.GetComponentInChildren<UIKeyDisplay>();
+            if (kdis)
+            {
+                kdis.sync();
+            }
+        }
         healthbar.source = unitTarget.GetComponentInParent<Health>();
         staggerbar.source = unitTarget.GetComponentInParent<Posture>();
         castbar.source = unitTarget.GetComponentInParent<Cast>();

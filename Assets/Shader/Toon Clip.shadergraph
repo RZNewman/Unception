@@ -44,6 +44,9 @@
         },
         {
             "m_Id": "671405a17a7244fe9f41c5d7687aae2b"
+        },
+        {
+            "m_Id": "7da33deb08744be3b26109060f349f33"
         }
     ],
     "m_Keywords": [],
@@ -143,6 +146,9 @@
         },
         {
             "m_Id": "afadafa0cf5c449c9885b99ba2b3eda6"
+        },
+        {
+            "m_Id": "fa5898b5712749cf917b47d317406792"
         }
     ],
     "m_GroupDatas": [],
@@ -496,6 +502,20 @@
                     "m_Id": "b71bffb849744011bf5bb52819b08c0d"
                 },
                 "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "fa5898b5712749cf917b47d317406792"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "852fd6b135a042c6b7f84176e053a683"
+                },
+                "m_SlotId": 2
             }
         }
     ],
@@ -1418,6 +1438,9 @@
             "m_Id": "82f33cfa70064c4caaf9b0177d776433"
         },
         {
+            "m_Id": "7da33deb08744be3b26109060f349f33"
+        },
+        {
             "m_Id": "53c722ac461d4ed3a1123f0bf632c574"
         },
         {
@@ -1937,9 +1960,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -4369.599609375,
-            "y": -1455.9998779296875,
-            "width": 105.599609375,
+            "x": -4461.599609375,
+            "y": -1487.199951171875,
+            "width": 104.7998046875,
             "height": 33.5999755859375
         }
     },
@@ -1989,6 +2012,27 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalUnlitSubTarget",
     "m_ObjectId": "62ce0e9a13b943eebf82df479996d436"
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
+    "m_ObjectId": "65036bcdf5df4270a9fb8cecc99260dd",
+    "m_Id": 0,
+    "m_DisplayName": "OffsetTexture",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "m_Labels": []
 }
 
 {
@@ -2324,6 +2368,33 @@
     "m_Value": {
         "x": 0.0,
         "y": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty",
+    "m_ObjectId": "7da33deb08744be3b26109060f349f33",
+    "m_Guid": {
+        "m_GuidSerialized": "5ebbb885-04e7-401b-bc39-7e424d19a71e"
+    },
+    "m_Name": "OffsetTexture",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "OffsetTexture",
+    "m_DefaultReferenceName": "_OffsetTexture",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
     }
 }
 
@@ -3625,6 +3696,41 @@
         "w": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "fa5898b5712749cf917b47d317406792",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -4448.7998046875,
+            "y": -1439.199951171875,
+            "width": 150.39990234375,
+            "height": 33.5999755859375
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "65036bcdf5df4270a9fb8cecc99260dd"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "7da33deb08744be3b26109060f349f33"
+    }
 }
 
 {

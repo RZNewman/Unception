@@ -16,7 +16,7 @@ public class LocalPlayer : NetworkBehaviour
             Instantiate(localCameraPre, transform);
             Instantiate(localClickPre, transform);
             Instantiate(localAudio, transform);
-            GameObject.FindGameObjectWithTag("LocalCanvas").GetComponent<UnitUiReference>().setTarget(gameObject);
+            GameObject.FindGameObjectWithTag("LocalCanvas").GetComponentInChildren<UnitUiReference>(true).setTarget(gameObject);
 
         }
     }

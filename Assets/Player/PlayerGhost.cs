@@ -263,7 +263,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     {
         get
         {
-            return extraLives > 0;
+            return currentSelf && extraLives > 0;
         }
     }
 

@@ -7,6 +7,8 @@ using UnityEngine;
 public class Interaction : MonoBehaviour
 {
     public string prompt;
+
+    bool canInteract = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,13 +35,52 @@ public class Interaction : MonoBehaviour
         action(interactor);
     }
 
+    List<Interactor> interactors = new List<Interactor>();
 
     private void OnTriggerEnter(Collider other)
     {
-        other.GetComponentInParent<Interactor>().setInteraction(this, true);
+        if (canInteract)
+        {
+            Interactor i = other.GetComponentInParent<Interactor>();
+            setOverlap(i, true);
+        }
+        
+        
     }
     private void OnTriggerExit(Collider other)
     {
-        other.GetComponentInParent<Interactor>().setInteraction(this, false);
+        if (canInteract)
+        {
+            Interactor i = other.GetComponentInParent<Interactor>();
+            setOverlap(i, false);
+        }
+    }
+
+    public void stopInteraction()
+    {
+        clear();
+        canInteract = false;
+    }
+
+    void clear()
+    {
+        foreach(Interactor i  in interactors.ToArray())
+        {
+            setOverlap(i, false);
+        }
+    }
+
+    void setOverlap(Interactor i, bool isInteracting)
+    {
+        i.setInteraction(this, isInteracting);
+        if (isInteracting)
+        {
+            interactors.Add(i);
+        }
+        else
+        {
+            interactors.Remove(i);
+        }
+        
     }
 }

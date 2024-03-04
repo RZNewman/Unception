@@ -13,6 +13,7 @@ public class Reward : MonoBehaviour
     float rewardBasePower = 0;
 
     public bool givesPower = true;
+    public bool finalizesPower= false;
     public bool givesItems = true;
 
 
@@ -67,27 +68,39 @@ public class Reward : MonoBehaviour
 
 
     }
+
+    float pendingPower = 0;
     void recievePower(Reward other)
     {
         float gathered = other.power;
 
         gathered *= RewardManager.powerPackPercent;
-        p.addPower(gathered);
+        if (other.finalizesPower)
+        {
+            gathered += pendingPower;
+            pendingPower = 0;
+            p.addPower(gathered);
+        }
+        else
+        {
+            pendingPower += gathered;
+        }
+        
     }
 
-    float gatheredPower = 0;
+    float partialItemPower = 0;
     void recieveItems(Reward other)
     {
         if (inventory)
         {
             float itemBasePower = Mathf.Max(other.rewardBasePower, Atlas.playerStartingPower);
 
-            gatheredPower += other.power;
+            partialItemPower += other.power;
             float packPerItem = 1 / RewardManager.itemsPerPack;
             float powerPerItem = itemBasePower * packPerItem;
-            while (gatheredPower > powerPerItem * other.qualityMultiplier)
+            while (partialItemPower > powerPerItem * other.qualityMultiplier)
             {
-                gatheredPower -= powerPerItem * other.qualityMultiplier;
+                partialItemPower -= powerPerItem * other.qualityMultiplier;
                 inventory.AddItem(GenerateAttack.generate(itemBasePower, GenerateAttack.AttackGenerationType.Player, other.qualityMultiplier, inventory.pity), other.transform.position);
             }
         }

@@ -13,15 +13,6 @@ public class Wetstone : NetworkBehaviour
     void Start()
     {
         GetComponent<Interaction>().setInteraction(Interact);
-        if (isServer)
-        {
-            EventManager events = GetComponent<EventManager>();
-            events.suscribeDeath(onDeath);
-        }
-    }
-    void onDeath(bool natural)
-    {
-        if (natural && target) { target.GetComponent<Reward>().recieveReward(GetComponent<Reward>()); }
     }
 
     void Interact(Interactor i)
@@ -34,11 +25,38 @@ public class Wetstone : NetworkBehaviour
         bindingVis.SetActive(false);
     }
 
+    public void consume()
+    {
+        StartCoroutine(consumeRoutine());
+    }
+
+    IEnumerator consumeRoutine()
+    {
+        GameObject unit = target;
+        unit.GetComponent<UnitPropsHolder>().waterCarried = null;
+        target = FindObjectOfType<Flower>().gameObject;
+        MenuHandler.controlCharacterCutscene = false;
+        LocalCamera cam = FindObjectOfType<LocalCamera>();
+        cam.gameObject.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        Sunlight sun = FindObjectOfType<Sunlight>();
+        sun.setMultiplier(200f);
+        unit.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
+        yield return new WaitForSeconds(3f);
+
+
+
+        sun.setMultiplier(1);
+        cam.gameObject.SetActive(true);
+        MenuHandler.controlCharacterCutscene = true;
+        Destroy(gameObject);
+    }
+
     private void OnDestroy()
     {
         if (target)
         {
-            target.GetComponent<UnitPropsHolder>().waterCarried = null;
+            
         }
     }
 

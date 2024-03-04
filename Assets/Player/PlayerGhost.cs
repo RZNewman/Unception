@@ -168,7 +168,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         if (i.gameObject == currentSelf)
         {
             GameObject water = i.gameObject.GetComponent<UnitPropsHolder>().waterCarried;
-            water.GetComponent<LifeManager>().die();
+            water.GetComponent<Wetstone>().consume();
         }
     }
 

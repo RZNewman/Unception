@@ -22,12 +22,14 @@ public class MenuHandler : MonoBehaviour
 
     GlobalPlayer gp;
 
-    static bool controlCharacter = false;
+    static bool controlCharacterMenu = false;
+
+    public static bool controlCharacterCutscene = true;
     public static bool canInput
     {
         get
         {
-            return controlCharacter;
+            return controlCharacterMenu && controlCharacterCutscene;
         }
     }
     // Start is called before the first frame update
@@ -129,7 +131,7 @@ public class MenuHandler : MonoBehaviour
         menuPreActions(activeMenu);
         menuObject(activeMenu).SetActive(true);
         menuPostActions(activeMenu);
-        controlCharacter = activeMenu == Menu.Gameplay;
+        controlCharacterMenu = activeMenu == Menu.Gameplay;
         MenuEvent?.Invoke(activeMenu);
     }
 

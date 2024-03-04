@@ -7,6 +7,8 @@ public class Sunlight : MonoBehaviour
     public Light daylight;
     public float daySpeedDegrees = 1;
 
+    float lightMultiplier=1;
+
     enum LightCycle
     {
         Day,
@@ -30,9 +32,15 @@ public class Sunlight : MonoBehaviour
             setLights();
         }
     }
+
+    public void setMultiplier(float mult)
+    {
+        lightMultiplier = mult;
+        setLights();
+    }
     void setLights()
     {
         //daylight.enabled = cycle == LightCycle.Day;
-        daylight.GetComponent<Spinner>().rotationSpeed = cycle == LightCycle.Day ? daySpeedDegrees : daySpeedDegrees * 2;
+        daylight.GetComponent<Spinner>().rotationSpeed = (cycle == LightCycle.Day ? daySpeedDegrees : daySpeedDegrees * 2) * lightMultiplier;
     }
 }

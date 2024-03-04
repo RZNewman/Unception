@@ -2,23 +2,44 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static EventManager;
 
-public class Wetstone : MonoBehaviour
+public class Wetstone : NetworkBehaviour
 {
+    [SyncVar]
     GameObject target;
     public GameObject bindingVis;
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<Interaction>().setInteraction(Interact);
+        if (isServer)
+        {
+            EventManager events = GetComponent<EventManager>();
+            events.suscribeDeath(onDeath);
+        }
+    }
+    void onDeath(bool natural)
+    {
+        if (natural && target) { target.GetComponent<Reward>().recieveReward(GetComponent<Reward>()); }
     }
 
     void Interact(Interactor i)
     {
-        GetComponent<Interaction>().stopInteraction();
+        GetComponent<Interaction>().setInteractable(false);
         transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        transform.parent = null;
         target = i.gameObject;
+        target.GetComponent<UnitPropsHolder>().waterCarried = gameObject;
         bindingVis.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (target)
+        {
+            target.GetComponent<UnitPropsHolder>().waterCarried = null;
+        }
     }
 
     readonly float _targetDist = 2.5f;
@@ -35,7 +56,11 @@ public class Wetstone : MonoBehaviour
         if (target)
         {
             Vector3 diff = target.transform.position - transform.position;
-            if(diff.magnitude > targetDist)
+            if(diff.magnitude > targetDist * 20)
+            {
+                transform.position = target.transform.position - diff.normalized * targetDist * 5;
+            }
+            else if(diff.magnitude > targetDist)
             {
                 transform.position += diff * 1.0f * Time.fixedDeltaTime;
             }

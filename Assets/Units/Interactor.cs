@@ -42,13 +42,22 @@ public class Interactor : NetworkBehaviour
         {
             if(zones.Count > 0)
             {
-                interactionPrompt.SetActive(true);
-                TMP_Text txt = interactionPrompt.GetComponentInChildren<TMP_Text>();
-                string prompt = zones.First().prompt;
-                if(txt.text != prompt)
+                Interaction zone = zones.First();
+                if (zone.conditionMet(this))
                 {
-                    txt.text = prompt;
+                    interactionPrompt.SetActive(true);
+                    TMP_Text txt = interactionPrompt.GetComponentInChildren<TMP_Text>();
+                    string prompt = zone.prompt;
+                    if (txt.text != prompt)
+                    {
+                        txt.text = prompt;
+                    }
                 }
+                else
+                {
+                    interactionPrompt.SetActive(false);
+                }
+                
             }
             else
             {
@@ -60,7 +69,8 @@ public class Interactor : NetworkBehaviour
         {
             if (zones.Count > 0)
             {
-                if (mover.input.interact)
+                Interaction zone = zones.First();
+                if (mover.input.interact && zone.conditionMet(this))
                 {
                     zones.First().interact(this);
                 }

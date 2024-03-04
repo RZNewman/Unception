@@ -1018,6 +1018,7 @@ MonoBehaviour:
   props: {fileID: 11400000, guid: dd546478b4cc8e24ba5e687b02adcde4, type: 2}
   launchedPlayer: 0
   owningPlayer: {fileID: 0}
+  waterCarried: {fileID: 0}
   championHealthMultiplier: 1
 --- !u!114 &973865255900791963
 MonoBehaviour:
@@ -14244,6 +14245,7 @@ MonoBehaviour:
   powerDisplayBar: {fileID: 0}
   buffBar: {fileID: 6714114782617600999}
   unitTarget: {fileID: 563495925269500109}
+  flatDisplays: []
 --- !u!1 &9178395675412575079
 GameObject:
   m_ObjectHideFlags: 0

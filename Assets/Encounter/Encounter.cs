@@ -90,7 +90,7 @@ public class Encounter : NetworkBehaviour
                     combat.setHitBy(triggeringUnit);
                     if (revealOnEnd)
                     {
-                        revealOnEnd.SetActive(true);
+                        revealOnEnd.GetComponent<Interaction>().setInteractable(true);
                     }
                     GetComponent<LifeManager>().die();
                 }

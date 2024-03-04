@@ -10,6 +10,9 @@ public class UnitPropsHolder : NetworkBehaviour
     [SyncVar]
     public GameObject owningPlayer;
 
+    [SyncVar]
+    public GameObject waterCarried = null;
+
 
     public float championHealthMultiplier = 1;
 

@@ -209,7 +209,7 @@ public class MonsterSpawn : NetworkBehaviour
                     position = endPortal.transform.position,
                     halfExtents = mapScales.world * 0.5f * Vector3.one,
                 };
-                endPortal.SetActive(false);
+                endPortal.GetComponent<Interaction>().setInteractable(false);
                 reveal = endPortal;
             }
             else

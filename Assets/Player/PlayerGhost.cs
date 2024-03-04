@@ -53,6 +53,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             //TODO multiplayer fix
             FindObjectOfType<GroveWorld>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(GroveInteract);
             FindObjectOfType<Atlas>().mapPodium.GetComponentInChildren<Interaction>().setInteraction(AtlasInteract);
+            FindObjectOfType<Flower>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(PlantFeedInteract);
+            FindObjectOfType<Flower>().transform.parent.GetComponentInChildren<Interaction>().setCondition(PlantFeedCondition);
         }
         if (isClient)
         {
@@ -158,6 +160,21 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         u.GetComponent<AbilityManager>().addAbility(inv.equippedAbilities);
         u.GetComponent<TriggerManager>().addTrigger(inv.blessings);
         currentSelf = u;
+    }
+
+    [Server]
+    void PlantFeedInteract(Interactor i)
+    {
+        if (i.gameObject == currentSelf)
+        {
+            GameObject water = i.gameObject.GetComponent<UnitPropsHolder>().waterCarried;
+            water.GetComponent<LifeManager>().die();
+        }
+    }
+
+    bool PlantFeedCondition(Interactor i)
+    {
+        return i.gameObject.GetComponent<UnitPropsHolder>().waterCarried;
     }
 
     [Server]
@@ -301,9 +318,9 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     }
 
     [ClientRpc]
-    public void RpcSetCompassDirection(Vector3 dir)
+    public void RpcSetCompassTarget(Vector3 target)
     {
-        FindObjectOfType<Compass>(true).setDirection(dir);
+        FindObjectOfType<Compass>(true).setTarget(target);
     }
 
     public void pause(bool paused)

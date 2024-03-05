@@ -303,7 +303,7 @@ public class MonsterSpawn : NetworkBehaviour
             encounter.addPack(pack);
 
         }
-        o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, encounter.rewardPercent, 2);
+        o.GetComponent<Reward>().setReward(spawnPower, encounterData.difficulty.total, encounter.rewardPercent);
         encounter.init();
     }
 
@@ -320,7 +320,7 @@ public class MonsterSpawn : NetworkBehaviour
             o.transform.localScale = Vector3.one * mapScales.world;
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
             o.GetComponent<Gravity>().gravity *= mapScales.speed;
-            o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent, qualityMult(type));
+            o.GetComponent<Reward>().setReward(spawnPower, 1.0f, packPercent);
             o.GetComponent<Breakable>().type = type;
 
             NetworkServer.Spawn(o);

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public static class RewardManager
 {
-    //This also increases the XP rate propotionally, bc it increases the falloff rate
-    public readonly static float itemQualityPercent = 1.5f;
     public readonly static float bonusRewardPerDifficulty = 0.3f;
 
     [Serializable]
@@ -87,26 +85,36 @@ public static class RewardManager
 
     public static float qualityPercent(Quality q)
     {
-        return Mathf.Lerp(1, itemQualityPercent, ((float)q) / ((float)Quality.Legendary));
+        return q switch
+        {
+            Quality.Common => 1,
+            Quality.Uncommon => 1.125f,
+            Quality.Rare => 1.25f,
+            Quality.Epic => 1.375f,
+            Quality.Legendary => 1.5f,
+            _ => 1
+        };
     }
 
-    public readonly static float itemsPerPack = 3f;
+    public readonly static float itemsPerPack = 0.5f;
 
-    readonly static float mapsPerFalloff = 3.0f;
+    //readonly static float mapsPerFalloff = 3.0f;
 
     //the percent increase in power to create a scale change equal to the % increase of the highest quality
     //this controls the falloff speed of items during leveling
     //~1.56
-    readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
+    //readonly static float powerPercentFalloff = Power.inverseDownscalePower(Power.baseDownscale * itemQualityPercent) / Power.basePower;
     //the XP rate is directly calulated from the desired falloff speed
-    public readonly static float packsKilledPerMap = 12f;
+    //public readonly static float packsKilledPerMap = 12f;
 
 
-    public readonly static float powerMapPercent = (powerPercentFalloff - 1) / mapsPerFalloff;
-    public readonly static float powerPackPercent = powerMapPercent / packsKilledPerMap;
+    //public readonly static float powerMapPercent = (powerPercentFalloff - 1) / mapsPerFalloff;
+    //public readonly static float powerPackPercent = powerMapPercent / packsKilledPerMap;
+    public readonly static float powerPackPercent = 0.05f;
 
 
-    public static readonly float uncommonChance = 4f / (itemsPerPack * packsKilledPerMap);
+    //public static readonly float uncommonChance = 4f / (itemsPerPack * packsKilledPerMap);
+    public static readonly float uncommonChance = 0.12f;
     public static readonly float qualityRarityFactor = 0.25f;
 
     public static readonly float chestChance = 0.125f;

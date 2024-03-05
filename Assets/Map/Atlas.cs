@@ -247,13 +247,14 @@ public class Atlas : NetworkBehaviour
         }
     }
 
+    readonly float packsKilledPerMap = 6f;
     float powerAtTier(int tier)
     {
         float power = tier switch
         {
             int i when i <= 1 => playerStartingPower,
             int i when i == 2 => playerStartingPower * 1.5f,
-            int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
+            int i => playerStartingPower * (Mathf.Pow(1 + powerPackPercent* packsKilledPerMap, mapClearsToTier(i))),
         };
         return Mathf.Min(power, softcap);
     }

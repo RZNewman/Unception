@@ -63,6 +63,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d24bde530a6cd174cb70a68743168031, type: 2}
+  - {fileID: 2100000, guid: ff511ad115b5d67479e6c603d3e8b95d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,6 +146,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skipSpawn: 0
   dissuadeCollapse: 0
+  navType: 0
+  alternatives: []
   adjacencies:
   - direction: 0
     connections: 02000000

@@ -33,10 +33,15 @@ public class Interactor : NetworkBehaviour
         {
             zones.Remove(ia);
         }
+        foreach(Interaction inter in zones)
+        {
+            Debug.Log(inter);
+        }
+        
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (lp.isLocalUnit)
         {

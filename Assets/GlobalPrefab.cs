@@ -10,6 +10,7 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject BuffPre;
     public GameObject GroundTargetPre;
     public GameObject ItemDropPre;
+    public GameObject WetstonePre;
 
     public GameObject ParticlePre;
     public GameObject DamageNumberPre;

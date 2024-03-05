@@ -14,7 +14,7 @@ public class Atlas : NetworkBehaviour
     public static readonly int breakablesPerFloor = 4;
     public readonly static float avgFloorsPerMap = 1f;
     public readonly static float softcap = 6_000f;
-    public readonly static float playerStartingPower = 1000;
+    public readonly static float playerStartingPower = 500;
     public static readonly float sparsness = 5f;
 
     public RectTransform mapImage;
@@ -113,6 +113,7 @@ public class Atlas : NetworkBehaviour
         public Floor floor;
         public Vector2 visualLocation;
         public float difficultyRangePercent;
+        public bool hideMonsters;
     }
     public struct Floor
     {
@@ -250,9 +251,8 @@ public class Atlas : NetworkBehaviour
     {
         float power = tier switch
         {
-            int i when i == 0 => playerStartingPower * 0.5f,
-            int i when i == 1 => playerStartingPower * 0.8f,
-            int i when i == 2 => playerStartingPower,
+            int i when i <= 1 => playerStartingPower,
+            int i when i == 2 => playerStartingPower * 1.5f,
             int i => playerStartingPower * (Mathf.Pow(1 + powerMapPercent, mapClearsToTier(i))),
         };
         return Mathf.Min(power, softcap);
@@ -380,14 +380,15 @@ public class Atlas : NetworkBehaviour
                     power = powerAtTier(q.tier),
                     difficulty = q.difficulty,
                     floor = new Floor
-                        {
-                            encounters = floorEncounters(q.difficulty, q.encounters),
-                            sparseness = sparsness,
-                            segments = segmentsAtTier(q.tier)
+                    {
+                        encounters = floorEncounters(q.difficulty, q.encounters),
+                        sparseness = sparsness,
+                        segments = segmentsAtTier(q.tier)
 
-                        },
+                    },
                     visualLocation = location.visualLocation,
-                });
+                    hideMonsters = q.tier == 0
+                }); ;
             }
             else
             {
@@ -539,7 +540,7 @@ public class Atlas : NetworkBehaviour
     {
         get
         {
-            return missionStatus == MissionStatus.Arrived || missionStatus == MissionStatus.Success;
+            return missionStatus == MissionStatus.Arrived;
         }
     }
     [Server]
@@ -570,6 +571,7 @@ public class Atlas : NetworkBehaviour
         //Debug.Log(m.quest + ": " + m.tier + " - " + m.power);
 
         yield return gen.buildMap();
+        PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.LoadingFinished);
         missionStatus = MissionStatus.Arrived;
     }
     public Vector3 playerSpawn
@@ -612,8 +614,6 @@ public class Atlas : NetworkBehaviour
             {
                 inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
-
-            inv.GetComponent<PlayerGhost>().TargetMenuFinish(inv.connectionToClient, grantBlessing);
         }
     }
 

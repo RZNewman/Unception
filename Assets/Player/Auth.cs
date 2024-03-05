@@ -56,13 +56,16 @@ public class Auth : NetworkBehaviour
     public void signOut()
     {
         CmdSignOut();
+        FindObjectOfType<Flower>().cameraPlant.SetActive(false);
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Login);
     }
     [Command]
     void CmdSignOut()
     {
+        GetComponent<PlayerGhost>().cleanup();
         save.saveAll();
         FindObjectOfType<UiPopups>().closePopup();
+        
         //only unset after
         username = null;
     }

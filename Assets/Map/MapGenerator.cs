@@ -124,7 +124,7 @@ public class MapGenerator : NetworkBehaviour
         yield return GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap.floor.sparseness, currentMap.difficulty, currentMap.floor.encounters, endPortal);
+        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap, endPortal);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassTarget(wfc.generationData.end));
     }
 

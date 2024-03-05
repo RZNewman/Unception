@@ -192,10 +192,17 @@ public class MonsterSpawn : NetworkBehaviour
         return units;
     }
 
-    public IEnumerator spawnLevel(List<SpawnTransform> locations, float sparseness, Difficulty baseDiff, EncounterData[] encounters, GameObject endPortal)
+    public IEnumerator spawnLevel(List<SpawnTransform> locations, Map map, GameObject endWater)
     {
-        monsterUnits = createUnits(baseDiff);
+        monsterUnits = createUnits(map.difficulty);
+        endWater.GetComponent<Reward>().setReward(spawnPower, map.difficulty.total, 3);
 
+        if (map.hideMonsters)
+        {
+            yield break;
+        }
+
+        EncounterData[] encounters = map.floor.encounters;
         for (int i = 0; i < encounters.Length; i++)
         {
             EncounterData e = encounters[i];
@@ -206,11 +213,11 @@ public class MonsterSpawn : NetworkBehaviour
             {
                 t = new SpawnTransform
                 {
-                    position = endPortal.transform.position,
+                    position = endWater.transform.position,
                     halfExtents = mapScales.world * 0.5f * Vector3.one,
                 };
-                endPortal.GetComponent<Interaction>().setInteractable(false);
-                reveal = endPortal;
+                endWater.GetComponent<Interaction>().setInteractable(false);
+                reveal = endWater;
             }
             else
             {
@@ -230,11 +237,12 @@ public class MonsterSpawn : NetworkBehaviour
             SpawnTransform t = locations[z];
             locations.RemoveAt(z);
             BreakableType bType = gp.serverPlayer.pityTimers.rollBreakable(1);
-            spawnBreakables(t, bType, baseDiff.total);
+            spawnBreakables(t, bType, map.difficulty.total);
             yield return null;
         }
 
         float sparseCounter = 0;
+        float sparseness = map.floor.sparseness;
         while(locations.Count>0)
         {
             int z = locations.RandomIndex();
@@ -249,7 +257,7 @@ public class MonsterSpawn : NetworkBehaviour
                 SpawnPack packData = new SpawnPack
                 {
                     spawnTransform = t,
-                    packMult = 1 + baseDiff.pack,
+                    packMult = 1 + map.difficulty.pack,
                     ignoreWakeup = false,
                 };
                 Pack pack = Instantiate(PackPre, floor).GetComponent<Pack>();

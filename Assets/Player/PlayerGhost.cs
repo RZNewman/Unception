@@ -107,6 +107,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     public void embark(int mapIndex)
     {
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
+        GetComponent<PlayerInfo>().FireTutorialEvent(PlayerInfo.TutorialEvent.MapSelect);
         CmdEmbark(mapIndex);
     }
 
@@ -207,18 +208,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     {
         FindObjectOfType<MenuHandler>().switchMenu(m);
     }
-    [TargetRpc]
-    public void TargetMenuFinish(NetworkConnection conn, bool blessing)
-    {
-        music.Menu();
-        MenuHandler.Menu target = blessing switch
-        {
-            true => MenuHandler.Menu.Blessing,
-            _ => MenuHandler.Menu.Loadout,
-        };
-        FindObjectOfType<MenuHandler>().switchMenu(target);
-    }
-    [Client]
 
 
     [Server]
@@ -242,6 +231,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
                 p.setOverrideNull();
                 currentSelf.transform.position = atlas.playerSpawn;
                 props.launchedPlayer = true;
+                GetComponent<PlayerInfo>().FireTutorialEvent(PlayerInfo.TutorialEvent.Launch);
             }
             currentSelf.GetComponent<UnitMovement>().stop(true);
             TargetToggleShip(connectionToClient, toShip);
@@ -263,7 +253,13 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         }
         
     }
-
+    public void cleanup()
+    {
+        if (currentSelf)
+        {
+            Destroy(currentSelf);
+        }
+    }
 
     //server
     void onUnitDeath(bool natural)

@@ -17,14 +17,17 @@ public class Wetstone : NetworkBehaviour
 
     void Interact(Interactor i)
     {
+        Debug.Log("pick water");
         GetComponent<Interaction>().setInteractable(false);
         transform.GetChild(0).GetComponent<Collider>().enabled = false;
         transform.parent = null;
         target = i.gameObject;
         target.GetComponent<UnitPropsHolder>().waterCarried = gameObject;
         bindingVis.SetActive(false);
+        PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.WaterPickup);
     }
 
+    [Server]
     public void consume()
     {
         StartCoroutine(consumeRoutine());
@@ -38,6 +41,7 @@ public class Wetstone : NetworkBehaviour
         MenuHandler.controlCharacterCutscene = false;
         LocalCamera cam = FindObjectOfType<LocalCamera>();
         cam.gameObject.SetActive(false);
+        FindObjectOfType<Atlas>().missionSucceed();
         yield return new WaitForSeconds(1f);
         Sunlight sun = FindObjectOfType<Sunlight>();
         sun.setMultiplier(200f);
@@ -50,6 +54,7 @@ public class Wetstone : NetworkBehaviour
         cam.gameObject.SetActive(true);
         MenuHandler.controlCharacterCutscene = true;
         Destroy(gameObject);
+        PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.WaterFed);
     }
 
     private void OnDestroy()

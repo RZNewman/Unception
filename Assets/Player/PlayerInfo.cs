@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         public FireConditions start;
         public List<TutorialSection> sections;
+        public Action<PlayerInfo> action;
         public FinishCondtions stop;
     }
 
@@ -31,6 +33,7 @@ public class PlayerInfo : NetworkBehaviour
     struct FinishCondtions
     {
         public List<Keybinds.KeyName> keyPress;
+        public List<TutorialEvent> events;
         public MenuHandler.Menu? menuScreen;
         public float timer;
         public bool timerIsFallback;
@@ -40,43 +43,6 @@ public class PlayerInfo : NetworkBehaviour
     {
         stages = new List<TutorialWindow>()
         {
-            //maps
-            new TutorialWindow
-            {
-                start = new FireConditions
-                {
-                    menuScreen= MenuHandler.Menu.MainMenu
-                },
-                sections = new List<TutorialSection>()
-                {
-                    new TutorialSection
-                    {
-                        displayText = "Click On the Maps menu"
-                    }
-                },
-                stop = new FinishCondtions
-                {
-                    menuScreen = MenuHandler.Menu.Map
-                }
-            },
-            //embark
-            new TutorialWindow
-            {
-                start = new FireConditions
-                {
-                },
-                sections = new List<TutorialSection>()
-                {
-                    new TutorialSection
-                    {
-                        displayText = "Select a Map Marker, then Embark!"
-                    }
-                },
-                stop = new FinishCondtions
-                {
-                    menuScreen = MenuHandler.Menu.Loading
-                }
-            },
             //move
             new TutorialWindow
             {
@@ -137,6 +103,209 @@ public class PlayerInfo : NetworkBehaviour
                     timerIsFallback = true,
                 }
             },
+            //collect water
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                    
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Collect the water"
+                    }
+                },
+                action = (i) =>
+                {
+                    Ship  s =FindObjectOfType<Ship>();
+
+                    s.shipWaterArrow.SetActive(true);
+                    i.CmdSpawnShipWater(s.shipWaterPosition.transform.position, s.shipWaterPosition.transform.lossyScale);
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.WaterPickup,
+                    }
+                }
+            },
+            //drink water
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Bring the water to the flower"
+                    }
+                },
+                action = (_) =>
+                {
+                    FindObjectOfType<Ship>().shipWaterArrow.transform.Rotate(Vector3.up,180);
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.WaterFed,
+                    }
+                }
+            },
+            //maps
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Go to the wheel"
+                    }
+                },
+                action = (_) =>
+                {
+                    FindObjectOfType<Ship>().shipWaterArrow.SetActive(false);
+                },
+                stop = new FinishCondtions
+                {
+                    menuScreen = MenuHandler.Menu.Map
+                }
+            },
+            //embark
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Select a Map Marker, then Embark!"
+                    }
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.MapSelect,
+                    }
+                }
+            },
+            //loading..
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    //new TutorialSection
+                    //{
+                    //    displayText = "Select a Map Marker, then Embark!"
+                    //}
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.LoadingFinished,
+                    }
+                }
+            },
+            //find water
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Leave to find more water"
+                    }
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.Launch,
+                    }
+                }
+            },
+            //goal
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "More water must be here...",
+                    }
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.WaterPickup
+                    }
+                }
+            },
+            //recall
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Return to the ship",
+                        keybinds = new List<Keybinds.KeyName>()
+                        {
+                        Keybinds.KeyName.Recall,
+                        }
+                    }
+                },
+                stop = new FinishCondtions
+                {
+                    keyPress = new List<Keybinds.KeyName>()
+                    {
+                        Keybinds.KeyName.Recall
+                    }
+                }
+            },
+            //wait for fed ..
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                },
+                stop = new FinishCondtions
+                {
+                    events = new List<TutorialEvent>()
+                    {
+                        TutorialEvent.WaterFed
+                    }
+                }
+            },
+
             //attack
             new TutorialWindow
             {
@@ -167,24 +336,7 @@ public class PlayerInfo : NetworkBehaviour
                     timerIsFallback = true,
                 }
             },
-            //goal
-            new TutorialWindow
-            {
-                start = new FireConditions
-                {
-                },
-                sections = new List<TutorialSection>()
-                {
-                    new TutorialSection
-                    {
-                        displayText = "Reach the blue portal at the end!",
-                    }
-                },
-                stop = new FinishCondtions
-                {
-                    timer = 10f
-                }
-            },
+            
             //equip
             new TutorialWindow
             {
@@ -230,6 +382,19 @@ public class PlayerInfo : NetworkBehaviour
         popups = FindObjectOfType<UiPopups>();
     }
 
+
+    [Command]
+    void CmdSpawnShipWater(Vector3 pos, Vector3 scale)
+    {
+        if(GetComponent<PlayerGhost>().power < Atlas.playerStartingPower * 2)
+        {
+            GameObject w = Instantiate(FindObjectOfType<GlobalPrefab>().WetstonePre, pos, Quaternion.identity);
+            w.transform.localScale = scale;
+            w.GetComponent<Reward>().setReward(500, 1, 20);
+            NetworkServer.Spawn(w);
+        }
+    }
+
     private void OnDestroy()
     {
         if (!isLocalPlayer)
@@ -248,7 +413,7 @@ public class PlayerInfo : NetworkBehaviour
         if (isOpen)
         {
             lookForKeys();
-            if (openWindow.stop.timer>0)
+            if (openWindow.stop.timer>0 && ! openWindow.stop.timerIsFallback)
             {
                 openWindow.stop.timer -= Time.deltaTime;
                 tryCloseStage();
@@ -313,17 +478,64 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
+    public enum TutorialEvent
+    {
+        WaterPickup,
+        WaterFed,
+        MapSelect,
+        LoadingFinished,
+        Launch
+    }
+
+    [Server]
+    public void FireTutorialEvent(TutorialEvent e)
+    {
+        TargetFireTutorialEvent(connectionToClient,e);
+    }
+    [TargetRpc]
+    void TargetFireTutorialEvent(NetworkConnection conn ,TutorialEvent e)
+    {
+        bool removed = false;
+        if (isOpen && openWindow.stop.events != null)
+        {
+            foreach (TutorialEvent tut in openWindow.stop.events.ToList())
+            {
+                if (tut == e)
+                {
+                    openWindow.stop.events.Remove(e);
+                    removed = true;
+                }
+            }
+            if (removed)
+            {
+                tryCloseStage();
+            }
+        }
+    }
+
+    [Server]
+    public static void FireTutorialEventAll(TutorialEvent e)
+    {
+        foreach(PlayerInfo pi in FindObjectsOfType<PlayerInfo>())
+        {
+            pi.FireTutorialEvent(e);
+        }
+        
+    }
+
+
     void tryCloseStage()
     {
         bool menuDone = !openWindow.stop.menuScreen.HasValue;
         bool buttonsDone = openWindow.stop.keyPress == null || openWindow.stop.keyPress.Count == 0;
+        bool eventsDone = openWindow.stop.events == null || openWindow.stop.events.Count == 0;
         bool timerDone = openWindow.stop.timer <= 0;
         bool timerFallback = openWindow.stop.timerIsFallback;
 
         if (
-            (menuDone && buttonsDone && timerDone)
+            (menuDone && buttonsDone && timerDone && eventsDone)
             ||
-            (timerFallback && menuDone && buttonsDone)
+            (timerFallback && menuDone && buttonsDone && eventsDone)
             ||
             (timerFallback && timerDone)
             )
@@ -336,6 +548,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         isOpen = false;
         currentProgress++;
+        //Debug.Log(currentProgress);
         popups.closePopup();
     }
 
@@ -344,6 +557,10 @@ public class PlayerInfo : NetworkBehaviour
         isOpen = true;
         openWindow = tutorial.stages[currentProgress];
         popups.createTutorial(openWindow.sections);
+        if(openWindow.action != null)
+        {
+            openWindow.action(this);
+        }
     }
 
     public struct NotificationsData

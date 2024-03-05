@@ -48,13 +48,21 @@ public class Size : MonoBehaviour
 
     void Start()
     {
-        stopper = transform.parent.GetComponentInChildren<UnitStopper>().GetComponent<CapsuleCollider>();
-        Physics.IgnoreCollision(col, stopper);
-        stopper.transform.parent = transform;
-        stopper.transform.localScale = Vector3.one;
-        stopper.radius = colliderWidth + 0.01f;
-        stopper.height = colliderHalfHeight * 2 + 0.01f;
-        GetComponentInParent<Power>().subscribePower(updateSize);
+        CapsuleCollider stopper = transform.parent?.GetComponentInChildren<UnitStopper>()?.GetComponent<CapsuleCollider>();
+        if (stopper)
+        {
+            Physics.IgnoreCollision(col, stopper);
+            stopper.transform.parent = transform;
+            stopper.transform.localScale = Vector3.one;
+            stopper.radius = colliderWidth + 0.01f;
+            stopper.height = colliderHalfHeight * 2 + 0.01f;
+        }
+        Power p = GetComponent<Power>();
+        if (!p)
+        {
+            p = GetComponentInParent<Power>();
+        }
+        p.subscribePower(updateSize);
     }
 
     Vector3 cachedSize = Vector3.one;

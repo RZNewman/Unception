@@ -33,10 +33,6 @@ public class Interactor : NetworkBehaviour
         {
             zones.Remove(ia);
         }
-        foreach(Interaction inter in zones)
-        {
-            Debug.Log(inter);
-        }
         
     }
 

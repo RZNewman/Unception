@@ -389,8 +389,9 @@ public class PlayerInfo : NetworkBehaviour
         if(GetComponent<PlayerGhost>().power < Atlas.playerStartingPower * 2)
         {
             GameObject w = Instantiate(FindObjectOfType<GlobalPrefab>().WetstonePre, pos, Quaternion.identity);
-            w.transform.localScale = scale;
-            w.GetComponent<Reward>().setReward(500, 1, 20);
+            w.GetComponent<Reward>().setReward(Atlas.playerStartingPower, 1, 20);
+            w.GetComponent<Power>().setPower(Atlas.playerStartingPower);
+            w.GetComponent<Power>().setOverrideDefault();
             NetworkServer.Spawn(w);
         }
     }

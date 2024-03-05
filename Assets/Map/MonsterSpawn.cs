@@ -196,6 +196,8 @@ public class MonsterSpawn : NetworkBehaviour
     {
         monsterUnits = createUnits(map.difficulty);
         endWater.GetComponent<Reward>().setReward(spawnPower, map.difficulty.total, 3);
+        endWater.GetComponent<Power>().setPower(spawnPower);
+        NetworkServer.Spawn(endWater);
 
         if (map.hideMonsters)
         {

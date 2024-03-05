@@ -15,8 +15,12 @@ public class UiPopups : MonoBehaviour
 
     public void createTutorial(List<PlayerInfo.TutorialSection> sections)
     {
-        instancedPopup = Instantiate(tutorialPre, transform);
-        instancedPopup.GetComponent<UiTutorial>().setSections(sections);
+        if(sections != null && sections.Count > 0)
+        {
+            instancedPopup = Instantiate(tutorialPre, transform);
+            instancedPopup.GetComponent<UiTutorial>().setSections(sections);
+        }
+        
     }
 
     public void closePopup()

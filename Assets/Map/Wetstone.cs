@@ -17,7 +17,6 @@ public class Wetstone : NetworkBehaviour
 
     void Interact(Interactor i)
     {
-        Debug.Log("pick water");
         GetComponent<Interaction>().setInteractable(false);
         transform.GetChild(0).GetComponent<Collider>().enabled = false;
         transform.parent = null;
@@ -42,6 +41,7 @@ public class Wetstone : NetworkBehaviour
         LocalCamera cam = FindObjectOfType<LocalCamera>();
         cam.gameObject.SetActive(false);
         FindObjectOfType<Atlas>().missionSucceed();
+        canTeleport = false;
         yield return new WaitForSeconds(1f);
         Sunlight sun = FindObjectOfType<Sunlight>();
         sun.setMultiplier(200f);
@@ -73,13 +73,14 @@ public class Wetstone : NetworkBehaviour
             return _targetDist * transform.lossyScale.x;
         }
     }
+    bool canTeleport = true;
     // Update is called once per frame
     void FixedUpdate()
     {
         if (target)
         {
             Vector3 diff = target.transform.position - transform.position;
-            if(diff.magnitude > targetDist * 20)
+            if(canTeleport && diff.magnitude > targetDist * 20)
             {
                 transform.position = target.transform.position - diff.normalized * targetDist * 5;
             }

@@ -175,7 +175,9 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     bool PlantFeedCondition(Interactor i)
     {
-        return i.gameObject.GetComponent<UnitPropsHolder>().waterCarried;
+        GameObject w = i.gameObject.GetComponent<UnitPropsHolder>().waterCarried;
+        //Debug.Log(w);
+        return w;
     }
 
     [Server]
@@ -224,6 +226,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
                 currentSelf.transform.position = GameObject.FindWithTag("Spawn").transform.position;
                 props.launchedPlayer = false;
                 currentSelf.GetComponent<Combat>().clearFighting();
+                if (props.waterCarried)
+                {
+                    props.waterCarried.GetComponent<Power>().setOverrideDefault();
+                }
                 
             }
             else if(!toShip)
@@ -232,6 +238,10 @@ public class PlayerGhost : NetworkBehaviour, TextValue
                 currentSelf.transform.position = atlas.playerSpawn;
                 props.launchedPlayer = true;
                 GetComponent<PlayerInfo>().FireTutorialEvent(PlayerInfo.TutorialEvent.Launch);
+                if (props.waterCarried)
+                {
+                    props.waterCarried.GetComponent<Power>().setOverrideNull();
+                }
             }
             currentSelf.GetComponent<UnitMovement>().stop(true);
             TargetToggleShip(connectionToClient, toShip);

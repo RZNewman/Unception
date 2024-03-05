@@ -260,6 +260,8 @@ GameObject:
   - component: {fileID: 3924559744057093545}
   - component: {fileID: 3924559744057093544}
   - component: {fileID: 3924559744057093526}
+  - component: {fileID: -1808027347186179402}
+  - component: {fileID: 9192438691345730077}
   m_Layer: 8
   m_Name: Wetstone
   m_TagString: Untagged
@@ -307,8 +309,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 2
-  m_Height: 6
+  m_Radius: 3
+  m_Height: 8
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3924559744057093522
@@ -405,8 +407,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   givesPower: 1
-  finalizesPower: 0
+  finalizesPower: 1
   givesItems: 0
+--- !u!114 &-1808027347186179402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3924559744057093534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003b8237c816eef45a426414a825b41a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9192438691345730077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3924559744057093534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec72d4ad18cb844eab69d9a70fd5ad9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &3924559744396276595
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,7 +464,7 @@ Transform:
   m_GameObject: {fileID: 3924559744396276595}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3924559743931186920}

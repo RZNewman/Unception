@@ -599,7 +599,7 @@ public class Atlas : NetworkBehaviour
     public void missionSucceed()
     {
         missionStatus = MissionStatus.Success;
-        makeMaps();
+        
         if (embarkedMap.quest)
         {
             foreach (SaveData save in FindObjectsOfType<SaveData>())
@@ -615,6 +615,7 @@ public class Atlas : NetworkBehaviour
                 inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
         }
+        makeMaps();
     }
 
     [Server]

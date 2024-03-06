@@ -247,7 +247,7 @@ public class Atlas : NetworkBehaviour
         }
     }
 
-    readonly float packsKilledPerMap = 6f;
+    readonly float packsKilledPerMap = 10f;
     float powerAtTier(int tier)
     {
         float power = tier switch

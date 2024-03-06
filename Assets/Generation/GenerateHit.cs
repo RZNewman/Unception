@@ -282,7 +282,7 @@ public static class GenerateHit
             }
             else
             {
-                vg.augmentInner(itemMaxDict(Stat.Range), 1f);
+                vg.augmentInner(itemMaxDict(Stat.Range), 2f);
             }
         }
         if (Random.value < 0.5f)

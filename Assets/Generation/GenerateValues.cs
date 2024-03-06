@@ -159,7 +159,7 @@ public static class GenerateValues
         for (int i = oldCount; i < newValues.Length; i++)
         {
             int oldDrain = Random.Range(0, oldCount - 1);
-            newValues = transfer(newValues, oldDrain, i, balance);
+            newValues = transfer(newValues, oldDrain, i, 0.05f,balance);
         }
 
 

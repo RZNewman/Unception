@@ -8,6 +8,7 @@ using static Atlas;
 using static GenerateAttack;
 using static Grove;
 using static GroveObject;
+using static ItemList;
 
 public class GroveWorld : MonoBehaviour
 {
@@ -58,9 +59,9 @@ public class GroveWorld : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (EventSystem.current.IsPointerOverGameObject())
+                if (hoveredItemList.HasValue)
                 {
-                    if(Input.mousePosition.x< Screen.width / 2)
+                    if(hoveredItemList.Value == InventoryMode.Drops)
                     {
                         sendCursorToTrash();
                         unsetHighlightAlways();
@@ -363,6 +364,17 @@ public class GroveWorld : MonoBehaviour
             deets.gameObject.SetActive(false);
             setRelatedSlotHighlight(id, false);
         }
+    }
+
+    InventoryMode? hoveredItemList;
+    public void setItemList(InventoryMode mode)
+    {
+        hoveredItemList = mode;
+    }
+
+    public void unsetItemList()
+    {
+        hoveredItemList = null;
     }
 
 

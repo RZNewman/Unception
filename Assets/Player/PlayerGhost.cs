@@ -100,7 +100,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     public void embark(int mapIndex)
     {
-        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
+        MenuHandler mh = FindObjectOfType<MenuHandler>();
+        mh.switchMenu(MenuHandler.Menu.Gameplay);
         GetComponent<PlayerInfo>().FireTutorialEvent(PlayerInfo.TutorialEvent.MapSelect);
         CmdEmbark(mapIndex);
     }
@@ -336,6 +337,11 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         {
             currentSelf.GetComponentInChildren<LocalCamera>().pause(paused);
         }
+    }
+
+    public Vector3 positionAround()
+    {
+        return currentSelf?.transform.position ?? FindObjectOfType<GroveWorld>().transform.position + new Vector3(Random.value*2 -1,Random.value, Random.value*2 -1)* scales.world;
     }
 
     public TextValue.TextData getText()

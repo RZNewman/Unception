@@ -553,7 +553,7 @@ public class Atlas : NetworkBehaviour
             yield break;
         }
         missionStatus = MissionStatus.Loading;
-
+        RpcSetLoading(true);
         Map m;
         if (index >= 0)
         {
@@ -574,7 +574,14 @@ public class Atlas : NetworkBehaviour
         yield return gen.buildMap();
         PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.LoadingFinished);
         missionStatus = MissionStatus.Arrived;
+        RpcSetLoading(false);
     }
+    [ClientRpc]
+    void RpcSetLoading(bool load)
+    {
+        FindObjectOfType<MenuHandler>().setLoading(load);
+    }
+
     public Vector3 playerSpawn
     {
         get

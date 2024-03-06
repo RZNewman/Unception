@@ -5,14 +5,15 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GenerateAttack;
+using static UiAbility;
 using static UnitControl;
 
-public class ItemList : MonoBehaviour, UiDraggerTarget
+public class ItemList : MonoBehaviour, UiDraggerTarget, IPointerEnterHandler, IPointerExitHandler
 {
     public GameObject abilityIconPre;
 
 
-
+    GroveWorld grove;
     Inventory inv;
     public InventoryMode mode;
     GlobalPlayer gp;
@@ -20,6 +21,7 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
     private void Start()
     {
         gp = FindObjectOfType<GlobalPlayer>(true);
+        grove = FindObjectOfType<GroveWorld>();
 
     }
     public enum InventoryMode
@@ -31,6 +33,19 @@ public class ItemList : MonoBehaviour, UiDraggerTarget
     public void setInventory(Inventory i)
     {
         inv = i;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+
+        grove.setItemList(mode);
+        
+
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        grove.unsetItemList();
+
     }
 
     public void fillAbilities()

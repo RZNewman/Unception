@@ -18,6 +18,7 @@ public class MenuHandler : MonoBehaviour
     public GameObject pause;
     public GameObject quest;
     public GameObject blessing;
+    public GameObject blank;
     public GameObject loading;
 
     GlobalPlayer gp;
@@ -46,7 +47,7 @@ public class MenuHandler : MonoBehaviour
         Pause,
         Quest,
         Blessing,
-        Loading,
+        Blank,
     }
 
     GameObject menuObject(Menu m)
@@ -63,7 +64,7 @@ public class MenuHandler : MonoBehaviour
             Menu.Pause => pause,
             Menu.Quest => quest,
             Menu.Blessing => blessing,
-            Menu.Loading => loading,
+            Menu.Blank => blank,
             _ => main
         };
     }
@@ -73,6 +74,7 @@ public class MenuHandler : MonoBehaviour
         {
             menuObject(m).SetActive(false);
         }
+        loading.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
         switchMenu(Menu.Title);
 
@@ -143,6 +145,11 @@ public class MenuHandler : MonoBehaviour
     public void returnPrevious()
     {
         switchMenu(prevoiusMenu);
+    }
+
+    public void setLoading(bool load)
+    {
+        loading.SetActive(load);
     }
 
     public bool canPause

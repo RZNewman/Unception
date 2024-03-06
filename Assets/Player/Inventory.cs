@@ -10,6 +10,7 @@ using static Keybinds;
 using static Utils;
 using static GenerateAttack;
 using static Grove;
+using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {
@@ -109,6 +110,11 @@ public class Inventory : NetworkBehaviour
         syncInventoryUpwards();
     }
 
+    public void loadEmptyItems()
+    {
+        grove.setup();
+    }
+
 
     [Server]
     public void genMinItems()
@@ -122,19 +128,21 @@ public class Inventory : NetworkBehaviour
         storage.Add(item2.id, item2);
         fillInstanceCache(item1);
         fillInstanceCache(item2);
-        Vector2Int center = grove.center;
-        Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
-        placements.Add(item1.id, new GrovePlacement
-        {
-            position = center - Vector2Int.one * 2 ,
-            rotation = Rotation.None,
-        });
-        placements.Add(item2.id, new GrovePlacement
-        {
-            position = center + Vector2Int.one * 2,
-            rotation = Rotation.None,
-        });
-        grove.importPlacements(placements, storage);
+        TargetDropItem(connectionToClient, item1, player.positionAround());
+        TargetDropItem(connectionToClient, item1, player.positionAround());
+        //Vector2Int center = grove.center;
+        //Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
+        //placements.Add(item1.id, new GrovePlacement
+        //{
+        //    position = center - Vector2Int.one * 2 ,
+        //    rotation = Rotation.None,
+        //});
+        //placements.Add(item2.id, new GrovePlacement
+        //{
+        //    position = center + Vector2Int.one * 2,
+        //    rotation = Rotation.None,
+        //});
+        //grove.importPlacements(placements, storage);
 
         syncInventoryUpwards();
         RpcInvChange();

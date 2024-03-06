@@ -296,13 +296,18 @@ public class Grove : NetworkBehaviour
     {
         return placedItems.Keys.ToDictionary(key => key, key => placedItems[key].placement);
     }
-
     [Server]
-    public void importPlacements(Dictionary<string, GrovePlacement> placements, Dictionary<string, CastData> items)
+    public void setup()
     {
         slotAllocations.Clear();
         placedItems.Clear();
         resetGrid();
+    }
+
+    [Server]
+    public void importPlacements(Dictionary<string, GrovePlacement> placements, Dictionary<string, CastData> items)
+    {
+        setup();
         foreach (string id in placements.Keys)
         {
             AddPlace(id, new GrovePlacedObject { placement = placements[id], shape = items[id].shape, slot = items[id].slot });

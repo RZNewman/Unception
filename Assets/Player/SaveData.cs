@@ -226,20 +226,20 @@ public class SaveData : NetworkBehaviour
         {
             DataSnapshot snapshotStorage = storage.Result;
             DataSnapshot snapshotPlaced = placements.Result;
-            if (snapshotPlaced.Exists)
+            if (snapshotStorage.Exists)
             {
-                CastData[] storageData = new CastData[0];
-                if (snapshotStorage.Exists)
+                CastData[] storageData = globalSave.itemsFromSnapshot(snapshotStorage);
+
+                Dictionary<string, GrovePlacement> placedData = new Dictionary<string, GrovePlacement>();
+                if (snapshotPlaced.Exists)
                 {
-                    storageData = globalSave.itemsFromSnapshot(snapshotStorage);
-                }
-                Dictionary<string, GrovePlacement> placedData = JsonConvert.DeserializeObject<Dictionary<string, GrovePlacement>>(snapshotPlaced.GetRawJsonValue());
+                    placedData = JsonConvert.DeserializeObject<Dictionary<string, GrovePlacement>>(snapshotPlaced.GetRawJsonValue());
+                }              
                 inv.reloadItems(storageData, placedData);
             }
             else
             {
-                inv.genMinItems();
-
+                inv.loadEmptyItems();
             }
         }
 
@@ -301,7 +301,9 @@ public class SaveData : NetworkBehaviour
     [TargetRpc]
     void TargetDoneLoading(NetworkConnection conn)
     {
-        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
+        MenuHandler mh = FindObjectOfType<MenuHandler>();
+        mh.switchMenu(MenuHandler.Menu.Gameplay);
+        mh.setLoading(false);
     }
 
     private void OnDestroy()

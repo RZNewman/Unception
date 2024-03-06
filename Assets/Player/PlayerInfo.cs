@@ -122,7 +122,7 @@ public class PlayerInfo : NetworkBehaviour
                     Ship  s =FindObjectOfType<Ship>();
 
                     s.shipWaterArrow.SetActive(true);
-                    i.CmdSpawnShipWater(s.shipWaterPosition.transform.position, s.shipWaterPosition.transform.lossyScale);
+                    i.CmdSpawnShipWater(s.shipWaterPosition.transform.position);
                 },
                 stop = new FinishCondtions
                 {
@@ -305,7 +305,50 @@ public class PlayerInfo : NetworkBehaviour
                     }
                 }
             },
-
+            //get your items
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                    
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "You found seeds! Go plant them in the middle",
+                    },
+                },
+                action = (i) => {
+                    i.CmdGenMinItems();
+                },
+                stop = new FinishCondtions
+                {
+                    menuScreen = MenuHandler.Menu.Loadout,
+                }
+            },
+            //equip
+            new TutorialWindow
+            {
+                start = new FireConditions
+                {
+                },
+                sections = new List<TutorialSection>()
+                {
+                    new TutorialSection
+                    {
+                        displayText = "Click to select your items, and then place them on the board to equip",
+                    },
+                    new TutorialSection
+                    {
+                        displayText = "Item Auroras may overlap, but the solid Hardpoints may not",
+                    },
+                },
+                stop = new FinishCondtions
+                {
+                    menuScreen = MenuHandler.Menu.Gameplay,
+                }
+            },
             //attack
             new TutorialWindow
             {
@@ -337,31 +380,7 @@ public class PlayerInfo : NetworkBehaviour
                 }
             },
             
-            //equip
-            new TutorialWindow
-            {
-                start = new FireConditions
-                {
-                    menuScreen = MenuHandler.Menu.Loadout
-                },
-                sections = new List<TutorialSection>()
-                {
-                    new TutorialSection
-                    {
-                        displayText = "Click to select your items, and then place them on the board to equip",
-                    },
-                    new TutorialSection
-                    {
-                        displayText = "Item Auroras may overlap, but the solid Hardpoints may not",
-                    },
-                },
-                stop = new FinishCondtions
-                {
-                    menuScreen = MenuHandler.Menu.MainMenu,
-                    timer = 30f,
-                    timerIsFallback = true,
-                }
-            }
+            
         }
     };
 
@@ -384,17 +403,28 @@ public class PlayerInfo : NetworkBehaviour
 
 
     [Command]
-    void CmdSpawnShipWater(Vector3 pos, Vector3 scale)
+    void CmdSpawnShipWater(Vector3 pos)
     {
-        if(GetComponent<PlayerGhost>().power < Atlas.playerStartingPower * 2)
+        if(GetComponent<PlayerGhost>().power < Atlas.playerStartingPower * 4)
         {
             GameObject w = Instantiate(FindObjectOfType<GlobalPrefab>().WetstonePre, pos, Quaternion.identity);
-            w.GetComponent<Reward>().setReward(Atlas.playerStartingPower, 1, 20);
+            w.GetComponent<Reward>().setReward(Atlas.playerStartingPower, 1, 10);
             w.GetComponent<Power>().setPower(Atlas.playerStartingPower);
             w.GetComponent<Power>().setOverrideDefault();
             NetworkServer.Spawn(w);
         }
     }
+
+    [Command]
+    void CmdGenMinItems()
+    {
+        float pow = GetComponent<PlayerGhost>().power;
+        if (pow < Atlas.playerStartingPower * 4)
+        {
+            GetComponent<Inventory>().genMinItems();
+        }
+    }
+
 
     private void OnDestroy()
     {

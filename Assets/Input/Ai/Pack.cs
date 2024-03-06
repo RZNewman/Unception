@@ -20,7 +20,7 @@ public class Pack : NetworkBehaviour
     Encounter encounter;
 
     //Server
-    bool aggroed = false;
+    //bool aggroed = false;
     bool enabledUnits = false;
     private void Start()
     {
@@ -30,16 +30,16 @@ public class Pack : NetworkBehaviour
 
     public void init()
     {
-        foreach (GameObject u in pack)
-        {
-            u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
-                if (!agg.lostAggro)
-                {
-                    aggroed = true;
-                }
-            };
-        }
-        disableUnits();
+        //foreach (GameObject u in pack)
+        //{
+        //    u.GetComponent<EventManager>().AggroEvent += (AggroEventData agg) => {
+        //        if (!agg.lostAggro)
+        //        {
+        //            aggroed = true;
+        //        }
+        //    };
+        //}
+        //disableUnits();
     }
 
 
@@ -70,38 +70,39 @@ public class Pack : NetworkBehaviour
             };
             u.GetComponent<UnitRingInd>().addColor(Color.red);
         }
+        disableUnits();
     }
 
     List<GameObject> players = new List<GameObject>();
     private void OnTriggerEnter(Collider other)
     {
-        if (isServer)
-        {
-            if (other.GetComponentInParent<TeamOwnership>().getTeam() == TeamOwnership.PLAYER_TEAM)
-            {
-                players.Add(other.gameObject);
-                if (!enabledUnits)
-                {
-                    enabledUnits = true;
-                    StartCoroutine(enableUnits());
-                }
+        //if (isServer)
+        //{
+        //    if (other.GetComponentInParent<TeamOwnership>().getTeam() == TeamOwnership.PLAYER_TEAM)
+        //    {
+        //        players.Add(other.gameObject);
+        //        if (!enabledUnits)
+        //        {
+        //            enabledUnits = true;
+        //            StartCoroutine(enableUnits());
+        //        }
 
-            }
+        //    }
 
-        }
+        //}
 
     }
     private void OnTriggerExit(Collider other)
     {
-        if (isServer && !aggroed)
-        {
-            players.Remove(other.gameObject);
-            if (players.Count == 0)
-            {
-                disableUnits();
-                enabledUnits = false;
-            }
-        }
+        //if (isServer && !aggroed)
+        //{
+        //    players.Remove(other.gameObject);
+        //    if (players.Count == 0)
+        //    {
+        //        disableUnits();
+        //        enabledUnits = false;
+        //    }
+        //}
 
     }
 

@@ -374,7 +374,7 @@ public class MonsterSpawn : NetworkBehaviour
 
         Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
         RaycastHit hit;
-        if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 2, LayerMask.GetMask("Terrain")))
+        if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 6, LayerMask.GetMask("Terrain")))
         {
             unitPos = hit.point + Vector3.up * mapScales.world;
         }

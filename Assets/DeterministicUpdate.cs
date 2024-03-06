@@ -21,7 +21,8 @@ public class DeterministicUpdate : NetworkBehaviour
         {
             unit.packHealTick();
         }
-        foreach (UnitUpdateOrder unit in unitList)
+        //Will deregister dead units
+        foreach (UnitUpdateOrder unit in unitList.ToArray())
         {
             unit.healthTick();
         }
@@ -48,6 +49,10 @@ public class DeterministicUpdate : NetworkBehaviour
         foreach (UnitUpdateOrder unit in unitList)
         {
             unit.machineTick();
+        }
+        foreach (UnitUpdateOrder unit in unitList)
+        {
+            unit.GravityTick();
         }
         foreach (UnitUpdateOrder unit in unitList)
         {

@@ -145,5 +145,7 @@ public interface UnitControl
 
     public void refreshInput();
 
+    public bool isAiActive();
+
     public void init();
 }

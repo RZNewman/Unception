@@ -10,11 +10,16 @@ public class UnitUpdateOrder : NetworkBehaviour
     AnimationController anim;
     PackHeal packHeal;
     EventManager eventManager;
+    Gravity gravity;
     // Start is called before the first frame update
+    DeterministicUpdate globalUpdate;
+
+    [SyncVar(hook =nameof(hookRegistration))]
+    bool registered;
     void Start()
     {
 
-        FindObjectOfType<DeterministicUpdate>().register(this);
+        globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
         health = GetComponent<Health>();
         posture = GetComponent<Posture>();
         stamina = GetComponent<Stamina>();
@@ -23,18 +28,38 @@ public class UnitUpdateOrder : NetworkBehaviour
         anim = GetComponent<AnimationController>();
         packHeal = GetComponent<PackHeal>();
         eventManager = GetComponent<EventManager>();
+        gravity = GetComponent<Gravity>();
 
-
+        eventManager.suscribeDeath((d) => setRegistration(false));
     }
 
-    private void OnDestroy()
+    public void setRegistration(bool register)
     {
-        DeterministicUpdate master = FindObjectOfType<DeterministicUpdate>();
-        if (master)
-        {
-            master.unregister(this);
-        }
+        if (register == registered) return;
 
+        registered = register;
+        setRegistrationHelper(register);
+    }
+
+    void hookRegistration(bool old, bool register)
+    {
+        if (isClientOnly)
+        {
+            setRegistrationHelper(register);
+        }
+    }
+
+    void setRegistrationHelper(bool register)
+    {
+        globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
+        if (register)
+        {
+            globalUpdate.register(this);
+        }
+        else
+        {
+            globalUpdate.unregister(this);
+        }
     }
 
 
@@ -71,6 +96,10 @@ public class UnitUpdateOrder : NetworkBehaviour
     public void machineTransition()
     {
         eventManager.fireTransition();
+    }
+    public void GravityTick()
+    {
+        gravity.OrderedUpdate();
     }
     public void IndicatorTick()
     {

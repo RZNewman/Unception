@@ -20,6 +20,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
     bool isPlayer = true;
 
     UnitPropsHolder propHolder;
+    UnitUpdateOrder updater;
 
     public bool isLocalAuthority
     {
@@ -44,6 +45,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             return;
         }
         propHolder = GetComponent<UnitPropsHolder>();
+        updater = GetComponent<UnitUpdateOrder>();
         isPlayer = propHolder.props.isPlayer;
 
         if (isLocalAuthority)
@@ -56,6 +58,12 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
             GameObject o = Instantiate(aiControlPre, transform);
             controller = o.GetComponent<UnitControl>();
         }
+
+        if (isPlayer)
+        {
+            updater.setRegistration(true);
+        }
+
         if (controller != null)
         {
             controller.init();
@@ -101,6 +109,7 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
         {
             if (!isPlayer)
             {
+                updater.setRegistration(controller.isAiActive());
                 controller.refreshInput();
                 currentInput.reset();
                 currentInput.merge(controller.getUnitInuput());

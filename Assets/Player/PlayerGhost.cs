@@ -115,8 +115,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
     [Server]
     public void refresh()
     {
-        extraLives = 1;
-        inv.clearDrops();
+        extraLives = 1;    
         save.saveItems();
         save.saveBlessings();
     }
@@ -154,11 +153,11 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         u.GetComponent<UnitPropsHolder>().owningPlayer = gameObject;
         Power p = u.GetComponent<Power>();
         p.setPower(playerPower, Atlas.softcap);
+        NetworkServer.Spawn(u, connectionToClient);
         p.setOverrideDefault();
         p.subscribePower(syncPower);
         u.GetComponent<Reward>().setInventory(inv);
-        u.GetComponent<EventManager>().suscribeDeath(onUnitDeath);
-        NetworkServer.Spawn(u, connectionToClient);
+        u.GetComponent<EventManager>().suscribeDeath(onUnitDeath);       
         u.GetComponent<AbilityManager>().addAbility(inv.equippedAbilities);
         u.GetComponent<TriggerManager>().addTrigger(inv.blessings);
         currentSelf = u;

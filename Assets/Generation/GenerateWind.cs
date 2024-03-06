@@ -15,14 +15,15 @@ public static class GenerateWind
         public float duration;
         public float moveMult;
         public float turnMult;
+        public bool isWinddown;
 
         public override InstanceData populate(float power, float strength, Scales scalesStart)
         {
-            float moveMag = this.moveMult.asRange(-5.0f, 0.3f);
+            float moveMag = this.moveMult.asRange(-5.0f, -1.0f);
             bool moveDir = moveMag >= 0;
             float moveMult = moveDir ? 1 + moveMag : 1 / (1 - moveMag);
 
-            float turnMag = this.turnMult.asRange(-5.0f, 0.3f);
+            float turnMag = isWinddown ? 0 : this.turnMult.asRange(-5.0f, -1.0f);
             bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
 
@@ -101,12 +102,13 @@ public static class GenerateWind
             }
         }
     }
-    public static WindGenerationData createWind(float durrationMinPercent, float durrationMaxPercent)
+    public static WindGenerationData createWind(float durrationMinPercent, float durrationMaxPercent, bool isWinddown)
     {
         WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
-        wind.duration = GaussRandomDecline(5).asRange(durrationMinPercent, durrationMaxPercent);
-        wind.moveMult = GaussRandomDecline(1.2f);
-        wind.turnMult = GaussRandomDecline(1.2f);
+        wind.duration = GaussRandomDecline(2).asRange(durrationMinPercent, durrationMaxPercent);
+        wind.moveMult = GaussRandomDecline(1.5f);
+        wind.turnMult = GaussRandomDecline(1.5f);
+        wind.isWinddown = isWinddown;
         return wind;
     }
 }

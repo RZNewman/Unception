@@ -18,14 +18,14 @@ public static class GenerateUnit
 
         float speed = (5f + 7f * speedVal);
         float turn = 75f + 60f * turnVal;
-        float health = 4f + 3f * healthVal;
+        float health = 2.5f + 2f * healthVal;
         float posture = (100f + 100f * postureVal);
         float mezmerize = (700f + 700f * mezValue);
 
         properties.maxSpeed = speed;
         properties.acceleration = speed * 4;
-        properties.decceleration = speed * 4;
-        properties.friction = speed * 3;
+        properties.decceleration = speed * 6;
+        properties.friction = speed * 4;
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;

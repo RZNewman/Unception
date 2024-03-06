@@ -22,9 +22,9 @@ public class Reward : MonoBehaviour
         p = GetComponent<Power>();
 
     }
-    public void setReward(float basePower, float multiplier, float packPercent)
+    public void setReward(float basePower, float additionalDifficultyMult, float packPercent)
     {
-        rewardBasePower = basePower; rewardPackPercent = packPercent; rewardMultiplier = multiplier; qualityMultiplier = multiplier;
+        rewardBasePower = basePower; rewardPackPercent = packPercent; rewardMultiplier = additionalDifficultyMult; qualityMultiplier = additionalDifficultyMult+1;
     }
     public void setInventory(Inventory i)
     {

@@ -77,8 +77,8 @@ public class Mezmerize : NetworkBehaviour, BarValue
         float scaleNum = p.scaleNumerical();
 
         maxFocus = props.maxFocus * scaleNum;
-        passiveFocusRecover = props.maxFocus * scaleNum * 0.02f;
-        mezmerizeFocusRecover = props.maxFocus * scaleNum * 0.25f;
+        passiveFocusRecover = props.maxFocus * scaleNum * (1f / 50);
+        mezmerizeFocusRecover = props.maxFocus * scaleNum * (1f / 3.5f);
 
 
         float proportion = maxFocus / lastMax;
@@ -143,7 +143,7 @@ public class Mezmerize : NetworkBehaviour, BarValue
         //change Focus
         if (currentFocus > 0)
         {
-            currentFocus -= currentFocusRecover * Time.fixedDeltaTime;
+            currentFocus -= currentFocusRecover * Time.fixedDeltaTime * power.scaleTime();
         }
         if (mezmerized && currentFocus <= 0)
         {

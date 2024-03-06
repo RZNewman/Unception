@@ -68,7 +68,7 @@ public class Posture : NetworkBehaviour, BarValue
 
         maxPosture = props.maxPosture * scaleNum;
         passivePostureRecover = props.maxPosture * scaleNum;
-        stunnedPostureRecover = props.maxPosture * scaleNum * 2;
+        stunnedPostureRecover = props.maxPosture * scaleNum * 10;
 
 
         float proportion = maxPosture / lastMax;
@@ -145,7 +145,7 @@ public class Posture : NetworkBehaviour, BarValue
         //change posture
         if (currentPosture > 0)
         {
-            currentPosture -= currentPostureRecover * Time.fixedDeltaTime;
+            currentPosture -= currentPostureRecover * Time.fixedDeltaTime * scaleTime;
         }
         if (stunned && currentPosture <= 0)
         {

@@ -553,6 +553,7 @@ public class Atlas : NetworkBehaviour
             yield break;
         }
         missionStatus = MissionStatus.Loading;
+        clearAllDrops();
         RpcSetLoading(true);
         Map m;
         if (index >= 0)
@@ -645,6 +646,14 @@ public class Atlas : NetworkBehaviour
         foreach (PlayerGhost player in FindObjectsOfType<PlayerGhost>())
         {
             player.refresh();
+        }
+    }
+    [Server]
+    void clearAllDrops()
+    {
+        foreach (Inventory inv in FindObjectsOfType<Inventory>())
+        {
+            inv.clearDrops();
         }
     }
 

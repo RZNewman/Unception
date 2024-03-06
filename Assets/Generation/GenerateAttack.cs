@@ -729,11 +729,6 @@ public static class GenerateAttack
 
 
         bool noCooldown = type == AttackGenerationType.IntroMain || type == AttackGenerationType.Monster;
-        float cd = Random.value;
-        if (cd < 0.01f)
-        {
-            noCooldown = true;
-        }
         float cooldownMin = 0;
         float cooldownMax = 1;
         if (type == AttackGenerationType.MonsterStrong)
@@ -766,35 +761,39 @@ public static class GenerateAttack
             }
 
         }
-        float charges = noCooldown ? 0 : GaussRandomDecline(2);
+        float charges = noCooldown ? 0 : GaussRandomDecline(1.5f);
         float chargeBaseStats = charges.asRange(0, itemMax(Stat.Charges));
 
         int segmentCount = 1;
         float r = Random.value;
         if (type != AttackGenerationType.IntroMain && type != AttackGenerationType.PlayerTrigger
-            && r < 0.1)
+            && r < 0.05)
         {
             segmentCount = 2;
-            windUpMax = 0.6f;
         }
 
         if (type == AttackGenerationType.Monster || type == AttackGenerationType.MonsterStrong)
         {
             windUpMin = 0.25f;
-            windDownMin = 0.45f;
+            windUpMax = 0.75f;
+            windDownMin = 0.15f;
+            windDownMax = 0.5f;
+            
         }
         else if (type == AttackGenerationType.IntroMain)
         {
             windUpMin = 0.3f;
             windUpMax = 0.4f;
-            windDownMax = 0.4f;
             windDownMin = 0.1f;
+            windDownMax = 0.4f;
+            
         }
         else if (type == AttackGenerationType.IntroOff)
         {
             windUpMax = 0.3f;
-            windDownMax = 0.5f;
             windDownMin = 0.1f;
+            windDownMax = 0.5f;
+            
 
         }
         else if (type == AttackGenerationType.PlayerTrigger)
@@ -804,16 +803,17 @@ public static class GenerateAttack
         }
         else
         {
-            if (slot == ItemSlot.Main || Random.value < 0.65f)
+            if (slot == ItemSlot.Main || Random.value < 0.8f)
             {
                 //fast hit
-                windUpMax *= 0.2f;
+                windUpMax = 0.2f;
                 windDownMax = 0.5f;
                 windDownMin = 0.1f;
             }
             else
             {
                 //fast end
+                windUpMin = 0.3f;
                 windDownMax = 0.2f;
             }
         }
@@ -823,8 +823,8 @@ public static class GenerateAttack
         for (int i = 0; i < segmentCount; i++)
         {
             SegmentGenerationData segment = getEffect(itemStatSpread - chargeBaseStats, type, slot, conditions);
-            segment.windup = createWind(windUpMin, windUpMax);
-            segment.winddown = createWind(windDownMin, windDownMax);
+            segment.windup = createWind(windUpMin, windUpMax, false);
+            segment.winddown = createWind(windDownMin, windDownMax, true);
             segments.Add(segment);
         }
 
@@ -924,7 +924,7 @@ public static class GenerateAttack
         {
             //repeat effect
             segment.repeat = createRepeating();
-            segment.windRepeat = createWind(0, 0.4f);
+            segment.windRepeat = createWind(0, 0.4f, false);
         }
 
         gen = Random.value;

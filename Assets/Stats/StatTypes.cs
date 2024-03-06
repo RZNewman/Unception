@@ -28,7 +28,7 @@ public static class StatTypes
 
     static Dictionary<Stat, float> statValues = new Dictionary<Stat, float>()
     {
-        {Stat.Length,3.5f},
+        {Stat.Length,3f},
         {Stat.Width,3.5f},
         {Stat.Knockback,12},
         {Stat.DamageMult,0.14f},
@@ -40,7 +40,7 @@ public static class StatTypes
         {Stat.Cooldown, 1.0f },
         {Stat.TurnspeedCast, 90f },
         {Stat.MovespeedCast, 2.0f },
-        {Stat.Range, 6f },
+        {Stat.Range, 5f },
         {Stat.Turnspeed, 80f },
         {Stat.Movespeed, 1.8f },
     }.Select(p => (p.Key, p.Value / Power.baseDownscale)).ToDictionary(tup => tup.Key, tup => tup.Item2);

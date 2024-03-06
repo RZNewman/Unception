@@ -9,6 +9,8 @@ public class Knockdown : NetworkBehaviour
     [SyncVar]
     float currentKnockdown;
 
+    float recentlyKDTime;
+
     public bool knockedDown
     {
         get
@@ -22,6 +24,25 @@ public class Knockdown : NetworkBehaviour
     void Start()
     {
         power = GetComponent<Power>();
+        recentlyKDTime = 0;
+    }
+
+    float fallOffMult
+    {
+        get
+        {
+            float scaleTime = power.scaleTime();
+            return (1 + (recentlyKDTime / scaleTime) / 3);
+        }
+    }
+
+    float stunThreshold
+    {
+        get
+        {
+            return 10 * fallOffMult;
+        }
+
     }
 
     public void tryKnockDown(float back, float up)
@@ -29,7 +50,7 @@ public class Knockdown : NetworkBehaviour
         float KDValue = back + 2 * up * relativeKnockup;
         KDValue /= power.scaleSpeed();
         //Debug.Log("Raw value:" + KDValue);
-        KDValue -= 10;
+        KDValue -= stunThreshold;
         if (KDValue > 0)
         {
             if (currentKnockdown <= 0)
@@ -43,11 +64,22 @@ public class Knockdown : NetworkBehaviour
     // Update is called once per frame
     public void OrderedUpdate()
     {
-        currentKnockdown -= Time.fixedDeltaTime * power.scaleTime();
+        float scaleTime = power.scaleTime();
+        currentKnockdown -= Time.fixedDeltaTime * scaleTime * fallOffMult;
 
         if (currentKnockdown < 0)
         {
             currentKnockdown = 0;
+        }
+
+        if (knockedDown)
+        {
+            recentlyKDTime += Time.fixedDeltaTime * scaleTime;
+        }
+        else
+        {
+            recentlyKDTime -= Time.fixedDeltaTime * (0.2f) * scaleTime;
+            recentlyKDTime = Mathf.Max(recentlyKDTime, 0);
         }
     }
 }

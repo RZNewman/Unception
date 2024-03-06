@@ -15,8 +15,8 @@ MonoBehaviour:
   isPlayer: 1
   maxSpeed: 9
   acceleration: 40
-  decceleration: 60
-  friction: 10
+  decceleration: 80
+  friction: 15
   jumpForce: 20
   jumpsquatTime: 0.2
   lookSpeedDegrees: 180

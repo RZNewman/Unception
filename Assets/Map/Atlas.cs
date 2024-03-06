@@ -584,20 +584,21 @@ public class Atlas : NetworkBehaviour
     }
 
     [Server]
-    public void disembarkFailure()
+    public IEnumerator disembarkFailure()
     {
         missionStatus = MissionStatus.None;
         if (Pause.isPaused)
         {
             FindObjectOfType<Pause>().togglePause();
         }
-        
+        yield return passTime();
+        refreshAllPlayers();
         makeMaps();
         
 
     }
 
-    public void missionSucceed()
+    public IEnumerator missionSucceed()
     {
         missionStatus = MissionStatus.Success;
         
@@ -616,7 +617,28 @@ public class Atlas : NetworkBehaviour
                 inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
         }
+        yield return passTime();
+        refreshAllPlayers();
         makeMaps();
+    }
+
+    IEnumerator passTime()
+    {
+        yield return new WaitForSeconds(1f);
+        Sunlight sun = FindObjectOfType<Sunlight>();
+        sun.setMultiplier(200f);
+        yield return new WaitForSeconds(3f);
+        sun.setMultiplier(1);
+    }
+
+
+    [Server]
+    void refreshAllPlayers()
+    {
+        foreach (PlayerGhost player in FindObjectsOfType<PlayerGhost>())
+        {
+            player.refresh();
+        }
     }
 
     [Server]

@@ -13,7 +13,7 @@ public class ColorIndividual : MonoBehaviour
         
     }
 
-    public void setColor(Color c)
+    public void setColor(Color c, string colorProperty = "_BaseColor")
     {
         _propBlock = new MaterialPropertyBlock();
         _renderer = GetComponent<Renderer>();
@@ -28,7 +28,7 @@ public class ColorIndividual : MonoBehaviour
             // Get the current value of the material properties in the renderer.
             _renderer.GetPropertyBlock(_propBlock);
             // Assign our new value.
-            _propBlock.SetColor("_BaseColor", c);
+            _propBlock.SetColor(colorProperty, c);
             // Assign our new value.
             _propBlock.SetVector("_Offset", new Vector2(Random.value, Random.value));
             // Apply the edited values to the renderer.

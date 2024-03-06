@@ -39,18 +39,11 @@ public class Wetstone : NetworkBehaviour
         target = FindObjectOfType<Flower>().gameObject;
         MenuHandler.controlCharacterCutscene = false;
         LocalCamera cam = FindObjectOfType<LocalCamera>();
-        cam.gameObject.SetActive(false);
-        FindObjectOfType<Atlas>().missionSucceed();
+        cam.gameObject.SetActive(false);  
         canTeleport = false;
-        yield return new WaitForSeconds(1f);
-        Sunlight sun = FindObjectOfType<Sunlight>();
-        sun.setMultiplier(200f);
+        yield return FindObjectOfType<Atlas>().missionSucceed();
+
         unit.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
-        yield return new WaitForSeconds(3f);
-
-
-
-        sun.setMultiplier(1);
         cam.gameObject.SetActive(true);
         MenuHandler.controlCharacterCutscene = true;
         Destroy(gameObject);

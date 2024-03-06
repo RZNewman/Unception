@@ -13,7 +13,7 @@ using static Grove;
 
 public class Inventory : NetworkBehaviour
 {
-    int inventoryLimit = 10;
+    int inventoryLimit = 50;
     int blessingLimit = 4;
 
     List<CastData> tempDrops = new List<CastData>();

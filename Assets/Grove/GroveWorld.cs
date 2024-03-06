@@ -58,7 +58,22 @@ public class GroveWorld : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    if(Input.mousePosition.x< Screen.width / 2)
+                    {
+                        sendCursorToTrash();
+                        unsetHighlightAlways();
+                    }
+                    else
+                    {
+                        returnToTray(cursor);
+                        unsetHighlightAlways();
+                        cursor = null;
+                    }
+                    
+                }
+                else if (cursor.gridSnap && cursor.gridSnap.isOnGrid)
                 {
                     cursor.gridSnap.isSnapping = false;
                     Vector3 newPos = cursor.transform.position;
@@ -75,6 +90,12 @@ public class GroveWorld : MonoBehaviour
                     cursor = null;
                 }
 
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                returnToTray(cursor);
+                unsetHighlightAlways();
+                cursor = null;
             }
         }
         else

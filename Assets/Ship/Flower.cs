@@ -36,4 +36,9 @@ public class Flower : MonoBehaviour
         o.GetComponent<Arc>().init(transform.up, 70f, callback);
         NetworkServer.Spawn(o);
     }
+
+    public void colorByLives(int lives)
+    {
+        GetComponent<ColorIndividual>().setColor(lives> 0 ? Color.yellow: Color.gray, "_Color_Override");
+    }
 }

@@ -98,12 +98,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         }
     }
 
-    [Server]
-    public void refreshLives()
-    {
-        extraLives = 1;
-    }
-
     public void embark(int mapIndex)
     {
         FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Gameplay);
@@ -113,13 +107,17 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     [Command]
     void CmdEmbark(int mapIndex)
+    {      
+        StartCoroutine(embarkRoutine(mapIndex));
+    }
+
+    [Server]
+    public void refresh()
     {
-        //TODO every player
-        refreshLives();
+        extraLives = 1;
         inv.clearDrops();
         save.saveItems();
         save.saveBlessings();
-        StartCoroutine(embarkRoutine(mapIndex));
     }
 
     [Server]
@@ -136,7 +134,9 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     void shootUnit()
     {
-        FindObjectOfType<Flower>().shoot(buildUnit);
+        Flower f = FindObjectOfType<Flower>();
+        f.colorByLives(extraLives);
+        f.shoot(buildUnit);
     }
 
     [TargetRpc]
@@ -292,15 +292,16 @@ public class PlayerGhost : NetworkBehaviour, TextValue
 
     IEnumerator onDeathRoutine(Atlas atlas)
     {
-        yield return new WaitForSecondsRealtime(1.5f);
+        yield return new WaitForSecondsRealtime(1f);
+        TargetToggleShip(connectionToClient, true);
         if (extraLives > 0)
         {
-            extraLives--;        
+            extraLives--;
+            
         }
         else
         {
-            //TODO lock player out instead of atlas
-            atlas.disembarkFailure();
+            yield return atlas.disembarkFailure();
         }
         shootUnit();
 

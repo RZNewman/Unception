@@ -380,7 +380,6 @@ public class PlayerInfo : NetworkBehaviour
         keys = FindObjectOfType<Keybinds>();
         FindObjectOfType<MenuHandler>().MenuEvent += OnOpenMenu;
         popups = FindObjectOfType<UiPopups>();
-        Debug.Log(RewardManager.powerPackPercent);
     }
 
 

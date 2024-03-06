@@ -46,6 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skipSpawn: 0
   dissuadeCollapse: 1
+  navType: 0
+  alternatives: []
   adjacencies:
   - direction: 0
     connections: 010000000004000010000000

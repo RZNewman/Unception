@@ -20,8 +20,11 @@ public class ItemDrop : MonoBehaviour
     Gravity grav;
     Rigidbody rb;
 
+    Quality quality;
+    AttackFlair flair;
+
     float targetSpeed = 0;
-    public void init(Scales scales, GameObject t, Quality q)
+    public void init(Scales scales, GameObject t, Quality q, AttackFlair f)
     {
         float scalePhys = scales.world;
         float scaleSpeed = scales.speed;
@@ -35,6 +38,10 @@ public class ItemDrop : MonoBehaviour
         GetComponent<Rigidbody>().velocity = new Vector3(dir.x * 4, 8, dir.y * 4) * scaleSpeed;
         Color qual = RewardManager.colorQuality(q);
         qual.a = 0.05f;
+
+        quality = q;
+        flair = f;
+
         itemAura.setColor(qual);
         itemBase.setColor(qual);
         target = t;
@@ -77,6 +84,7 @@ public class ItemDrop : MonoBehaviour
             if (dir.magnitude < catchDistance)
             {
                 sound.playSound(SoundManager.SoundClip.Slurp, transform.position);
+                FindObjectOfType<UiItemPopups>().createPop(quality, flair);
                 Destroy(gameObject);
             }
         }

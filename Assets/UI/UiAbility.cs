@@ -27,11 +27,7 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public Image foreground;
     public Text chargeCount;
 
-    public Sprite Common;
-    public Sprite Uncommon;
-    public Sprite Rare;
-    public Sprite Epic;
-    public Sprite Legendary;
+
 
     Ability target;
 
@@ -101,7 +97,7 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     {
         mode = m;
         AttackFlair flair = filled.flair;
-        background.sprite = bgFromQuality(filled.quality);
+        background.sprite = GlobalPrefab.gPre.bgFromQuality(filled.quality);
         Symbol symbolSource = FindObjectOfType<Symbol>();
         Color partialColor = flair.color;
         partialColor.a = 0.4f;
@@ -184,32 +180,6 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         
     }
 
-    Sprite bgFromQuality(Quality q)
-    {
-        Sprite bg;
-        switch (q)
-        {
-            case Quality.Common:
-                bg = Common;
-                break;
-            case Quality.Uncommon:
-                bg = Uncommon;
-                break;
-            case Quality.Rare:
-                bg = Rare;
-                break;
-            case Quality.Epic:
-                bg = Epic;
-                break;
-            case Quality.Legendary:
-                bg = Legendary;
-                break;
-            default:
-                bg = Common;
-                break;
-
-        }
-        return bg;
-    }
+    
 
 }

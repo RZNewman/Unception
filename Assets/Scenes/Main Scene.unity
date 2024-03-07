@@ -3324,7 +3324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &270633024
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3342,6 +3342,7 @@ RectTransform:
   - {fileID: 1656051420}
   - {fileID: 444171662}
   - {fileID: 241455271}
+  - {fileID: 1455817423}
   m_Father: {fileID: 2099282392}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3404,7 +3405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &280340037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14154,6 +14155,11 @@ MonoBehaviour:
   GroundIndPre: {fileID: 8249178311684600747, guid: 759948cdacef6af4c871955bad7c495f, type: 3}
   ProjIndPre: {fileID: 8249178311684600747, guid: b6ca85c5a6d7a6f4695dbc5cb233d419, type: 3}
   DashIndPre: {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
+  Common: {fileID: 21300000, guid: 2c4c8ea7a3cd80b458813449829a7a35, type: 3}
+  Uncommon: {fileID: 21300000, guid: a65bce7eb42ea6644af4c8b1d1f0234d, type: 3}
+  Rare: {fileID: 21300000, guid: 9e60a721aae69de4ea168e30b771468c, type: 3}
+  Epic: {fileID: 21300000, guid: bbb2cc29dd9f5a141932082de22bb76b, type: 3}
+  Legendary: {fileID: 21300000, guid: b37d1bebd40f62240a21d477ac9b78e7, type: 3}
   projectileAssetsPre:
   - {fileID: 8094084720107789588, guid: 63e287140c2dc7c4aa149832f6ebbd4b, type: 3}
   - {fileID: 7724720896443182447, guid: 5264bcd220a390f478916220c19b72aa, type: 3}
@@ -17991,6 +17997,92 @@ Material:
     - _SpaceTextureOffset: {r: 0, g: 0, b: 0, a: 0}
     - _SpaceTextureTiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
+--- !u!1 &1455817422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1455817423}
+  - component: {fileID: 1455817425}
+  - component: {fileID: 1455817424}
+  - component: {fileID: 1455817426}
+  m_Layer: 5
+  m_Name: Item Popups
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1455817423
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455817422}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 270633024}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.85300004, y: 0.127}
+  m_AnchorMax: {x: 0.95100003, y: 0.33561477}
+  m_AnchoredPosition: {x: 1, y: 0}
+  m_SizeDelta: {x: 1, y: -1}
+  m_Pivot: {x: 1, y: 0}
+--- !u!114 &1455817424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455817422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 7
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!222 &1455817425
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455817422}
+  m_CullTransparentMesh: 1
+--- !u!114 &1455817426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455817422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a5a8bda3abdca4585fe377b9dfbcfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPopupPre: {fileID: 4258929728871884347, guid: b7507bc446321314ba2f840bab3abebf, type: 3}
 --- !u!1 &1456768529
 GameObject:
   m_ObjectHideFlags: 0
@@ -23634,7 +23726,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2143667522
 RectTransform:
   m_ObjectHideFlags: 0

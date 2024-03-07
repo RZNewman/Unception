@@ -242,7 +242,7 @@ public class Inventory : NetworkBehaviour
     void TargetDropItem(NetworkConnection conn, CastData item, Vector3 location)
     {
         GameObject i = Instantiate(itemPre, location, Random.rotation);
-        i.GetComponent<ItemDrop>().init(player.scales, player.unit, item.quality);
+        i.GetComponent<ItemDrop>().init(player.scales, player.unit, item.quality, item.flair);
 
     }
 

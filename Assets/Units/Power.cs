@@ -35,15 +35,30 @@ public class Power : NetworkBehaviour, TextValue, BarValue
         }
     }
 
-    public void addPower(float power)
+    public void addPower(float incPower)
     {
-        if(softcap > 0 && currentPower > softcap)
+        if(softcap > 0)
         {
-            float percentOver = currentPower / softcap * 100;
-            float diminish = Mathf.Pow(softcapDiminishPercent, percentOver);
-            power *= diminish;
+            float powerOver = currentPower + incPower - softcap;
+            if(powerOver > 0)
+            {
+                float oldCap = Mathf.Max(currentPower, softcap);
+                float diff = currentPower + incPower - oldCap;
+
+                float percentOver = (oldCap+diff/2) / softcap * 100;
+                currentPower = oldCap + diff * Mathf.Pow(softcapDiminishPercent, percentOver) ;
+            }
+            else
+            {
+                currentPower += incPower;
+            }
+            
         }
-        currentPower += power;
+        else
+        {
+            currentPower += incPower;
+        }
+        
         powerUpdates();
 
     }

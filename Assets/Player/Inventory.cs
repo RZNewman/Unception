@@ -14,7 +14,7 @@ using static UnityEditor.Progress;
 
 public class Inventory : NetworkBehaviour
 {
-    int inventoryLimit = 50;
+    int inventoryLimit = 80;
     int blessingLimit = 4;
 
     List<CastData> tempDrops = new List<CastData>();
@@ -173,7 +173,7 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void AddItem(CastData item, Vector3 otherPosition)
     {
-        tempDrops.Add(item);
+        storage.Add(item.id, item);
         fillInstanceCache(item);
         TargetDropItem(connectionToClient, item, otherPosition);
     }

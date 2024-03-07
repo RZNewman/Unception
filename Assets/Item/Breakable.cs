@@ -34,9 +34,9 @@ public class Breakable : NetworkBehaviour, TeamOwnership
         switch (type)
         {
             case BreakableType.Urn:
-                return 0.5f;
+                return 1.5f / RewardManager.itemsPerPack;
             case BreakableType.Chest:
-                return 5f;
+                return 4.5f / RewardManager.itemsPerPack;
             default:
                 return 0.5f;
         }

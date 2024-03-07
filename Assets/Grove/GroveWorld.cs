@@ -267,6 +267,13 @@ public class GroveWorld : MonoBehaviour
         cursor = null;
 
     }
+    public void sendIconToTrash(string abilityId, GameObject icon)
+    {
+        loadoutMenu.trashObject(abilityId);
+        gp.player.GetComponent<Inventory>().CmdSendTrash(abilityId);
+        Destroy(icon);
+
+    }
 
 
     void AddShape(GroveObject obj)

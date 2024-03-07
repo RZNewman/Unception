@@ -164,10 +164,22 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     {
         if(mode == UIAbilityMode.Inventory)
         {
-            Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
-            FindObjectOfType<GroveWorld>().buildObject(abilityID);
-            inv.CmdSendStorage(abilityID);
-            Destroy(gameObject);
+            if(eventData.button == PointerEventData.InputButton.Left)
+            {
+                Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
+                grove.buildObject(abilityID);
+                inv.CmdSendStorage(abilityID);
+                grove.unsetHover(abilityID);
+                Destroy(gameObject);
+            }
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                Inventory inv = FindObjectOfType<GlobalPlayer>().player.GetComponent<Inventory>();
+                inv.CmdSendTrash(abilityID);
+                grove.unsetHover(abilityID);
+                FindObjectOfType<GroveWorld>().sendIconToTrash(abilityID, gameObject);
+            }
+
         }
         
     }

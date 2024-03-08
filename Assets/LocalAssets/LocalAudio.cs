@@ -12,6 +12,10 @@ public class LocalAudio : MonoBehaviour
 
     private void OnDestroy()
     {
-        Camera.main.GetComponent<AudioListener>().enabled = true;
+        if (Camera.main)
+        {
+            Camera.main.GetComponent<AudioListener>().enabled = true;
+        }
+        
     }
 }

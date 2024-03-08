@@ -57,6 +57,7 @@ public static class GenerateHit
                 stats[s] = statValues[s].asRange(0, itemMax(s));
             }
             stats = stats.sum(itemStatBase);
+            stats = stats.sum(itemStatBaseTyped(type));
             stats = stats.scale(scalesStart.numeric);
 
             StatStream stream = new StatStream();

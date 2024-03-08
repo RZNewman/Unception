@@ -36,15 +36,15 @@ Material:
     m_Floats:
     - _Edge: 2
     - _Fresnel: 4.39
-    - _Height: 2.59
-    - _Length: 4
-    - _MaxHeight: 4.45
+    - _Height: 3.4
+    - _Length: 5.03
+    - _MaxHeight: 3.08
     - _Mult: 0.2
     - _Offset: -2.28
-    - _Progress: -0.06
+    - _Progress: 0.54
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Width: 4
+    - _Width: 4.58
     - _isCone: 0
     - _isSquare: 1
     m_Colors: []

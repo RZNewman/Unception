@@ -52,14 +52,18 @@ public class UnitUpdateOrder : NetworkBehaviour
     void setRegistrationHelper(bool register)
     {
         globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
-        if (register)
+        if (globalUpdate)
         {
-            globalUpdate.register(this);
+            if (register)
+            {
+                globalUpdate.register(this);
+            }
+            else
+            {
+                globalUpdate.unregister(this);
+            }
         }
-        else
-        {
-            globalUpdate.unregister(this);
-        }
+        
     }
 
 

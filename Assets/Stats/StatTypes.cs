@@ -208,11 +208,26 @@ public static class StatTypes
     public readonly static Dictionary<Stat, float> itemStatBase = new Dictionary<Stat, float>()
     {
         {Stat.Range,1},
-        {Stat.Length,6},
-        {Stat.Width,9},
+        {Stat.Length,1},
+        {Stat.Width,20},
         {Stat.DamageMult,200},
         {Stat.Mezmerize,20},
     };
+
+    public  static Dictionary<Stat, float> itemStatBaseTyped(HitType type)
+    {
+        Dictionary<Stat, float> dict = new Dictionary<Stat, float>();
+        switch (type)
+        {
+            case HitType.Projectile:
+                dict.Add(Stat.Range, 20);
+                break;
+            default:
+                dict.Add(Stat.Length, 20);
+                break;
+        }
+        return dict;
+    } 
 
     public static float itemStatBaseTotal
     {

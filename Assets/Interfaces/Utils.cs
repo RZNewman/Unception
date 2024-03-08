@@ -26,7 +26,12 @@ public static class Utils
         return export.ToDictionary(p => (T)System.Enum.Parse(typeof(T), p.Key), p => p.Value);
     }
 
-
+    public enum CapsuleColliderDirection
+    {
+        X=0,
+        Y=1,
+        Z=2,
+    }
     public enum Rotation
     {
         None,
@@ -134,6 +139,26 @@ public static class Utils
     public static Vector3 positiveVector(Vector3 v)
     {
         return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
+    }
+
+
+
+    public static IEnumerable<T> innerJoin<T>(this List<T> one, IEnumerable<T> two)
+    {
+        foreach(T t in one.ToArray())
+        {
+            if (!two.Contains(t))
+            {
+                one.Remove(t);
+            }
+        }
+        return one;
+    }
+
+    public static float DistanceToLine(this Vector3 vec, Vector3 point)
+    {
+        return HandleUtility.DistancePointLine(point, Vector3.zero, vec);
+        //return (point - (Vector3.Dot(point, vec.normalized) * vec.normalized)).magnitude;
     }
 
     public static float GaussRandomDecline(float balance = 2)

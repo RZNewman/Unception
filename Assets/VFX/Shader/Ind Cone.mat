@@ -38,9 +38,10 @@ Material:
     - _Fresnel: 4.39
     - _Height: 0
     - _Length: 5
+    - _MaxHeight: 1.5
     - _Mult: 0.2
     - _Offset: -2.28
-    - _Progress: -0.46
+    - _Progress: 0.27
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Width: 5

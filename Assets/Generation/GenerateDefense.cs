@@ -17,7 +17,7 @@ public static class GenerateDefense
         {
             strength *= this.percentOfEffect;
 
-            float shieldValue = 2.1f * strength;
+            float shieldValue = 1.7f * strength;
 
             float baseDuration = this.duration.asRange(0.25f, 8);
             float duration = baseDuration / scalesStart.time;

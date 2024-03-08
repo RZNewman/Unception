@@ -50,7 +50,7 @@ public static class GenerateBuff
             int castCount = 0;
             if (mode == BuffMode.Timed)
             {
-                float baseDuration = this.duration.asRange(6, 20);
+                float baseDuration = this.duration.asRange(3, 15);
                 duration = baseDuration / scalesStart.time;
                 float portion = 0.2f;
                 float scale = portion + (1 - portion) * (1 - this.duration);

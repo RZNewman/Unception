@@ -60,7 +60,7 @@ public class ChannelState : PlayerMovementState, BarValue
         {
             return new StateTransition(new StunnedState(mover), true);
         }
-        if (mover.input.cancel)
+        if (mover.input.cancel || mover.input.move != Vector2.zero)
         {
             return new StateTransition(new FreeState(mover), true);
         }

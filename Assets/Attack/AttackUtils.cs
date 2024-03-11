@@ -332,6 +332,7 @@ public static class AttackUtils
         public List<ColliderInfo> colliders;
         public List<IndicatorDisplay> indicators;
         public VFXInfo vfx;
+        public EffectiveDistance effective;
     }
 
     public static ShapeData getShapeData(EffectShape shape, CapsuleSize sizeC, float range, float length, float width, bool useRange)
@@ -348,7 +349,7 @@ public static class AttackUtils
         {
             case EffectShape.Centered:
                 subtractRadius = (range + sizeC.radius)*rangeMult;
-                float fullRadius = width + subtractRadius;
+                float fullRadius = width / 2 + subtractRadius;
                 barWidth = fullRadius * 0.08f;
                 #region colliders
                 data.colliders.Add(new CapsuleInfo
@@ -469,6 +470,13 @@ public static class AttackUtils
                     radius = fullRadius,
                     subtractRadius = subtractRadius,
                     additionalLength = length,
+                };
+                data.effective = new EffectiveDistance()
+                {
+                    height = fullRadius * 2,
+                    minDistance = subtractRadius,
+                    maxDistance = fullRadius,
+                    width = width,
                 };
                 break;
             case EffectShape.Slash:
@@ -591,6 +599,13 @@ public static class AttackUtils
                     arcDegrees = arcHalfDegrees * 2,
                     height = boxSize.y,
                 };
+                data.effective = new EffectiveDistance()
+                {
+                    height = boxSize.y,
+                    minDistance = subtractRadius,
+                    maxDistance = slashLength,
+                    widthAngle = arcHalfDegrees *2,
+                };
                 break;
             case EffectShape.Overhead:
                 subtractRadius = range * rangeMult;
@@ -673,6 +688,13 @@ public static class AttackUtils
                     rollDegrees = 90,
                     arcDegrees = 180,
                     height = width,
+                };
+                data.effective = new EffectiveDistance()
+                {
+                    height = outerRadius * 2,
+                    minDistance = subtractRadius,
+                    maxDistance = outerRadius,
+                    width = width,
                 };
                 break;
         }
@@ -774,107 +796,11 @@ public static class AttackUtils
         return hits.Select(c => c.gameObject).ToList();
     }
 
-    public struct LineInfo
-    {
-        public Vector3 boxCenter;
-        public Vector3 boxHalfs;
-        public Vector3 capsuleStart;
-        public Vector3 capsuleEnd;
-        public Vector3 occlusionOrigin;
-        public Quaternion aim;
-        public float maxDistance;
-        public Vector3 bodyForward;
-    }
-    public static LineInfo LineCalculations(SpellSource source, float range, float length, float width)
-    {
-        Vector2 attackVec = new Vector2(length, width / 2);
-        float maxDistance = attackVec.magnitude;
-        FloorNormal floor = source.GetComponent<FloorNormal>();
-        Quaternion aim = source.aimRotation(AimType.Normal);
-        Vector3 attackFocus = source.transform.position + aim * Vector3.forward * range;
-        Vector3 boxCenter = attackFocus + maxDistance * 0.5f * (aim * Vector3.forward);
-        float boxHeight = attackHitboxHalfHeight(HitType.Attached, source.sizeCapsule.distance, maxDistance);
-        Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
-
-        float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
-        Vector3 capsuleHeightDiff = floor.normal * capsuleHeightFactor;
-        Vector3 capsuleStart = attackFocus + capsuleHeightDiff;
-        Vector3 capsuleEnd = attackFocus - capsuleHeightDiff;
-        return new LineInfo
-        {
-            boxCenter = boxCenter,
-            boxHalfs = boxHalfs,
-            capsuleEnd = capsuleEnd,
-            capsuleStart = capsuleStart,
-            aim = aim,
-            maxDistance = maxDistance,
-            bodyForward = source.transform.forward,
-            occlusionOrigin = source.transform.position,
-        };
-    }
-
-    public static List<GameObject> LineAttack(LineInfo info)
-    {
-        List<GameObject> hits = new List<GameObject>();
-        List<GameObject> tempHits = new List<GameObject>();
-
-        RaycastHit[] boxHits = Physics.BoxCastAll(info.boxCenter, info.boxHalfs, info.bodyForward, info.aim, 0.0f, LayerMask.GetMask("Players", "Breakables"));
-        //RaycastHit[] sphereHits = Physics.SphereCastAll(bodyFocus, maxDistance, body.forward, 0.0f, LayerMask.GetMask("Players"));
-
-        RaycastHit[] capsuleHits = Physics.CapsuleCastAll(info.capsuleStart, info.capsuleEnd, info.maxDistance, info.bodyForward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
-
-        //Debug.DrawLine(bodyFocus, bodyFocus + body.forward * maxDistance, Color.blue, 3.0f); ;
-        //Debug.DrawLine(bodyFocus, bodyFocus + (body.forward+body.up).normalized * maxDistance, Color.blue, 3.0f);
-        //DrawBox(boxCenter, aim, boxHalfs * 2, Color.blue);
-        //Debug.DrawLine(capsuleStart, capsuleEnd, Color.red);
-        //Debug.DrawLine(capsuleStart, capsuleStart+ body.forward*maxDistance, Color.red);
-        //Debug.DrawLine(capsuleEnd, capsuleEnd + body.forward * maxDistance, Color.red);
-        //Debug.Break();
-
-        foreach (RaycastHit hit in boxHits)
-        {
-            GameObject obj = hit.collider.gameObject;
-            tempHits.Add(obj);
-        }
-        foreach (RaycastHit hit in capsuleHits)
-        {
-            GameObject obj = hit.collider.gameObject;
-            Vector3 lineDiff = hit.collider.bounds.center - info.occlusionOrigin;
-            if (tempHits.Contains(obj)
-                && !Physics.Raycast(info.occlusionOrigin, lineDiff, lineDiff.magnitude, LayerMask.GetMask("Terrain")))
-            {
-
-                hits.Add(obj);
-            }
-        }
-
-        return hits;
-
-    }
 
     public static float GroundRadius(float length, float width)
     {
         return (length + width) / 2;
     }
-    public static List<GameObject> GroundAttack(Vector3 origin, float radius)
-    {
-        List<GameObject> hits = new List<GameObject>();
-
-        RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.forward, 0.0f, LayerMask.GetMask("Players", "Breakables"));
-
-
-
-        foreach (RaycastHit hit in sphereHits)
-        {
-            GameObject obj = hit.collider.gameObject;
-            hits.Add(obj);
-        }
-
-
-        return hits;
-
-    }
-
 
 
     public static void ShapeParticle(SpellSource source, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists)

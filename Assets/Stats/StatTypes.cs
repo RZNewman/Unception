@@ -74,7 +74,7 @@ public static class StatTypes
         {EffectShape.Centered, new Dictionary<Stat, float>(){
             {Stat.Length, 0.5f },
             {Stat.Range, 0.8f },
-            {Stat.Width, 1.5f },
+            {Stat.Width, 2.5f },
             {Stat.DamageMult, 0.9f },
             }
         }

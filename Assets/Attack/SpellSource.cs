@@ -140,21 +140,33 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
 
     public void moveTowardTarget()
     {
-
-        Vector3 diff = target - transform.position;
-        diff = Vector3.ProjectOnPlane(diff, ground.normal);
+        Vector3 diffFull = target - transform.position;
+        Vector3 diffFlat = Vector3.ProjectOnPlane(diffFull, ground.normal);
         float frameDistance = speed * Time.fixedDeltaTime;
-        if (diff.magnitude < frameDistance)
+        Vector3 velo = Vector3.zero;
+        if (diffFlat.magnitude < frameDistance)
         {
-            transform.position = target;
-            rb.velocity = Vector3.zero;
+            transform.position += diffFlat;
         }
         else
         {
-            rb.velocity = speed * diff.normalized;
+            velo = speed * diffFlat.normalized;
         }
 
+        Vector3 diffPerp = diffFull - diffFlat;
+        if(diffFlat.magnitude <= speed * 0.5f)
+        {
+            if (diffPerp.magnitude < frameDistance)
+            {
+                transform.position += diffPerp;
+            }
+            else
+            {
+                velo += speed * diffPerp.normalized;
+            }
+        }
 
+        rb.velocity = velo;
     }
 
 

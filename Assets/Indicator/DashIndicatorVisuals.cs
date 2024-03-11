@@ -41,12 +41,12 @@ public class DashIndicatorVisuals : IndicatorInstance
         }
 
         line.transform.localScale = new Vector3(width, Mathf.Abs(length));
-        line.transform.localPosition = new Vector3(0, length / 2);
+        line.transform.localPosition = new Vector3(0,0, length / 2);
         line.transform.localRotation = rotation;
 
         Vector3 arrowScale = new Vector3(0.5f, 0.2f) * scale;
         tip.transform.localScale = arrowScale;
-        tip.transform.localPosition = new Vector3(0, length);
+        tip.transform.localPosition = new Vector3(0,0, length);
         tip.transform.localRotation = rotation;
 
         progress.transform.localScale = arrowScale * 2;

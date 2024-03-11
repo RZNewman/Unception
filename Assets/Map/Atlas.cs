@@ -634,8 +634,8 @@ public class Atlas : NetworkBehaviour
     {
         yield return new WaitForSeconds(1f);
         Sunlight sun = FindObjectOfType<Sunlight>();
-        sun.setMultiplier(200f);
-        yield return new WaitForSeconds(3f);
+        sun.setMultiplier(300f);
+        yield return new WaitForSeconds(2.5f);
         sun.setMultiplier(1);
     }
 

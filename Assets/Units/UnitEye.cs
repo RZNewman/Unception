@@ -22,5 +22,6 @@ public class UnitEye : MonoBehaviour
     public void updateRotation()
     {
         transform.localRotation = Quaternion.AngleAxis(movement.currentLookVerticalAngle, Vector3.right);
+        Debug.DrawLine(transform.position, transform.position + transform.forward * 20f, new Color(1,0.5f, 0.5f)) ;
     }
 }

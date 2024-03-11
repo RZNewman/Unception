@@ -43,7 +43,7 @@ public class Wetstone : NetworkBehaviour
         canTeleport = false;
         yield return FindObjectOfType<Atlas>().missionSucceed();
         cam.gameObject.SetActive(true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         unit.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
         MenuHandler.controlCharacterCutscene = true;
         Destroy(gameObject);

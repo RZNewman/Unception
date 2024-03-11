@@ -6,6 +6,7 @@ using static Cast;
 using static GenerateAttack;
 using static GenerateValues;
 using static GenerateWind;
+using static Size;
 using static StatTypes;
 using static WindState;
 
@@ -68,9 +69,12 @@ public static class GenerateDash
         public DashControl control;
         public DashEndMomentum endMomentum;
 
-        public override EffectiveDistance GetEffectiveDistance(float halfHeight)
+        public override EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {
-            return new EffectiveDistance(distance, distance, 0, 0, EffectiveDistanceType.Modifier);
+            return new EffectiveDistance()
+            {
+                modDistance = distance,
+            };
         }
     }
     public static DashGenerationData createDash()

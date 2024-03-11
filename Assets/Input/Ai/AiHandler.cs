@@ -17,55 +17,16 @@ public class AiHandler : MonoBehaviour, UnitControl
     float scalePhys = 1;
 
     NavMeshAgent agent;
-    public enum EffectiveDistanceType
-    {
-        None,
-        Hit,
-        Modifier
-    }
+
     public struct EffectiveDistance
     {
+        public float modDistance;
+
         public float minDistance;
         public float maxDistance;
         public float width;
+        public float widthAngle;
         public float height;
-        public EffectiveDistanceType type;
-        public EffectiveDistance(float min, float max, float widthHit, float heightHit, EffectiveDistanceType t = EffectiveDistanceType.Hit)
-        {
-            type = t;
-            minDistance = min;
-            maxDistance = max;
-            width = widthHit;
-            height = heightHit;
-        }
-        public static EffectiveDistance empty
-        {
-            get
-            {
-                return new EffectiveDistance()
-                {
-                    minDistance = 0,
-                    maxDistance = 0,
-                    width = 0,
-                    height = 0,
-                    type = EffectiveDistanceType.None,
-                };
-            }
-        }
-
-        public EffectiveDistance sum(EffectiveDistance other)
-        {
-            return new EffectiveDistance
-            {
-                
-                type = other.type,
-                minDistance = minDistance + other.minDistance,
-                maxDistance = other.maxDistance,
-                width = other.width,
-                height = other.height,
-
-            };
-        }
     }
     public UnitInput getUnitInuput()
     {
@@ -169,7 +130,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                 bool canSee = aggro.canSee(target);
                 Optional<Ability> currentAttack = mover.currentAttackingAbility();
                 AbilityPair bestNext = GetComponentInParent<AbilityManager>().getBestAbility();
-                EffectiveDistance eff = currentAttack.HasValue ? currentAttack.Value.GetEffectiveDistance(mySize.scaledHalfHeight) : bestNext.ability.GetEffectiveDistance(mySize.scaledHalfHeight);
+                EffectiveDistance eff = currentAttack.HasValue ? currentAttack.Value.GetEffectiveDistance(mySize.sizeC) : bestNext.ability.GetEffectiveDistance(mySize.sizeC);
                 DistanceType dist = DistanceType.WayTooFar;
                 bool canAttack = false;
                 currentInput.attacks = new ItemSlot[0];
@@ -177,17 +138,18 @@ public class AiHandler : MonoBehaviour, UnitControl
                 if (canSee)
                 {
                     Quaternion aim = eye.transform.rotation;
-                    
-                    float fullRange = eff.maxDistance + mySize.scaledRadius + thierSize.scaledRadius;
+
+                    float startRange = eff.minDistance + eff.modDistance;
+                    float fullRange = eff.maxDistance + eff.modDistance + thierSize.scaledRadius;
                     Vector3 aimedDiff = Quaternion.Inverse(aim) * rawDiffAttack;
                     float distanceFromTarget = rawDiffAttack.magnitude;
-                    float goodDist = fullRange - eff.minDistance;
+                    float goodDist = fullRange - startRange;
 
                     dist = distanceFromTarget switch
                     {
-                        float i when i < eff.minDistance => DistanceType.TooClose,
-                        float i when i < eff.minDistance + goodDist * 0.2f => DistanceType.SlightlyClose,
-                        float i when i < eff.minDistance + goodDist * 0.8f => DistanceType.JustRight,
+                        float i when i < startRange => DistanceType.TooClose,
+                        float i when i < startRange + goodDist * 0.3f => DistanceType.SlightlyClose,
+                        float i when i < startRange + goodDist * 0.5f => DistanceType.JustRight,
                         float i when i <= fullRange => DistanceType.SlightlyFar,
                         float i when i <= fullRange * 1.5 => DistanceType.TooFar,
                         _ => DistanceType.WayTooFar,
@@ -197,8 +159,13 @@ public class AiHandler : MonoBehaviour, UnitControl
                     {
                         if(dist != DistanceType.TooClose && dist != DistanceType.TooFar && dist != DistanceType.WayTooFar)
                         {
-                            if (Mathf.Abs(aimedDiff.x) < eff.width
-                                    && Mathf.Abs(aimedDiff.y) < eff.height)
+                            if (
+                                (eff.width <= 0 || Mathf.Abs(aimedDiff.x) < eff.width /2)
+                                &&
+                                (eff.widthAngle <= 0 || Vector3.Angle(Vector3.forward, new Vector3(aimedDiff.x, 0, aimedDiff.z - eff.modDistance)) < eff.widthAngle /2)
+                                &&
+                                Mathf.Abs(aimedDiff.y) < eff.height
+                                )
                             {
                                 canAttack = true;
 

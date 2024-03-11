@@ -7,6 +7,7 @@ using static AttackSegment;
 using static AttackUtils;
 using static GenerateAttack;
 using static Power;
+using static Size;
 using static StatTypes;
 using static UnitControl;
 using static Utils;
@@ -193,9 +194,9 @@ public class Ability : NetworkBehaviour
 
 
 
-    public EffectiveDistance GetEffectiveDistance(float halfHeight)
+    public EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
     {
-        return formatInstance.effect.GetEffectiveDistance(halfHeight);
+        return formatInstance.effect.GetEffectiveDistance(sizeC);
     }
 
     public ItemSlot? slot()

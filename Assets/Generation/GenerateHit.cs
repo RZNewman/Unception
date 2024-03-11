@@ -7,6 +7,8 @@ using static AiHandler;
 using static GenerateValues;
 using static AttackUtils;
 using static StatTypes;
+using static UnityEngine.Rendering.HableCurve;
+using static Size;
 
 public static class GenerateHit
 {
@@ -170,26 +172,27 @@ public static class GenerateHit
         float getStat(Stat stat)
         {
             return stream.getValue(stat, scales, type, shape) * strength;
-
         }
 
-        public override EffectiveDistance GetEffectiveDistance(float halfHeight)
+        public override EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {
             float length = getStat(Stat.Length);
             float width = getStat(Stat.Width);
             float range = getStat(Stat.Range);
-            Vector2 max = new Vector2(length, width / 2);
+
+            ShapeData data = AttackUtils.getShapeData(shape, sizeC, range, length, width, type == HitType.Attached);
             switch (type)
             {
-                case HitType.Attached:
-
-                    return new EffectiveDistance(range, range + max.magnitude, max.y, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
                 case HitType.ProjectileExploding:
-                    return new EffectiveDistance(0, range, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
-                case HitType.GroundPlaced:
-                    return new EffectiveDistance(0, range + GroundRadius(length, width), GroundRadius(length, width) / 2, GroundRadius(length, width) / 2);
+                    return new EffectiveDistance()
+                    {
+                        maxDistance = range,
+                        width = width/2,
+                        height = width/2,
+                    };
                 default:
-                    return new EffectiveDistance(0, length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude));
+                    data.effective.modDistance = type == HitType.GroundPlaced ? range + sizeC.radius : 0;
+                    return data.effective;
             }
         }
 

@@ -22,6 +22,7 @@ using static GenerateDefense;
 using static GroveObject;
 using static Grove;
 using static Power;
+using static Size;
 
 public static class GenerateAttack
 {
@@ -36,9 +37,9 @@ public static class GenerateAttack
         public float powerAtGen;
         public Scales scales;
         public float percentOfEffect;
-        public virtual EffectiveDistance GetEffectiveDistance(float halfHeight)
+        public virtual EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {
-            return EffectiveDistance.empty;
+            return new EffectiveDistance();
         }
     }
 
@@ -406,25 +407,19 @@ public static class GenerateAttack
 
 
 
-        public EffectiveDistance GetEffectiveDistance(float halfHeight)
+        public EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {
-            EffectiveDistance saved = EffectiveDistance.empty;
-
+            float modDist = 0;
             SegmentInstanceData prime = segments[0];
             if (prime.dash != null && !prime.dashAfter)
             {
-                saved = saved.sum(prime.dash.GetEffectiveDistance(halfHeight));
+                modDist = prime.dash.GetEffectiveDistance(sizeC).modDistance;
             }
-            AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance(halfHeight);
+            AiHandler.EffectiveDistance e = prime.hit.GetEffectiveDistance(sizeC);
 
-            if (saved.type != AiHandler.EffectiveDistanceType.None)
-            {
-                return saved.sum(e);
-            }
-            else
-            {
-                return e;
-            }
+            e.modDistance += modDist;
+            return e;
+
         }
         #region display
 

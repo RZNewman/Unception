@@ -14155,6 +14155,7 @@ MonoBehaviour:
   GroundIndPre: {fileID: 8249178311684600747, guid: 759948cdacef6af4c871955bad7c495f, type: 3}
   ProjIndPre: {fileID: 8249178311684600747, guid: b6ca85c5a6d7a6f4695dbc5cb233d419, type: 3}
   DashIndPre: {fileID: 8249178311684600747, guid: d99a7a19ebe044d47a0ef0bd2ca8f46a, type: 3}
+  ShapeIndPre: {fileID: 8249178311684600747, guid: 0f237e22cee669c459b7ecadca5c2c38, type: 3}
   Common: {fileID: 21300000, guid: 2c4c8ea7a3cd80b458813449829a7a35, type: 3}
   Uncommon: {fileID: 21300000, guid: a65bce7eb42ea6644af4c8b1d1f0234d, type: 3}
   Rare: {fileID: 21300000, guid: 9e60a721aae69de4ea168e30b771468c, type: 3}

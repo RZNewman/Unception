@@ -20,6 +20,7 @@ public class GlobalPrefab : MonoBehaviour
     public GameObject GroundIndPre;
     public GameObject ProjIndPre;
     public GameObject DashIndPre;
+    public GameObject ShapeIndPre;
 
     public Sprite Common;
     public Sprite Uncommon;

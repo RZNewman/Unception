@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using static AttackMachine;
+using static AttackUtils;
 using static GenerateAttack;
 using static GenerateHit;
 using static SpellSource;
@@ -42,9 +43,9 @@ public class AttackSegment
         constructIndicators();
     }
 
-    public void sourceUpdate()
+    public void sourcePreUpdate()
     {
-        sourcePoint.OrderedUpdate();
+        sourcePoint.PreUpdate();
     }
 
     public void IndicatorUpdate()
@@ -160,11 +161,12 @@ public class AttackSegment
             {
                 ActionState action = (ActionState)state;
                 HitInstanceData source = action.getSource();
-                if (source.type == HitType.Ground)
+                ShapeData shapeData = action.getShapeData();
+                if (source.type == HitType.GroundPlaced)
                 {
                     ((WindState)currentState).setGroundTarget(sourcePoint);
                 }
-                sourcePoint.buildHitIndicator(source);
+                sourcePoint.buildHitIndicator(source, shapeData);
             }
             else if (state is DashState)
             {
@@ -205,7 +207,7 @@ public class AttackSegment
             WindState windup = new WindState(mover, seg.windup, false, castData.hardCast);
 
 
-            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast);
+            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast, castData.usesRangeForHitbox(seg.hit.type));
             finalSeg.hitData = seg.hit;
 
             states.Add(windup);
@@ -269,7 +271,7 @@ public class AttackSegment
                 finalSeg.location = castData.locationOverride;
                 finalSeg.targetOverride = new Optional<Vector3>(castData.triggeredPosition);
             }
-            else if (seg.hit.type == HitType.Ground)
+            else if (seg.hit.type == HitType.GroundPlaced)
             {
                 finalSeg.location = SourceLocation.WorldForward;
             }
@@ -297,7 +299,7 @@ public class AttackSegment
         FloorNormal ground = mover.GetComponent<FloorNormal>();
         UnitEye eye = mover.GetComponentInChildren<UnitEye>();
 
-        float range = source.type == HitType.Projectile ? 0 : source.range;
+        float range = source.type == HitType.ProjectileExploding ? 0 : source.range;
 
         MoveMode moveType = MoveMode.Parent;
         if (location == SourceLocation.World || location == SourceLocation.WorldForward)
@@ -324,14 +326,14 @@ public class AttackSegment
 
 
                 float distance = targetDiff.magnitude;
-                if (source.type == HitType.Line)
-                {
-                    distance = Mathf.Max(0, distance - source.length / 2);
-                }
-                if (source.type == HitType.Projectile)
-                {
-                    distance = Mathf.Max(0, distance - source.range / 2);
-                }
+                //if (source.type == HitType.Line)
+                //{
+                //    distance = Mathf.Max(0, distance - source.length / 2);
+                //}
+                //if (source.type == HitType.Projectile)
+                //{
+                //    distance = Mathf.Max(0, distance - source.range / 2);
+                //}
 
                 Vector3 limitedDiff = targetDiff.normalized * Mathf.Clamp(distance, 0, range);
                 if (location == SourceLocation.WorldForward)
@@ -353,7 +355,7 @@ public class AttackSegment
             default:
                 Transform targetTransform = location == SourceLocation.Body ? body : mover.transform;
                 Quaternion rotation = location == SourceLocation.Body ? body.rotation : Quaternion.LookRotation(flatDiff);
-                instance = GameObject.Instantiate(prefab, bodyFocus, rotation, targetTransform);
+                instance = GameObject.Instantiate(prefab, targetTransform.position, rotation, targetTransform);
                 ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
                 adopt.parent = mover.gameObject;
                 adopt.useSubBody = location == SourceLocation.Body;

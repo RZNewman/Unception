@@ -38,13 +38,5 @@ public class GroundIndicatorVisuals : HitIndicatorInstance
         progress.transform.localScale = new Vector3(length_percent, length_percent);
     }
 
-    protected override float getThreat()
-    {
-        return data.powerByStrength / GlobalPlayer.gPlay.localPowerThreat;
-    }
 
-    protected override bool willStagger()
-    {
-        return data.stagger >= GlobalPlayer.gPlay.localStunThreat;
-    }
 }

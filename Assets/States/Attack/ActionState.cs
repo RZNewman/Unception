@@ -18,14 +18,16 @@ public class ActionState : AttackStageState
 
     AttackSegment segment;
     bool hardCast;
+    bool useRangeForHit;
 
-    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, DefenseInstanceData def, bool hardCasted) : base(m)
+    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, DefenseInstanceData def, bool hardCasted, bool usesRangeForHit) : base(m)
     {
         attackData = data;
         buffData = dataB;
         defData = def;
         segment = seg;
         hardCast = hardCasted;
+        useRangeForHit = usesRangeForHit;
     }
     public override void enter()
     {
@@ -41,59 +43,50 @@ public class ActionState : AttackStageState
 
     void handleAttack()
     {
+        if (!mover.isServer)
+        {
+            return;
+        }
         SpellSource sourcePoint = segment.sourcePoint;
         List<GameObject> hits = new List<GameObject>();
+        List<GameObject> enemyHits = new List<GameObject>();
+        ShapeData shapeData = getShapeData();
         switch (attackData.type)
         {
-            case HitType.Line:
-                LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
-                LineParticle(info, attackData.flair, mover.sound.dists);
-                if (!mover.isServer)
-                {
-                    return;
-                }
-                hits = LineAttack(info);
-                foreach (GameObject o in hits)
-                {
-                    hit(o, mover, attackData,
-                        mover.GetComponent<TeamOwnership>().getTeam(),
-                        mover.GetComponent<Power>().power,
-                        new KnockBackVectors
-                        {
-                            center = sourcePoint.transform.position,
-                            direction = sourcePoint.transform.forward
-                        });
+            case HitType.Attached: 
+                //LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
+                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                //LineParticle(info, attackData.flair, mover.sound.dists);
+                //hits = LineAttack(info);
+                hits = ShapeAttack(sourcePoint, shapeData);
 
-                }
                 break;
-            case HitType.Projectile:
-                if (!mover.isServer)
-                {
-                    return;
-                }
+            case HitType.ProjectileExploding:
                 SpawnProjectile(sourcePoint, mover, attackData, buffData, mover.sound.dists);
                 break;
-            case HitType.Ground:
-                float radius = GroundRadius(attackData.length, attackData.width);
-                GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
-                if (!mover.isServer)
-                {
-                    return;
-                }
-                hits = GroundAttack(sourcePoint.transform.position, radius);
-                foreach (GameObject o in hits)
-                {
-                    hit(o, mover, attackData,
-                        mover.GetComponent<TeamOwnership>().getTeam(),
-                        mover.GetComponent<Power>().power,
-                        new KnockBackVectors
-                        {
-                            center = sourcePoint.transform.position,
-                            direction = sourcePoint.transform.forward
-                        });
-
-                }
+            case HitType.GroundPlaced:
+                //float radius = GroundRadius(attackData.length, attackData.width);
+                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                //GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
+                hits = ShapeAttack(sourcePoint, shapeData);
+                //hits = GroundAttack(sourcePoint.transform.position, radius);
                 break;
+
+        }
+
+        foreach (GameObject o in hits)
+        {
+            if (hit(o, mover, attackData,
+                mover.GetComponent<TeamOwnership>().getTeam(),
+                mover.GetComponent<Power>().power,
+                new KnockBackVectors
+                {
+                    center = sourcePoint.transform.position,
+                    direction = sourcePoint.transform.forward
+                }))
+            {
+                enemyHits.Add(o);
+            }
 
         }
 
@@ -109,7 +102,7 @@ public class ActionState : AttackStageState
             }
             else
             {
-                foreach (GameObject h in hits)
+                foreach (GameObject h in enemyHits)
                 {
                     BuffManager bm = h.GetComponentInParent<BuffManager>();
                     if (bm)
@@ -137,10 +130,14 @@ public class ActionState : AttackStageState
             time = 0,
         };
     }
-
     public HitInstanceData getSource()
     {
         return attackData;
+    }
+
+    public ShapeData getShapeData()
+    {
+        return AttackUtils.getShapeData(attackData.shape, segment.sourcePoint.sizeCapsule, attackData.range, attackData.length, attackData.width, useRangeForHit);
     }
     public override void tick()
     {

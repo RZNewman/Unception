@@ -8,6 +8,10 @@ using static IndicatorInstance;
 using UnityEngine.VFX;
 using static UnitSound;
 using static GenerateBuff;
+using static UnityEngine.Rendering.HableCurve;
+using static Size;
+using static FloorNormal;
+using UnityEngine.UIElements;
 
 public class Projectile : NetworkBehaviour
 {
@@ -19,7 +23,7 @@ public class Projectile : NetworkBehaviour
 
     float lifetime;
     float birth;
-    bool hasHit = false;
+    //bool hasHit = false;
 
     UnitMovement mover;
     HitInstanceData hitData;
@@ -42,14 +46,14 @@ public class Projectile : NetworkBehaviour
     {
         if (isServer && Time.time > birth + lifetime)
         {
-            Destroy(gameObject);
+            fireExplode(transform.position + transform.forward * data.hitboxRadius);
         }
     }
     struct ProjectileData
     {
         public float terrainRadius;
         public float hitboxRadius;
-        public float halfHeight;
+        public CapsuleSize sizeC;
         public float length;
         public float range;
         public uint team;
@@ -61,7 +65,7 @@ public class Projectile : NetworkBehaviour
 
     }
     [Server]
-    public void init(float terrainRadius, float hitboxRadius, float halfHeight, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, AudioDistances dists)
+    public void init(float terrainRadius, float hitboxRadius, CapsuleSize sizeC, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, AudioDistances dists)
     {
         mover = m;
         Power p = mover.GetComponent<Power>();
@@ -71,7 +75,7 @@ public class Projectile : NetworkBehaviour
         {
             terrainRadius = terrainRadius,
             hitboxRadius = hitboxRadius,
-            halfHeight = halfHeight,
+            sizeC = sizeC,
             team = mover.GetComponent<TeamOwnership>().getTeam(),
             power = p.power,
             length = hitData.length,
@@ -90,8 +94,8 @@ public class Projectile : NetworkBehaviour
     {
         float terrainR = data.terrainRadius;
         float hitR = data.hitboxRadius;
-        terrainHit.transform.localScale = new Vector3(terrainR, terrainR, terrainR) * 2;
-        playerHit.transform.localScale = new Vector3(hitR, attackHitboxHalfHeight(HitType.Projectile, data.halfHeight, hitR) / 2, hitR) * 2;
+        terrainHit.transform.localScale = Vector3.one *terrainR *2 ;
+        playerHit.transform.localScale = Vector3.one * hitR * 2; ;
         setAudioDistances(Instantiate(FindObjectOfType<GlobalPrefab>().projectileAssetsPre[data.visualIndex], visualScale.transform), data.dists);
     }
 
@@ -106,25 +110,80 @@ public class Projectile : NetworkBehaviour
         if (isServer && !collided.Contains(other))
         {
 
-            collided.Add(other);
-            if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward }))
-            {
-                if (buffData != null && buffData.type == BuffType.Debuff)
-                {
-                    SpawnBuff(buffData, other.GetComponentInParent<BuffManager>().transform);
-                }
-                if (!hasHit)
-                {
-                    hasHit = true;
-                    birth = Time.time;
-                    lifetime = data.lifetime / 3f;
-                    setSpeed(data.length / lifetime);
-                }
+            //collided.Add(other);
+            //if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward }))
+            //{
+            //    if (buffData != null && buffData.type == BuffType.Debuff)
+            //    {
+            //        SpawnBuff(buffData, other.GetComponentInParent<BuffManager>().transform);
+            //    }
+            //    if (!hasHit)
+            //    {
+            //        hasHit = true;
+            //        birth = Time.time;
+            //        lifetime = data.lifetime / 3f;
+            //        setSpeed(data.length / lifetime);
+            //    }
 
+            //}
+            if(other.GetComponentInParent<TeamOwnership>().getTeam() != data.team)
+            {
+                Vector3 diff = other.transform.position - transform.position;
+                Vector3 offset = diff.normalized * Mathf.Min(diff.magnitude, data.hitboxRadius);
+
+                fireExplode(transform.position + offset);
             }
+            
         }
 
     }
+
+    [Server]
+    void fireExplode(Vector3 contact)
+    {
+        List<GameObject> hits;
+        List<GameObject> enemyHits = new List<GameObject>();
+        GroundResult calc = FloorNormal.getGroundNormal(contact, data.sizeC);
+        Quaternion aim = Quaternion.LookRotation(transform.forward, calc.normal);
+        hits = ShapeAttack(aim, contact, getShapeData());
+        foreach (GameObject o in hits)
+        {
+            if (hit(o, mover, hitData,
+                data.team,
+                data.power,
+                new KnockBackVectors
+                {
+                    center = contact,
+                    direction = transform.forward
+                }))
+            {
+                enemyHits.Add(o);
+            }
+
+        }
+        if (buffData != null && buffData.type == BuffType.Debuff)
+        {
+            foreach (GameObject h in enemyHits)
+            {
+                BuffManager bm = h.GetComponentInParent<BuffManager>();
+                if (bm)
+                {
+                    SpawnBuff(buffData, bm.transform);
+                }
+            }
+
+        }
+        ShapeParticle(aim, contact, transform.forward, getShapeData(), hitData.shape, hitData.flair, mover.sound.dists);
+        Destroy(gameObject);
+    }
+
+    
+
+    public ShapeData getShapeData()
+    {
+        return AttackUtils.getShapeData(hitData.shape, data.sizeC, hitData.range, hitData.length, hitData.width, false);
+    }
+
     public void onTerrainCollide(Collider other)
     {
         if (isServer)

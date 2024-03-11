@@ -58,13 +58,5 @@ public class LineIndicatorVisuals : HitIndicatorInstance
         progress.transform.localPosition = new Vector3(0, range + length_percent / 2);
     }
 
-    protected override float getThreat()
-    {
-        return data.powerByStrength / GlobalPlayer.gPlay.localPowerThreat;
-    }
-
-    protected override bool willStagger()
-    {
-        return data.stagger >= GlobalPlayer.gPlay.localStunThreat;
-    }
+    
 }

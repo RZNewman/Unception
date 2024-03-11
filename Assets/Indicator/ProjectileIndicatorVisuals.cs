@@ -22,10 +22,16 @@ public class ProjectileIndicatorVisuals : HitIndicatorInstance
         length = data.range * 0.3f;
         width = data.width;
 
+        Quaternion turn = Quaternion.LookRotation(Vector3.down, Vector3.forward);
+        
+
         shot.transform.localScale = new Vector3(width, length);
-        shot.transform.localPosition = new Vector3(0, length / 2);
+        shot.transform.localPosition = new Vector3(0,0, length / 2);
 
         progress.transform.localScale = new Vector3(width, 0);
+
+        shot.transform.localRotation = turn;
+        progress.transform.localRotation = turn;
 
     }
 
@@ -40,16 +46,8 @@ public class ProjectileIndicatorVisuals : HitIndicatorInstance
     {
         float length_percent = length * percent;
         progress.transform.localScale = new Vector3(progress.transform.localScale.x, length_percent);
-        progress.transform.localPosition = new Vector3(0, length_percent / 2);
+        progress.transform.localPosition = new Vector3(0,0, length_percent / 2);
     }
 
-    protected override float getThreat()
-    {
-        return data.powerByStrength / GlobalPlayer.gPlay.localPowerThreat;
-    }
-
-    protected override bool willStagger()
-    {
-        return data.stagger >= GlobalPlayer.gPlay.localStunThreat;
-    }
+    
 }

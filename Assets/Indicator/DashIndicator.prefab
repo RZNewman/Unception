@@ -301,6 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd9624e78be07345b4ba33954b33d7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   parent: {fileID: 0}
@@ -317,10 +318,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientStarted: 0
   sceneId: 0
+  _assetId: 1246377903
   serverOnly: 0
   visible: 0
-  m_AssetId: d99a7a19ebe044d47a0ef0bd2ca8f46a
   hasSpawned: 0
 --- !u!114 &672253254383725343
 MonoBehaviour:

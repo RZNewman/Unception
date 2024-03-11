@@ -12,9 +12,9 @@ public static class GenerateHit
 {
     public enum HitType : byte
     {
-        Line,
-        Projectile,
-        Ground
+        Attached,
+        ProjectileExploding,
+        GroundPlaced
     }
     public enum KnockBackType : byte
     {
@@ -37,6 +37,7 @@ public static class GenerateHit
     public class HitGenerationData : GenerationData
     {
         public HitType type;
+        public EffectShape shape;
         public Dictionary<Stat, float> statValues;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
@@ -77,6 +78,7 @@ public static class GenerateHit
                 knockBackType = this.knockBackType,
                 knockBackDirection = this.knockBackDirection,
                 type = this.type,
+                shape= this.shape,
                 dotPercent = dotPercent,
                 dotTime = dotBaseTime / scalesStart.time,
                 dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
@@ -103,6 +105,7 @@ public static class GenerateHit
         }
 
         public HitType type;
+        public EffectShape shape;
         public KnockBackType knockBackType;
         public KnockBackDirection knockBackDirection;
         public HitFlair flair;
@@ -166,7 +169,7 @@ public static class GenerateHit
 
         float getStat(Stat stat)
         {
-            return stream.getValue(stat, scales, type) * strength;
+            return stream.getValue(stat, scales, type, shape) * strength;
 
         }
 
@@ -178,12 +181,12 @@ public static class GenerateHit
             Vector2 max = new Vector2(length, width / 2);
             switch (type)
             {
-                case HitType.Line:
+                case HitType.Attached:
 
                     return new EffectiveDistance(range, range + max.magnitude, max.y, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
-                case HitType.Projectile:
+                case HitType.ProjectileExploding:
                     return new EffectiveDistance(0, range, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude) * 0.85f);
-                case HitType.Ground:
+                case HitType.GroundPlaced:
                     return new EffectiveDistance(0, range + GroundRadius(length, width), GroundRadius(length, width) / 2, GroundRadius(length, width) / 2);
                 default:
                     return new EffectiveDistance(0, length, width / 2, attackHitboxHalfHeight(type, halfHeight, max.magnitude));
@@ -240,6 +243,8 @@ public static class GenerateHit
     {
         HitType t;
         float r = Random.value;
+        //float r = 0.1f;
+        //Only line for now
         if (r < 0.2f
             && (!conditions.HasValue ||
                    (
@@ -249,19 +254,37 @@ public static class GenerateHit
                 )
             )
         {
-            t = HitType.Ground;
+            t = HitType.GroundPlaced;
         }
         else if (r < 0.5f)
         {
-            t = HitType.Projectile;
+            t = HitType.ProjectileExploding;
         }
         else
         {
-            t = HitType.Line;
+            t = HitType.Attached;
         }
 
+        EffectShape shape;
+        r = Random.value;
+        if(r < 0.4f)
+        {
+            shape = EffectShape.Overhead;
+        }
+        else if(r < 0.8f)
+        {
+            shape = EffectShape.Slash;
+        }
+        else
+        {
+            shape = EffectShape.Centered;
+        }
+
+
+
+
         List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult };
-        if (t == HitType.Projectile || t == HitType.Ground)
+        if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
         {
             generateStats.Add(Stat.Range);
         }
@@ -277,7 +300,7 @@ public static class GenerateHit
 
         if (Random.value < 0.3f)
         {
-            if (t == HitType.Projectile || t == HitType.Ground)
+            if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
             {
                 vg.augmentInner(itemMaxDict(Stat.Length), 1f);
             }
@@ -348,6 +371,7 @@ public static class GenerateHit
         hit.knockBackType = kbType;
         hit.knockBackDirection = kbDir;
         hit.type = t;
+        hit.shape = shape;
         hit.flair = flair;
         hit.multiple = 1;
         hit.multipleArc = 0;

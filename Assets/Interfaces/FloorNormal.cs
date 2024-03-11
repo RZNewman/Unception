@@ -22,21 +22,11 @@ public class FloorNormal : MonoBehaviour
         {
             return;
         }
-        RaycastHit rout;
 
-        bool terrain = Physics.SphereCast(transform.position + transform.up * sizeC.distance, sizeC.radius*0.95f, -transform.up, out rout, sizeC.distance * 2.01f, LayerMask.GetMask("Terrain"));
-        float angle = Vector3.Angle(Vector3.up, rout.normal);
+        GroundResult calc = getGroundNormal(transform.position, sizeC);
 
-        ground = terrain && angle < floorDegrees;
-
-        if (ground)
-        {
-            groundNormal = rout.normal;
-        }
-        else
-        {
-            groundNormal = Vector3.up;
-        }
+        ground = calc.ground;
+        groundNormal = calc.normal;
 
         NavMeshHit hit;
         if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
@@ -45,6 +35,36 @@ public class FloorNormal : MonoBehaviour
         }
 
         cachedPosition = transform.position;
+    }
+
+    public struct GroundResult
+    {
+        public bool ground;
+        public Vector3 normal;
+    }
+
+    public static GroundResult getGroundNormal(Vector3 position, CapsuleSize sizeC)
+    {
+        RaycastHit rout;
+        bool terrain = Physics.SphereCast(position + Vector3.up * sizeC.distance, sizeC.radius * 0.95f, Vector3.down, out rout, sizeC.distance * 2.01f, LayerMask.GetMask("Terrain"));
+        float angle = Vector3.Angle(Vector3.up, rout.normal);
+
+        bool ground = terrain && angle < floorDegrees;
+
+        Vector3 groundNormal;
+        if (ground)
+        {
+            groundNormal = rout.normal;
+        }
+        else
+        {
+            groundNormal = Vector3.up;
+        }
+        return new GroundResult
+        {
+            ground = ground,
+            normal = groundNormal,
+        };
     }
     public Vector3 normal
     {

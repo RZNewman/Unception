@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using static GenerateHit;
 using static GenerateAttack;
+using static AttackUtils;
 
 public static class StatTypes
 {
@@ -47,17 +48,33 @@ public static class StatTypes
 
     static Dictionary<HitType, Dictionary<Stat, float>> hitStatModifiers = new Dictionary<HitType, Dictionary<Stat, float>>()
     {
-        {HitType.Projectile, new Dictionary<Stat, float>(){
-            {Stat.Length, 1.4f },
-            {Stat.Range, 4 },
-            {Stat.Width, 0.4f },
-            {Stat.DamageMult, 1.0f },
+        {HitType.ProjectileExploding, new Dictionary<Stat, float>(){
+            {Stat.Length, 0.8f },
+            {Stat.Range, 6 },
+            {Stat.Width, 0.6f },
+            //{Stat.DamageMult, 1.0f },
             }
         },
-        {HitType.Ground, new Dictionary<Stat, float>(){
-            {Stat.Length, 1.3f },
+        {HitType.GroundPlaced, new Dictionary<Stat, float>(){
+            //{Stat.Length, 1.3f },
             {Stat.Range, 2 },
+            //{Stat.Width, 0.9f },
+            {Stat.DamageMult, 0.9f },
+            }
+        }
+    };
+
+    static Dictionary<EffectShape, Dictionary<Stat, float>> shapeStatModifiers = new Dictionary<EffectShape, Dictionary<Stat, float>>()
+    {
+        {EffectShape.Slash, new Dictionary<Stat, float>(){
+            {Stat.Length, 0.7f },
             {Stat.Width, 1.3f },
+            }
+        },
+        {EffectShape.Centered, new Dictionary<Stat, float>(){
+            {Stat.Length, 0.5f },
+            {Stat.Range, 0.8f },
+            {Stat.Width, 1.5f },
             {Stat.DamageMult, 0.9f },
             }
         }
@@ -71,13 +88,20 @@ public static class StatTypes
         }
     }
 
-    public static float statToValue(Stat stat, float amount, Scales scales, HitType type)
+    public static float statToValue(Stat stat, float amount, Scales scales, HitType type, EffectShape shape)
     {
         float value = statToValue(stat, amount, scales);
         Dictionary<Stat, float> multLookup;
+        float mult;
+        if (shapeStatModifiers.TryGetValue(shape, out multLookup))
+        {  
+            if (multLookup.TryGetValue(stat, out mult))
+            {
+                value *= mult;
+            }
+        }
         if (hitStatModifiers.TryGetValue(type, out multLookup))
         {
-            float mult;
             if (multLookup.TryGetValue(stat, out mult))
             {
                 value *= mult;
@@ -219,7 +243,7 @@ public static class StatTypes
         Dictionary<Stat, float> dict = new Dictionary<Stat, float>();
         switch (type)
         {
-            case HitType.Projectile:
+            case HitType.ProjectileExploding:
                 dict.Add(Stat.Range, 20);
                 break;
             default:

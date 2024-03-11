@@ -20,6 +20,7 @@ using static Size;
 using static AttackUtils.CapsuleInfo;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static UnityEngine.UI.Image;
 
 public static class AttackUtils
 {
@@ -119,11 +120,11 @@ public static class AttackUtils
     {
         switch (type)
         {
-            case HitType.Line:
+            case HitType.Attached:
                 return Mathf.Max(halfUnitHeight * 1.5f, attackDistance);
-            case HitType.Projectile:
+            case HitType.ProjectileExploding:
                 return Mathf.Max(halfUnitHeight, attackDistance);
-            case HitType.Ground:
+            case HitType.GroundPlaced:
                 return attackDistance;
             default:
                 return halfUnitHeight * 2;
@@ -138,8 +139,8 @@ public static class AttackUtils
         GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
-        float terrainRadius = Mathf.Min(hitRadius, source.sizeCapsule.distance * 0.5f);
-        p.init(terrainRadius, hitRadius, source.sizeCapsule.distance, mover, hitData, buffData, dists);
+        float terrainRadius = Mathf.Min(hitRadius, source.sizeCapsule.radius * 0.5f);
+        p.init(terrainRadius, hitRadius, source.sizeCapsule, mover, hitData, buffData, dists);
         NetworkServer.Spawn(instance);
     }
 
@@ -166,7 +167,7 @@ public static class AttackUtils
         NetworkServer.Spawn(instance);
     }
 
-    public enum EffectShape
+    public enum EffectShape : byte
     {
         Centered,
         Slash,
@@ -184,7 +185,7 @@ public static class AttackUtils
         public Vector3 position;
         public Quaternion rotation;
         public bool subtract;
-        
+
     }
 
     public class BoxInfo : ColliderInfo
@@ -261,12 +262,12 @@ public static class AttackUtils
 
     public struct IndicatorShaderSettings
     {
-        public float angle;
-        public float circle;
-        public float circleSubtract;
-        public float forward;
-        public float sidways;
-        public float subtractOffset;
+        public float? angle;
+        public float? circle;
+        public float? circleSubtract;
+        public float? forward;
+        public float? sideways;
+        public float? subtractOffset;
     }
     public enum IndicatorShape
     {
@@ -292,10 +293,12 @@ public static class AttackUtils
     }
 
 
-    public  abstract class VFXInfo
+    public abstract class VFXInfo
     {
         public float radius;
         public float subtractRadius;
+
+        
     }
 
     public class VFXCapsuleInfo : VFXInfo
@@ -308,6 +311,20 @@ public static class AttackUtils
         public float rollDegrees;
         public float arcDegrees;
         public float height;
+        public float effectCenterDist
+        {
+            get
+            {
+                return (radius - subtractRadius) / 2 + subtractRadius;
+            }
+        }
+        public float arcWidth
+        {
+            get
+            {
+                return (Quaternion.Euler(0, arcDegrees / 2, 0) * Vector3.forward * radius).x * 2;
+            }
+        }
     }
 
     public struct ShapeData
@@ -317,23 +334,26 @@ public static class AttackUtils
         public VFXInfo vfx;
     }
 
-    public static ShapeData getShapeData(EffectShape shape, CapsuleSize sizeC, float range, float length, float width)
+    public static ShapeData getShapeData(EffectShape shape, CapsuleSize sizeC, float range, float length, float width, bool useRange)
     {
         ShapeData data = new ShapeData();
         data.colliders = new List<ColliderInfo>();
         data.indicators = new List<IndicatorDisplay>();
-        Vector3 frontPoint = Vector3.forward * sizeC.radius;
+        float rangeMult = useRange ? 1 : 0;
+        Vector3 frontPoint = Vector3.forward * sizeC.radius * rangeMult;
+        float subtractRadius;
         float subtractPercent;
-        float barWidth = sizeC.radius;
+        float barWidth;
         switch (shape)
         {
             case EffectShape.Centered:
-                float subtractRadius = range + sizeC.radius;
+                subtractRadius = (range + sizeC.radius)*rangeMult;
                 float fullRadius = width + subtractRadius;
+                barWidth = fullRadius * 0.08f;
                 #region colliders
                 data.colliders.Add(new CapsuleInfo
                 {
-                    position = Vector3.zero + Vector3.forward * length/2,
+                    position = Vector3.zero + Vector3.forward * length / 2,
                     rotation = Quaternion.identity,
                     capsuleDir = CapsuleColliderDirection.Z,
                     radius = fullRadius,
@@ -405,29 +425,40 @@ public static class AttackUtils
                 });
                 data.indicators.Add(new IndicatorDisplay
                 {
-                    position = Vector3.forward * length/2 + Vector3.right*fullRadius,
+                    position = Vector3.forward * length / 2 + Vector3.right * (fullRadius - barWidth / 2),
                     rotation = Quaternion.identity,
-                    scale = new Vector3(barWidth,0,length),
-                    shape = IndicatorShape.BoxFull,
-                });
-                data.indicators.Add(new IndicatorDisplay
-                {
-                    position = Vector3.forward * length / 2 + Vector3.left * fullRadius,
-                    rotation = Quaternion.identity,
-                    scale = new Vector3(barWidth, 0, length),
-                    shape = IndicatorShape.BoxFull,
-                });
-                data.indicators.Add(new IndicatorDisplay
-                {
-                    position = Vector3.forward * length / 2,
-                    rotation = Quaternion.identity,
-                    scale = new Vector3(fullRadius * 2, 0, length+fullRadius),
+                    scale = new Vector3(barWidth, length),
                     shape = IndicatorShape.BoxFull,
                     settings = new IndicatorShaderSettings
                     {
-                        sidways = subtractPercent,
+                        circle = 2,
+                    },
+                });
+                data.indicators.Add(new IndicatorDisplay
+                {
+                    position = Vector3.forward * length / 2 + Vector3.left * (fullRadius - barWidth / 2),
+                    rotation = Quaternion.identity,
+                    scale = new Vector3(barWidth, length),
+                    shape = IndicatorShape.BoxFull,
+                    settings = new IndicatorShaderSettings
+                    {
+                        circle = 2,
+                    },
+                });
+                float lengthPercent = length / fullRadius;
+                data.indicators.Add(new IndicatorDisplay
+                {
+                    position = Vector3.back * fullRadius + Vector3.forward * length,
+                    rotation = Quaternion.identity,
+                    scale = new Vector3(fullRadius * 2, fullRadius * 2),
+                    shape = IndicatorShape.BoxFull,
+                    settings = new IndicatorShaderSettings
+                    {
+                        sideways = subtractPercent,
                         circleSubtract = subtractPercent,
-                        subtractOffset = 1,
+                        forward = 2 - lengthPercent,
+                        subtractOffset = -1 + lengthPercent,
+                        circle = 2,
                     },
                     progress = IndicatorProgressElement.Sideways,
                 });
@@ -443,9 +474,10 @@ public static class AttackUtils
             case EffectShape.Slash:
                 #region colliders
                 float slashWidth = width;
-                float slashLength = length+range;
+                subtractRadius = range * rangeMult;
+                float slashLength = length + subtractRadius;
                 float halfCircum = Mathf.PI * slashLength;
-                if(slashWidth > halfCircum)
+                if (slashWidth > halfCircum)
                 {
                     //https://www.wolframalpha.com/input?i=w-x+%3D+%28l%2Bx%29+*+pi%2C+solve+for+x
                     float delta = (float)(slashWidth - Math.PI * slashLength) / (1 + Mathf.PI);
@@ -455,14 +487,16 @@ public static class AttackUtils
                 halfCircum = Mathf.PI * slashLength;
                 float arcHalfDegrees = slashWidth / halfCircum * 180 / 2;
 
-                
+
                 Quaternion leftRotation = Quaternion.Euler(new Vector3(0, -arcHalfDegrees, 0));
                 Quaternion rightRotation = Quaternion.Euler(new Vector3(0, arcHalfDegrees, 0));
                 Vector3 leftPoint = frontPoint + leftRotation * Vector3.forward * slashLength;
                 Vector3 rightPoint = frontPoint + rightRotation * Vector3.forward * slashLength;
                 float boxWidth = (leftPoint - frontPoint).DistanceToLine(rightPoint);
-                Vector3 boxSize = new Vector3(boxWidth, sizeC.distance, slashLength);
+                Vector3 boxSize = new Vector3(boxWidth, sizeC.distance * 1.2f, slashLength);
                 Vector3 boxOffset = boxSize / 2;
+
+                barWidth = slashLength * 0.05f;
 
 
                 data.colliders.Add(new SphereInfo
@@ -475,15 +509,15 @@ public static class AttackUtils
                 {
                     position = frontPoint,
                     rotation = Quaternion.identity,
-                    radius = range,
-                    subtract =true,
+                    radius = subtractRadius,
+                    subtract = true,
                 });
 
                 data.colliders.Add(new BoxInfo
                 {
-                    position = frontPoint + rightRotation*new Vector3(-boxOffset.x,0,boxOffset.z),
+                    position = frontPoint + rightRotation * new Vector3(-boxOffset.x, 0, boxOffset.z),
                     rotation = rightRotation,
-                    size= boxSize,
+                    size = boxSize,
                 });
                 data.colliders.Add(new BoxInfo
                 {
@@ -494,16 +528,16 @@ public static class AttackUtils
                 #endregion
 
                 #region indicators
-                subtractPercent = range / slashLength;
+                subtractPercent = subtractRadius / slashLength;
                 data.indicators.Add(new IndicatorDisplay
                 {
-                    position= frontPoint,
-                    rotation= Quaternion.identity,
-                    scale = Vector3.one *slashLength *2,
+                    position = frontPoint,
+                    rotation = Quaternion.identity,
+                    scale = Vector3.one * slashLength * 2,
                     shape = IndicatorShape.Circle,
                     settings = new IndicatorShaderSettings
                     {
-                        angle = arcHalfDegrees *2,
+                        angle = arcHalfDegrees * 2,
                     },
 
                 });
@@ -517,7 +551,7 @@ public static class AttackUtils
                     {
                         angle = arcHalfDegrees * 2,
                         circleSubtract = subtractPercent,
-                        circle = subtractPercent,                     
+                        circle = subtractPercent,
                     },
                     progress = IndicatorProgressElement.Circle,
                 });
@@ -525,24 +559,27 @@ public static class AttackUtils
                 {
                     position = frontPoint + rightRotation * new Vector3(0, 0, boxOffset.z),
                     rotation = rightRotation,
-                    scale = new Vector3(barWidth, 0,slashLength),
+                    scale = new Vector3(barWidth, slashLength),
                     shape = IndicatorShape.BoxFull,
                     settings = new IndicatorShaderSettings
                     {
-                        circleSubtract = subtractPercent *2,
-                        subtractOffset = 1
+                        circleSubtract = subtractPercent * 2,
+                        subtractOffset = 1,
+                        circle = 2,
+
                     },
                 });
                 data.indicators.Add(new IndicatorDisplay
                 {
                     position = frontPoint + leftRotation * new Vector3(0, 0, boxOffset.z),
                     rotation = leftRotation,
-                    scale = new Vector3(barWidth, 0, slashLength),
+                    scale = new Vector3(barWidth, slashLength),
                     shape = IndicatorShape.BoxFull,
                     settings = new IndicatorShaderSettings
                     {
                         circleSubtract = subtractPercent * 2,
-                        subtractOffset = 1
+                        subtractOffset = 1,
+                        circle = 2,
                     },
                 });
                 #endregion
@@ -550,14 +587,16 @@ public static class AttackUtils
                 data.vfx = new VFXArcInfo()
                 {
                     radius = slashLength,
-                    subtractRadius = range,
+                    subtractRadius = subtractRadius,
                     arcDegrees = arcHalfDegrees * 2,
                     height = boxSize.y,
                 };
                 break;
             case EffectShape.Overhead:
-                Vector3 outerVec = new Vector3(width / 2, 0, length + range);
+                subtractRadius = range * rangeMult;
+                Vector3 outerVec = new Vector3(width / 2, 0, length + subtractRadius);
                 float outerRadius = outerVec.magnitude;
+                barWidth = outerRadius * 0.1f;
                 #region colliders
                 data.colliders.Add(new SphereInfo
                 {
@@ -569,19 +608,19 @@ public static class AttackUtils
                 {
                     position = frontPoint,
                     rotation = Quaternion.identity,
-                    radius =range,
-                    subtract=true,
+                    radius = subtractRadius,
+                    subtract = true,
                 });
                 data.colliders.Add(new BoxInfo
                 {
-                    position = frontPoint + Vector3.forward * (range + length)/2,
+                    position = frontPoint + Vector3.forward * (subtractRadius + length) / 2,
                     rotation = Quaternion.identity,
-                    size = new Vector3(width,outerRadius *2, outerRadius),
+                    size = new Vector3(width, outerRadius * 2, outerRadius),
                 });
                 #endregion
 
                 #region indicators
-                subtractPercent = range / outerRadius;
+                subtractPercent = subtractRadius / outerRadius;
                 float outerArcHalfDegrees = Vector3.Angle(outerVec, Vector3.forward);
                 float sidePercent = width / 2 / outerRadius;
                 data.indicators.Add(new IndicatorDisplay
@@ -604,28 +643,33 @@ public static class AttackUtils
                     shape = IndicatorShape.CircleFull,
                     settings = new IndicatorShaderSettings
                     {
-                        sidways = sidePercent,
+                        sideways = sidePercent,
                         circleSubtract = subtractPercent,
                         circle = subtractPercent,
+                        forward = 1 + subtractPercent,
                     },
                     progress = IndicatorProgressElement.Circle,
                 });
                 Vector3 boxHalfs = outerVec;
-                boxHalfs.z -= range;
+                boxHalfs.z -= subtractRadius;
                 boxHalfs.z /= 2;
                 data.indicators.Add(new IndicatorDisplay
                 {
-                    position = frontPoint +Vector3.forward * boxHalfs.z,
+                    position = frontPoint + Vector3.forward * outerVec.z + Vector3.back * boxHalfs.z,
                     rotation = Quaternion.identity,
-                    scale = boxHalfs * 2,
+                    scale = new Vector3(boxHalfs.x, boxHalfs.z) * 2,
                     shape = IndicatorShape.Box,
-                }) ;
+                    settings = new IndicatorShaderSettings
+                    {
+                        circle = 2,
+                    }
+                });
                 #endregion
 
                 data.vfx = new VFXArcInfo()
                 {
                     radius = outerRadius,
-                    subtractRadius = range,
+                    subtractRadius = subtractRadius,
                     rollDegrees = 90,
                     arcDegrees = 180,
                     height = width,
@@ -638,26 +682,30 @@ public static class AttackUtils
 
     public static List<GameObject> ShapeAttack(SpellSource source, ShapeData data)
     {
+        return ShapeAttack(source.aimRotation(AimType.Normal), source.transform.position, data);
+    }
+
+    public static List<GameObject> ShapeAttack(Quaternion aim, Vector3 origin, ShapeData data)
+    {
         List<Collider> hits = null;
         List<Collider> negativeHits = new List<Collider>();
 
         foreach (ColliderInfo info in data.colliders)
         {
             Collider[] singleHits;
-            Quaternion aim = source.aimRotation(AimType.Normal);
-            Vector3 totalPosition = source.transform.position+ aim *info.position;
+            Vector3 totalPosition = origin + aim * info.position;
             Quaternion totalRotation = aim * info.rotation;
             switch (info)
             {
                 case BoxInfo box:
-                    singleHits = Physics.OverlapBox(totalPosition, box.size/2,  totalRotation, LayerMask.GetMask("Players", "Breakables"));
+                    singleHits = Physics.OverlapBox(totalPosition, box.size / 2, totalRotation, LayerMask.GetMask("Players", "Breakables"));
                     if (box.subtract)
                     {
                         throw new NotImplementedException();
                     }
                     else
                     {
-                        if(hits == null)
+                        if (hits == null)
                         {
                             hits = singleHits.ToList();
                         }
@@ -671,13 +719,13 @@ public static class AttackUtils
                     singleHits = Physics.OverlapSphere(totalPosition, sphere.radius, LayerMask.GetMask("Players", "Breakables"));
                     if (sphere.subtract)
                     {
-                        foreach(Collider c in singleHits)
+                        foreach (Collider c in singleHits)
                         {
-                            if(c is CapsuleCollider)
+                            if (c is CapsuleCollider)
                             {
                                 CapsuleCollider cap = (CapsuleCollider)c;
                                 CapsulePoints pointsCheck = fromCollider(cap).getPoints(Vector3.zero, Quaternion.identity);
-                                if(pointsCheck.furthestDistance(totalPosition)+cap.radius < sphere.radius)
+                                if (pointsCheck.furthestDistance(totalPosition) + cap.radius < sphere.radius)
                                 {
                                     negativeHits.Add(c);
                                 }
@@ -697,7 +745,7 @@ public static class AttackUtils
                     }
                     break;
                 case CapsuleInfo capsule:
-                    CapsulePoints points = capsule.getPoints(source.transform.position, aim);
+                    CapsulePoints points = capsule.getPoints(origin, aim);
                     singleHits = Physics.OverlapCapsule(points.one, points.two, capsule.radius, LayerMask.GetMask("Players", "Breakables"));
                     if (capsule.subtract)
                     {
@@ -718,12 +766,12 @@ public static class AttackUtils
             }
         }
 
-        foreach(Collider c in negativeHits)
+        foreach (Collider c in negativeHits)
         {
             hits.Remove(c);
         }
 
-        return hits.Select(c =>c.gameObject).ToList();
+        return hits.Select(c => c.gameObject).ToList();
     }
 
     public struct LineInfo
@@ -738,14 +786,14 @@ public static class AttackUtils
         public Vector3 bodyForward;
     }
     public static LineInfo LineCalculations(SpellSource source, float range, float length, float width)
-    {      
+    {
         Vector2 attackVec = new Vector2(length, width / 2);
         float maxDistance = attackVec.magnitude;
         FloorNormal floor = source.GetComponent<FloorNormal>();
         Quaternion aim = source.aimRotation(AimType.Normal);
         Vector3 attackFocus = source.transform.position + aim * Vector3.forward * range;
         Vector3 boxCenter = attackFocus + maxDistance * 0.5f * (aim * Vector3.forward);
-        float boxHeight = attackHitboxHalfHeight(HitType.Line, source.sizeCapsule.distance, maxDistance);
+        float boxHeight = attackHitboxHalfHeight(HitType.Attached, source.sizeCapsule.distance, maxDistance);
         Vector3 boxHalfs = new Vector3(width / 2, boxHeight / 2, maxDistance / 2);
 
         float capsuleHeightFactor = Mathf.Max(boxHeight / 2 - maxDistance, 0);
@@ -804,16 +852,6 @@ public static class AttackUtils
 
     }
 
-    public static void LineParticle(LineInfo info, HitFlair flair, AudioDistances dists)
-    {
-        GlobalPrefab gp = GlobalPrefab.gPre;
-        GameObject prefab = gp.ParticlePre;
-        GameObject i = GameObject.Instantiate(prefab, info.boxCenter, info.aim);
-        i.transform.localScale = info.boxHalfs * 2;
-        i.GetComponent<Particle>().setVisualsLine(gp.lineAssetsPre[flair.visualIndex], dists);
-
-    }
-
     public static float GroundRadius(float length, float width)
     {
         return (length + width) / 2;
@@ -837,14 +875,37 @@ public static class AttackUtils
 
     }
 
-    public static void GroundParticle(Vector3 origin, float radius, Quaternion aim, HitFlair flair, AudioDistances dists)
+
+
+    public static void ShapeParticle(SpellSource source, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists)
+    {
+        ShapeParticle(source.aimRotation(AimType.Normal), source.transform.position, source.transform.forward, data, shape, flair, dists);
+    }
+
+    public static void ShapeParticle(Quaternion aim, Vector3 position, Vector3 forward, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists)
     {
         GlobalPrefab gp = GlobalPrefab.gPre;
         GameObject prefab = gp.ParticlePre;
-        GameObject i = GameObject.Instantiate(prefab, origin, aim);
-        i.transform.localScale = Vector3.one * radius * 2;
-        i.GetComponent<Particle>().setVisualsCircle(gp.groundAssetsPre[flair.visualIndex], dists);
-
+        GameObject i = null;
+        switch (data.vfx)
+        {
+            case VFXArcInfo arc:
+                i = GameObject.Instantiate(prefab, position + forward * arc.effectCenterDist, aim);
+                Vector3 scale = shape switch
+                {
+                    EffectShape.Overhead => new Vector3(arc.height,arc.radius*2,arc.radius),
+                    _ => new Vector3(arc.arcWidth,arc.height,arc.radius)
+                };
+                i.transform.localScale = scale;
+                i.GetComponent<Particle>().setVisuals(Particle.VisualType.Line, flair.visualIndex, dists);
+                break;
+            case VFXCapsuleInfo cap:
+                i = GameObject.Instantiate(prefab, position + forward * cap.additionalLength/2, aim);
+                i.transform.localScale = new Vector3(cap.radius*2,cap.radius * 2, cap.radius * 2 + cap.additionalLength);
+                i.GetComponent<Particle>().setVisuals(Particle.VisualType.Circle, flair.visualIndex, dists);
+                break;
+        }
+        NetworkServer.Spawn(i);
 
     }
 }

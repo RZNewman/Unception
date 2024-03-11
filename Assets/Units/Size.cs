@@ -26,10 +26,8 @@ public class Size : MonoBehaviour
         }
         public Vector3 indicatorPosition(Vector3 worldForward)
         {
-            float worldAngle = Vector2.SignedAngle(Vector2.up, new Vector2(worldForward.x, worldForward.z));
-            Quaternion worldToLocal = Quaternion.AngleAxis(worldAngle, Vector3.up);
-            return indicatorHeight * Vector3.down
-                  + radius * (worldToLocal * worldForward);
+            return indicatorHeight * Vector3.down;
+                  
         }
     }
 

@@ -60,7 +60,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         }
     }
 
-    public void OrderedUpdate()
+    public void PreUpdate()
     {
         ground.setGround(sizeC);
     }
@@ -179,13 +179,13 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         Dash
     }
     Dictionary<IndicatorType, IndicatorInstance> indicators = new Dictionary<IndicatorType, IndicatorInstance>();
-    public void buildHitIndicator(HitInstanceData data)
+    public void buildHitIndicator(HitInstanceData data, ShapeData shapeData)
     {
         GameObject prefab = data.type switch
         {
-            HitType.Line => global.LineIndPre,
-            HitType.Projectile => global.ProjIndPre,
-            HitType.Ground => global.GroundIndPre,
+            HitType.Attached => global.ShapeIndPre,
+            HitType.ProjectileExploding => global.ProjIndPre,
+            HitType.GroundPlaced => global.ShapeIndPre,
             _ => global.LineIndPre
         };
         GameObject indicator = Instantiate(
@@ -193,7 +193,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
             transform
         );
         HitIndicatorInstance i = indicator.GetComponent<HitIndicatorInstance>();
-        i.setSource(data);
+        i.setSource(data, shapeData);
         i.setTeam(team);
         indicators.Add(IndicatorType.Hit, i);
     }

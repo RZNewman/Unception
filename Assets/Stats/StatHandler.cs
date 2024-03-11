@@ -5,6 +5,7 @@ using static StatTypes;
 using Mirror;
 using static GenerateHit;
 using static GenerateAttack;
+using static AttackUtils;
 
 public class StatHandler : NetworkBehaviour
 {
@@ -126,10 +127,10 @@ public class StatStream
         objectStats = objectStats.sum(delta);
         updateExpression(delta);
     }
-    public float getValue(Stat stat, Scales scales, HitType hitType)
+    public float getValue(Stat stat, Scales scales, HitType hitType, EffectShape shape)
     {
         float value;
-        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scales, hitType) : 0;
+        return expressedStats.TryGetValue(stat, out value) ? statToValue(stat, value, scales, hitType, shape) : 0;
     }
     public float getValue(Stat stat, Scales scales)
     {

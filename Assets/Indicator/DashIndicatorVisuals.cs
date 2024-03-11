@@ -33,10 +33,10 @@ public class DashIndicatorVisuals : IndicatorInstance
 
         length = data.distance;
         float width = 0.1f * scale;
-        Quaternion rotation = Quaternion.identity;
+        Quaternion rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
         if (data.control == DashControl.Backward)
         {
-            rotation = Quaternion.AngleAxis(180, Vector3.forward);
+            rotation = Quaternion.AngleAxis(180, Vector3.up) * rotation;
             length *= -1;
         }
 
@@ -57,6 +57,6 @@ public class DashIndicatorVisuals : IndicatorInstance
     protected override void setCurrentProgress(float percent)
     {
         float length_percent = length * percent;
-        progress.transform.localPosition = new Vector3(0, length_percent);
+        progress.transform.localPosition = new Vector3(0, 0, length_percent);
     }
 }

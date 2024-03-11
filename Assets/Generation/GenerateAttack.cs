@@ -932,7 +932,7 @@ public static class GenerateAttack
             && slot != ItemSlot.Helm
             && !conditions.HasValue
             && (slot == ItemSlot.Boots || gen < 0.2f)
-            && segment.hit.type != HitType.Ground)
+            && segment.hit.type != HitType.GroundPlaced)
         {
             //dash effect
             segment.dash = createDash();

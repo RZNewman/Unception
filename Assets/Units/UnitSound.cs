@@ -16,6 +16,7 @@ public class UnitSound : MonoBehaviour
     public AudioClip portalStart;
     public AudioClip portalEnd;
 
+    [System.Serializable]
     public struct AudioDistances
     {
         public float min;

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AttackSegment;
 using static AttackUtils;
+using static GenerateHit;
 using static Utils;
 
 public class AttackMachine
@@ -30,10 +32,23 @@ public class AttackMachine
         public bool hardCast;
         public SourceLocation locationOverride;
         public Vector3 triggeredPosition;
+
+        public bool usesRangeForHitbox(HitType typeOfHit)
+        {
+            Func<HitType, bool> isAttached = (type) => {
+                return type == HitType.Attached;
+            };
+
+            return locationOverride switch
+            {
+                SourceLocation.Body => isAttached(typeOfHit),
+                SourceLocation.BodyFixed => isAttached(typeOfHit),
+                _ => false,
+            };
+        }
     }
 
     public delegate void MachineEndCallback(AttackMachine m);
-    static readonly MachineEndCallback nothingCallback = (_) => { };
     MachineEndCallback callback;
 
 
@@ -53,7 +68,7 @@ public class AttackMachine
     }
     public void transition()
     {
-        currentSegment.sourceUpdate();
+        currentSegment.sourcePreUpdate();
         attackMachine.transition();
         if (ended)
         {

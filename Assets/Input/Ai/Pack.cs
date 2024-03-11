@@ -21,7 +21,7 @@ public class Pack : NetworkBehaviour
 
     //Server
     //bool aggroed = false;
-    bool enabledUnits = false;
+    //bool enabledUnits = false;
     private void Start()
     {
         sound = FindObjectOfType<SoundManager>();

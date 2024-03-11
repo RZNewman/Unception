@@ -1120,6 +1120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   givesPower: 1
+  finalizesPower: 0
   givesItems: 1
 --- !u!114 &7523574754519777489
 MonoBehaviour:

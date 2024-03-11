@@ -28,6 +28,7 @@ public class Projectile : NetworkBehaviour
     UnitMovement mover;
     HitInstanceData hitData;
     BuffInstanceData buffData;
+    HitList hitList;
 
     [SyncVar]
     ProjectileData data;
@@ -65,12 +66,13 @@ public class Projectile : NetworkBehaviour
 
     }
     [Server]
-    public void init(float terrainRadius, float hitboxRadius, CapsuleSize sizeC, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, AudioDistances dists)
+    public void init(float terrainRadius, float hitboxRadius, CapsuleSize sizeC, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, HitList hitL, AudioDistances dists)
     {
         mover = m;
         Power p = mover.GetComponent<Power>();
         hitData = hitD;
         buffData = buffD;
+        hitList = hitL;
         data = new ProjectileData
         {
             terrainRadius = terrainRadius,
@@ -155,7 +157,7 @@ public class Projectile : NetworkBehaviour
                 {
                     center = contact,
                     direction = transform.forward
-                }))
+                }, hitList))
             {
                 enemyHits.Add(o);
             }

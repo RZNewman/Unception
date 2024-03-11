@@ -140,7 +140,7 @@ public class InputHandler : MonoBehaviour, UnitControl
                 else
                 {
                     //throw new System.Exception();
-                    Debug.LogError("no local click target");
+                    //Debug.LogWarning("no local click target");
                     return;
                 }
 

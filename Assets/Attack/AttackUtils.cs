@@ -29,9 +29,9 @@ public static class AttackUtils
         public Vector3 center;
         public Vector3 direction;
     }
-    public static bool hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData)
+    public static bool hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData, HitList hitList)
     {
-        if (other.GetComponentInParent<TeamOwnership>().getTeam() != team)
+        if (other.GetComponentInParent<TeamOwnership>().getTeam() != team && hitList.tryAddHit(other))
         {
             UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
             DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
@@ -131,7 +131,7 @@ public static class AttackUtils
         }
     }
 
-    public static void SpawnProjectile(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, AudioDistances dists)
+    public static void SpawnProjectile(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists)
     {
         FloorNormal floor = source.GetComponent<FloorNormal>();
         GameObject prefab = GlobalPrefab.gPre.ProjectilePre;
@@ -140,7 +140,7 @@ public static class AttackUtils
         Projectile p = instance.GetComponent<Projectile>();
         float hitRadius = hitData.width / 2;
         float terrainRadius = Mathf.Min(hitRadius, source.sizeCapsule.radius * 0.5f);
-        p.init(terrainRadius, hitRadius, source.sizeCapsule, mover, hitData, buffData, dists);
+        p.init(terrainRadius, hitRadius, source.sizeCapsule, mover, hitData, buffData, hitList, dists);
         NetworkServer.Spawn(instance);
     }
 
@@ -833,5 +833,20 @@ public static class AttackUtils
         }
         NetworkServer.Spawn(i);
 
+    }
+
+    public class HitList
+    {
+        public List<GameObject> alreadyHit = new List<GameObject>();
+
+        public bool tryAddHit(GameObject o)
+        {
+            if (alreadyHit.Contains(o))
+            {
+                return false;
+            }
+            alreadyHit.Add(o);
+            return true;
+        }
     }
 }

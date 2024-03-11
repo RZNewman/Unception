@@ -558,7 +558,7 @@ public static class GenerateAttack
             addedBaseStrength += opts.addedStrength.Value;
         }
         float multBaseStrength = opts.multipliedStrength;
-        float windStrength = (1 + addedBaseStrength) * multBaseStrength;
+        float strengthFromRarity = (1 + addedBaseStrength) * multBaseStrength;
 
         List<SegmentGenerationData> segmentsGen = atk.segments.ToList();
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
@@ -574,13 +574,13 @@ public static class GenerateAttack
         for (int i = 0; i < segmentsGen.Count; i++)
         {
             SegmentGenerationData segment = segmentsGen[i];
-            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, windStrength, opts.scales);
+            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, strengthFromRarity, opts.scales);
             parent(up);
             List<WindInstanceData> windList = new List<WindInstanceData> { up };
             WindInstanceData down = null;
             if (segment.winddown)
             {
-                down = (WindInstanceData)segment.winddown.populate(power, windStrength, opts.scales);
+                down = (WindInstanceData)segment.winddown.populate(power, strengthFromRarity, opts.scales);
                 parent(down);
                 windList.Add(down);
             }
@@ -597,8 +597,8 @@ public static class GenerateAttack
             int repeatCount = 1;
             if (segment.repeat != null)
             {
-                repeat = (RepeatingInstanceData)segment.repeat.populate(power, windStrength, opts.scales);
-                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, windStrength, opts.scales);
+                repeat = (RepeatingInstanceData)segment.repeat.populate(power, strengthFromRarity, opts.scales);
+                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, strengthFromRarity, opts.scales);
                 parent(windRepeat);
                 repeatCount = repeat.repeatCount;
                 for (int j = 0; j < segment.repeat.repeatCount; j++)
@@ -657,7 +657,7 @@ public static class GenerateAttack
 
         AttackInstanceData atkIn = new AttackInstanceData
         {
-            strength = windStrength,
+            strength = strengthFromRarity,
             cooldown = cooldownTime,
             stream = stream,
             segments = segmentsInst,

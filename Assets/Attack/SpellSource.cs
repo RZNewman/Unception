@@ -30,6 +30,12 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     [SyncVar]
     public float offsetMult = 1f;
 
+    [SyncVar]
+    public Vector3 movementOffset = Vector3.zero;
+
+    [SyncVar]
+    public Quaternion multipleRotation = Quaternion.identity;
+
     FloorNormal ground;
     GlobalPrefab global;
 
@@ -56,7 +62,8 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         }
         if (isClientOnly)
         {
-            owner.GetComponent<UnitMovement>().currentAttackSegment().Value.clientSyncSource(this);
+            //TODO cant get segment for triggered abils
+            //owner.GetComponent<UnitMovement>().currentAttackSegment().Value.clientSyncSource(this);
         }
     }
 
@@ -67,6 +74,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     public void updateIndicator(IndicatorType type, IndicatorOffsets offsets)
     {
         IndicatorInstance ind = indicators[type];
+        offsets.distance = Quaternion.Inverse(multipleRotation) * offsets.distance;
         ind.setLocalOffsets(offsets);
         ind.OrderedUpdate();
     }
@@ -133,7 +141,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
 
     public void setTarget(Vector3 t, float s)
     {
-        target = t;
+        target = t + movementOffset;
         speed = s;
         moveTowardTarget();
     }

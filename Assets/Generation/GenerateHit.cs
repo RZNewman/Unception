@@ -54,6 +54,9 @@ public static class GenerateHit
         {
             strength *= this.percentOfEffect;
 
+            float multipleHitStrengthPenalty = (multiple - 1) * 0.075f;
+            strength *= 1 - multipleHitStrengthPenalty;
+
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
             foreach (Stat s in statValues.Keys)
             {
@@ -80,11 +83,14 @@ public static class GenerateHit
                 knockBackType = this.knockBackType,
                 knockBackDirection = this.knockBackDirection,
                 type = this.type,
-                shape= this.shape,
+                shape = this.shape,
                 dotPercent = dotPercent,
                 dotTime = dotBaseTime / scalesStart.time,
                 dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
                 exposePercent = exposePercent,
+
+                multiple = multiple,
+                multipleArcSpacing = multipleArc.asRange(15, 35),
             };
             return baseData;
 
@@ -115,6 +121,8 @@ public static class GenerateHit
         public float dotTime;
         public float dotAddedMult;
         public float exposePercent;
+        public int multiple;
+        public float multipleArcSpacing;
 
 
         #region getStats
@@ -361,6 +369,22 @@ public static class GenerateHit
             exposePercent = Random.value.asRange(0.25f, 0.6f);
         }
 
+        int multiple = 1;
+        float multipleArc = 0;
+        //r = Random.value;
+        r = 0.1f;
+        if ((t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
+            &&
+            r < 0.2f
+            )
+        {
+            r = Random.value;
+
+            int set = r < 0.2f ? 2 : 1;
+            multiple += set * 2;
+            multipleArc = Random.value;
+        }
+
 
 
         HitFlair flair = new HitFlair
@@ -376,8 +400,8 @@ public static class GenerateHit
         hit.type = t;
         hit.shape = shape;
         hit.flair = flair;
-        hit.multiple = 1;
-        hit.multipleArc = 0;
+        hit.multiple = multiple;
+        hit.multipleArc = multipleArc;
         hit.dotPercent = dotPercent;
         hit.dotTime = GaussRandomDecline();
         hit.exposePercent = exposePercent;

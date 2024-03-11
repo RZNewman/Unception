@@ -15,7 +15,7 @@ public class WindState : AttackStageState, BarValue
 {
     bool isWinddown;
     WindInstanceData windData;
-    SpellSource groundTarget;
+    SpellSource[] groundTargets = new SpellSource[0];
     bool hardCast;
 
     public WindState(UnitMovement m) : base(m)
@@ -52,9 +52,13 @@ public class WindState : AttackStageState, BarValue
 
         UnitInput inp = mover.input;
 
-        if (groundTarget)
+        if (groundTargets.Length >0 )
         {
-            groundTarget.setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * windData.turnMult);
+            foreach(SpellSource source in groundTargets)
+            {
+                source.setTarget(mover.lookWorldPos, 4.0f * mover.GetComponent<Power>().scaleSpeed() * windData.turnMult);
+            }
+            
         }
         mover.rotate(inp, false, windData.turnMult, windData.turnspeedCast);
         mover.move(inp, windData.moveMult, windData.movespeedCast);
@@ -100,9 +104,9 @@ public class WindState : AttackStageState, BarValue
             text = mover.currentAbilityName(),
         };
     }
-    public void setGroundTarget(SpellSource t)
+    public void setGroundTarget(SpellSource[] t)
     {
-        groundTarget = t;
+        groundTargets = t;
     }
 
     protected override float tickSpeedMult()

@@ -7,6 +7,7 @@ using static AttackMachine;
 using static AttackUtils;
 using static GenerateAttack;
 using static GenerateHit;
+using static Size;
 using static SpellSource;
 using static Utils;
 
@@ -16,7 +17,9 @@ public class AttackSegment
     public WindState windup;
     public WindState winddown;
     public HitInstanceData hitData;
-    public SpellSource sourcePoint;
+    SpellSource[] sourcePoints = new SpellSource[0];
+    SpellSource primeSource;
+    CapsuleSize sizeC;
 
     SourceLocation location;
     Optional<Vector3> targetOverride;
@@ -29,23 +32,38 @@ public class AttackSegment
     public AttackStageState enterSegment(UnitMovement mover)
     {
         pastWindup = false;
+        sizeC = mover.GetComponentInChildren<Size>().sizeC;
         if (mover.isServer)
         {
 
-            sourcePoint = SpawnSource(mover, hitData, location, targetOverride);
+            (sourcePoints, primeSource) = SpawnSources(mover, hitData, location, targetOverride);
         }
         return getNextState().state;
     }
 
-    public void clientSyncSource(SpellSource s)
+    public CapsuleSize capsuleSize
     {
-        sourcePoint = s;
-        constructIndicators();
+        get
+        {
+            return sizeC;
+        }
+    }
+
+    public SpellSource[] sources
+    {
+        get
+        {
+            return sourcePoints;
+        }
     }
 
     public void sourcePreUpdate()
     {
-        sourcePoint.PreUpdate();
+        foreach(SpellSource source in sourcePoints)
+        {
+            source.PreUpdate();
+        }
+        
     }
 
     public void IndicatorUpdate()
@@ -66,11 +84,15 @@ public class AttackSegment
             AttackStageState state = indStates[i];
             if (state is ActionState)
             {
-                sourcePoint.updateIndicator(IndicatorType.Hit, offsets);
+                foreach(SpellSource source in sourcePoints)
+                {
+                    source.updateIndicator(IndicatorType.Hit, offsets);
+                }
+                
             }
             else if (state is DashState)
             {
-                sourcePoint.updateIndicator(IndicatorType.Dash, offsets);
+                primeSource.updateIndicator(IndicatorType.Dash, offsets);
             }
 
             offsets = offsets.sum(state.GetIndicatorOffsets());
@@ -80,9 +102,13 @@ public class AttackSegment
 
     public void exitSegment()
     {
-        if (sourcePoint)
+        if (sourcePoints.Length > 0)
         {
-            GameObject.Destroy(sourcePoint.gameObject);
+            foreach (SpellSource source in sourcePoints)
+            {
+                GameObject.Destroy(source.gameObject);
+            }
+            
         }
 
     }
@@ -112,18 +138,22 @@ public class AttackSegment
 
         if (currentState is ActionState)
         {
-            sourcePoint.killIndicatorType(IndicatorType.Hit);
+            foreach (SpellSource source in sourcePoints)
+            {
+                source.killIndicatorType(IndicatorType.Hit);
+            }
+            
         }
         else if (currentState is DashState)
         {
-            sourcePoint.killIndicatorType(IndicatorType.Dash);
+            primeSource.killIndicatorType(IndicatorType.Dash);
         }
 
         currentState = states[0];
         states.RemoveAt(0);
         if (currentState is WindState)
         {
-            if (states.Count > 0 && sourcePoint)
+            if (states.Count > 0 && sourcePoints.Length>0)
             {
                 constructIndicators();
             }
@@ -160,17 +190,21 @@ public class AttackSegment
             if (state is ActionState)
             {
                 ActionState action = (ActionState)state;
-                HitInstanceData source = action.getSource();
+                HitInstanceData hitData = action.getSource();
                 ShapeData shapeData = action.getShapeData();
-                if (source.type == HitType.GroundPlaced)
+                if (hitData.type == HitType.GroundPlaced)
                 {
-                    ((WindState)currentState).setGroundTarget(sourcePoint);
+                    ((WindState)currentState).setGroundTarget(sourcePoints);
                 }
-                sourcePoint.buildHitIndicator(source, shapeData);
+                foreach (SpellSource source in sourcePoints)
+                {
+                    source.buildHitIndicator(hitData, shapeData);
+                }
+                
             }
             else if (state is DashState)
             {
-                sourcePoint.buildDashIndicator(((DashState)state).getSource());
+                primeSource.buildDashIndicator(((DashState)state).getSource());
             }
 
 
@@ -289,8 +323,11 @@ public class AttackSegment
         Body,
         BodyFixed
     }
-    static SpellSource SpawnSource(UnitMovement mover, HitInstanceData source, SourceLocation location, Optional<Vector3> targetOverride)
+    static (SpellSource[], SpellSource) SpawnSources(UnitMovement mover, HitInstanceData hitData, SourceLocation location, Optional<Vector3> targetOverride)
     {
+        SpellSource prime;
+        List<SpellSource> instances = new List<SpellSource>();
+
         Size size = mover.GetComponentInChildren<Size>();
         Vector3 target = targetOverride.HasValue ? targetOverride.Value : mover.lookWorldPos;
 
@@ -299,7 +336,7 @@ public class AttackSegment
         FloorNormal ground = mover.GetComponent<FloorNormal>();
         UnitEye eye = mover.GetComponentInChildren<UnitEye>();
 
-        float range = source.type == HitType.ProjectileExploding ? 0 : source.range;
+        float range = hitData.type == HitType.ProjectileExploding ? 0 : hitData.range;
 
         MoveMode moveType = MoveMode.Parent;
         if (location == SourceLocation.World || location == SourceLocation.WorldForward)
@@ -318,6 +355,7 @@ public class AttackSegment
         //Vector3 forwardLine = Quaternion.AngleAxis(angleOff, Vector3.up) * diff;
         //Vector3 offset = forwardLine.normalized * Mathf.Min(length, Vector3.Dot(diff, forwardLine));
         GameObject instance;
+        Quaternion additionalRot;
         switch (location)
         {
             case SourceLocation.World:
@@ -344,31 +382,50 @@ public class AttackSegment
                     flatDiff.y = 0;
                 }
 
+                Vector3 primePos = bodyFocus + limitedDiff;
+                for (int i = 0; i < hitData.multiple; i++)
+                {
+                    Quaternion faceRot = flatDiff.magnitude > 0 ? Quaternion.LookRotation(flatDiff) : Quaternion.LookRotation(body.forward);
+                    additionalRot = Quaternion.AngleAxis((i - (hitData.multiple / 2)) * hitData.multipleArcSpacing, faceRot * Vector3.up);
 
-                Quaternion faceRot = flatDiff.magnitude >0 ? Quaternion.LookRotation(flatDiff) : Quaternion.LookRotation(body.forward);
-
-                instance = GameObject.Instantiate(prefab, bodyFocus + limitedDiff, faceRot);
-                instance.GetComponent<SpellSource>().offsetMult = 0;
+                    Vector3 instancePos = bodyFocus + additionalRot * limitedDiff;
+                    instance = GameObject.Instantiate(prefab, instancePos, additionalRot * faceRot);
+                    SpellSource source = instance.GetComponent<SpellSource>();
+                    source.movementOffset = instancePos - primePos;
+                    source.multipleRotation = additionalRot;
+                    source.offsetMult = 0;
+                    instances.Add(source);
+                }
                 break;
             case SourceLocation.Body:
             case SourceLocation.BodyFixed:
             default:
                 Transform targetTransform = location == SourceLocation.Body ? body : mover.transform;
-                Quaternion rotation = location == SourceLocation.Body ? body.rotation : Quaternion.LookRotation(flatDiff);
-                instance = GameObject.Instantiate(prefab, targetTransform.position, rotation, targetTransform);
-                ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
-                adopt.parent = mover.gameObject;
-                adopt.useSubBody = location == SourceLocation.Body;
+                for(int i = 0; i <hitData.multiple; i++)
+                {
+                    Quaternion primeRotation = location == SourceLocation.Body ? body.rotation : mover.AimRotation(flatDiff);
+                    additionalRot = Quaternion.AngleAxis((i - (hitData.multiple / 2)) * hitData.multipleArcSpacing, primeRotation * Vector3.up);
+
+                    instance = GameObject.Instantiate(prefab, targetTransform.position, additionalRot *primeRotation, targetTransform);
+                    ClientAdoption adopt = instance.GetComponent<ClientAdoption>();
+                    adopt.parent = mover.gameObject;
+                    adopt.useSubBody = location == SourceLocation.Body;
+                    SpellSource source = instance.GetComponent<SpellSource>();
+                    source.multipleRotation = additionalRot;
+                    instances.Add(source);
+                }
+                
                 break;
 
         }
-        SpellSource instanceSource = instance.GetComponent<SpellSource>();
+        foreach(SpellSource source in instances)
+        {
+            source.init(size.sizeC, mover.gameObject, team, moveType);
+            NetworkServer.Spawn(source.gameObject);
+        }
 
-        instanceSource.init(size.sizeC, mover.gameObject, team, moveType);
-        NetworkServer.Spawn(instance);
-
-
-        return instanceSource;
+        prime = instances[hitData.multiple / 2];
+        return (instances.ToArray(), prime);
     }
 }
 

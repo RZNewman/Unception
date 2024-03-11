@@ -7,6 +7,7 @@ using static AttackUtils;
 using static GenerateBuff;
 using static SpellSource;
 using static GenerateDefense;
+using System.Linq;
 
 public class ActionState : AttackStageState
 {
@@ -47,45 +48,29 @@ public class ActionState : AttackStageState
         {
             return;
         }
-        SpellSource sourcePoint = segment.sourcePoint;
-        List<GameObject> hits = new List<GameObject>();
+        SpellSource[] sources = segment.sources;
+        List<HitSource> hits = new List<HitSource>();
         List<GameObject> enemyHits = new List<GameObject>();
         ShapeData shapeData = getShapeData();
-        switch (attackData.type)
+        HitList hitList = new HitList();
+
+        foreach(SpellSource source in sources)
         {
-            case HitType.Attached: 
-                //LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
-                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
-                //LineParticle(info, attackData.flair, mover.sound.dists);
-                //hits = LineAttack(info);
-                hits = ShapeAttack(sourcePoint, shapeData);
-
-                break;
-            case HitType.ProjectileExploding:
-                SpawnProjectile(sourcePoint, mover, attackData, buffData, mover.sound.dists);
-                break;
-            case HitType.GroundPlaced:
-                //float radius = GroundRadius(attackData.length, attackData.width);
-                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
-                //GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
-                hits = ShapeAttack(sourcePoint, shapeData);
-                //hits = GroundAttack(sourcePoint.transform.position, radius);
-                break;
-
+            hits.AddRange(fireOneSource(source, shapeData, hitList));
         }
 
-        foreach (GameObject o in hits)
+        foreach (HitSource hitSource in hits)
         {
-            if (hit(o, mover, attackData,
+            if (hit(hitSource.hit, mover, attackData,
                 mover.GetComponent<TeamOwnership>().getTeam(),
                 mover.GetComponent<Power>().power,
                 new KnockBackVectors
                 {
-                    center = sourcePoint.transform.position,
-                    direction = sourcePoint.transform.forward
-                }))
+                    center = hitSource.source.transform.position,
+                    direction = hitSource.source.transform.forward
+                }, hitList))
             {
-                enemyHits.Add(o);
+                enemyHits.Add(hitSource.hit);
             }
 
         }
@@ -122,6 +107,40 @@ public class ActionState : AttackStageState
         }
     }
 
+    struct HitSource
+    {
+        public GameObject hit;
+        public SpellSource source;
+    }
+
+    List<HitSource> fireOneSource(SpellSource sourcePoint, ShapeData shapeData, HitList hitList)
+    {
+        List<GameObject> hits = new List<GameObject>();
+        switch (attackData.type)
+        {
+            case HitType.Attached:
+                //LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
+                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                //LineParticle(info, attackData.flair, mover.sound.dists);
+                //hits = LineAttack(info);
+                hits = ShapeAttack(sourcePoint, shapeData);
+
+                break;
+            case HitType.ProjectileExploding:
+                SpawnProjectile(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists);
+                break;
+            case HitType.GroundPlaced:
+                //float radius = GroundRadius(attackData.length, attackData.width);
+                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                //GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
+                hits = ShapeAttack(sourcePoint, shapeData);
+                //hits = GroundAttack(sourcePoint.transform.position, radius);
+                break;
+
+        }
+        return hits.Select(h => new HitSource { hit = h, source = sourcePoint }).ToList();
+    }
+
     public override IndicatorOffsets GetIndicatorOffsets()
     {
         return new IndicatorOffsets
@@ -137,7 +156,7 @@ public class ActionState : AttackStageState
 
     public ShapeData getShapeData()
     {
-        return AttackUtils.getShapeData(attackData.shape, segment.sourcePoint.sizeCapsule, attackData.range, attackData.length, attackData.width, useRangeForHit);
+        return AttackUtils.getShapeData(attackData.shape, segment.capsuleSize, attackData.range, attackData.length, attackData.width, useRangeForHit);
     }
     public override void tick()
     {

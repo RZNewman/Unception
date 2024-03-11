@@ -161,6 +161,8 @@ public class UnitMovement : NetworkBehaviour
         };
     }
     #endregion
+
+    //TODO remove, these are ugly
     public string currentAbilityName()
     {
         if (currentState() is AttackingState)
@@ -168,14 +170,6 @@ public class UnitMovement : NetworkBehaviour
             return ((AttackingState)currentState()).abilityName;
         }
         return "";
-    }
-    public Optional<AttackSegment> currentAttackSegment()
-    {
-        if (currentState() is AttackingState)
-        {
-            return ((AttackingState)currentState()).segment;
-        }
-        return null;
     }
 
     public Optional<Ability> currentAttackingAbility()
@@ -566,6 +560,12 @@ public class UnitMovement : NetworkBehaviour
             currentLookVerticalAngle += frameMagnitude * Mathf.Sign(diff);
         }
     }
+
+    public Quaternion AimRotation(Vector3 forward)
+    {
+        return ground.getAimRotation(forward);
+    }
+
     public void maybeSnapRotation(UnitInput inp)
     {
         if (inp.look == Vector2.zero || !props.isPlayer)

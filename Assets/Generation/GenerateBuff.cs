@@ -36,9 +36,9 @@ public static class GenerateBuff
 
         public static float buffStatsBase = 45;
 
-        public override InstanceData populate(float power, float strength, Scales scalesStart)
+        public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
         {
-            strength *= this.percentOfEffect;
+            strength += new StrengthMultiplers(0, this.percentOfEffect);
 
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();

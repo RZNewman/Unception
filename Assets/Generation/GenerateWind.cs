@@ -17,7 +17,7 @@ public static class GenerateWind
         public float turnMult;
         public bool isWinddown;
 
-        public override InstanceData populate(float power, float strength, Scales scalesStart)
+        public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
         {
             float moveMag = this.moveMult.asRange(-5.0f, -1.0f);
             bool moveDir = moveMag >= 0;
@@ -48,7 +48,7 @@ public static class GenerateWind
     }
     public class WindInstanceData : InstanceData
     {
-        public float strength;
+        public StrengthMultiplers strength;
 
         public float duration;
         public float moveMult;

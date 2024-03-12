@@ -29,7 +29,7 @@ public static class GenerateAttack
     public abstract class GenerationData : ScriptableObject
     {
         public float percentOfEffect = 1;
-        public abstract InstanceData populate(float power, float strength, Scales scalesStart);
+        public abstract InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart);
     }
     public abstract class InstanceData
     {
@@ -43,20 +43,52 @@ public static class GenerateAttack
         }
     }
 
+    public struct StrengthMultiplers
+    {
+        public float increased;
+        public float more;
+
+        public StrengthMultiplers(float i, float m = 1)
+        {
+            increased = i;
+            more = m;
+        }
+
+        public static float operator *(float a, StrengthMultiplers b)
+        {
+            return a * (1+b.increased) * b.more;
+        }
+        public static StrengthMultiplers operator +(StrengthMultiplers a, StrengthMultiplers b)
+        {
+            //Debug.Log(a.ToString() + " // " + b.ToString());
+            return new StrengthMultiplers
+            {
+                increased = a.increased + b.increased,
+                more = a.more * b.more,
+            };
+        }
+
+        public override string ToString()
+        {
+            return increased + " - " + more;
+        }
+
+    }
+
     //value added for 100% reduced effect (50% speed)
     static readonly float moveValuePositive = 0.04f;
     static readonly float turnValuePositive = 0.025f;
 
     static readonly float moveValueNegative = 0.4f;
     static readonly float turnValueNegative = 0.1f;
-    static public float getWindValue(WindInstanceData[] winds, bool reducedValue)
+    static public StrengthMultiplers getWindValue(WindInstanceData[] winds, bool reducedValue)
     {
         float value = winds.Sum(getWindValue);
         if (reducedValue)
         {
             value *= 0.2f;
         }
-        return value;
+        return new StrengthMultiplers(value);
     }
     static public float getWindValue(WindInstanceData wind)
     {
@@ -383,7 +415,7 @@ public static class GenerateAttack
     }
     public struct AttackInstanceData
     {
-        public float strength;
+        public StrengthMultiplers strength;
         public SegmentInstanceData[] segments;
         public float cooldown;
         public StatStream stream;
@@ -519,8 +551,7 @@ public static class GenerateAttack
     {
         public float power;
         public Scales scales;
-        public float multipliedStrength;
-        public float? addedStrength;
+        public StrengthMultiplers strength;
         public bool? reduceWindValue;
         public Ability? statLinkAbility;
     }
@@ -543,22 +574,16 @@ public static class GenerateAttack
     public static AttackInstanceData populateAttack(AttackGenerationData atk, PopulateAttackOptions opts)
     {
         float power = opts.power;
+        StrengthMultiplers instanceStrength = new StrengthMultiplers(0);
 
         float cooldownValue = atk.cooldown;
         float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 5 + 1), 2f);
+        
         cooldownTime /= opts.scales.time;
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
         stats = stats.scale(opts.scales.numeric);
-
-        float addedBaseStrength = 0;
-        if (opts.addedStrength.HasValue)
-        {
-            addedBaseStrength += opts.addedStrength.Value;
-        }
-        float multBaseStrength = opts.multipliedStrength;
-        float strengthFromRarity = (1 + addedBaseStrength) * multBaseStrength;
 
         List<SegmentGenerationData> segmentsGen = atk.segments.ToList();
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
@@ -574,13 +599,13 @@ public static class GenerateAttack
         for (int i = 0; i < segmentsGen.Count; i++)
         {
             SegmentGenerationData segment = segmentsGen[i];
-            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, strengthFromRarity, opts.scales);
+            WindInstanceData up = (WindInstanceData)segment.windup.populate(power, opts.strength, opts.scales);
             parent(up);
             List<WindInstanceData> windList = new List<WindInstanceData> { up };
             WindInstanceData down = null;
             if (segment.winddown)
             {
-                down = (WindInstanceData)segment.winddown.populate(power, strengthFromRarity, opts.scales);
+                down = (WindInstanceData)segment.winddown.populate(power, opts.strength, opts.scales);
                 parent(down);
                 windList.Add(down);
             }
@@ -597,8 +622,8 @@ public static class GenerateAttack
             int repeatCount = 1;
             if (segment.repeat != null)
             {
-                repeat = (RepeatingInstanceData)segment.repeat.populate(power, strengthFromRarity, opts.scales);
-                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, strengthFromRarity, opts.scales);
+                repeat = (RepeatingInstanceData)segment.repeat.populate(power, opts.strength, opts.scales);
+                windRepeat = (WindInstanceData)segment.windRepeat.populate(power, opts.strength, opts.scales);
                 parent(windRepeat);
                 repeatCount = repeat.repeatCount;
                 for (int j = 0; j < segment.repeat.repeatCount; j++)
@@ -607,12 +632,10 @@ public static class GenerateAttack
                 }
             }
 
-            float strength = getWindValue(windList.ToArray(), opts.reduceWindValue.GetValueOrDefault(false));
-            float addedCDStrength = cooldownStrength * (1 - 0.03f * (repeatCount - 1));
-            strength += addedCDStrength;
-            strength += addedBaseStrength;
-            strength *= multBaseStrength;
-            float repeatStrength = strength / repeatCount;
+            instanceStrength += getWindValue(windList.ToArray(), opts.reduceWindValue.GetValueOrDefault(false));
+            instanceStrength += new StrengthMultiplers(cooldownStrength * (1 - 0.03f * (repeatCount - 1)));
+            instanceStrength += opts.strength;
+            StrengthMultiplers repeatStrength = instanceStrength + new StrengthMultiplers(0,1/repeatCount);
 
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength, opts.scales);
             parent(hit);
@@ -636,7 +659,7 @@ public static class GenerateAttack
                 windup = up,
                 winddown = down,
                 hit = hit,
-                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : strength, opts.scales),
+                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : instanceStrength, opts.scales),
                 buff = buff,
                 defense = defense,
                 repeat = repeat,
@@ -657,7 +680,7 @@ public static class GenerateAttack
 
         AttackInstanceData atkIn = new AttackInstanceData
         {
-            strength = strengthFromRarity,
+            strength = opts.strength,
             cooldown = cooldownTime,
             stream = stream,
             segments = segmentsInst,

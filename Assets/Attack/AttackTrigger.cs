@@ -65,18 +65,14 @@ public class TriggerDataInstance : AbilityDataInstance
     public TriggerConditions conditions;
     public float difficultyTotal;
 
-    public override float multipliedStrength()
+    public override StrengthMultiplers strength()
     {
-        return 1 + difficultyTotal * 0.25f;
-    }
-    public override float addedStrength()
-    {
-        return conditions.triggerStrength;
+        return new StrengthMultiplers(conditions.triggerStrength, 1 + difficultyTotal * 0.25f);
     }
 
     public override float actingPower()
     {
-        return powerInstance * (1+ addedStrength())* multipliedStrength();
+        return powerInstance * strength();
     }
 }
 

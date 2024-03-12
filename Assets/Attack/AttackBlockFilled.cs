@@ -23,12 +23,12 @@ public class CastDataInstance : AbilityDataInstance
         { GroveSlotType.Hard,0.15f },
         { GroveSlotType.Aura,0.07f },
     };
-    public override float addedStrength()
+    public override StrengthMultiplers strength()
     {
-        return shape.power(shapeValues);
+        return new StrengthMultiplers(shape.power(shapeValues), multipliedStrength());
     }
 
-    public override float multipliedStrength()
+    public float multipliedStrength()
     {
         return qualityPercent(quality) + 0.03f * stars;
     }

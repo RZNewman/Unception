@@ -13,9 +13,9 @@ public static class GenerateDefense
         public float duration;
         public float regen;
 
-        public override InstanceData populate(float power, float strength, Scales scalesStart)
+        public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
         {
-            strength *= this.percentOfEffect;
+            strength += new StrengthMultiplers(0, this.percentOfEffect);
 
             float shieldValue = 1.7f * strength;
 

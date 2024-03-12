@@ -162,7 +162,6 @@ public class UnitMovement : NetworkBehaviour
     }
     #endregion
 
-    //TODO remove, these are ugly
     public string currentAbilityName()
     {
         if (currentState() is AttackingState)

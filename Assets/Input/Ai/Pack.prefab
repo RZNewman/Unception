@@ -46,10 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25984a35b8a9e4f4eb45de2ed1468f8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   spawnWarning: {fileID: 493794054391715329, guid: 0fc2dca83a6d75e4b8170856d29d514c, type: 3}
-  powerPoolPack: 0
   scale: 0
 --- !u!114 &6037732328346485963
 MonoBehaviour:
@@ -63,10 +63,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientStarted: 0
   sceneId: 0
+  _assetId: 2320990904
   serverOnly: 0
   visible: 0
-  m_AssetId: e356917f25b672a4bbea9b4dcadc3e56
   hasSpawned: 0
 --- !u!135 &3119872686040649259
 SphereCollider:

@@ -51,9 +51,8 @@ public abstract class AbilityData : AbilityIdentifiers
                 time = numericScale/ opts.baseScales.time,
                 bases = opts.baseScales,
             },
-            multipliedStrength = instance.multipliedStrength(),
+            strength = instance.strength(),
             statLinkAbility = opts.statLinkAbility,
-            addedStrength = instance.addedStrength(),
             reduceWindValue = opts.reduceWindValue,
         });
     }
@@ -90,9 +89,7 @@ public abstract class AbilityDataInstance : AbilityIdentifiers
     public abstract float actingPower();
  
 
-    public abstract float multipliedStrength();
-
-    public abstract float addedStrength();
+    public abstract StrengthMultiplers strength();
 
     //float modPercentValue
     //{

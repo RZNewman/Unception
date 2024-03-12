@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static GenerateAttack;
 using static MapGenerator;
 using static RewardManager;
 
@@ -257,6 +258,10 @@ public static class Utils
 
         }
         return newDict;
+    }
+    public static Dictionary<T, float> scale<T>(this IDictionary<T, float> dict, StrengthMultiplers strength, params T[] exclusions)
+    {
+        return dict.scale(1*strength,exclusions);
     }
 
     public static Dictionary<T, float> scale<T>(this IDictionary<T, float> dict, float scale, params T[] exclusions)

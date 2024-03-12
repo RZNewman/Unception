@@ -50,12 +50,13 @@ public static class GenerateHit
         public float dotTime;
         public float exposePercent;
 
-        public override InstanceData populate(float power, float strength, Scales scalesStart)
+        public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
         {
-            strength *= this.percentOfEffect;
+            strength +=  new StrengthMultiplers(0,this.percentOfEffect);
+            
 
             float multipleHitStrengthPenalty = (multiple - 1) * 0.075f;
-            strength *= 1 - multipleHitStrengthPenalty;
+            strength += new StrengthMultiplers(0, 1 - multipleHitStrengthPenalty);
 
             Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
             foreach (Stat s in statValues.Keys)
@@ -102,7 +103,7 @@ public static class GenerateHit
 
     public class HitInstanceData : InstanceData
     {
-        public float strength;
+        public StrengthMultiplers strength;
 
         public float powerByStrength
         {
@@ -371,8 +372,7 @@ public static class GenerateHit
 
         int multiple = 1;
         float multipleArc = 0;
-        //r = Random.value;
-        r = 0.1f;
+        r = Random.value;
         if ((t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
             &&
             r < 0.2f

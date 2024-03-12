@@ -73,7 +73,7 @@ public static class GenerateHit
             float dotBaseTime = this.dotTime.asRange(5f, 20f);
             HitInstanceData baseData = new HitInstanceData
             {
-                strength = strength,
+                bakedStrength = strength,
                 powerAtGen = power,
                 scales = scalesStart,
                 percentOfEffect = percentOfEffect,
@@ -103,15 +103,7 @@ public static class GenerateHit
 
     public class HitInstanceData : InstanceData
     {
-        public StrengthMultiplers strength;
-
-        public float powerByStrength
-        {
-            get
-            {
-                return powerAtGen * strength;
-            }
-        }
+        
 
         public HitType type;
         public EffectShape shape;
@@ -180,7 +172,7 @@ public static class GenerateHit
 
         float getStat(Stat stat)
         {
-            return stream.getValue(stat, scales, type, shape) * strength;
+            return stream.getValue(stat, scales, type, shape) * dynamicStrength;
         }
 
         public override EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)

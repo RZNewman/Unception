@@ -17,7 +17,7 @@ public static class GenerateDefense
         {
             strength += new StrengthMultiplers(0, this.percentOfEffect);
 
-            float shieldValue = 1.7f * strength;
+            float shieldValue = 1.7f;
 
             float baseDuration = this.duration.asRange(0.25f, 8);
             float duration = baseDuration / scalesStart.time;
@@ -33,12 +33,13 @@ public static class GenerateDefense
 
             DefenseInstanceData baseData = new DefenseInstanceData
             {
+                bakedStrength = strength,
                 percentOfEffect = percentOfEffect,
                 scales = scalesStart,
                 powerAtGen = power,
 
                 duration = duration,
-                shieldMult = shieldValue,
+                shieldMultFlat = shieldValue,
                 regenMult = regenValue,
             };
             return baseData;
@@ -50,11 +51,11 @@ public static class GenerateDefense
     {
         public float duration;
         public float regenMult;
-        public float shieldMult;
+        public float shieldMultFlat;
 
         public float shield(float power)
         {
-            return shieldMult * Power.damageFalloff(powerAtGen, power);
+            return shieldMultFlat * dynamicStrength * Power.damageFalloff(powerAtGen, power);
         }
 
         public float regen(float power)

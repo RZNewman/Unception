@@ -426,8 +426,8 @@ public class UnitMovement : NetworkBehaviour
         float scaleSpeed = power.scaleSpeed();
         return new DashInstanceData
         {
-            distance = props.dashDistance * airMultiplier * scalePhys,
-            speed = props.dashSpeed * airMultiplier * combatMultiplier * scaleSpeed,
+            distanceFlat = props.dashDistance * airMultiplier * scalePhys,
+            speedFlat = props.dashSpeed * airMultiplier * combatMultiplier * scaleSpeed,
             control = DashControl.Input,
             endMomentum = DashEndMomentum.Walk,
             pitch = pitch,

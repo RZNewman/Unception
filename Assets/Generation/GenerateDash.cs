@@ -38,17 +38,17 @@ public static class GenerateDash
         {
             strength += new StrengthMultiplers(0, this.percentOfEffect);
 
-            float speed = this.speed.asRange(15f, 30f) * scalesStart.speed * strength;
-            float distance = this.distance.asRange(2f, 6f) * scalesStart.world * strength;
+            float speed = this.speed.asRange(15f, 30f) * scalesStart.speed;
+            float distance = this.distance.asRange(2f, 6f) * scalesStart.world;
 
             return new DashInstanceData
             {
-                powerByStrength = power * strength,
+                bakedStrength = strength,
                 scales =scalesStart,
                 percentOfEffect = percentOfEffect,
 
-                speed = speed,
-                distance = distance,
+                speedFlat = speed,
+                distanceFlat = distance,
                 pitch = pitch,
                 control = control,
                 endMomentum = DashEndMomentum.Walk,
@@ -61,13 +61,21 @@ public static class GenerateDash
     }
     public class DashInstanceData : InstanceData
     {
-        public float powerByStrength;
-
-        public float speed;
-        public float distance;
+        public float speedFlat;
+        public float distanceFlat;
         public float pitch;
         public DashControl control;
         public DashEndMomentum endMomentum;
+
+        public float speed
+        {
+            get { return speedFlat *  dynamicStrength; }
+        }
+        public float distance
+        {
+            get { return distanceFlat * dynamicStrength; }
+        }
+
 
         public override EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {

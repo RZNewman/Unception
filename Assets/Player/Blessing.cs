@@ -41,6 +41,7 @@ public abstract class AbilityData : AbilityIdentifiers
         instance.powerAtGeneration = powerAtGeneration;
         instance.effectGeneration = effectGeneration;
         instance.powerInstance = power;
+        instance.tempStrengthEffect = new StrengthMultiplers(0);
         instance.effect = populateAttack(effectGeneration, new PopulateAttackOptions
         {
             power = power,
@@ -54,6 +55,7 @@ public abstract class AbilityData : AbilityIdentifiers
             strength = instance.strength(),
             statLinkAbility = opts.statLinkAbility,
             reduceWindValue = opts.reduceWindValue,
+            rootInstance = instance,
         });
     }
 
@@ -74,7 +76,6 @@ public struct FillBlockOptions
 {
     public BaseScales baseScales;
     public float? overridePower;
-    public float? addedStrength;
     public bool? reduceWindValue;
     public bool? forceScaling;
     public Ability? statLinkAbility;
@@ -85,6 +86,7 @@ public abstract class AbilityDataInstance : AbilityIdentifiers
     public AttackGenerationData effectGeneration;
     public AttackInstanceData effect;
     public float powerInstance;
+    public StrengthMultiplers tempStrengthEffect;
 
     public abstract float actingPower();
  

@@ -80,7 +80,6 @@ public static class GenerateBuff
 
 
             stats = stats.scale(buffStatsBase);
-            stats = stats.scale(strength);
             stats = stats.scale(scalesStart.numeric);
             if (type == BuffType.Debuff)
             {
@@ -89,6 +88,7 @@ public static class GenerateBuff
 
             BuffInstanceData baseData = new BuffInstanceData
             {
+                bakedStrength = strength,
                 percentOfEffect = percentOfEffect,
                 scales = scalesStart,
                 durration = duration,
@@ -120,7 +120,7 @@ public static class GenerateBuff
         {
             get
             {
-                return _baseStats;
+                return _baseStats.scale(dynamicStrength);
             }
         }
 

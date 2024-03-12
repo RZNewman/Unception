@@ -182,14 +182,20 @@ public class Ability : NetworkBehaviour
                 {
                     statLinkAbility = this,
                     overridePower = p.power,
-                    baseScales = cachedBaseScales
+                    baseScales = cachedBaseScales,
+
+
                 }
                 );
-            //TODO id like this to be dynamic, eventual callback from stat handler change
             chargeMax = chargeMaxCalculated;
         }
         
 
+    }
+
+    void setCastStrength(float percent)
+    {
+        formatInstance.tempStrengthEffect = new StrengthMultiplers(0, percent);
     }
 
 

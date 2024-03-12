@@ -30,7 +30,7 @@ public static class GenerateWind
             float baseDuration = this.duration.asRange(0.08f, 3f);
             return new WindInstanceData
             {
-                strength = strength,
+                bakedStrength = strength,
 
                 duration = baseDuration / scalesStart.time,
                 moveMult = moveMult,
@@ -48,7 +48,6 @@ public static class GenerateWind
     }
     public class WindInstanceData : InstanceData
     {
-        public StrengthMultiplers strength;
 
         public float duration;
         public float moveMult;
@@ -77,7 +76,7 @@ public static class GenerateWind
         }
         float getStat(Stat stat)
         {
-            return stream.getValue(stat, scales) * strength;
+            return stream.getValue(stat, scales) * dynamicStrength;
 
         }
         float haste

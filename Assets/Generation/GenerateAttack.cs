@@ -33,10 +33,29 @@ public static class GenerateAttack
     }
     public abstract class InstanceData
     {
-        public StatStream stream;
+        public StatStream stream = new StatStream();
         public float powerAtGen;
         public Scales scales;
         public float percentOfEffect;
+
+        public StrengthMultiplers bakedStrength = new StrengthMultiplers(0);
+        public AbilityDataInstance rootInstance;
+
+        public StrengthMultiplers dynamicStrength
+        {
+            get
+            {
+                return bakedStrength + (rootInstance != null ? rootInstance.tempStrengthEffect : new StrengthMultiplers(0));
+            }
+        }
+
+        public float powerByStrength
+        {
+            get
+            {
+                return powerAtGen * bakedStrength;
+            }
+        }
         public virtual EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
         {
             return new EffectiveDistance();
@@ -552,6 +571,7 @@ public static class GenerateAttack
         public float power;
         public Scales scales;
         public StrengthMultiplers strength;
+        public AbilityDataInstance rootInstance;
         public bool? reduceWindValue;
         public Ability? statLinkAbility;
     }
@@ -585,14 +605,21 @@ public static class GenerateAttack
         stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
         stats = stats.scale(opts.scales.numeric);
 
+        StatStream stream = new StatStream();
+        stream.setStats(stats);
+        if (opts.statLinkAbility != null)
+        {
+            opts.statLinkAbility.GetComponent<StatHandler>().link(stream);
+        }
+
         List<SegmentGenerationData> segmentsGen = atk.segments.ToList();
         SegmentInstanceData[] segmentsInst = new SegmentInstanceData[segmentsGen.Count];
-        List<InstanceStreamInfo> stagesToParent = new List<InstanceStreamInfo>();
         System.Action<InstanceData> parent = (InstanceData data) =>
         {
+            data.rootInstance = opts.rootInstance;
             //Hits benefit more from stats when they share their effect with a buff or dash
             //This is because thier strength is already reduced, and the buff/dash dont benefit from the stats
-            stagesToParent.Add(new InstanceStreamInfo { data = data, mult = 1 / data.percentOfEffect });
+            StatStream.linkStreams(stream, data.stream, 1 / data.percentOfEffect);
         };
 
 
@@ -635,7 +662,7 @@ public static class GenerateAttack
             instanceStrength += getWindValue(windList.ToArray(), opts.reduceWindValue.GetValueOrDefault(false));
             instanceStrength += new StrengthMultiplers(cooldownStrength * (1 - 0.03f * (repeatCount - 1)));
             instanceStrength += opts.strength;
-            StrengthMultiplers repeatStrength = instanceStrength + new StrengthMultiplers(0,1/repeatCount);
+            StrengthMultiplers repeatStrength = instanceStrength + new StrengthMultiplers(0,1f/repeatCount);
 
             HitInstanceData hit = (HitInstanceData)segment.hit.populate(power, repeatStrength, opts.scales);
             parent(hit);
@@ -644,13 +671,23 @@ public static class GenerateAttack
             if (segment.buff != null)
             {
                 buff = (BuffInstanceData)segment.buff.populate(power, repeatStrength, opts.scales);
+                parent(buff);
             }
 
             DefenseInstanceData defense = null;
             if (segment.defense != null)
             {
                 defense = (DefenseInstanceData)segment.defense.populate(power, repeatStrength, opts.scales);
+                parent(defense);
             }
+
+            DashInstanceData dash =null;
+            if(segment.dash != null)
+            {
+                dash = (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : instanceStrength, opts.scales);
+                parent(dash);
+            }
+
 
             segmentsInst[i] = new SegmentInstanceData
             {
@@ -659,7 +696,7 @@ public static class GenerateAttack
                 windup = up,
                 winddown = down,
                 hit = hit,
-                dash = segment.dash == null ? null : (DashInstanceData)segment.dash.populate(power, segment.dashInside ? repeatStrength : instanceStrength, opts.scales),
+                dash = dash,
                 buff = buff,
                 defense = defense,
                 repeat = repeat,
@@ -671,12 +708,7 @@ public static class GenerateAttack
 
         }
 
-        StatStream stream = new StatStream();
-        stream.setStats(stats);
-        if (opts.statLinkAbility != null)
-        {
-            opts.statLinkAbility.GetComponent<StatHandler>().link(stream);
-        }
+        
 
         AttackInstanceData atkIn = new AttackInstanceData
         {
@@ -687,10 +719,6 @@ public static class GenerateAttack
             scales = opts.scales,
         };
 
-        foreach (InstanceStreamInfo info in stagesToParent)
-        {
-            StatStream.linkStreams(stream, info.data.stream, info.mult);
-        }
         return atkIn;
 
     }

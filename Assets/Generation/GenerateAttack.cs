@@ -299,12 +299,21 @@ public static class GenerateAttack
         public float rolledPercent;
         public ModBonus bonus;
     }
+
+    public enum CriticalType
+    {
+        Period,
+        Luck
+    }
     [System.Serializable]
     public struct AttackGenerationData
     {
         public SegmentGenerationData[] segments;
         public float cooldown;
         public float charges;
+        public int criticalCount;
+        public float criticalModifier;
+        public CriticalType criticalType;
 
         public StatInfo getInfo(Stat stat)
         {
@@ -439,6 +448,9 @@ public static class GenerateAttack
         public float cooldown;
         public StatStream stream;
         public Scales scales;
+        public int criticalCount;
+        public float criticalModifier;
+        public CriticalType criticalType;
 
         public float getStat(Stat stat)
         {
@@ -717,6 +729,9 @@ public static class GenerateAttack
             stream = stream,
             segments = segmentsInst,
             scales = opts.scales,
+            criticalCount = atk.criticalCount,
+            criticalModifier = atk.criticalModifier.asRange(0.1f,0.2f),
+            criticalType = atk.criticalType,
         };
 
         return atkIn;
@@ -864,6 +879,18 @@ public static class GenerateAttack
             }
         }
 
+        int critCount = 0;
+        float critMod = Random.value;
+        CriticalType critType = CriticalType.Period;
+        //r = Random.value;
+        r = 0.01f;
+        if (r < 0.05f)
+        {
+            critCount = Mathf.RoundToInt(Random.value.asRange(3, 6));
+            critMod = GaussRandomDecline();
+            //critType
+        }
+
 
         List<SegmentGenerationData> segments = new List<SegmentGenerationData>();
         for (int i = 0; i < segmentCount; i++)
@@ -879,6 +906,9 @@ public static class GenerateAttack
             segments = segments.ToArray(),
             cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(cooldownMin, cooldownMax),
             charges = charges,
+            criticalCount = critCount,
+            criticalModifier = critMod,
+            criticalType = critType,
 
         };
         return atk;

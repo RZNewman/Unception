@@ -35,6 +35,10 @@ public class Ability : NetworkBehaviour
 
     [SyncVar]
     public bool cooldownTicking = false;
+
+    [SyncVar]
+    int criticalCount = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -126,8 +130,51 @@ public class Ability : NetworkBehaviour
             return formatInstance.effect.getCharges();
         }
     }
+
+    bool canCrit
+    {
+        get
+        {
+            return formatInstance.effect.criticalCount > 0;
+        }
+    }
+    public bool willCrit
+    {
+        get
+        {
+            return formatInstance.effect.criticalCount == criticalCount + 2;
+        }
+    }
+    bool isCrit
+    {
+        get
+        {
+            return formatInstance.effect.criticalCount == criticalCount + 1;
+        }
+    }
+
+    float critEffect
+    {
+        get
+        {
+            return 1 + (isCrit ? formatInstance.effect.criticalCount * formatInstance.effect.criticalModifier : -formatInstance.effect.criticalModifier);
+        }
+    }
+
+    void trySetCritScaling()
+    {
+        if(canCrit)
+        {
+            formatInstance.tempStrengthEffect = new StrengthMultiplers(0, critEffect);
+        }
+    }
     public List<AttackSegment> cast(UnitMovement mover, CastingLocationData castData)
     {
+        if (canCrit)
+        {
+            criticalCount = (criticalCount+1) % formatInstance.effect.criticalCount;
+            trySetCritScaling();
+        }
         if (cooldownPerCharge > 0)
         {
             charges -= 1;
@@ -188,6 +235,7 @@ public class Ability : NetworkBehaviour
                 }
                 );
             chargeMax = chargeMaxCalculated;
+            trySetCritScaling();
         }
         
 

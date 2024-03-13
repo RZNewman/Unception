@@ -22,6 +22,7 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     public Image symbolInv;
     public Image slotInv;
     public UiBuffBar buffBarGameplay;
+    public Image critGameplay;
 
 
     public Image foreground;
@@ -72,6 +73,7 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
             background.color = fresh ? Color.white : new Color(0.5f, 0.5f, 0.5f);
             foreground.fillAmount = charges == 1 ? 0 : 1 - (charges % 1);
             chargeCount.text = charges > 1 ? Mathf.Floor(charges).ToString() : "";
+            critGameplay.gameObject.SetActive(target.willCrit && target.ready);
         }
 
     }

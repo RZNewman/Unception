@@ -23,7 +23,7 @@ public class Compass : MonoBehaviour
         {
             Vector3 diff = target - c.transform.parent.position;
             float angle = Vector3.SignedAngle(diff, Vector3.forward, Vector3.up);
-            transform.rotation = Quaternion.AngleAxis(angle + c.currentLookAngle, Vector3.forward);
+            transform.localRotation = Quaternion.AngleAxis(angle + c.currentLookAngle, Vector3.forward);
         }
     }
 

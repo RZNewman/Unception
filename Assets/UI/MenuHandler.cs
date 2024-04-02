@@ -77,7 +77,7 @@ public class MenuHandler : MonoBehaviour
         loading.SetActive(false);
         gp = FindObjectOfType<GlobalPlayer>(true);
         switchMenu(Menu.Title);
-
+        GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
     }
 
     void menuPostActions(Menu m)

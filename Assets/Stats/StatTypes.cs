@@ -61,20 +61,34 @@ public static class StatTypes
             //{Stat.Width, 0.9f },
             {Stat.DamageMult, 0.9f },
             }
+        },
+        {HitType.DamageDash, new Dictionary<Stat, float>(){
+            {Stat.Length, 0.9f },
+            {Stat.Range, 1.0f },
+            {Stat.Width, 1.1f },
+            {Stat.DamageMult, 0.9f },
+            }
         }
     };
 
     static Dictionary<EffectShape, Dictionary<Stat, float>> shapeStatModifiers = new Dictionary<EffectShape, Dictionary<Stat, float>>()
     {
+        {EffectShape.Overhead, new Dictionary<Stat, float>(){
+            {Stat.Length, 1.4f },
+            //{Stat.Range, 0.8f },
+            {Stat.Width, 0.7f },
+            //{Stat.DamageMult, 0.9f },
+            }
+        },
         {EffectShape.Slash, new Dictionary<Stat, float>(){
-            {Stat.Length, 0.7f },
-            {Stat.Width, 1.3f },
+            //{Stat.Length, 0.8f },
+            //{Stat.Width, 1.5f },
             }
         },
         {EffectShape.Centered, new Dictionary<Stat, float>(){
             {Stat.Length, 0.5f },
             {Stat.Range, 0.8f },
-            {Stat.Width, 2.5f },
+            {Stat.Width, 2.2f },
             {Stat.DamageMult, 0.9f },
             }
         }
@@ -244,6 +258,7 @@ public static class StatTypes
         switch (type)
         {
             case HitType.ProjectileExploding:
+            case HitType.DamageDash:
                 dict.Add(Stat.Range, 20);
                 break;
             default:

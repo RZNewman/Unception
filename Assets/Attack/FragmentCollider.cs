@@ -5,13 +5,15 @@ public class FragmentCollider : MonoBehaviour
 {
     CompoundCollider comp;
 
+    public bool subtract = false;
+
     [HideInInspector]
-    public List<Collider> colliding;
+    public List<Collider> colliding = new List<Collider>();
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         comp = GetComponentInParent<CompoundCollider>();
-        colliding = new List<Collider>();
+        comp.addFragment(this);
     }
 
     private void OnTriggerEnter(Collider other)

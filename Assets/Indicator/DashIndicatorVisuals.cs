@@ -58,5 +58,13 @@ public class DashIndicatorVisuals : IndicatorInstance
     {
         float length_percent = length * percent;
         progress.transform.localPosition = new Vector3(0, 0, length_percent);
+        if (selfPercent > 0)
+        {
+            float distanceTraveled = length * selfPercent;
+            line.transform.localPosition = new Vector3(0, 0, length / 2 - distanceTraveled);
+            tip.transform.localPosition = new Vector3(0, 0, length - distanceTraveled);
+            progress.SetActive(false);
+        }
     }
+
 }

@@ -130,8 +130,8 @@ public class UiAbility : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
             foreach (GroveSlotPosition slot in filled.shape.points)
             {
-                Vector3 location = transform.position + new Vector3(slot.position.x, slot.position.y) * 10 * shapeHolder.transform.lossyScale.x * GroveWorld.gridSpacing;
-                Instantiate(ShapeLinkPre, location, Quaternion.identity, shapeHolder.transform).GetComponent<UIGroveLink>().setVisuals(flair, slot.type == GroveSlotType.Hard);
+                Vector3 location = transform.position + (transform.right*slot.position.x + transform.up*slot.position.y) * 10 * shapeHolder.transform.lossyScale.x * GroveWorld.gridSpacing;
+                Instantiate(ShapeLinkPre, location, transform.rotation, shapeHolder.transform).GetComponent<UIGroveLink>().setVisuals(flair, slot.type == GroveSlotType.Hard);
             }
         }
 

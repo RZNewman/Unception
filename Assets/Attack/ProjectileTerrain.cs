@@ -6,6 +6,6 @@ public class ProjectileTerrain : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        GetComponentInParent<Projectile>().onTerrainCollide(other);
+        GetComponentInParent<Persistent>().onTerrainCollide(other);
     }
 }

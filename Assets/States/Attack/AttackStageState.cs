@@ -4,7 +4,15 @@ using static SpellSource;
 
 public abstract class AttackStageState : PlayerMovementState
 {
+    public int[] indicatorIds = new int[0];
 
+    public virtual float selfPercent
+    {
+        get
+        {
+            return 0;
+        }
+    }
     public AttackStageState(UnitMovement m) : base(m)
     {
 

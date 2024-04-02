@@ -18,7 +18,7 @@ public class CursorLock : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 tempPos = transform.position;
+        Vector2 tempPos = transform.localPosition;
         float signedXOffset = xOffset;
         
         
@@ -40,6 +40,6 @@ public class CursorLock : MonoBehaviour
 
         if (syncX) { tempPos.x = Input.mousePosition.x + signedXOffset; }
         if (syncY) { tempPos.y = Input.mousePosition.y; }
-        transform.position = tempPos;
+        transform.localPosition = tempPos;
     }
 }

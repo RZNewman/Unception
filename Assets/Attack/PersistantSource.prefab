@@ -14,8 +14,10 @@ GameObject:
   - component: {fileID: 3052161307534552487}
   - component: {fileID: -8331668547386798651}
   - component: {fileID: -8778334345834773254}
+  - component: {fileID: 6640524217112429985}
+  - component: {fileID: 6971837421050928272}
   m_Layer: 0
-  m_Name: ProjectileBase
+  m_Name: PersistantSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +57,8 @@ MonoBehaviour:
   syncInterval: 0.1
   playerHit: {fileID: 8301353970095431689}
   terrainHit: {fileID: 3613822612320361351}
-  visualScale: {fileID: 8063588006359353581}
+  lineVisuals: {fileID: 0}
+  circleVisuals: {fileID: 0}
 --- !u!114 &-1071482608002039638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +161,36 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &6640524217112429985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093185378213857955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd9624e78be07345b4ba33954b33d7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  parent: {fileID: 0}
+  useSubBody: 0
+--- !u!114 &6971837421050928272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093185378213857955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1afe8fac7bc5c294f82c399f735dc589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subBody: {fileID: 0}
 --- !u!1 &3613822612320361351
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,37 +249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef98470e53a31074cbdcc91a81a6d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &8063588006359353581
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7549083577058511137}
-  m_Layer: 8
-  m_Name: Particle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7549083577058511137
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8063588006359353581}
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
-  m_LocalScale: {x: 0.40000004, y: 1, z: 0.5}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8622387659627963757}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &8301353970095431689
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,8 +258,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8622387659627963757}
-  - component: {fileID: 3094455636349170853}
-  - component: {fileID: 6844992210079207848}
+  - component: {fileID: 6527162575788542893}
   m_Layer: 8
   m_Name: PlayerHitbox
   m_TagString: Untagged
@@ -274,14 +275,13 @@ Transform:
   m_GameObject: {fileID: 8301353970095431689}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7549083577058511137}
+  m_Children: []
   m_Father: {fileID: 679059797728781725}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3094455636349170853
+--- !u!114 &6527162575788542893
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -290,19 +290,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8301353970095431689}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13d25396f1920a54c9f43c4816da94a7, type: 3}
+  m_Script: {fileID: 11500000, guid: d7adcc1d88896384284fb377612967c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!135 &6844992210079207848
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8301353970095431689}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  colliding: []

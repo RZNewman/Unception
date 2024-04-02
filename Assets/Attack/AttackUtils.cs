@@ -21,6 +21,7 @@ using static AttackUtils.CapsuleInfo;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static UnityEngine.UI.Image;
+using static AttackSegment;
 
 public static class AttackUtils
 {
@@ -116,32 +117,22 @@ public static class AttackUtils
     }
 
 
-    public static float attackHitboxHalfHeight(HitType type, float halfUnitHeight, float attackDistance)
+    public static GameObject SpawnPersistent(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists)
     {
-        switch (type)
-        {
-            case HitType.Attached:
-                return Mathf.Max(halfUnitHeight * 1.5f, attackDistance);
-            case HitType.ProjectileExploding:
-                return Mathf.Max(halfUnitHeight, attackDistance);
-            case HitType.GroundPlaced:
-                return attackDistance;
-            default:
-                return halfUnitHeight * 2;
-        }
-    }
-
-    public static void SpawnProjectile(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists)
-    {
-        FloorNormal floor = source.GetComponent<FloorNormal>();
         GameObject prefab = GlobalPrefab.gPre.ProjectilePre;
-        Quaternion aim = source.aimRotation(AimType.Normal);
+        Quaternion aim = source.aimRotation();
         GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
-        Projectile p = instance.GetComponent<Projectile>();
-        float hitRadius = hitData.width / 2;
-        float terrainRadius = Mathf.Min(hitRadius, source.sizeCapsule.radius * 0.5f);
-        p.init(terrainRadius, hitRadius, source.sizeCapsule, mover, hitData, buffData, hitList, dists);
+        MoveMode moveType = MoveMode.World;
+        if (hitData.type == HitType.DamageDash)
+        {
+            instance.transform.parent = source.transform;
+            instance.GetComponent<ClientAdoption>().parent = source.gameObject;
+            moveType = MoveMode.Parent;
+        }
+        Persistent p = instance.GetComponent<Persistent>();
+        p.init(source.sizeCapsule, mover, hitData, buffData, hitList, moveType, dists);
         NetworkServer.Spawn(instance);
+        return instance;
     }
 
     public static void SpawnBuff(BuffInstanceData buff, Transform target)
@@ -335,20 +326,45 @@ public static class AttackUtils
         public EffectiveDistance effective;
     }
 
-    public static ShapeData getShapeData(EffectShape shape, CapsuleSize sizeC, float range, float length, float width, bool useRange)
+    public static RangeForShape usesRangeForHitbox(HitType typeOfHit)
+    {
+
+        if(typeOfHit == HitType.Attached)
+        {
+            return RangeForShape.RangeAndRadius;
+        }
+        else if (typeOfHit == HitType.DamageDash)
+        {
+            return RangeForShape.RadiusOnly;
+        }
+        else
+        {
+            return RangeForShape.None;
+        }
+    }
+
+    public enum RangeForShape
+    {
+        None,
+        RadiusOnly,
+        RangeAndRadius
+    }
+
+    public static ShapeData getShapeData(EffectShape shape, CapsuleSize sizeC, float range, float length, float width, RangeForShape rangeUse)
     {
         ShapeData data = new ShapeData();
         data.colliders = new List<ColliderInfo>();
         data.indicators = new List<IndicatorDisplay>();
-        float rangeMult = useRange ? 1 : 0;
-        Vector3 frontPoint = Vector3.forward * sizeC.radius * rangeMult;
+        float rangeMult = rangeUse == RangeForShape.RangeAndRadius ? 1 : 0;
+        float radiusMult = rangeUse >= RangeForShape.RadiusOnly ? 1 : 0;
+        Vector3 frontPoint = Vector3.forward * sizeC.radius * radiusMult;
         float subtractRadius;
         float subtractPercent;
         float barWidth;
         switch (shape)
         {
             case EffectShape.Centered:
-                subtractRadius = (range + sizeC.radius)*rangeMult;
+                subtractRadius = range* rangeMult + sizeC.radius* radiusMult;
                 float fullRadius = width / 2 + subtractRadius;
                 barWidth = fullRadius * 0.08f;
                 #region colliders
@@ -360,13 +376,16 @@ public static class AttackUtils
                     radius = fullRadius,
                     height = fullRadius + length,
                 });
-                data.colliders.Add(new SphereInfo
+                if (subtractRadius > 0)
                 {
-                    position = Vector3.zero,
-                    rotation = Quaternion.identity,
-                    subtract = true,
-                    radius = subtractRadius,
-                });
+                    data.colliders.Add(new SphereInfo
+                    {
+                        position = Vector3.zero,
+                        rotation = Quaternion.identity,
+                        subtract = true,
+                        radius = subtractRadius,
+                    });
+                }              
                 #endregion
 
                 #region indicators
@@ -513,13 +532,17 @@ public static class AttackUtils
                     rotation = Quaternion.identity,
                     radius = slashLength,
                 });
-                data.colliders.Add(new SphereInfo
+                if (subtractRadius > 0)
                 {
-                    position = frontPoint,
-                    rotation = Quaternion.identity,
-                    radius = subtractRadius,
-                    subtract = true,
-                });
+                    data.colliders.Add(new SphereInfo
+                    {
+                        position = frontPoint,
+                        rotation = Quaternion.identity,
+                        radius = subtractRadius,
+                        subtract = true,
+                    });
+                }
+                
 
                 data.colliders.Add(new BoxInfo
                 {
@@ -619,13 +642,17 @@ public static class AttackUtils
                     rotation = Quaternion.identity,
                     radius = outerRadius,
                 });
-                data.colliders.Add(new SphereInfo
+                if (subtractRadius > 0)
                 {
-                    position = frontPoint,
-                    rotation = Quaternion.identity,
-                    radius = subtractRadius,
-                    subtract = true,
-                });
+                    data.colliders.Add(new SphereInfo
+                    {
+                        position = frontPoint,
+                        rotation = Quaternion.identity,
+                        radius = subtractRadius,
+                        subtract = true,
+                    });
+                }
+                
                 data.colliders.Add(new BoxInfo
                 {
                     position = frontPoint + Vector3.forward * (subtractRadius + length) / 2,
@@ -704,7 +731,7 @@ public static class AttackUtils
 
     public static List<GameObject> ShapeAttack(SpellSource source, ShapeData data)
     {
-        return ShapeAttack(source.aimRotation(AimType.Normal), source.transform.position, data);
+        return ShapeAttack(source.aimRotation(), source.transform.position, data);
     }
 
     public static List<GameObject> ShapeAttack(Quaternion aim, Vector3 origin, ShapeData data)
@@ -803,12 +830,12 @@ public static class AttackUtils
     }
 
 
-    public static void ShapeParticle(SpellSource source, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists)
+    public static void ShapeParticle(SpellSource source, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists, Transform persistParent = null)
     {
-        ShapeParticle(source.aimRotation(AimType.Normal), source.transform.position, source.transform.forward, data, shape, flair, dists);
+        ShapeParticle(source.aimRotation(), source.transform.position, source.transform.forward, data, shape, flair, dists, persistParent);
     }
 
-    public static void ShapeParticle(Quaternion aim, Vector3 position, Vector3 forward, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists)
+    public static void ShapeParticle(Quaternion aim, Vector3 position, Vector3 forward, ShapeData data, EffectShape shape, HitFlair flair, AudioDistances dists, Transform persistParent = null)
     {
         GlobalPrefab gp = GlobalPrefab.gPre;
         GameObject prefab = gp.ParticlePre;
@@ -823,13 +850,18 @@ public static class AttackUtils
                     _ => new Vector3(arc.arcWidth,arc.height,arc.radius)
                 };
                 i.transform.localScale = scale;
-                i.GetComponent<Particle>().setVisuals(Particle.VisualType.Line, flair.visualIndex, dists);
+                i.GetComponent<Particle>().setVisuals(persistParent ? Particle.VisualType.Projectile : Particle.VisualType.Line, flair.visualIndex, dists);
                 break;
             case VFXCapsuleInfo cap:
                 i = GameObject.Instantiate(prefab, position + forward * cap.additionalLength/2, aim);
                 i.transform.localScale = new Vector3(cap.radius*2,cap.radius * 2, cap.radius * 2 + cap.additionalLength);
-                i.GetComponent<Particle>().setVisuals(Particle.VisualType.Circle, flair.visualIndex, dists);
+                i.GetComponent<Particle>().setVisuals(persistParent ? Particle.VisualType.FullCircle : Particle.VisualType.Circle, flair.visualIndex, dists);
                 break;
+        }
+        if (persistParent)
+        {
+            i.transform.parent = persistParent;
+            i.GetComponent<ClientAdoption>().parent = persistParent.gameObject;
         }
         NetworkServer.Spawn(i);
 

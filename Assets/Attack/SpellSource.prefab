@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7241020738862006196}
   - component: {fileID: 7749858868163909196}
   - component: {fileID: -9050939049981701260}
+  - component: {fileID: 8573891544564139453}
   m_Layer: 0
   m_Name: SpellSource
   m_TagString: Untagged
@@ -170,6 +171,8 @@ MonoBehaviour:
   target: {x: 0, y: 0, z: 0}
   speed: 0
   offsetMult: 1
+  movementOffset: {x: 0, y: 0, z: 0}
+  multipleRotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!114 &-9050939049981701260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,3 +190,16 @@ MonoBehaviour:
   syncInterval: 0.1
   parent: {fileID: 0}
   useSubBody: 0
+--- !u!114 &8573891544564139453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5435974136974231416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1afe8fac7bc5c294f82c399f735dc589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subBody: {fileID: 0}

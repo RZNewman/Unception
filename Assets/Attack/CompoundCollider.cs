@@ -10,13 +10,17 @@ public class CompoundCollider : MonoBehaviour
     [HideInInspector]
     public List<Collider> colliding;
 
-    FragmentCollider[] fragments;
+    List<FragmentCollider> fragments = new List<FragmentCollider>();
 
     OnCompoundCollision callback;
     // Start is called before the first frame update
     void Start()
     {
-        fragments = GetComponentsInChildren<FragmentCollider>();
+        
+    }
+    public void addFragment(FragmentCollider f)
+    {
+        fragments.Add(f);
     }
 
     public void setCallback(OnCompoundCollision call)
@@ -32,7 +36,7 @@ public class CompoundCollider : MonoBehaviour
         }
         foreach (FragmentCollider fragment in fragments)
         {
-            if (!colliding.Contains(col))
+            if (!fragment.colliding.Contains(col))
             {
                 return;
             }
@@ -51,12 +55,13 @@ public class CompoundCollider : MonoBehaviour
         }
         foreach (FragmentCollider fragment in fragments)
         {
-            if (colliding.Contains(col))
+            if (!fragment.colliding.Contains(col))
             {
+                colliding.Remove(col);
                 return;
             }
         }
-        colliding.Remove(col);
+        
     }
 
     // Update is called once per frame

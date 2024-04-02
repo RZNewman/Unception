@@ -33,17 +33,13 @@ public class AttackMachine
         public SourceLocation locationOverride;
         public Vector3 triggeredPosition;
 
-        public bool usesRangeForHitbox(HitType typeOfHit)
+        public RangeForShape usesRange(HitType typeOfHit)
         {
-            Func<HitType, bool> isAttached = (type) => {
-                return type == HitType.Attached;
-            };
-
             return locationOverride switch
             {
-                SourceLocation.Body => isAttached(typeOfHit),
-                SourceLocation.BodyFixed => isAttached(typeOfHit),
-                _ => false,
+                SourceLocation.Body => usesRangeForHitbox(typeOfHit),
+                SourceLocation.BodyFixed => usesRangeForHitbox(typeOfHit),
+                _ => RangeForShape.None,
             };
         }
     }

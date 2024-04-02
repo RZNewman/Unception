@@ -20,7 +20,7 @@ public class ProjectileIndicatorVisuals : HitIndicatorInstance
     {
 
         length = data.range * 0.3f;
-        width = data.width;
+        width = data.width/2;
 
         Quaternion turn = Quaternion.LookRotation(Vector3.down, Vector3.forward);
         

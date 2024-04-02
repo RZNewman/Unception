@@ -16,7 +16,8 @@ public static class GenerateHit
     {
         Attached,
         ProjectileExploding,
-        GroundPlaced
+        GroundPlaced,
+        DamageDash,
     }
     public enum KnockBackType : byte
     {
@@ -100,7 +101,6 @@ public static class GenerateHit
 
     }
 
-
     public class HitInstanceData : InstanceData
     {
         
@@ -181,7 +181,7 @@ public static class GenerateHit
             float width = getStat(Stat.Width);
             float range = getStat(Stat.Range);
 
-            ShapeData data = AttackUtils.getShapeData(shape, sizeC, range, length, width, type == HitType.Attached);
+            ShapeData data = AttackUtils.getShapeData(shape, sizeC, range, length, width, usesRangeForHitbox(type));
             switch (type)
             {
                 case HitType.ProjectileExploding:
@@ -192,7 +192,7 @@ public static class GenerateHit
                         height = width/2,
                     };
                 default:
-                    data.effective.modDistance = type == HitType.GroundPlaced ? range + sizeC.radius : 0;
+                    data.effective.modDistance = type == HitType.GroundPlaced || type == HitType.DamageDash ? range + sizeC.radius : 0;
                     return data.effective;
             }
         }
@@ -247,7 +247,7 @@ public static class GenerateHit
     {
         HitType t;
         float r = Random.value;
-        //float r = 0.1f;
+        //float r = 0.55f;
         //Only line for now
         if (r < 0.2f
             && (!conditions.HasValue ||
@@ -263,6 +263,10 @@ public static class GenerateHit
         else if (r < 0.5f)
         {
             t = HitType.ProjectileExploding;
+        }
+        else if (r < 0.6f && !conditions.HasValue)
+        {
+            t = HitType.DamageDash;
         }
         else
         {
@@ -288,7 +292,7 @@ public static class GenerateHit
 
 
         List<Stat> generateStats = new List<Stat>() { Stat.Width, Stat.Knockback, Stat.DamageMult };
-        if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
+        if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced || t == HitType.DamageDash)
         {
             generateStats.Add(Stat.Range);
         }
@@ -304,7 +308,7 @@ public static class GenerateHit
 
         if (Random.value < 0.3f)
         {
-            if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced)
+            if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced || t == HitType.DamageDash)
             {
                 vg.augmentInner(itemMaxDict(Stat.Length), 1f);
             }

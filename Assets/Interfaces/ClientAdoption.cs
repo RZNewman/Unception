@@ -14,17 +14,12 @@ public class ClientAdoption : NetworkBehaviour
     bool adopted = false;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         trySetAdopted();
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        trySetAdopted();
-    }
 
     public void trySetAdopted()
     {

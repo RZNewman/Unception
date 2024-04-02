@@ -31,6 +31,7 @@ public class GlobalPrefab : MonoBehaviour
 
 
     public GameObject[] projectileAssetsPre;
+    public GameObject[] circleAssetsPre;
     public GameObject[] lineAssetsPre;
     public GameObject[] groundAssetsPre;
 

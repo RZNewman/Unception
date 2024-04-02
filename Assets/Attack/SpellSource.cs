@@ -71,40 +71,32 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     {
         ground.setGround(sizeC);
     }
-    public void updateIndicator(IndicatorType type, IndicatorOffsets offsets)
+    public void updateIndicator(int id, IndicatorOffsets offsets, float selfPercent)
     {
-        IndicatorInstance ind = indicators[type];
+        if(!indicators.ContainsKey(id))
+        {
+            //expected when using multiple projectiles
+            return;
+        }
+        IndicatorInstance ind = indicators[id];
         offsets.distance = Quaternion.Inverse(multipleRotation) * offsets.distance;
-        ind.setLocalOffsets(offsets);
+        ind.setLocalOffsets(offsets,selfPercent);
         ind.OrderedUpdate();
     }
 
 
-    public enum AimType
-    {
-        Normal,
-        Indicator
-    }
-    public Quaternion aimRotation(AimType type)
+    public Quaternion aimRotation()
     {
         UnitEye eye = GetComponentInParent<UnitEye>();
 
         if (eye)
         {
             //rotation handled by unit eye; default to foward
-            return type switch
-            {
-                AimType.Indicator => Quaternion.LookRotation(ground.normal, transform.forward),
-                _ => Quaternion.LookRotation( transform.forward, ground.normal),
-            };
+            return Quaternion.LookRotation(transform.forward, ground.normal);
         }
         else
         {
-            return type switch
-            {
-                AimType.Indicator => ground.getIndicatorRotation(transform.forward),
-                _ => ground.getAimRotation(transform.forward)
-            };
+            return ground.getAimRotation(transform.forward);
         }
     }
 
@@ -193,19 +185,16 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
             };
         }
     }
-    public enum IndicatorType
-    {
-        Hit,
-        Dash
-    }
-    Dictionary<IndicatorType, IndicatorInstance> indicators = new Dictionary<IndicatorType, IndicatorInstance>();
-    public void buildHitIndicator(HitInstanceData data, ShapeData shapeData)
+
+    Dictionary<int, IndicatorInstance> indicators = new Dictionary<int, IndicatorInstance>();
+    public int buildHitIndicator(HitInstanceData data, ShapeData shapeData)
     {
         GameObject prefab = data.type switch
         {
             HitType.Attached => global.ShapeIndPre,
             HitType.ProjectileExploding => global.ProjIndPre,
             HitType.GroundPlaced => global.ShapeIndPre,
+            HitType.DamageDash => global.ShapeIndPre,
             _ => global.LineIndPre
         };
         GameObject indicator = Instantiate(
@@ -215,10 +204,12 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         HitIndicatorInstance i = indicator.GetComponent<HitIndicatorInstance>();
         i.setSource(data, shapeData);
         i.setTeam(team);
-        indicators.Add(IndicatorType.Hit, i);
+        int id = indicator.GetInstanceID();
+        indicators.Add(id,i);
+        return id;
     }
 
-    public void buildDashIndicator(DashInstanceData data)
+    public int buildDashIndicator(DashInstanceData data)
     {
         Power pow = owner.GetComponent<Power>();
         GameObject indicator = Instantiate(
@@ -228,12 +219,19 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         DashIndicatorVisuals d = indicator.GetComponent<DashIndicatorVisuals>();
         d.setSource(data, pow);
         d.setTeam(team);
-        indicators.Add(IndicatorType.Dash, d);
+        int id = indicator.GetInstanceID();
+        indicators.Add(id, d);
+        return id;
     }
-    public void killIndicatorType(IndicatorType type)
+    public void killIndicator(int id)
     {
-        Destroy(indicators[type].gameObject);
-        indicators.Remove(type);
+        if (!indicators.ContainsKey(id))
+        {
+            //expected when using multiple projectiles
+            return;
+        }
+        Destroy(indicators[id].gameObject);
+        indicators.Remove(id);
 
     }
 

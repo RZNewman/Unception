@@ -69,7 +69,7 @@ public static class GenerateDash
 
         public float speed
         {
-            get { return speedFlat *  dynamicStrength; }
+            get { return speedFlat *  dynamicStrength * castSpeedMultiplier; }
         }
         public float distance
         {
@@ -83,6 +83,28 @@ public static class GenerateDash
             {
                 modDistance = distance,
             };
+        }
+
+        public float castSpeedMultiplier
+        {
+            get
+            {
+                return 1 + haste;
+            }
+        }
+
+        float haste
+        {
+            get
+            {
+                return getStat(Stat.Haste);
+            }
+        }
+
+        float getStat(Stat stat)
+        {
+            return stream.getValue(stat, scales) * dynamicStrength;
+
         }
     }
     public static DashGenerationData createDash()

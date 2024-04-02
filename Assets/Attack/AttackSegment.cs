@@ -82,17 +82,12 @@ public class AttackSegment
         {
 
             AttackStageState state = indStates[i];
-            if (state is ActionState)
+            foreach(int id in state.indicatorIds)
             {
-                foreach(SpellSource source in sourcePoints)
+                foreach (SpellSource source in sourcePoints)
                 {
-                    source.updateIndicator(IndicatorType.Hit, offsets);
+                    source.updateIndicator(id, offsets, state.selfPercent);
                 }
-                
-            }
-            else if (state is DashState)
-            {
-                primeSource.updateIndicator(IndicatorType.Dash, offsets);
             }
 
             offsets = offsets.sum(state.GetIndicatorOffsets());
@@ -136,18 +131,17 @@ public class AttackSegment
             triggeredCast = true;
         }
 
-        if (currentState is ActionState)
-        {
-            foreach (SpellSource source in sourcePoints)
+        if (currentState != null) {
+            foreach (int id in currentState.indicatorIds)
             {
-                source.killIndicatorType(IndicatorType.Hit);
+                foreach (SpellSource source in sourcePoints)
+                {
+                    source.killIndicator(id);
+                }
             }
-            
         }
-        else if (currentState is DashState)
-        {
-            primeSource.killIndicatorType(IndicatorType.Dash);
-        }
+        
+
 
         currentState = states[0];
         states.RemoveAt(0);
@@ -186,27 +180,43 @@ public class AttackSegment
                     break;
                 }
             }
+            List<int> indIds = new List<int>();
 
-            if (state is ActionState)
+            if (state is ActionState || (state is DashState && ((DashState)state).isHit))
             {
-                ActionState action = (ActionState)state;
-                HitInstanceData hitData = action.getSource();
-                ShapeData shapeData = action.getShapeData();
+
+                HitInstanceData hitData;
+                ShapeData shapeData;
+                if(state is ActionState)
+                {
+                    ActionState action = (ActionState)state;
+                    hitData = action.getSource();
+                    shapeData = action.getShapeData();
+                }
+                else
+                {
+                    DashState dashState = (DashState)state;
+                    hitData = dashState.getHit();
+                    shapeData = dashState.getShapeData();
+                }
+
                 if (hitData.type == HitType.GroundPlaced)
                 {
                     ((WindState)currentState).setGroundTarget(sourcePoints);
                 }
                 foreach (SpellSource source in sourcePoints)
                 {
-                    source.buildHitIndicator(hitData, shapeData);
+                    indIds.Add(source.buildHitIndicator(hitData, shapeData));
                 }
                 
             }
-            else if (state is DashState)
+            
+            if (state is DashState)
             {
-                primeSource.buildDashIndicator(((DashState)state).getSource());
+                indIds.Add(primeSource.buildDashIndicator(((DashState)state).getSource()));
             }
 
+            state.indicatorIds = indIds.ToArray();
 
             i++;
         }
@@ -241,7 +251,14 @@ public class AttackSegment
             WindState windup = new WindState(mover, seg.windup, false, castData.hardCast);
 
 
-            ActionState hit = new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast, castData.usesRangeForHitbox(seg.hit.type));
+            AttackStageState getHitState()
+            {
+                return seg.hit.type switch
+                {
+                    HitType.DamageDash => new DashState(mover, finalSeg, seg.hit, seg.buff, seg.defense, true),
+                    _ => new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast, castData.usesRange(seg.hit.type)),
+                };
+            }
             finalSeg.hitData = seg.hit;
 
             states.Add(windup);
@@ -251,7 +268,7 @@ public class AttackSegment
                 List<AttackStageState> repeatStates = new List<AttackStageState>();
                 for (int j = 0; j < seg.repeat.repeatCount; j++)
                 {
-                    repeatStates.Add(hit);
+                    repeatStates.Add(getHitState());
                     if (seg.dash != null && seg.dashInside)
                     {
                         if (seg.dashAfter)
@@ -273,7 +290,7 @@ public class AttackSegment
             }
             else
             {
-                effectStates.Add(hit);
+                effectStates.Add(getHitState());
             }
 
             if (seg.dash != null && !seg.dashInside)

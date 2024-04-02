@@ -10,6 +10,7 @@ using static SpellSource;
 public abstract class IndicatorInstance : MonoBehaviour
 {
     public float maxTime = 0;
+    protected float selfPercent = 0;
 
     public IndicatorOffsets currentOffsets;
 
@@ -22,9 +23,10 @@ public abstract class IndicatorInstance : MonoBehaviour
 
     public abstract void setColor(Color color, Color stunning);
 
-    public void setLocalOffsets(IndicatorOffsets offsets)
+    public void setLocalOffsets(IndicatorOffsets offsets, float activePercent)
     {
         currentOffsets = offsets;
+        selfPercent = activePercent;
         if (offsets.time > maxTime)
         {
             maxTime = offsets.time;
@@ -80,7 +82,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         if (transform.parent)
         {
-            transform.rotation = GetComponentInParent<SpellSource>().aimRotation(AimType.Normal);
+            transform.rotation = GetComponentInParent<SpellSource>().aimRotation();
         }
     }
 

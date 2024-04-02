@@ -8,6 +8,7 @@ using static GenerateBuff;
 using static SpellSource;
 using static GenerateDefense;
 using System.Linq;
+using System;
 
 public class ActionState : AttackStageState
 {
@@ -19,9 +20,9 @@ public class ActionState : AttackStageState
 
     AttackSegment segment;
     bool hardCast;
-    bool useRangeForHit;
+    RangeForShape useRangeForHit;
 
-    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, DefenseInstanceData def, bool hardCasted, bool usesRangeForHit) : base(m)
+    public ActionState(UnitMovement m, AttackSegment seg, HitInstanceData data, BuffInstanceData dataB, DefenseInstanceData def, bool hardCasted, RangeForShape usesRangeForHit) : base(m)
     {
         attackData = data;
         buffData = dataB;
@@ -127,7 +128,7 @@ public class ActionState : AttackStageState
 
                 break;
             case HitType.ProjectileExploding:
-                SpawnProjectile(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists);
+                SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists);
                 break;
             case HitType.GroundPlaced:
                 //float radius = GroundRadius(attackData.length, attackData.width);
@@ -136,6 +137,8 @@ public class ActionState : AttackStageState
                 hits = ShapeAttack(sourcePoint, shapeData);
                 //hits = GroundAttack(sourcePoint.transform.position, radius);
                 break;
+            case HitType.DamageDash:
+                throw new NotImplementedException("Dash should use dash");
 
         }
         return hits.Select(h => new HitSource { hit = h, source = sourcePoint }).ToList();

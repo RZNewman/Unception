@@ -55,6 +55,13 @@ public static class StatTypes
             //{Stat.DamageMult, 1.0f },
             }
         },
+        {HitType.ProjectileWave, new Dictionary<Stat, float>(){
+            //{Stat.Length, 0.8f },
+            {Stat.Range, 2 },
+            //{Stat.Width, 0.6f },
+            //{Stat.DamageMult, 1.0f },
+            }
+        },
         {HitType.GroundPlaced, new Dictionary<Stat, float>(){
             //{Stat.Length, 1.3f },
             {Stat.Range, 2 },
@@ -258,6 +265,7 @@ public static class StatTypes
         switch (type)
         {
             case HitType.ProjectileExploding:
+            case HitType.ProjectileWave:
             case HitType.DamageDash:
                 dict.Add(Stat.Range, 20);
                 break;

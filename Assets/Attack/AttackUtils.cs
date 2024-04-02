@@ -130,8 +130,8 @@ public static class AttackUtils
             moveType = MoveMode.Parent;
         }
         Persistent p = instance.GetComponent<Persistent>();
-        p.init(source.sizeCapsule, mover, hitData, buffData, hitList, moveType, dists);
         NetworkServer.Spawn(instance);
+        p.init(source.sizeCapsule, mover, hitData, buffData, hitList, moveType, dists);      
         return instance;
     }
 

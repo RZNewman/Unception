@@ -27,7 +27,8 @@ public class Persistent : NetworkBehaviour
     public GameObject lineVisuals;
     public GameObject circleVisuals;
 
-    public static readonly float BaseProjectileLifetime = 1.5f;
+    public static readonly float ExplodeProjectileLifetime = 1.5f;
+    public static readonly float WaveProjectileLifetime = 2.5f;
 
     float lifetime;
     float birth;
@@ -69,9 +70,17 @@ public class Persistent : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        if (isServer && isProjectile && Time.time > birth + lifetime)
+        if (isServer  && Time.time > birth + lifetime)
         {
-            fireExplode(transform.position + transform.forward * data.hitRadius);
+            if (isProjectileExplode)
+            {
+                fireExplode(transform.position + transform.forward * data.hitRadius);
+            }
+            if (isProjectileWave)
+            {
+                Destroy(gameObject);
+            }
+            
         }
     }
 
@@ -120,11 +129,18 @@ public class Persistent : NetworkBehaviour
 
     }
 
-    bool isProjectile
+    bool isProjectileExplode
     {
         get
         {
             return data.hitDataCaptured.type == HitType.ProjectileExploding;
+        }
+    }
+    bool isProjectileWave
+    {
+        get
+        {
+            return data.hitDataCaptured.type == HitType.ProjectileWave;
         }
     }
     [Server]
@@ -148,31 +164,27 @@ public class Persistent : NetworkBehaviour
         };
         setup();
         
-        if (isProjectile)
+        if (isProjectileExplode || isProjectileWave)
         {
-            lifetime = BaseProjectileLifetime / p.scaleTime();
+            lifetime = isProjectileExplode ? ExplodeProjectileLifetime : WaveProjectileLifetime / p.scaleTime();
             setSpeed(hitD.range / lifetime);
-        }
-        else
-        {
-            
         }
         
     }
 
     void setup()
     {
-        if (!isProjectile)
+        if (isProjectileExplode || isProjectileWave)
         {
-            terrainHit.SetActive(false);
+            terrainHit.transform.localScale = Vector3.one * data.terrainRadius * 2;          
         }
         else
         {
-            terrainHit.transform.localScale = Vector3.one * data.terrainRadius * 2;
+            terrainHit.SetActive(false);
         }
         ShapeData shapeD;
         playerHit.GetComponent<CompoundCollider>().setCallback(onPlayerCollide);
-        if (isProjectile)
+        if (isProjectileExplode)
         {
             shapeD = new ShapeData
             {
@@ -190,6 +202,12 @@ public class Persistent : NetworkBehaviour
                     height = data.hitRadius,
                 }
             };
+            buildCompoundCollider(shapeD);
+            ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
+        }
+        else if (isProjectileWave)
+        {
+            shapeD = getShapeData();
             buildCompoundCollider(shapeD);
             ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }

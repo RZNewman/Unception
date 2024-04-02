@@ -353,7 +353,7 @@ public class AttackSegment
         FloorNormal ground = mover.GetComponent<FloorNormal>();
         UnitEye eye = mover.GetComponentInChildren<UnitEye>();
 
-        float range = hitData.type == HitType.ProjectileExploding ? 0 : hitData.range;
+        float range = hitData.type == HitType.ProjectileExploding || hitData.type == HitType.ProjectileWave ? 0 : hitData.range;
 
         MoveMode moveType = MoveMode.Parent;
         if (location == SourceLocation.World || location == SourceLocation.WorldForward)

@@ -128,6 +128,7 @@ public class ActionState : AttackStageState
 
                 break;
             case HitType.ProjectileExploding:
+            case HitType.ProjectileWave:
                 SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists);
                 break;
             case HitType.GroundPlaced:

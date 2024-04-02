@@ -193,6 +193,7 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
         {
             HitType.Attached => global.ShapeIndPre,
             HitType.ProjectileExploding => global.ProjIndPre,
+            HitType.ProjectileWave => global.ProjIndPre,
             HitType.GroundPlaced => global.ShapeIndPre,
             HitType.DamageDash => global.ShapeIndPre,
             _ => global.LineIndPre

@@ -346,11 +346,11 @@ public class Persistent : NetworkBehaviour
     {
         if (isServer)
         {
-            return AttackUtils.getShapeData(hitData.shape, data.sizeC, hitData.range, hitData.length, hitData.width, RangeForShape.None);
+            return AttackUtils.getShapeData(hitData.shape, data.sizeC, hitData.range, hitData.length, hitData.width, usesRangeForHitbox(hitData.type));
         }
         else
         {
-            return AttackUtils.getShapeData(data.hitDataCaptured.shape, data.sizeC, data.hitDataCaptured.range, data.hitDataCaptured.length, data.hitDataCaptured.width, RangeForShape.None);
+            return AttackUtils.getShapeData(data.hitDataCaptured.shape, data.sizeC, data.hitDataCaptured.range, data.hitDataCaptured.length, data.hitDataCaptured.width, usesRangeForHitbox(data.hitDataCaptured.type));
         }
         
     }

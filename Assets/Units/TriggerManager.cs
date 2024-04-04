@@ -98,8 +98,11 @@ public class TriggerManager : NetworkBehaviour
         Action<CastingLocationData> cast = abilityCallback(a);
         return (GetHitEventData data) =>
         {
-            location.triggeredPosition = data.other.transform.position;
-            cast(location);
+            if (data.other)
+            {
+                location.triggeredPosition = data.other.transform.position;
+                cast(location);
+            }          
         };
     }
 

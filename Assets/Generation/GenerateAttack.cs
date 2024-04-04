@@ -197,7 +197,7 @@ public static class GenerateAttack
             if (hit.exposePercent > 0)
             {
                 percent = Mathf.Round(hit.exposePercent * 100);
-                shape += " Dot " + percent + "%";
+                shape += " Expose " + percent + "%";
             }
 
             if (dash != null)
@@ -263,7 +263,7 @@ public static class GenerateAttack
         public float damage(float power)
         {
 
-            return hit.getHarmValues(power, false).totalDamage * (repeat == null ? 1 : repeat.repeatCount);
+            return hit.getHarmValues(power, new AttackUtils.KnockBackVectors()).totalDamage * (repeat == null ? 1 : repeat.repeatCount);
 
         }
         public float dps(float power)

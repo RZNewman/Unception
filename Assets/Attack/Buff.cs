@@ -5,12 +5,13 @@ using UnityEngine;
 using static EventManager;
 using static GenerateAttack;
 using static GenerateBuff;
+using static GenerateHit.HitInstanceData;
 using static StatTypes;
 
 public class Buff : NetworkBehaviour
 {
     [SyncVar]
-    float duration;
+    float durationRemaining;
 
     [SyncVar]
     float durationMax;
@@ -30,11 +31,13 @@ public class Buff : NetworkBehaviour
     [SyncVar]
     float regen;
 
+    [SyncVar]
+    HarmValues harm;
+
     BuffMode mode = BuffMode.Timed;
 
     float timeScale;
     EventManager events;
-    Health health;
     public float relativeScale(float targetTimeScale)
     {
         return timeScale / targetTimeScale;
@@ -44,15 +47,15 @@ public class Buff : NetworkBehaviour
     {
         get
         {
-            return duration;
+            return durationRemaining;
         }
     }
 
-    public float progressPercent
+    public float progressPercentCountdown
     {
         get
         {
-            return duration / durationMax;
+            return durationRemaining / durationMax;
         }
     }
     public string charges
@@ -74,7 +77,6 @@ public class Buff : NetworkBehaviour
     {
         GetComponent<ClientAdoption>().trySetAdopted();
         transform.parent.GetComponent<BuffManager>().addBuff(this);
-        health = GetComponentInParent<Health>();
         events = transform.GetComponentInParent<EventManager>();
         events.TickEvent += Tick;
         if (mode == BuffMode.Cast)
@@ -96,11 +98,12 @@ public class Buff : NetworkBehaviour
         }
     }
 
-    public float valueRemaining
+    public float damageRemaining
     {
         get
         {
-            return value * (1-progressPercent);
+            //Debug.Log(harm.totalDamage + " - " + progressPercent);
+            return harm.totalDamage * progressPercentCountdown;
         }
     }
 
@@ -141,7 +144,7 @@ public class Buff : NetworkBehaviour
     public void setup(BuffInstanceData buff)
     {
         durationMax = buff.durration;
-        duration = buff.durration;
+        durationRemaining = buff.durration;
         timeScale = buff.scales.time;
         castCount = buff.castCount;
         slot = buff.slot;
@@ -151,15 +154,24 @@ public class Buff : NetworkBehaviour
         }
     }
 
-    public void setup(BuffMode buffMode, Scales scales, float durationBegin, float valueBegin, float regenBegin = 0)
+    public void setupShield(Scales scales, float durationBegin, float valueBegin, float regenBegin = 0)
     {
         durationMax = durationBegin;
-        duration = durationBegin;
+        durationRemaining = durationBegin;
         timeScale = scales.time;
-        mode = buffMode;
+        mode = BuffMode.Shield;
         valueMax = valueBegin;
         value = valueBegin;
         regen = regenBegin;
+    }
+
+    public void setupDot(Scales scales, float durationBegin, HarmValues harmV)
+    {
+        durationMax = durationBegin;
+        durationRemaining = durationBegin;
+        timeScale = scales.time;
+        mode = BuffMode.Dot;
+        harm = harmV;
     }
 
     // Update is called once per frame
@@ -170,9 +182,12 @@ public class Buff : NetworkBehaviour
             switch (mode)
             {
                 case BuffMode.Dot:
-                    float timeThisTick = Mathf.Min(duration, Time.fixedDeltaTime);
-                    float damageThisTick = timeThisTick * value/durationMax;
-                    health.takeDamageDrain(damageThisTick);
+                    float timeThisTick = Mathf.Min(durationRemaining, Time.fixedDeltaTime);
+                    HarmValues harmThisTick = harm.tickPortion( timeThisTick / durationMax);
+                    events.fireHit(new GetHitEventData()
+                    {
+                        harm = harmThisTick,
+                    });
                     break;
                 case BuffMode.Shield:
                     value += regen * Time.fixedDeltaTime;
@@ -180,14 +195,10 @@ public class Buff : NetworkBehaviour
                     break;
             }
         }
-        duration -= Time.fixedDeltaTime;
+        durationRemaining -= Time.fixedDeltaTime;
         if (isServer)
         {
-            if (duration <= 0 || (mode == BuffMode.Cast && castCount <= 0))
-            {
-                Destroy(gameObject);
-            }
-            if (mode == BuffMode.Expose && value <= 0)
+            if (durationRemaining <= 0 || (mode == BuffMode.Cast && castCount <= 0))
             {
                 Destroy(gameObject);
             }

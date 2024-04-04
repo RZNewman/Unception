@@ -124,8 +124,12 @@ public class Combat : NetworkBehaviour
     }
     void onHit(GetHitEventData data)
     {
-        lastUnitHitBy = data.other;
-        setFighting(data.other);
+        if (data.other)
+        {
+            lastUnitHitBy = data.other;
+            setFighting(data.other);
+        }
+        
     }
 
     public void setHitBy(GameObject hitter)

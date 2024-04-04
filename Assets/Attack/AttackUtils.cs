@@ -30,22 +30,27 @@ public static class AttackUtils
         public Vector3 center;
         public Vector3 direction;
     }
-    public static bool hit(GameObject other, UnitMovement mover, HitInstanceData hitData, uint team, float power, KnockBackVectors knockbackData, HitList hitList)
+    public static bool hit(GameObject other, UnitMovement mover, HarmPortions harm, uint team, HitList hitList)
     {
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team && hitList.tryAddHit(other))
         {
-            UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
-            HarmValues harm = hitData.getHarmValues(power, otherMover && otherMover.isIncapacitated);
-            harm.knockbackData = knockbackData;
-            if (mover)
-            {
+            EventManager otherEvents = other.GetComponentInParent<EventManager>();
 
-                other.GetComponentInParent<EventManager>().fireHit(new GetHitEventData
+            otherEvents.fireHit(new GetHitEventData
+            {
+                other = mover?.gameObject,
+                harm = harm.instant,
+            });
+            if (harm.OverTime.HasValue)
+            {
+                otherEvents.fireApply(new ApplyDotEventData
                 {
-                    other = mover.gameObject,
-                    harm = harm,
+                    other = mover?.gameObject,
+                    harm = harm.OverTime.Value,
+                    time = harm.time,
                 });
             }
+            
 
             return true;
         }
@@ -85,12 +90,20 @@ public static class AttackUtils
         NetworkServer.Spawn(instance);
     }
 
-    public static void SpawnBuff(Transform target, BuffMode buffMode, Scales scales, float duration, float value, float regen = 0)
+    public static void SpawnShield(Transform target,  Scales scales, float duration, float value, float regen = 0)
     {
         GameObject prefab = GlobalPrefab.gPre.BuffPre;
         GameObject instance = GameObject.Instantiate(prefab, target);
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
-        instance.GetComponent<Buff>().setup(buffMode, scales, duration, value, regen);
+        instance.GetComponent<Buff>().setupShield(scales, duration, value, regen);
+        NetworkServer.Spawn(instance);
+    }
+    public static void SpawnDot(Transform target, Scales scales, float duration, HarmValues harm)
+    {
+        GameObject prefab = GlobalPrefab.gPre.BuffPre;
+        GameObject instance = GameObject.Instantiate(prefab, target);
+        instance.GetComponent<ClientAdoption>().parent = target.gameObject;
+        instance.GetComponent<Buff>().setupDot(scales, duration, harm);
         NetworkServer.Spawn(instance);
     }
 

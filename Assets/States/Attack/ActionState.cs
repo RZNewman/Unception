@@ -9,6 +9,7 @@ using static SpellSource;
 using static GenerateDefense;
 using System.Linq;
 using System;
+using static GenerateHit.HitInstanceData;
 
 public class ActionState : AttackStageState
 {
@@ -62,14 +63,16 @@ public class ActionState : AttackStageState
 
         foreach (HitSource hitSource in hits)
         {
-            if (hit(hitSource.hit, mover, attackData,
+            float power = mover.GetComponent<Power>().power;
+            HarmPortions harm = attackData.getHarmValues(power, new KnockBackVectors
+            {
+                center = hitSource.source.transform.position,
+                direction = hitSource.source.transform.forward
+            });
+            if (hit(hitSource.hit, mover,
+                harm,
                 mover.GetComponent<TeamOwnership>().getTeam(),
-                mover.GetComponent<Power>().power,
-                new KnockBackVectors
-                {
-                    center = hitSource.source.transform.position,
-                    direction = hitSource.source.transform.forward
-                }, hitList))
+                hitList))
             {
                 enemyHits.Add(hitSource.hit);
             }
@@ -100,7 +103,7 @@ public class ActionState : AttackStageState
 
         if (defData != null)
         {
-            SpawnBuff(mover.transform, BuffMode.Shield, defData.scales, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
+            SpawnShield(mover.transform, defData.scales, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
         }
     }
 

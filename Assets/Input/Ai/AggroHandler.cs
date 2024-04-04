@@ -118,8 +118,12 @@ public class AggroHandler : MonoBehaviour
 
     void aggroWhenHit(GetHitEventData data)
     {
-        GameObject other = data.other.GetComponentInChildren<Size>().gameObject;
-        addAggro(other);
+        if (data.other)
+        {
+            GameObject otherChild = data.other.GetComponentInChildren<Size>().gameObject;
+            addAggro(otherChild);
+        }
+        
     }
 
     public void addAggro(GameObject target)

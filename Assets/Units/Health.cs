@@ -7,6 +7,7 @@ using UnityEngine;
 using static EventManager;
 using static GenerateBuff;
 using static AttackUtils;
+using static GenerateHit;
 
 public class Health : NetworkBehaviour, BarValue
 {
@@ -16,9 +17,14 @@ public class Health : NetworkBehaviour, BarValue
     [SyncVar]
     float currentHealth;
 
+    [SyncVar]
+    float exposedHealth;
+
     Combat combat;
     GameObject damageDisplayPre;
     GlobalPlayer gp;
+    Power power;
+    UnitMovement mover;
 
     Dictionary<BuffMode, List<Buff>> buffReferences = new Dictionary<BuffMode, List<Buff>>();
     // Start is called before the first frame update
@@ -28,9 +34,12 @@ public class Health : NetworkBehaviour, BarValue
         combat = GetComponent<Combat>();
         damageDisplayPre = FindObjectOfType<GlobalPrefab>().DamageNumberPre;
         gp = FindObjectOfType<GlobalPlayer>();
+        mover = GetComponent<UnitMovement>();
+        power = GetComponent<Power>();
+
         GetComponent<EventManager>().HitEvent += OnGetHit;
+        GetComponent<EventManager>().ApplyEvent += OnApply;
         buffReferences[BuffMode.Dot] = new List<Buff>();
-        buffReferences[BuffMode.Expose] = new List<Buff>();
         buffReferences[BuffMode.Shield] = new List<Buff>();
 
         if (isServer)
@@ -58,7 +67,7 @@ public class Health : NetworkBehaviour, BarValue
     }
 
     [Server]
-    public void takeDamageDrain(float damage)
+    public void takeDamageNoDisplay(float damage)
     {
         takeDamageShielded(damage);
     }
@@ -120,13 +129,17 @@ public class Health : NetworkBehaviour, BarValue
                 //healed in Pack heal now
                 //currentHealth = maxHealth;
                 currentHealth = Mathf.Max(currentHealth, 1);
+                exposedHealth = 0;
                 clearReferences(BuffMode.Dot);
-                clearReferences(BuffMode.Expose);
             }
             if (currentHealth <= 0)
             {
                 GetComponent<LifeManager>().die();
 
+            }
+            if(exposedHealth > 0)
+            {
+                exposedHealth -= maxHealth * 0.03f * Time.fixedDeltaTime * power.scaleTime();
             }
         }
 
@@ -156,43 +169,47 @@ public class Health : NetworkBehaviour, BarValue
     {
         if (isServer)
         {
-            buffReferences[BuffMode.Expose].Sort((a, b) => a.remainingDuration.CompareTo(b.remainingDuration));
-            float incDamage = data.harm.instant;
+            float damageMult = 1;
+            if(mover && mover.isIncapacitated) { damageMult = 1.1f; }
 
-            float addedDamage = 0;
-            for (int i = 0; i < buffReferences[BuffMode.Expose].Count; i++)
-            {
-                Buff ex = buffReferences[BuffMode.Expose][i];
-                float exposeValue = Mathf.Min(incDamage, ex.valueCurrent);
-                ex.changeValue(-exposeValue);
-                addedDamage += exposeValue;
-                incDamage -= exposeValue;
+            data.harm.multDamage(damageMult);
+            float incDamage = data.harm.damage;
 
-                if (incDamage <= 0)
-                {
-                    break;
-                }
-            }
-            takeDamageDrain(addedDamage);
+            float addedDamage = Mathf.Min(incDamage, exposedHealth);
+            exposedHealth -= addedDamage;
+            takeDamageNoDisplay(addedDamage);
 
-            if (data.harm.dot > 0)
+
+
+
+            float exposeDamage = 0;
+            if (data.harm.exposePercent > 0)
             {
-                SpawnBuff(transform, BuffMode.Dot, data.harm.scales, data.harm.dotTime, data.harm.dot);
+                exposeDamage = incDamage * data.harm.exposePercent;
+                incDamage -= exposeDamage;
+                exposeDamage *= EXPOSE_MULTIPLIER;
             }
-            takeDamageHit(data.harm.instant);
-            if (data.harm.expose > 0)
-            {
-                SpawnBuff(transform, BuffMode.Expose, data.harm.scales, 10f / data.harm.scales.time, data.harm.expose);
-            }
+            exposedHealth += exposeDamage;
+
+            takeDamageHit(incDamage);
+        }
+    }
+    void OnApply(ApplyDotEventData data)
+    {
+        if (isServer)
+        {
+
+            SpawnDot(transform, data.harm.scales, data.time, data.harm);
+
         }
     }
 
 
     public BarValue.BarData getBarFill()
     {
-        float riskDot = buffReferences[BuffMode.Dot].Sum(b => b.valueRemaining);
+        float riskDot = buffReferences[BuffMode.Dot].Sum(b => b.damageRemaining);
         riskDot = Mathf.Min(riskDot, currentHealth);
-        float riskExpose = buffReferences[BuffMode.Expose].Sum(b => b.valueCurrent);
+        float riskExpose = exposedHealth;
         riskExpose = Mathf.Min(riskExpose, currentHealth - riskDot);
         float shield = buffReferences[BuffMode.Shield].Sum(b => b.valueCurrent);
 

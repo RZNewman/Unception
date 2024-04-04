@@ -19,6 +19,7 @@ using static UnityEngine.UI.Image;
 using System.Linq;
 using System;
 using static SpellSource;
+using static GenerateHit.HitInstanceData;
 
 public class Persistent : NetworkBehaviour
 {
@@ -281,7 +282,12 @@ public class Persistent : NetworkBehaviour
                         fireExplode(transform.position + offset);
                         break;
                     default:
-                        if (hit(other.gameObject, mover, hitData, data.team, data.power, new KnockBackVectors { center = transform.position, direction = transform.forward },hitList))
+                        HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors { 
+                            center = transform.position, 
+                            direction = transform.forward 
+                        });
+
+                        if (hit(other.gameObject, mover, harm, data.team ,hitList))
                         {
                             if (buffData != null && buffData.type == BuffType.Debuff)
                             {
@@ -309,16 +315,16 @@ public class Persistent : NetworkBehaviour
         GroundResult calc = FloorNormal.getGroundNormal(contact, data.sizeC);
         Quaternion aim = Quaternion.LookRotation(transform.forward, calc.normal);
         hits = ShapeAttack(aim, contact, getShapeData());
+        HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors
+        {
+            center = contact,
+            direction = transform.forward
+        });
+
         foreach (GameObject o in hits)
         {
-            if (hit(o, mover, hitData,
-                data.team,
-                data.power,
-                new KnockBackVectors
-                {
-                    center = contact,
-                    direction = transform.forward
-                }, hitList))
+            if (hit(o, mover, harm,
+                data.team, hitList))
             {
                 enemyHits.Add(o);
             }

@@ -9,9 +9,12 @@ using static AttackUtils;
 using static StatTypes;
 using static UnityEngine.Rendering.HableCurve;
 using static Size;
+using static GenerateHit.HitInstanceData.HarmValues;
+
 
 public static class GenerateHit
 {
+    public static readonly float EXPOSE_MULTIPLIER = 1.2f;
     public enum HitType : byte
     {
         Attached,
@@ -50,6 +53,7 @@ public static class GenerateHit
         public float multipleArc;
         public float dotPercent;
         public float dotTime;
+        public SplitMode splitMode;
         public float exposePercent;
 
         public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
@@ -91,6 +95,7 @@ public static class GenerateHit
                 dotTime = dotBaseTime / scalesStart.time,
                 dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
                 exposePercent = exposePercent,
+                splitMode =splitMode,
 
                 multiple = multiple,
                 multipleArcSpacing = multipleArc.asRange(15, 35),
@@ -114,6 +119,7 @@ public static class GenerateHit
         public float dotPercent;
         public float dotTime;
         public float dotAddedMult;
+        public SplitMode splitMode;
         public float exposePercent;
         public int multiple;
         public float multipleArcSpacing;
@@ -198,12 +204,32 @@ public static class GenerateHit
             }
         }
 
+        
+
+        public struct HarmPortions
+        {
+            public HarmValues instant;
+            public HarmValues? OverTime;
+            public float time;
+
+            public float totalDamage
+            {
+                get
+                {
+                    return instant.totalDamage + (OverTime.HasValue ? OverTime.Value.totalDamage : 0);
+                }
+            }
+
+            public void multDamage(float mult)
+            {
+               instant.multDamage(mult);
+                OverTime?.multDamage(mult);
+            }
+        }
         public struct HarmValues
         {
-            public float instant;
-            public float dot;
-            public float dotTime;
-            public float expose;
+            public float damage;
+            public float exposePercent;
 
             public float stagger;
             public float mezmerize;
@@ -220,48 +246,99 @@ public static class GenerateHit
             {
                 get
                 {
-                    return instant + dot + expose;
+                    return (damage * exposePercent * EXPOSE_MULTIPLIER) + (damage * (1 - exposePercent));
                 }
             }
+
+            public void multDamage(float mult)
+            {
+                damage *= mult;
+            }
+
+            public void multForSplit(float damageMult, float globalMult)
+            {
+                damage *= damageMult;
+
+                stagger *= globalMult;
+                mezmerize *= globalMult;
+                knockback *= globalMult;
+                knockup *= globalMult;
+
+                powerByStrength *= globalMult;
+            }
+
+            public HarmValues tickPortion(float percent)
+            {
+                return new HarmValues
+                {
+                    damage = damage *percent,
+                    stagger = stagger*percent,
+                    mezmerize = mezmerize*percent,
+                    knockback = knockback * percent,
+                    knockup = knockup * percent,
+
+                    powerByStrength = powerByStrength*percent,
+                    
+                    exposePercent =exposePercent,
+                    knockbackData = knockbackData,
+                    knockDir = knockDir,
+                    knockType = knockType,
+                    scales = scales,
+                };
+            }
+
+
+            public enum SplitMode
+            {
+                Damage,
+                All
+            }
+
+          
         }
-        public HarmValues getHarmValues(float power, bool isStunned)
+        HarmValues baseHarmValues(float power, KnockBackVectors knockVecs)
         {
             float baseDamage = getStat(Stat.DamageMult) * Power.damageFalloff(powerAtGen, power);
-
-            if (isStunned)
-            {
-                baseDamage *= 1.1f;
-            }
-            float dotDamage = 0;
-            if (dotPercent > 0)
-            {
-                dotDamage = baseDamage * dotPercent;
-                baseDamage -= dotDamage;
-                dotDamage *= 1 + dotAddedMult;
-            }
-            float exposeDamage = 0;
-            if (exposePercent > 0)
-            {
-                exposeDamage = baseDamage * exposePercent;
-                baseDamage -= exposeDamage;
-                exposeDamage *= 1 + 0.2f;
-            }
             return new HarmValues
             {
-                instant = baseDamage,
-                dot = dotDamage,
-                dotTime = dotTime,
-                expose = exposeDamage,
+                damage = baseDamage,
+
                 stagger = stagger,
                 mezmerize = mezmerize,
-                powerByStrength = powerByStrength,
-                scales = scales,
                 knockback = knockback,
                 knockup = knockup,
+
+                powerByStrength = powerByStrength,
+
+                exposePercent = exposePercent,
+                scales = scales,
                 knockType = knockBackType,
                 knockDir = knockBackDirection,
-                //knockbackData is set Later
+                knockbackData = knockVecs,
 
+            };
+        }
+        public HarmPortions getHarmValues(float power, KnockBackVectors knockVecs)
+        {   
+
+            float instantPercent = 1 - dotPercent;
+            float globalInstantPercent = splitMode == SplitMode.All ? instantPercent : 1;
+            HarmValues instant = baseHarmValues(power, knockVecs);
+            instant.multForSplit(instantPercent, globalInstantPercent);
+            HarmValues? dotHarm = null;
+            if (dotPercent > 0)
+            {
+                float overTimePercent = dotPercent *( 1 + dotAddedMult);
+                float globalOverTimePercent = splitMode == SplitMode.All ? overTimePercent : 0;
+                dotHarm = baseHarmValues(power, knockVecs);
+                dotHarm.Value.multForSplit(overTimePercent, globalOverTimePercent);
+            }
+
+            return new HarmPortions
+            {
+                instant = instant,
+                time = dotTime,
+                OverTime = dotHarm,
             };
         }
     }
@@ -383,12 +460,21 @@ public static class GenerateHit
 
         float dotPercent = 0;
         float exposePercent = 0;
+        SplitMode splitMode = SplitMode.Damage;
         r = Random.value;
         if (r < 0.2f)
         {
             dotPercent = Random.value.asRange(0.25f, 1f);
+            r = Random.value;
+            if(r < 0.2f)
+            {
+                splitMode = SplitMode.All;
+            }
         }
-        else if (r < 0.35f)
+
+
+        r = Random.value;
+        if (r < 0.1f)
         {
             exposePercent = Random.value.asRange(0.25f, 0.6f);
         }
@@ -428,6 +514,7 @@ public static class GenerateHit
         hit.dotPercent = dotPercent;
         hit.dotTime = GaussRandomDecline();
         hit.exposePercent = exposePercent;
+        hit.splitMode = splitMode;
 
         return hit;
 

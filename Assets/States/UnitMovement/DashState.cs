@@ -90,7 +90,7 @@ public class DashState : AttackStageState
 
             if (defData != null)
             {
-                SpawnBuff(mover.transform, BuffMode.Shield, defData.scales, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
+                SpawnShield(mover.transform, defData.scales, defData.duration, defData.shield(mover.GetComponent<Power>().power), defData.regen(mover.GetComponent<Power>().power));
             }
         }
     }

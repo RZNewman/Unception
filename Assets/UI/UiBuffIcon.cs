@@ -37,7 +37,7 @@ public class UiBuffIcon : MonoBehaviour
     {
         if (source)
         {
-            duration.fillAmount = source.progressPercent;
+            duration.fillAmount = source.progressPercentCountdown;
             charges.text = source.charges;
         }
     }

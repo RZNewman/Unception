@@ -11,6 +11,13 @@ public class EventManager : MonoBehaviour
         public HarmValues harm;
     }
 
+    public struct ApplyDotEventData
+    {
+        public GameObject other;
+        public HarmValues harm;
+        public float time;
+    }
+
     public struct AggroEventData
     {
         public GameObject targetCollider;
@@ -19,6 +26,7 @@ public class EventManager : MonoBehaviour
 
     public delegate void OnDeath(bool natural);
     public delegate void OnHit(GetHitEventData data);
+    public delegate void OnApplyDot(ApplyDotEventData data);
     public delegate void OnCast(Ability ability);
     public delegate void OnTransition();
     public delegate void OnTick();
@@ -29,6 +37,7 @@ public class EventManager : MonoBehaviour
 
     event OnDeath DeathEvent;
     public event OnHit HitEvent;
+    public event OnApplyDot ApplyEvent;
     public event OnCast CastEvent;
     public event OnTransition TransitionEvent;
     public event OnTick TickEvent;
@@ -62,6 +71,10 @@ public class EventManager : MonoBehaviour
         HitEvent?.Invoke(data);
     }
 
+    public void fireApply(ApplyDotEventData data)
+    {
+        ApplyEvent?.Invoke(data);
+    }
 
     public void fireCast(Ability a)
     {

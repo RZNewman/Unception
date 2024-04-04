@@ -86,7 +86,10 @@ public class Breakable : NetworkBehaviour, TeamOwnership
 
     void onHit(GetHitEventData data)
     {
-        data.other.GetComponent<Reward>().recieveReward(r);
+        if (data.other)
+        {
+            data.other.GetComponent<Reward>().recieveReward(r);
+        }
         life.die();
     }
 

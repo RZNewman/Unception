@@ -21,9 +21,8 @@ public static class GenerateBuff
     {
         Timed,
         Cast,
-        //Not used in generation, but used by Dot, Expose, and Shield
+        //Not used in generation, but used by Dot and Shield
         Dot,
-        Expose,
         Shield,
     }
     public class BuffGenerationData : GenerationData

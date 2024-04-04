@@ -34,7 +34,6 @@ public class BuffManager : NetworkBehaviour
             switch (b.buffMode)
             {
                 case BuffMode.Dot:
-                case BuffMode.Expose:
                 case BuffMode.Shield:
                     GetComponent<Health>().addReference(b);
                     break;
@@ -55,7 +54,6 @@ public class BuffManager : NetworkBehaviour
             switch (b.buffMode)
             {
                 case BuffMode.Dot:
-                case BuffMode.Expose:
                 case BuffMode.Shield:
                     GetComponent<Health>().removeReference(b);
                     break;

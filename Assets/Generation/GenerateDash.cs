@@ -69,7 +69,9 @@ public static class GenerateDash
 
         public float speed
         {
-            get { return speedFlat *  dynamicStrength * castSpeedMultiplier; }
+            get {
+                return speedFlat *  dynamicStrength * castSpeedMultiplier; 
+            }
         }
         public float distance
         {

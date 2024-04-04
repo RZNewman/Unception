@@ -2,9 +2,11 @@ using Mirror;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using static EventManager;
 using static GenerateBuff;
+using static AttackUtils;
 
 public class Health : NetworkBehaviour, BarValue
 {
@@ -49,7 +51,7 @@ public class Health : NetworkBehaviour, BarValue
     }
 
     [Server]
-    public void takeDamageHit(float damage)
+    void takeDamageHit(float damage)
     {
         takeDamageShielded(damage);
         RpcDisplayDamage(damage);
@@ -155,7 +157,7 @@ public class Health : NetworkBehaviour, BarValue
         if (isServer)
         {
             buffReferences[BuffMode.Expose].Sort((a, b) => a.remainingDuration.CompareTo(b.remainingDuration));
-            float incDamage = data.damage;
+            float incDamage = data.harm.instant;
 
             float addedDamage = 0;
             for (int i = 0; i < buffReferences[BuffMode.Expose].Count; i++)
@@ -172,13 +174,23 @@ public class Health : NetworkBehaviour, BarValue
                 }
             }
             takeDamageDrain(addedDamage);
+
+            if (data.harm.dot > 0)
+            {
+                SpawnBuff(transform, BuffMode.Dot, data.harm.scales, data.harm.dotTime, data.harm.dot);
+            }
+            takeDamageHit(data.harm.instant);
+            if (data.harm.expose > 0)
+            {
+                SpawnBuff(transform, BuffMode.Expose, data.harm.scales, 10f / data.harm.scales.time, data.harm.expose);
+            }
         }
     }
 
 
     public BarValue.BarData getBarFill()
     {
-        float riskDot = buffReferences[BuffMode.Dot].Sum(b => b.valueByTime);
+        float riskDot = buffReferences[BuffMode.Dot].Sum(b => b.valueRemaining);
         riskDot = Mathf.Min(riskDot, currentHealth);
         float riskExpose = buffReferences[BuffMode.Expose].Sum(b => b.valueCurrent);
         riskExpose = Mathf.Min(riskExpose, currentHealth - riskDot);

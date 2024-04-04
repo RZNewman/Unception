@@ -25,6 +25,7 @@ public class Mezmerize : NetworkBehaviour, BarValue
     UnitProperties props;
     Power power;
     Combat combat;
+    Knockdown kDown;
     public bool isMezmerized
     {
         get
@@ -47,6 +48,7 @@ public class Mezmerize : NetworkBehaviour, BarValue
         props = GetComponent<UnitPropsHolder>().props;
         power = GetComponent<Power>();
         combat = GetComponent<Combat>();
+        kDown = GetComponent<Knockdown>();
 
         currentFocus = 0;
         maxFocus = props.maxFocus;
@@ -63,9 +65,16 @@ public class Mezmerize : NetworkBehaviour, BarValue
     {
         if (mezmerized)
         {
-            float relativeStrength = data.powerByStrength / power.power;
+            float relativeStrength = data.harm.powerByStrength / power.power;
             currentFocus -= maxFocus * 0.1f * relativeStrength;
         }
+
+        float focusHit = data.harm.mezmerize;
+        if (kDown && kDown.knockedDown)
+        {
+            focusHit *= 1.1f;
+        }
+        takeFocus(focusHit);
     }
 
 
@@ -88,7 +97,7 @@ public class Mezmerize : NetworkBehaviour, BarValue
     }
 
 
-    public void takeFocus(float damage)
+    void takeFocus(float damage)
     {
 
 

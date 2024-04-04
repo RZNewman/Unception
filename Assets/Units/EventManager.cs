@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GenerateHit.HitInstanceData;
 
 public class EventManager : MonoBehaviour
 {
     public struct GetHitEventData
     {
         public GameObject other;
-        public float powerByStrength;
-        public float damage;
+        public HarmValues harm;
     }
 
     public struct AggroEventData

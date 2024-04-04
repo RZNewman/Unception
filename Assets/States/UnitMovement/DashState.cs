@@ -31,16 +31,21 @@ public class DashState : AttackStageState
         isAttack = attack;
         inpSnapshot = UnitInput.zero();
     }
-    static readonly float dashHitSpeed = 0.8f;
-    public DashState(UnitMovement m, AttackSegment seg, HitInstanceData h, BuffInstanceData dataB, DefenseInstanceData def, bool attack) : base(m, dashHitSpeed)
+    static readonly float dashHitTime = 0.8f;
+    public DashState(UnitMovement m, AttackSegment seg, HitInstanceData h, BuffInstanceData dataB, DefenseInstanceData def, bool attack) : base(m, dashHitTime / h.scales.time)
     {
         opts = new DashInstanceData
         {
             distanceFlat = h.range,
-            speedFlat = h.range / dashHitSpeed,
+            speedFlat = h.range / (dashHitTime /h.scales.time),
             control = DashControl.Forward,
             endMomentum = DashEndMomentum.Walk,
             stream = h.stream,
+            bakedStrength = h.bakedStrength,
+            percentOfEffect = h.percentOfEffect,
+            powerAtGen = h.powerAtGen,
+            rootInstance = h.rootInstance,
+            scales = h.scales,
         };
         hitData = h;
         buffData = dataB;
@@ -114,6 +119,7 @@ public class DashState : AttackStageState
 
     public override StateTransition transition()
     {
+
         if (isAttack)
         {
             return base.transition();

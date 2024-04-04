@@ -35,80 +35,16 @@ public static class AttackUtils
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team && hitList.tryAddHit(other))
         {
             UnitMovement otherMover = other.GetComponentInParent<UnitMovement>();
-            DamageValues damage = hitData.damage(power, otherMover && otherMover.isIncapacitated);
+            HarmValues harm = hitData.getHarmValues(power, otherMover && otherMover.isIncapacitated);
+            harm.knockbackData = knockbackData;
             if (mover)
             {
 
                 other.GetComponentInParent<EventManager>().fireHit(new GetHitEventData
                 {
                     other = mover.gameObject,
-                    powerByStrength = hitData.powerByStrength,
-                    damage = damage.instant,
+                    harm = harm,
                 });
-            }
-
-            Health h = other.GetComponentInParent<Health>();
-            Posture p = other.GetComponentInParent<Posture>();
-            Mezmerize mez = other.GetComponentInParent<Mezmerize>();
-            Knockdown kDown = other.GetComponentInParent<Knockdown>();
-            if (h)
-            {
-
-                if (damage.dot > 0)
-                {
-                    SpawnBuff(otherMover.transform, BuffMode.Dot, hitData.scales, damage.dotTime, damage.dot);
-                }
-                h.takeDamageHit(damage.instant);
-                if (damage.expose > 0)
-                {
-                    SpawnBuff(otherMover.transform, BuffMode.Expose, hitData.scales, 10f / hitData.scales.time, damage.expose);
-                }
-            }
-
-            if (p)
-            {
-                float stagger = hitData.stagger;
-                if (mez && mez.isMezmerized)
-                {
-                    stagger *= 1.1f;
-                }
-                p.takeStagger(stagger);
-            }
-            if (mez)
-            {
-                float focusHit = hitData.mezmerize;
-                if (kDown && kDown.knockedDown)
-                {
-                    focusHit *= 1.1f;
-                }
-                mez.takeFocus(focusHit);
-            }
-
-
-            if (otherMover)
-            {
-                Vector3 knockBackDir;
-                switch (hitData.knockBackType)
-                {
-                    case KnockBackType.inDirection:
-                        knockBackDir = knockbackData.direction;
-                        break;
-                    case KnockBackType.fromCenter:
-                        Vector3 dir = other.transform.position - knockbackData.center;
-                        dir.y = 0;
-                        dir.Normalize();
-                        knockBackDir = dir;
-                        break;
-                    default:
-                        throw new System.Exception("No kb type");
-                }
-                switch (hitData.knockBackDirection)
-                {
-                    case KnockBackDirection.Backward:
-                        knockBackDir *= -1;
-                        break;
-                }
-                otherMover.knock(knockBackDir, hitData.knockback, hitData.knockup);
             }
 
             return true;

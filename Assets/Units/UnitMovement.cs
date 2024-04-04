@@ -4,7 +4,9 @@ using UnityEngine;
 using static AnimationController;
 using static AttackUtils;
 using static DashState;
+using static EventManager;
 using static GenerateDash;
+using static GenerateHit;
 using static StatTypes;
 using static UnitControl;
 using static Utils;
@@ -62,6 +64,7 @@ public class UnitMovement : NetworkBehaviour
         events.TransitionEvent += (transition);
         events.TickEvent += (tick);
         events.CastEvent += cast;
+        events.HitEvent += getHit;
     }
 
     void syncLookAngle(float oldAngle, float newAngle)
@@ -117,6 +120,34 @@ public class UnitMovement : NetworkBehaviour
             movement.transition();
         }
 
+    }
+    void getHit(GetHitEventData data)
+    {
+        if (isServer)
+        {
+            Vector3 knockBackDir;
+            switch (data.harm.knockType)
+            {
+                case KnockBackType.inDirection:
+                    knockBackDir = data.harm.knockbackData.direction;
+                    break;
+                case KnockBackType.fromCenter:
+                    Vector3 dir = transform.position - data.harm.knockbackData.center;
+                    dir.y = 0;
+                    dir.Normalize();
+                    knockBackDir = dir;
+                    break;
+                default:
+                    throw new System.Exception("No kb type");
+            }
+            switch (data.harm.knockDir)
+            {
+                case KnockBackDirection.Backward:
+                    knockBackDir *= -1;
+                    break;
+            }
+            knock(knockBackDir, data.harm.knockback, data.harm.knockup);
+        }
     }
 
     void cast(Ability a)
@@ -305,7 +336,7 @@ public class UnitMovement : NetworkBehaviour
     {
         rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scalePhysical(), rb.velocity.z);
     }
-    public void knock(Vector3 dir, float back, float up)
+    void knock(Vector3 dir, float back, float up)
     {
         dir.Normalize();
         if (posture.isStunned)
@@ -431,6 +462,9 @@ public class UnitMovement : NetworkBehaviour
             control = DashControl.Input,
             endMomentum = DashEndMomentum.Walk,
             pitch = pitch,
+            bakedStrength = new GenerateAttack.StrengthMultiplers(1),
+ 
+            
         };
     }
     public void dash(UnitInput inp, DashInstanceData opts)

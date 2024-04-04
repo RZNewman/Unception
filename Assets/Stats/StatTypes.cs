@@ -71,7 +71,7 @@ public static class StatTypes
         },
         {HitType.DamageDash, new Dictionary<Stat, float>(){
             {Stat.Length, 0.9f },
-            {Stat.Range, 1.0f },
+            {Stat.Range, 0.8f },
             {Stat.Width, 1.1f },
             {Stat.DamageMult, 0.9f },
             }

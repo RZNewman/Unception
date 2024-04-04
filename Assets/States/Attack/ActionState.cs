@@ -78,10 +78,6 @@ public class ActionState : AttackStageState
 
         if (buffData != null)
         {
-            if (!mover.isServer)
-            {
-                return;
-            }
             if (buffData.type == BuffType.Buff)
             {
                 SpawnBuff(buffData, mover.transform);

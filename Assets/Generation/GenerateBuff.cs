@@ -150,7 +150,7 @@ public static class GenerateBuff
 
 
         List<Stat> generateStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Mezmerize, Stat.Cooldown, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
-        List<Stat> debuffStats = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Range, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
+        List<Stat> debuffStats = new List<Stat>() { /*Stat.Length, Stat.Width, Stat.Range,*/ Stat.Knockback, Stat.Haste, Stat.Turnspeed, Stat.Movespeed };
         List<Stat> itemStatsCast = new List<Stat>() { Stat.Length, Stat.Width, Stat.Knockback, Stat.Knockup, Stat.Range, Stat.Stagger, Stat.Mezmerize, Stat.Haste, Stat.MovespeedCast };
         List<Stat> itemStatsTime = new List<Stat>() { Stat.Cooldown };
         Dictionary<Stat, float> statValues = new Dictionary<Stat, float>();

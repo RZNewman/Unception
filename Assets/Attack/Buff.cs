@@ -48,7 +48,7 @@ public class Buff : NetworkBehaviour
         }
     }
 
-    public float remainingPercent
+    public float progressPercent
     {
         get
         {
@@ -96,11 +96,11 @@ public class Buff : NetworkBehaviour
         }
     }
 
-    public float valueByTime
+    public float valueRemaining
     {
         get
         {
-            return value * duration;
+            return value * (1-progressPercent);
         }
     }
 
@@ -170,7 +170,8 @@ public class Buff : NetworkBehaviour
             switch (mode)
             {
                 case BuffMode.Dot:
-                    float damageThisTick = Mathf.Min(duration, Time.fixedDeltaTime) * value;
+                    float timeThisTick = Mathf.Min(duration, Time.fixedDeltaTime);
+                    float damageThisTick = timeThisTick * value/durationMax;
                     health.takeDamageDrain(damageThisTick);
                     break;
                 case BuffMode.Shield:

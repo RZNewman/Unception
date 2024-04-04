@@ -75,7 +75,7 @@ public static class GenerateAttack
 
         public static float operator *(float a, StrengthMultiplers b)
         {
-            return a * (1+b.increased) * b.more;
+            return a * (b.increased) * b.more;
         }
         public static StrengthMultiplers operator +(StrengthMultiplers a, StrengthMultiplers b)
         {
@@ -263,7 +263,7 @@ public static class GenerateAttack
         public float damage(float power)
         {
 
-            return hit.damage(power, false).total * (repeat == null ? 1 : repeat.repeatCount);
+            return hit.getHarmValues(power, false).totalDamage * (repeat == null ? 1 : repeat.repeatCount);
 
         }
         public float dps(float power)
@@ -609,7 +609,7 @@ public static class GenerateAttack
         StrengthMultiplers instanceStrength = new StrengthMultiplers(0);
 
         float cooldownValue = atk.cooldown;
-        float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(1, 30);
+        float cooldownTime = cooldownValue < 0 ? 0 : cooldownValue.asRange(3, 30);
         float cooldownStrength = Mathf.Pow(Mathf.Log(cooldownTime + 1, 5 + 1), 2f);
         
         cooldownTime /= opts.scales.time;
@@ -904,7 +904,7 @@ public static class GenerateAttack
         AttackGenerationData atk = new AttackGenerationData
         {
             segments = segments.ToArray(),
-            cooldown = noCooldown ? -1 : GaussRandomDecline(4).asRange(cooldownMin, cooldownMax),
+            cooldown = noCooldown ? -1 : GaussRandomDecline(2).asRange(cooldownMin, cooldownMax),
             charges = charges,
             criticalCount = critCount,
             criticalModifier = critMod,

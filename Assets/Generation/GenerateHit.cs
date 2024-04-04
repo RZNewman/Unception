@@ -198,13 +198,25 @@ public static class GenerateHit
             }
         }
 
-        public struct DamageValues
+        public struct HarmValues
         {
             public float instant;
             public float dot;
             public float dotTime;
             public float expose;
-            public float total
+
+            public float stagger;
+            public float mezmerize;
+            public float powerByStrength;
+            public Scales scales;
+
+            public float knockback;
+            public float knockup;
+            public KnockBackType knockType;
+            public KnockBackDirection knockDir;
+            public KnockBackVectors knockbackData;
+
+            public float totalDamage
             {
                 get
                 {
@@ -212,7 +224,7 @@ public static class GenerateHit
                 }
             }
         }
-        public DamageValues damage(float power, bool isStunned)
+        public HarmValues getHarmValues(float power, bool isStunned)
         {
             float baseDamage = getStat(Stat.DamageMult) * Power.damageFalloff(powerAtGen, power);
 
@@ -234,12 +246,22 @@ public static class GenerateHit
                 baseDamage -= exposeDamage;
                 exposeDamage *= 1 + 0.2f;
             }
-            return new DamageValues
+            return new HarmValues
             {
                 instant = baseDamage,
-                dot = dotDamage / dotTime,
+                dot = dotDamage,
                 dotTime = dotTime,
                 expose = exposeDamage,
+                stagger = stagger,
+                mezmerize = mezmerize,
+                powerByStrength = powerByStrength,
+                scales = scales,
+                knockback = knockback,
+                knockup = knockup,
+                knockType = knockBackType,
+                knockDir = knockBackDirection,
+                //knockbackData is set Later
+
             };
         }
     }

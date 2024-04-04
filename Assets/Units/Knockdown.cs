@@ -15,9 +15,10 @@ public class Knockdown : NetworkBehaviour
     {
         get
         {
-            return currentKnockdown > 0;
+            return isDown;
         }
     }
+    bool isDown = false;
     Power power;
 
     // Start is called before the first frame update
@@ -40,25 +41,18 @@ public class Knockdown : NetworkBehaviour
     {
         get
         {
-            return 10 * fallOffMult;
+            return 1.2f * fallOffMult;
         }
 
     }
+
 
     public void tryKnockDown(float back, float up)
     {
         float KDValue = back + 2 * up * relativeKnockup;
         KDValue /= power.scaleSpeed();
         //Debug.Log("Raw value:" + KDValue);
-        KDValue -= stunThreshold;
-        if (KDValue > 0)
-        {
-            if (currentKnockdown <= 0)
-            {
-                GetComponent<AnimationController>().setKnockedDown();
-            }
-            currentKnockdown += KDValue * 0.12f;
-        }
+        currentKnockdown += KDValue * 0.12f;
     }
 
     // Update is called once per frame
@@ -72,7 +66,18 @@ public class Knockdown : NetworkBehaviour
             currentKnockdown = 0;
         }
 
-        if (knockedDown)
+        if(!isDown&&currentKnockdown >= stunThreshold)
+        {
+            isDown = true;
+            GetComponent<AnimationController>().setKnockedDown();
+        }
+        else if(isDown && currentKnockdown < stunThreshold)
+        {
+            isDown = false;
+        }
+
+
+        if (isDown)
         {
             recentlyKDTime += Time.fixedDeltaTime * scaleTime;
         }

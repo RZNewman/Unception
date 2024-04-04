@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using static EventManager;
 
 public class Posture : NetworkBehaviour, BarValue
 {
@@ -57,6 +58,7 @@ public class Posture : NetworkBehaviour, BarValue
         if (isServer)
         {
             GetComponent<Power>().subscribePower(updateMaxPosture);
+            GetComponent<EventManager>().HitEvent += getHit;
         }
 
     }
@@ -76,9 +78,21 @@ public class Posture : NetworkBehaviour, BarValue
         currentPosture *= proportion;
         currentStunHighestPosture *= proportion;
     }
+    void getHit(GetHitEventData data)
+    {
+        if (isServer)
+        {
+            float stagger = data.harm.stagger;
+            if (mezmerize && mezmerize.isMezmerized)
+            {
+                stagger *= 1.1f;
+            }
+            takeStagger(stagger);
+        }
+    }
 
 
-    public void takeStagger(float damage)
+    void takeStagger(float damage)
     {
         currentPosture += damage;
 

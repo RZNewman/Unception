@@ -4,7 +4,7 @@ using UnityEngine;
 public class CompoundCollider : MonoBehaviour
 {
 
-    public delegate void OnCompoundCollision(Collider col);
+    public delegate void OnCompoundCollision(Collider col, bool enter);
 
 
     [HideInInspector]
@@ -43,7 +43,7 @@ public class CompoundCollider : MonoBehaviour
         }
         colliding.Add(col);
 
-        callback(col);
+        callback(col, true);
 
     }
 
@@ -58,10 +58,13 @@ public class CompoundCollider : MonoBehaviour
             if (!fragment.colliding.Contains(col))
             {
                 colliding.Remove(col);
+                callback(col, false);
                 return;
             }
         }
+
         
+
     }
 
     // Update is called once per frame

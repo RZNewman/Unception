@@ -1,7 +1,10 @@
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using static EventManager;
 using static GenerateBuff;
 
 public class BuffManager : NetworkBehaviour
@@ -11,10 +14,12 @@ public class BuffManager : NetworkBehaviour
 
     StatHandler handler;
     Power power;
+    EventManager events;
     void Start()
     {
         handler = GetComponent<StatHandler>();
         power = GetComponentInParent<Power>();
+        events = transform.GetComponentInParent<EventManager>();
     }
 
     void debugStats(List<Buff> b)
@@ -22,6 +27,10 @@ public class BuffManager : NetworkBehaviour
         handler.debugStats();
     }
 
+    public EventManager eventManager
+    {
+        get { return events; }
+    }
 
     List<Buff> buffs = new List<Buff>();
     List<BuffRefresh> subs = new List<BuffRefresh>();
@@ -29,6 +38,9 @@ public class BuffManager : NetworkBehaviour
     public void addBuff(Buff b)
     {
         buffs.Add(b);
+        b.setManager(this);
+        events.TickEvent += b.Tick;
+        events.CastEvent += b.OnCast;
         if (isServer)
         {
             switch (b.buffMode)
@@ -49,6 +61,9 @@ public class BuffManager : NetworkBehaviour
     public void removeBuff(Buff b)
     {
         buffs.Remove(b);
+        EventManager events = transform.GetComponentInParent<EventManager>();
+        events.TickEvent -= b.Tick;
+        events.CastEvent -= b.OnCast;
         if (isServer)
         {
             switch (b.buffMode)

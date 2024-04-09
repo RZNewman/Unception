@@ -130,17 +130,18 @@ public class Health : NetworkBehaviour, BarValue
                 //currentHealth = maxHealth;
                 currentHealth = Mathf.Max(currentHealth, 1);
                 exposedHealth = 0;
-                clearReferences(BuffMode.Dot);
+                clearOOCDebuffs(BuffMode.Dot);
             }
             if (currentHealth <= 0)
             {
                 GetComponent<LifeManager>().die();
 
             }
-            if(exposedHealth > 0)
-            {
-                exposedHealth -= maxHealth * 0.03f * Time.fixedDeltaTime * power.scaleTime();
-            }
+            //if(exposedHealth > 0)
+            //{
+            //    exposedHealth -= maxHealth * 0.005f * Time.fixedDeltaTime * power.scaleTime();
+            //    exposedHealth = Mathf.Max(exposedHealth, 0);
+            //}
         }
 
 
@@ -157,11 +158,11 @@ public class Health : NetworkBehaviour, BarValue
         buffReferences[b.buffMode].Remove(b);
     }
 
-    void clearReferences(BuffMode mode)
+    void clearOOCDebuffs(BuffMode mode)
     {
         buffReferences[mode].ForEach(b =>
         {
-            Destroy(b.gameObject);
+            b.clearOOC();
         });
     }
 
@@ -175,9 +176,13 @@ public class Health : NetworkBehaviour, BarValue
             data.harm.multDamage(damageMult);
             float incDamage = data.harm.damage;
 
-            float addedDamage = Mathf.Min(incDamage, exposedHealth);
-            exposedHealth -= addedDamage;
-            takeDamageNoDisplay(addedDamage);
+            if (!data.stopExpose)
+            {
+                float addedDamage = Mathf.Min(incDamage, exposedHealth);
+                exposedHealth -= addedDamage;
+                takeDamageNoDisplay(addedDamage);
+            }
+            
 
 
 
@@ -190,7 +195,7 @@ public class Health : NetworkBehaviour, BarValue
                 exposeDamage *= EXPOSE_MULTIPLIER;
             }
             exposedHealth += exposeDamage;
-
+            Debug.Log(data.harm.damage + " - " + incDamage + " - " + exposeDamage);
             takeDamageHit(incDamage);
         }
     }

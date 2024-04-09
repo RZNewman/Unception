@@ -39,7 +39,9 @@ public class Keybinds : MonoBehaviour
 
     public KeyCode binding(KeyName name)
     {
-        return binds[name];
+        KeyCode key;
+        binds.TryGetValue(name, out key);
+        return key;
     }
 
     public Sprite keyImage(KeyCode key)

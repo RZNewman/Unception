@@ -51,52 +51,44 @@ public class ActionState : AttackStageState
             return;
         }
         SpellSource[] sources = segment.sources;
-        List<HitSource> hits = new List<HitSource>();
-        List<GameObject> enemyHits = new List<GameObject>();
         ShapeData shapeData = getShapeData();
         HitList hitList = new HitList();
 
         foreach(SpellSource source in sources)
         {
-            hits.AddRange(fireOneSource(source, shapeData, hitList));
-        }
-
-        foreach (HitSource hitSource in hits)
-        {
+            List<GameObject> hits = fireOneSource(source, shapeData, hitList);
             float power = mover.GetComponent<Power>().power;
             HarmPortions harm = attackData.getHarmValues(power, new KnockBackVectors
             {
-                center = hitSource.source.transform.position,
-                direction = hitSource.source.transform.forward
+                center = source.transform.position,
+                direction = source.transform.forward
             });
-            if (hit(hitSource.hit, mover,
-                harm,
-                mover.GetComponent<TeamOwnership>().getTeam(),
-                hitList))
+            if(attackData.dotType == DotType.Placed)
             {
-                enemyHits.Add(hitSource.hit);
+                harm.OverTime = null;
+                SpawnPersistent(source, mover,attackData, null, null, mover.sound.dists, true);
             }
 
+
+            foreach (GameObject other in hits)
+            {
+                
+                hit(other, mover,
+                    harm,
+                    mover.GetComponent<TeamOwnership>().getTeam(),
+                    hitList, buffData);
+
+
+            }
         }
+
+        
 
         if (buffData != null)
         {
             if (buffData.type == BuffType.Buff)
             {
                 SpawnBuff(buffData, mover.transform);
-            }
-            else
-            {
-                foreach (GameObject h in enemyHits)
-                {
-                    BuffManager bm = h.GetComponentInParent<BuffManager>();
-                    if (bm)
-                    {
-                        SpawnBuff(buffData, bm.transform);
-                    }
-
-
-                }
             }
 
         }
@@ -113,7 +105,7 @@ public class ActionState : AttackStageState
         public SpellSource source;
     }
 
-    List<HitSource> fireOneSource(SpellSource sourcePoint, ShapeData shapeData, HitList hitList)
+    List<GameObject> fireOneSource(SpellSource sourcePoint, ShapeData shapeData, HitList hitList)
     {
         List<GameObject> hits = new List<GameObject>();
         switch (attackData.type)
@@ -128,7 +120,7 @@ public class ActionState : AttackStageState
                 break;
             case HitType.ProjectileExploding:
             case HitType.ProjectileWave:
-                SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists);
+                SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists, false);
                 break;
             case HitType.GroundPlaced:
                 //float radius = GroundRadius(attackData.length, attackData.width);
@@ -141,7 +133,7 @@ public class ActionState : AttackStageState
                 throw new NotImplementedException("Dash should use dash");
 
         }
-        return hits.Select(h => new HitSource { hit = h, source = sourcePoint }).ToList();
+        return hits;
     }
 
     public override IndicatorOffsets GetIndicatorOffsets()

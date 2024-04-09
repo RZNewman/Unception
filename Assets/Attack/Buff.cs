@@ -8,13 +8,13 @@ using static GenerateBuff;
 using static GenerateHit.HitInstanceData;
 using static StatTypes;
 
-public class Buff : NetworkBehaviour
+public class Buff : NetworkBehaviour, Duration
 {
     [SyncVar]
-    float durationRemaining;
+    float _durationRemaining;
 
     [SyncVar]
-    float durationMax;
+    float _durationMax;
 
     [SyncVar]
     float castCount;
@@ -36,8 +36,9 @@ public class Buff : NetworkBehaviour
 
     BuffMode mode = BuffMode.Timed;
 
+    BuffManager manager;
+
     float timeScale;
-    EventManager events;
     public float relativeScale(float targetTimeScale)
     {
         return timeScale / targetTimeScale;
@@ -47,17 +48,24 @@ public class Buff : NetworkBehaviour
     {
         get
         {
-            return durationRemaining;
+            return _durationRemaining;
         }
     }
-
-    public float progressPercentCountdown
+    public float maxDuration
     {
         get
         {
-            return durationRemaining / durationMax;
+            return _durationMax;
         }
     }
+
+    Duration controllingDuration;
+    
+    public Duration duration {
+       get { return controllingDuration; } 
+    }
+
+
     public string charges
     {
         get
@@ -76,26 +84,21 @@ public class Buff : NetworkBehaviour
     void Start()
     {
         GetComponent<ClientAdoption>().trySetAdopted();
-        transform.parent.GetComponent<BuffManager>().addBuff(this);
-        events = transform.GetComponentInParent<EventManager>();
-        events.TickEvent += Tick;
-        if (mode == BuffMode.Cast)
+        if (selfManaged)
         {
-            events.CastEvent += OnCast;
+            transform.parent.GetComponent<BuffManager>().addBuff(this);
         }
+        
     }
 
 
     private void OnDestroy()
     {
-
-        transform.parent.GetComponent<BuffManager>().removeBuff(this);
-
-        events.TickEvent -= Tick;
-        if (mode == BuffMode.Cast)
+        if (selfManaged)
         {
-            events.CastEvent -= OnCast;
+            transform.parent.GetComponent<BuffManager>().removeBuff(this);
         }
+        
     }
 
     public float damageRemaining
@@ -103,7 +106,7 @@ public class Buff : NetworkBehaviour
         get
         {
             //Debug.Log(harm.totalDamage + " - " + progressPercent);
-            return harm.totalDamage * progressPercentCountdown;
+            return harm.totalDamage * controllingDuration.remainingPercent;
         }
     }
 
@@ -127,10 +130,10 @@ public class Buff : NetworkBehaviour
         value += delta;
     }
 
-    void OnCast(Ability a)
+     public void OnCast(Ability a)
     {
         ItemSlot? castSlot = a.slot();
-        if (castSlot.HasValue)
+        if (mode == BuffMode.Cast && castSlot.HasValue)
         {
             if (!slot.HasValue || slot.Value == castSlot.Value)
             {
@@ -143,8 +146,9 @@ public class Buff : NetworkBehaviour
 
     public void setup(BuffInstanceData buff)
     {
-        durationMax = buff.durration;
-        durationRemaining = buff.durration;
+        _durationMax = buff.durration;
+        _durationRemaining = buff.durration;
+        controllingDuration = this;
         timeScale = buff.scales.time;
         castCount = buff.castCount;
         slot = buff.slot;
@@ -156,8 +160,9 @@ public class Buff : NetworkBehaviour
 
     public void setupShield(Scales scales, float durationBegin, float valueBegin, float regenBegin = 0)
     {
-        durationMax = durationBegin;
-        durationRemaining = durationBegin;
+        _durationMax = durationBegin;
+        _durationRemaining = durationBegin;
+        controllingDuration = this;
         timeScale = scales.time;
         mode = BuffMode.Shield;
         valueMax = valueBegin;
@@ -167,26 +172,37 @@ public class Buff : NetworkBehaviour
 
     public void setupDot(Scales scales, float durationBegin, HarmValues harmV)
     {
-        durationMax = durationBegin;
-        durationRemaining = durationBegin;
+        _durationMax = durationBegin;
+        _durationRemaining = durationBegin;
+        controllingDuration = this;
+        timeScale = scales.time;
+        mode = BuffMode.Dot;
+        harm = harmV;
+    }
+
+    public void setupAura(Scales scales, Persistent aura, HarmValues harmV)
+    {
+        controllingDuration = aura;
         timeScale = scales.time;
         mode = BuffMode.Dot;
         harm = harmV;
     }
 
     // Update is called once per frame
-    void Tick()
+     public void Tick()
     {
         if (isServer)
         {
             switch (mode)
             {
                 case BuffMode.Dot:
-                    float timeThisTick = Mathf.Min(durationRemaining, Time.fixedDeltaTime);
-                    HarmValues harmThisTick = harm.tickPortion( timeThisTick / durationMax);
-                    events.fireHit(new GetHitEventData()
+                    float timeThisTick = Mathf.Min(controllingDuration.remainingDuration, Time.fixedDeltaTime);
+                    HarmValues harmThisTick = harm.tickPortion( timeThisTick / controllingDuration.maxDuration);
+                    Debug.Log(harmThisTick.damage);
+                    manager.eventManager.fireHit(new GetHitEventData()
                     {
                         harm = harmThisTick,
+                        stopExpose = true,
                     });
                     break;
                 case BuffMode.Shield:
@@ -195,15 +211,40 @@ public class Buff : NetworkBehaviour
                     break;
             }
         }
-        durationRemaining -= Time.fixedDeltaTime;
-        if (isServer)
+        if(selfManaged)
         {
-            if (durationRemaining <= 0 || (mode == BuffMode.Cast && castCount <= 0))
+            _durationRemaining -= Time.fixedDeltaTime;
+            if (isServer)
             {
-                Destroy(gameObject);
+                if (_durationRemaining <= 0 || (mode == BuffMode.Cast && castCount <= 0))
+                {
+                    Destroy(gameObject);
+                }
+
+
             }
+        }
+        
+    }
 
+    public void clearOOC()
+    {
+        if (selfManaged)
+        {
+            Destroy(gameObject);
+        }
+    }
 
+    internal void setManager(BuffManager buffManager)
+    {
+        manager = buffManager;
+    }
+
+    bool selfManaged
+    {
+        get
+        {
+            return (Object)controllingDuration == this;
         }
     }
 }

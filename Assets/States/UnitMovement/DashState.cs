@@ -84,7 +84,7 @@ public class DashState : AttackStageState
         {
             foreach (SpellSource source in segment.sources)
             {
-                persistingAttack = SpawnPersistent(source, mover, hitData, buffData, hitList, mover.sound.dists);
+                persistingAttack = SpawnPersistent(source, mover, hitData, buffData, hitList, mover.sound.dists,false);
             }
             
 

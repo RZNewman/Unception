@@ -40,6 +40,18 @@ public static class GenerateHit
         public int visualIndex;
         public int soundIndex;
     }
+    public enum SplitMode
+    {
+        Damage,
+        All
+    }
+
+    public enum DotType
+    {
+        Applied,
+        Placed,
+        Channeled,
+    }
 
     public class HitGenerationData : GenerationData
     {
@@ -54,6 +66,7 @@ public static class GenerateHit
         public float dotPercent;
         public float dotTime;
         public SplitMode splitMode;
+        public DotType dotType;
         public float exposePercent;
 
         public override InstanceData populate(float power, StrengthMultiplers strength, Scales scalesStart)
@@ -77,6 +90,11 @@ public static class GenerateHit
             stream.setStats(stats);
 
             float dotBaseTime = this.dotTime.asRange(5f, 20f);
+            float dotMultMax = dotType switch
+            {
+                DotType.Placed => 3,
+                _ => 0.2f,
+            };
             HitInstanceData baseData = new HitInstanceData
             {
                 bakedStrength = strength,
@@ -93,9 +111,10 @@ public static class GenerateHit
                 shape = this.shape,
                 dotPercent = dotPercent,
                 dotTime = dotBaseTime / scalesStart.time,
-                dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * 0.2f,
+                dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * dotMultMax,
                 exposePercent = exposePercent,
                 splitMode =splitMode,
+                dotType = dotType,
 
                 multiple = multiple,
                 multipleArcSpacing = multipleArc.asRange(15, 35),
@@ -120,6 +139,7 @@ public static class GenerateHit
         public float dotTime;
         public float dotAddedMult;
         public SplitMode splitMode;
+        public DotType dotType;
         public float exposePercent;
         public int multiple;
         public float multipleArcSpacing;
@@ -288,12 +308,7 @@ public static class GenerateHit
             }
 
 
-            public enum SplitMode
-            {
-                Damage,
-                All
-            }
-
+            
           
         }
         HarmValues baseHarmValues(float power, KnockBackVectors knockVecs)
@@ -461,7 +476,9 @@ public static class GenerateHit
         float dotPercent = 0;
         float exposePercent = 0;
         SplitMode splitMode = SplitMode.Damage;
+        DotType dotType = DotType.Applied;
         r = Random.value;
+        //r = 0.1f;
         if (r < 0.2f)
         {
             dotPercent = Random.value.asRange(0.25f, 1f);
@@ -470,10 +487,19 @@ public static class GenerateHit
             {
                 splitMode = SplitMode.All;
             }
+
+            r = Random.value;
+            //r = 0.1f;
+            if (r < 0.6f && (t == HitType.Attached || t == HitType.GroundPlaced || t == HitType.ProjectileExploding))
+            {
+                dotType = DotType.Placed;
+            }
+
         }
 
 
         r = Random.value;
+        //r = 0.05f;
         if (r < 0.1f)
         {
             exposePercent = Random.value.asRange(0.25f, 0.6f);
@@ -515,6 +541,7 @@ public static class GenerateHit
         hit.dotTime = GaussRandomDecline();
         hit.exposePercent = exposePercent;
         hit.splitMode = splitMode;
+        hit.dotType = dotType;
 
         return hit;
 

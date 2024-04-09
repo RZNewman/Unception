@@ -21,7 +21,7 @@ using System;
 using static SpellSource;
 using static GenerateHit.HitInstanceData;
 
-public class Persistent : NetworkBehaviour
+public class Persistent : NetworkBehaviour, Duration
 {
     public GameObject playerHit;
     public GameObject terrainHit;
@@ -32,6 +32,7 @@ public class Persistent : NetworkBehaviour
     public static readonly float WaveProjectileLifetime = 2.5f;
 
     float lifetime;
+    float maxLifetime;
     float birth;
     //bool hasHit = false;
 
@@ -46,7 +47,38 @@ public class Persistent : NetworkBehaviour
     [SyncVar]
     MoveMode moveType;
 
+    [SyncVar]
+    Buff AuraBuff;
+
+    public enum PersistMode
+    {
+        Explode,
+        Wave,
+        Dash,
+        AuraPlaced,
+    }
+
+    [SyncVar]
+    PersistMode mode;
+
     Rigidbody rb;
+
+    public float remainingDuration
+    {
+        get
+        {
+            return lifetime;
+        }
+    }
+
+    public float maxDuration
+    {
+        get
+        {
+            return maxLifetime;
+        }
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -71,13 +103,14 @@ public class Persistent : NetworkBehaviour
     }
     private void FixedUpdate()
     {
-        if (isServer  && Time.time > birth + lifetime)
+        lifetime -= Time.fixedDeltaTime;
+        if (isServer  && lifetime <=0)
         {
-            if (isProjectileExplode)
+            if (mode == PersistMode.Explode)
             {
                 fireExplode(transform.position + transform.forward * data.hitRadius);
             }
-            if (isProjectileWave)
+            if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave)
             {
                 Destroy(gameObject);
             }
@@ -130,22 +163,8 @@ public class Persistent : NetworkBehaviour
 
     }
 
-    bool isProjectileExplode
-    {
-        get
-        {
-            return data.hitDataCaptured.type == HitType.ProjectileExploding;
-        }
-    }
-    bool isProjectileWave
-    {
-        get
-        {
-            return data.hitDataCaptured.type == HitType.ProjectileWave;
-        }
-    }
     [Server]
-    public void init(CapsuleSize sizeC, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, HitList hitL,MoveMode moveT, AudioDistances dists)
+    public void init(CapsuleSize sizeC, UnitMovement m, HitInstanceData hitD, BuffInstanceData buffD, HitList hitL,MoveMode moveT, AudioDistances dists, PersistMode persistMode)
     {
         mover = m;
         Power p = mover.GetComponent<Power>();
@@ -153,7 +172,7 @@ public class Persistent : NetworkBehaviour
         buffData = buffD;
         hitList = hitL;
         moveType = moveT;
-
+        mode = persistMode;
 
         data = new ProjectileData
         {
@@ -165,17 +184,29 @@ public class Persistent : NetworkBehaviour
         };
         setup();
         
-        if (isProjectileExplode || isProjectileWave)
+        if (mode == PersistMode.Explode || mode == PersistMode.Wave)
         {
-            lifetime = isProjectileExplode ? ExplodeProjectileLifetime : WaveProjectileLifetime / p.scaleTime();
+            maxLifetime = mode == PersistMode.Explode ? ExplodeProjectileLifetime : WaveProjectileLifetime / p.scaleTime();
+            lifetime = maxLifetime;
             setSpeed(hitD.range / lifetime);
+        }
+        if (mode == PersistMode.AuraPlaced)
+        {
+            maxLifetime = hitData.dotTime;
+            lifetime = maxLifetime;
+            HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors
+            {
+                center = transform.position,
+                direction = transform.forward
+            });
+            AuraBuff = SpawnAuraBuff(transform, hitData.scales, this, harm.OverTime.Value);
         }
         
     }
 
     void setup()
     {
-        if (isProjectileExplode || isProjectileWave)
+        if (mode == PersistMode.Explode || mode == PersistMode.Wave)
         {
             terrainHit.transform.localScale = Vector3.one * data.terrainRadius * 2;          
         }
@@ -185,7 +216,7 @@ public class Persistent : NetworkBehaviour
         }
         ShapeData shapeD;
         playerHit.GetComponent<CompoundCollider>().setCallback(onPlayerCollide);
-        if (isProjectileExplode)
+        if (mode == PersistMode.Explode)
         {
             shapeD = new ShapeData
             {
@@ -206,7 +237,7 @@ public class Persistent : NetworkBehaviour
             buildCompoundCollider(shapeD);
             ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }
-        else if (isProjectileWave)
+        else if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave)
         {
             shapeD = getShapeData();
             buildCompoundCollider(shapeD);
@@ -226,6 +257,8 @@ public class Persistent : NetworkBehaviour
         //Quaternion aim = Quaternion.LookRotation(transform.forward, calc.normal);
         foreach (ColliderInfo info in shapeData.colliders)
         {
+            //TODO
+            if (info.subtract) return;
             //Vector3 totalPosition = transform.position + aim * info.position;
             //Quaternion totalRotation = aim * info.rotation;
             GameObject h = new GameObject("Collider");
@@ -265,41 +298,48 @@ public class Persistent : NetworkBehaviour
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
     }
 
-    public void onPlayerCollide(Collider other)
+    public void onPlayerCollide(Collider other, bool enter)
     {
         if (isServer)
         {
 
             if (other.GetComponentInParent<TeamOwnership>().getTeam() != data.team)
             {
-
-                switch (data.hitDataCaptured.type)
+                if (enter)
                 {
-                    case HitType.ProjectileExploding:
-                        Vector3 diff = other.transform.position - transform.position;
-                        Vector3 offset = diff.normalized * Mathf.Min(diff.magnitude, data.hitRadius);
+                    switch (mode)
+                    {
+                        case PersistMode.AuraPlaced:
+                            other.GetComponentInParent<BuffManager>().addBuff(AuraBuff);
+                            break;
+                        case PersistMode.Explode:
+                            Vector3 diff = other.transform.position - transform.position;
+                            Vector3 offset = diff.normalized * Mathf.Min(diff.magnitude, data.hitRadius);
 
-                        fireExplode(transform.position + offset);
-                        break;
-                    default:
-                        HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors { 
-                            center = transform.position, 
-                            direction = transform.forward 
-                        });
-
-                        if (hit(other.gameObject, mover, harm, data.team ,hitList))
-                        {
-                            if (buffData != null && buffData.type == BuffType.Debuff)
+                            fireExplode(transform.position + offset);
+                            break;
+                        default:
+                            HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors
                             {
-                                BuffManager bm = other.GetComponentInParent<BuffManager>();
-                                if (bm)
-                                {
-                                    SpawnBuff(buffData, bm.transform);
-                                }
-                            }
-                        }
-                        break;
+                                center = transform.position,
+                                direction = transform.forward
+                            });
+
+                            hit(other.gameObject, mover, harm, data.team, hitList, buffData);
+
+                            break;
+                    }
                 }
+                else
+                {
+                    switch (mode)
+                    {
+                        case PersistMode.AuraPlaced:
+                            other.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
+                            break;
+                    }
+                }
+                
                 
             }
             
@@ -307,11 +347,25 @@ public class Persistent : NetworkBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        switch (mode)
+        {
+            case PersistMode.AuraPlaced:
+                foreach(Collider col in playerHit.GetComponent<CompoundCollider>().colliding)
+                {
+                    col.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
+                }
+                break;
+        }
+    }
+
+
+
     [Server]
     void fireExplode(Vector3 contact)
     {
         List<GameObject> hits;
-        List<GameObject> enemyHits = new List<GameObject>();
         GroundResult calc = FloorNormal.getGroundNormal(contact, data.sizeC);
         Quaternion aim = Quaternion.LookRotation(transform.forward, calc.normal);
         hits = ShapeAttack(aim, contact, getShapeData());
@@ -320,26 +374,17 @@ public class Persistent : NetworkBehaviour
             center = contact,
             direction = transform.forward
         });
+        if (hitData.dotType == DotType.Placed)
+        {
+            harm.OverTime = null;
+            SpawnPersistent(aim, gameObject,data.sizeC, mover, hitData, null, null, mover.sound.dists, true);
+        }
 
         foreach (GameObject o in hits)
         {
-            if (hit(o, mover, harm,
-                data.team, hitList))
-            {
-                enemyHits.Add(o);
-            }
+            hit(o, mover, harm,
+                data.team, hitList, buffData);
 
-        }
-        if (buffData != null && buffData.type == BuffType.Debuff)
-        {
-            foreach (GameObject h in enemyHits)
-            {
-                BuffManager bm = h.GetComponentInParent<BuffManager>();
-                if (bm)
-                {
-                    SpawnBuff(buffData, bm.transform);
-                }
-            }
 
         }
         ShapeParticle(aim, contact, transform.forward, getShapeData(), hitData.shape, hitData.flair, mover.sound.dists);

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using static UnityEngine.UI.Image;
 using static AttackSegment;
+using static Persistent;
 
 public static class AttackUtils
 {
@@ -30,7 +31,7 @@ public static class AttackUtils
         public Vector3 center;
         public Vector3 direction;
     }
-    public static bool hit(GameObject other, UnitMovement mover, HarmPortions harm, uint team, HitList hitList)
+    public static void hit(GameObject other, UnitMovement mover, HarmPortions harm, uint team, HitList hitList, BuffInstanceData buffData)
     {
         if (other.GetComponentInParent<TeamOwnership>().getTeam() != team && hitList.tryAddHit(other))
         {
@@ -51,28 +52,45 @@ public static class AttackUtils
                 });
             }
             
-
-            return true;
+            if(buffData != null && buffData.type == BuffType.Debuff)
+            {
+                BuffManager bm = other.GetComponentInParent<BuffManager>();
+                if (bm)
+                {
+                    SpawnBuff(buffData, bm.transform);
+                }
+            }
         }
-        return false;
+
+    }
+    public static GameObject SpawnPersistent(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, bool isAura)
+    {
+        Quaternion aim = source.aimRotation();
+        CapsuleSize sizeC = source.sizeCapsule;
+        return SpawnPersistent(aim, source.gameObject,sizeC, mover, hitData, buffData, hitList, dists, isAura);
     }
 
-
-    public static GameObject SpawnPersistent(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists)
+    public static GameObject SpawnPersistent(Quaternion aim, GameObject root, CapsuleSize sizeC, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, bool isAura)
     {
         GameObject prefab = GlobalPrefab.gPre.ProjectilePre;
-        Quaternion aim = source.aimRotation();
-        GameObject instance = GameObject.Instantiate(prefab, source.transform.position, aim);
+        GameObject instance = GameObject.Instantiate(prefab, root.transform.position, aim);
         MoveMode moveType = MoveMode.World;
         if (hitData.type == HitType.DamageDash)
         {
-            instance.transform.parent = source.transform;
-            instance.GetComponent<ClientAdoption>().parent = source.gameObject;
+            instance.transform.parent = root.transform;
+            instance.GetComponent<ClientAdoption>().parent = root;
             moveType = MoveMode.Parent;
         }
         Persistent p = instance.GetComponent<Persistent>();
         NetworkServer.Spawn(instance);
-        p.init(source.sizeCapsule, mover, hitData, buffData, hitList, moveType, dists);      
+        PersistMode modeP = isAura ? PersistMode.AuraPlaced : hitData.type switch
+        {
+            HitType.ProjectileExploding  => PersistMode.Explode,
+            HitType.ProjectileWave => PersistMode.Wave,
+            HitType.DamageDash => PersistMode.Dash,
+            _=> throw new NotImplementedException(),
+        };
+        p.init(sizeC, mover, hitData, buffData, hitList, moveType, dists, modeP);      
         return instance;
     }
 
@@ -105,6 +123,17 @@ public static class AttackUtils
         instance.GetComponent<ClientAdoption>().parent = target.gameObject;
         instance.GetComponent<Buff>().setupDot(scales, duration, harm);
         NetworkServer.Spawn(instance);
+    }
+
+    public static Buff SpawnAuraBuff(Transform target, Scales scales, Persistent persist, HarmValues harm)
+    {
+        GameObject prefab = GlobalPrefab.gPre.BuffPre;
+        GameObject instance = GameObject.Instantiate(prefab, target);
+        instance.GetComponent<ClientAdoption>().parent = target.gameObject;
+        Buff buff = instance.GetComponent<Buff>();
+        buff.setupAura(scales, persist, harm);
+        NetworkServer.Spawn(instance);
+        return buff;
     }
 
     public enum EffectShape : byte

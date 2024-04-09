@@ -9,6 +9,7 @@ public class EventManager : MonoBehaviour
     {
         public GameObject other;
         public HarmValues harm;
+        public bool stopExpose;
     }
 
     public struct ApplyDotEventData

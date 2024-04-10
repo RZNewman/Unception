@@ -195,7 +195,7 @@ public class Health : NetworkBehaviour, BarValue
                 exposeDamage *= EXPOSE_MULTIPLIER;
             }
             exposedHealth += exposeDamage;
-            Debug.Log(data.harm.damage + " - " + incDamage + " - " + exposeDamage);
+            //Debug.Log(data.harm.damage + " - " + incDamage + " - " + exposeDamage);
             takeDamageHit(incDamage);
         }
     }
@@ -236,13 +236,13 @@ public class Health : NetworkBehaviour, BarValue
                 },
                 new UiBarBasic.BarSegment
                 {
-                    color = new Color(1f, 0.5f, 0),
-                    percent = Mathf.Clamp01(riskExpose / barMax),
+                    color = new Color(0.7f, 0, 0),
+                    percent = Mathf.Clamp01(riskDot / barMax),
                 },
                 new UiBarBasic.BarSegment
                 {
-                    color = new Color(0.7f, 0, 0),
-                    percent = Mathf.Clamp01(riskDot / barMax),
+                    color = new Color(1f, 0.5f, 0),
+                    percent = Mathf.Clamp01(riskExpose / barMax),
                 },
                 new UiBarBasic.BarSegment
                 {

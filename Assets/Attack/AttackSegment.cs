@@ -335,7 +335,7 @@ public class AttackSegment
 
     public enum SourceLocation : byte
     {
-        World,
+        World=1,
         WorldForward,
         Body,
         BodyFixed

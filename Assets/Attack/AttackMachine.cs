@@ -37,9 +37,9 @@ public class AttackMachine
         {
             return locationOverride switch
             {
-                SourceLocation.Body => usesRangeForHitbox(typeOfHit),
-                SourceLocation.BodyFixed => usesRangeForHitbox(typeOfHit),
-                _ => RangeForShape.None,
+                SourceLocation.World => RangeForShape.None,
+                SourceLocation.WorldForward => RangeForShape.None,
+                _ => usesRangeForHitbox(typeOfHit),
             };
         }
     }

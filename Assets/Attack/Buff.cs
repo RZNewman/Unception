@@ -198,7 +198,7 @@ public class Buff : NetworkBehaviour, Duration
                 case BuffMode.Dot:
                     float timeThisTick = Mathf.Min(controllingDuration.remainingDuration, Time.fixedDeltaTime);
                     HarmValues harmThisTick = harm.tickPortion( timeThisTick / controllingDuration.maxDuration);
-                    Debug.Log(harmThisTick.damage);
+                    //Debug.Log(harmThisTick.damage);
                     manager.eventManager.fireHit(new GetHitEventData()
                     {
                         harm = harmThisTick,

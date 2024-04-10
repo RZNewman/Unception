@@ -232,23 +232,45 @@ public class Persistent : NetworkBehaviour, Duration
                     radius = data.hitRadius,
                     arcDegrees = 180,
                     height = data.hitRadius,
-                }
+                },
+                indicators = new List<IndicatorDisplay>(){ new IndicatorDisplay
+                {
+                    rotation = Quaternion.identity,
+                    scale = Vector3.one* data.hitRadius *2,
+                    shape = IndicatorShape.Circle,
+
+                } }
             };
             buildCompoundCollider(shapeD);
+            buildShapeInd(shapeD);
             ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }
         else if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave)
         {
             shapeD = getShapeData();
             buildCompoundCollider(shapeD);
+            buildShapeInd(shapeD);
             ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }
         else
         {
             shapeD = getShapeData();
             buildCompoundCollider(shapeD);
+            buildShapeInd(shapeD);
             ShapeParticle(transform.parent.GetComponent<SpellSource>(), shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }
+    }
+
+    void buildShapeInd(ShapeData shapeData)
+    {
+        GlobalPrefab global = FindObjectOfType<GlobalPrefab>();
+        GameObject indicator = Instantiate(
+            global.ShapeIndPre,
+            transform
+        );
+        HitIndicatorInstance i = indicator.GetComponent<HitIndicatorInstance>();
+        i.setSource(hitData, shapeData);
+        i.setTeam(data.team);
     }
 
     void buildCompoundCollider(ShapeData shapeData)
@@ -257,8 +279,6 @@ public class Persistent : NetworkBehaviour, Duration
         //Quaternion aim = Quaternion.LookRotation(transform.forward, calc.normal);
         foreach (ColliderInfo info in shapeData.colliders)
         {
-            //TODO
-            if (info.subtract) return;
             //Vector3 totalPosition = transform.position + aim * info.position;
             //Quaternion totalRotation = aim * info.rotation;
             GameObject h = new GameObject("Collider");

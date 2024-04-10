@@ -35,6 +35,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     private void Start()
     {
         updateColor();
+        setCurrentProgress(0);
         StartCoroutine(fixRotation());
     }
 
@@ -82,7 +83,12 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         if (transform.parent)
         {
-            transform.rotation = GetComponentInParent<SpellSource>().aimRotation();
+            SpellSource source = GetComponentInParent<SpellSource>();
+            if (source)
+            {
+                transform.rotation = source.aimRotation();
+            }
+            
         }
     }
 

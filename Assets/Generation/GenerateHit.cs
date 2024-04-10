@@ -117,7 +117,7 @@ public static class GenerateHit
                 dotType = dotType,
 
                 multiple = multiple,
-                multipleArcSpacing = multipleArc.asRange(15, 35),
+                multipleArcSpacing = multipleArc.asRange(10, 35),
             };
             return baseData;
 

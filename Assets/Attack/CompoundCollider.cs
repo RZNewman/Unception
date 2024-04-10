@@ -36,7 +36,7 @@ public class CompoundCollider : MonoBehaviour
         }
         foreach (FragmentCollider fragment in fragments)
         {
-            if (!fragment.colliding.Contains(col))
+            if (!fragment.isColliding(col))
             {
                 return;
             }
@@ -55,7 +55,7 @@ public class CompoundCollider : MonoBehaviour
         }
         foreach (FragmentCollider fragment in fragments)
         {
-            if (!fragment.colliding.Contains(col))
+            if (!fragment.isColliding(col))
             {
                 colliding.Remove(col);
                 callback(col, false);

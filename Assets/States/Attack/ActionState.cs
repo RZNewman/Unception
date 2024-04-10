@@ -112,7 +112,10 @@ public class ActionState : AttackStageState
         {
             case HitType.Attached:
                 //LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
-                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                if(attackData.dotType != DotType.Placed)
+                {
+                    ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                }
                 //LineParticle(info, attackData.flair, mover.sound.dists);
                 //hits = LineAttack(info);
                 hits = ShapeAttack(sourcePoint, shapeData);
@@ -124,7 +127,10 @@ public class ActionState : AttackStageState
                 break;
             case HitType.GroundPlaced:
                 //float radius = GroundRadius(attackData.length, attackData.width);
-                ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                if (attackData.dotType != DotType.Placed)
+                {
+                    ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
+                }
                 //GroundParticle(sourcePoint.transform.position, radius, sourcePoint.aimRotation(AimType.Normal), attackData.flair, mover.sound.dists);
                 hits = ShapeAttack(sourcePoint, shapeData);
                 //hits = GroundAttack(sourcePoint.transform.position, radius);

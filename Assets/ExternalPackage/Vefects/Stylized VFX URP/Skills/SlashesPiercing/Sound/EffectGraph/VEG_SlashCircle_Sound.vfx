@@ -16,10 +16,10 @@ MonoBehaviour:
   - title: SPARKLES
     position:
       serializedVersion: 2
-      x: 0
-      y: 0
-      width: 100
-      height: 100
+      x: 1506
+      y: -313
+      width: 2082
+      height: 2458
     contents:
     - model: {fileID: 8926484042661615015}
       id: 0
@@ -100,9 +100,9 @@ MonoBehaviour:
   uiBounds:
     serializedVersion: 2
     x: -317
-    y: -312
-    width: 3905
-    height: 5572
+    y: -313
+    width: 3906
+    height: 5578
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3664,7 +3664,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661615254}
-  m_UIPosition: {x: 3139, y: 1053}
+  m_UIPosition: {x: 3139, y: 1054}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -5162,7 +5162,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount
@@ -5252,7 +5252,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount
@@ -5376,7 +5376,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount
@@ -10972,7 +10972,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount
@@ -12835,7 +12835,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661616631}
-  m_UIPosition: {x: 2106, y: -251}
+  m_UIPosition: {x: 2106, y: -253}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -12872,7 +12872,7 @@ MonoBehaviour:
   m_Children:
   - {fileID: 8926484042661616598}
   - {fileID: 8926484042661616618}
-  m_UIPosition: {x: 2106, y: 901}
+  m_UIPosition: {x: 2106, y: 902}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -14033,7 +14033,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount
@@ -16452,7 +16452,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 30
     m_Space: 2147483647
   m_Property:
     name: LoopCount

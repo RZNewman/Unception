@@ -11,7 +11,7 @@ public interface IndicatorHolder
         public Vector3 newForward;
     }
 
-    public abstract Vector3 indicatorPosition(Vector3 forward);
+    public abstract Vector3 indicatorPosition();
 
     public abstract float offsetMultiplier();
 }

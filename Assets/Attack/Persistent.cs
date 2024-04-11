@@ -21,7 +21,7 @@ using System;
 using static SpellSource;
 using static GenerateHit.HitInstanceData;
 
-public class Persistent : NetworkBehaviour, Duration
+public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
 {
     public GameObject playerHit;
     public GameObject terrainHit;
@@ -433,5 +433,15 @@ public class Persistent : NetworkBehaviour, Duration
             Destroy(gameObject);
         }
 
+    }
+
+    public Vector3 indicatorPosition()
+    {
+        return data.sizeC.indicatorPosition();
+    }
+
+    public float offsetMultiplier()
+    {
+        return 0;
     }
 }

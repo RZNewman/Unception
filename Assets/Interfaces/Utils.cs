@@ -162,6 +162,54 @@ public static class Utils
         //return (point - (Vector3.Dot(point, vec.normalized) * vec.normalized)).magnitude;
     }
 
+    public static bool FullyInside(this SphereCollider sphere, CapsuleCollider capsule)
+    {
+        Vector3 pA, pB;
+        float radius;
+        capsule.ToWorldSpaceCapsule(out pA, out pB, out radius);
+        float distA = (pA - sphere.transform.position).magnitude;
+        float distB = (pB - sphere.transform.position).magnitude;
+
+        return Mathf.Max(distA, distB) + radius < sphere.radius;
+    }
+
+    //https://github.com/justonia/UnityExtensions/blob/master/PhysicsExtensions.cs
+    public static void ToWorldSpaceCapsule(this CapsuleCollider capsule, out Vector3 point0, out Vector3 point1, out float radius)
+    {
+        var center = capsule.transform.TransformPoint(capsule.center);
+        radius = 0f;
+        float height = 0f;
+        Vector3 lossyScale = capsule.transform.lossyScale.Abs();
+        Vector3 dir = Vector3.zero;
+
+        switch (capsule.direction)
+        {
+            case 0: // x
+                radius = Mathf.Max(lossyScale.y, lossyScale.z) * capsule.radius;
+                height = lossyScale.x * capsule.height;
+                dir = capsule.transform.TransformDirection(Vector3.right);
+                break;
+            case 1: // y
+                radius = Mathf.Max(lossyScale.x, lossyScale.z) * capsule.radius;
+                height = lossyScale.y * capsule.height;
+                dir = capsule.transform.TransformDirection(Vector3.up);
+                break;
+            case 2: // z
+                radius = Mathf.Max(lossyScale.x, lossyScale.y) * capsule.radius;
+                height = lossyScale.z * capsule.height;
+                dir = capsule.transform.TransformDirection(Vector3.forward);
+                break;
+        }
+
+        if (height < radius * 2f)
+        {
+            dir = Vector3.zero;
+        }
+
+        point0 = center + dir * (height * 0.5f - radius);
+        point1 = center - dir * (height * 0.5f - radius);
+    }
+
     public static float GaussRandomDecline(float balance = 2)
     {
         float value = Random.value;

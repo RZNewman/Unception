@@ -572,7 +572,7 @@ public static class AttackUtils
                     shape = IndicatorShape.BoxFull,
                     settings = new IndicatorShaderSettings
                     {
-                        forward = 2 - (2 * subtractPercent),
+                        forward = 2 * subtractPercent,
                         circle = 2,
 
                     },
@@ -585,7 +585,7 @@ public static class AttackUtils
                     shape = IndicatorShape.BoxFull,
                     settings = new IndicatorShaderSettings
                     {
-                        forward = 2 - (2 * subtractPercent),
+                        forward = 2 * subtractPercent,
                         circle = 2,
                     },
                 });

@@ -36,6 +36,7 @@ public abstract class IndicatorInstance : MonoBehaviour
     {
         updateColor();
         setCurrentProgress(0);
+        setLocalPosition();
         StartCoroutine(fixRotation());
     }
 
@@ -60,11 +61,8 @@ public abstract class IndicatorInstance : MonoBehaviour
         if (transform.parent)
         {
             GameObject trackingBody = transform.parent.gameObject;
-            FloorNormal ground = trackingBody.GetComponentInParent<FloorNormal>();
             IndicatorHolder ih = trackingBody.GetComponentInChildren<IndicatorHolder>();
-            Vector3 worldFoward = ground.forwardPlanarWorld(trackingBody.transform.forward);
-
-            transform.localPosition = ih.indicatorPosition(worldFoward) + currentOffsets.distance * ih.offsetMultiplier();
+            transform.localPosition = ih.indicatorPosition() + currentOffsets.distance * ih.offsetMultiplier();
 
         }
     }

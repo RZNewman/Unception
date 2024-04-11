@@ -24,7 +24,7 @@ public class Size : MonoBehaviour
                 return distance * 0.45f;
             }
         }
-        public Vector3 indicatorPosition(Vector3 worldForward)
+        public Vector3 indicatorPosition()
         {
             return indicatorHeight * Vector3.down;
                   

@@ -122,9 +122,9 @@ public class SpellSource : NetworkBehaviour, IndicatorHolder, TeamOwnership
     }
 
 
-    public Vector3 indicatorPosition(Vector3 forward)
+    public Vector3 indicatorPosition()
     {
-        return sizeC.indicatorPosition(forward);
+        return sizeC.indicatorPosition();
     }
     public float offsetMultiplier()
     {

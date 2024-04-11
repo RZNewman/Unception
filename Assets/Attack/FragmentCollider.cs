@@ -49,7 +49,11 @@ public class FragmentCollider : MonoBehaviour
     {
         foreach(Collider col in fullyInside.Keys.ToList())
         {
-            fullyInside[col] = isFullyInside(col);
+            if (col)
+            {
+                fullyInside[col] = isFullyInside(col);
+            }
+            
         }
     }
     bool isFullyInside(Collider col)
@@ -59,7 +63,7 @@ public class FragmentCollider : MonoBehaviour
         return col switch
         {
             SphereCollider s => (s.gameObject.transform.position - transform.position).magnitude + s.radius < myCol.radius,
-            CapsuleCollider c => false,
+            CapsuleCollider c => myCol.FullyInside(c),
             _ => throw new NotImplementedException(),
         };
     }

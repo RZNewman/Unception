@@ -25,6 +25,7 @@ public class Health : NetworkBehaviour, BarValue
     GlobalPlayer gp;
     Power power;
     UnitMovement mover;
+    LifeManager life;
 
     Dictionary<BuffMode, List<Buff>> buffReferences = new Dictionary<BuffMode, List<Buff>>();
     // Start is called before the first frame update
@@ -36,6 +37,7 @@ public class Health : NetworkBehaviour, BarValue
         gp = FindObjectOfType<GlobalPlayer>();
         mover = GetComponent<UnitMovement>();
         power = GetComponent<Power>();
+        life = GetComponent<LifeManager>();
 
         GetComponent<EventManager>().HitEvent += OnGetHit;
         GetComponent<EventManager>().ApplyEvent += OnApply;
@@ -46,16 +48,27 @@ public class Health : NetworkBehaviour, BarValue
         {
             maxHealth = 1;
             currentHealth = maxHealth;
-            GetComponent<Power>().subscribePower(updateMaxHealth);
+            if (power)
+            {
+                //dummys dont have power
+                power.subscribePower(updateMaxHealth);
+            }
+            
         }
 
     }
 
     void updateMaxHealth(Power p)
     {
-        float currentPercent = currentHealth / maxHealth;
+
         UnitPropsHolder holder = GetComponent<UnitPropsHolder>();
-        maxHealth = holder.props.maxHealthMult * holder.championHealthMultiplier * p.power;
+        setMaxHealth( holder.props.maxHealthMult * holder.championHealthMultiplier * p.power);
+    }
+
+    public void setMaxHealth(float h)
+    {
+        float currentPercent = currentHealth / maxHealth;
+        maxHealth = h;
         currentHealth = maxHealth * currentPercent;
     }
 
@@ -107,9 +120,11 @@ public class Health : NetworkBehaviour, BarValue
         //Not the local player
         if (!isOwned)
         {
-            Vector3 offset = Random.insideUnitSphere * 4;
+            float scale = Power.scaleNumerical(gp.player.power) / Power.currentBaseScales.world;
+            Vector3 offset = Random.insideUnitSphere * 3 * scale;
             GameObject o = Instantiate(damageDisplayPre, transform.position + offset, Quaternion.identity);
-            o.transform.localScale *= 4 * (damage / (gp.player.power * 0.4f)) * 0.9f;
+            o.GetComponent<Drifter>().startingVelocity = Vector3.up * 25 * scale;
+            o.transform.localScale *= (damage / (gp.player.power)) * 7f * scale;
             o.GetComponentInChildren<TMP_Text>().text = Power.displayPower(damage);
         }
 
@@ -122,7 +137,7 @@ public class Health : NetworkBehaviour, BarValue
         {
             return;
         }
-        if (!GetComponent<LifeManager>().IsDead)
+        if (life && !life.IsDead)
         {
             if (!combat.inCombat)
             {
@@ -196,7 +211,15 @@ public class Health : NetworkBehaviour, BarValue
             }
             exposedHealth += exposeDamage;
             //Debug.Log(data.harm.damage + " - " + incDamage + " - " + exposeDamage);
-            takeDamageHit(incDamage);
+            if (data.stopExpose)
+            {
+                takeDamageNoDisplay(incDamage);
+            }
+            else
+            {
+                takeDamageHit(incDamage);
+            }
+            
         }
     }
     void OnApply(ApplyDotEventData data)
@@ -231,7 +254,7 @@ public class Health : NetworkBehaviour, BarValue
             {
                 new UiBarBasic.BarSegment
                 {
-                    color = combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
+                    color =  !combat || combat.inCombat ? Color.red : new Color(1, 0.5f, 0),
                     percent = Mathf.Clamp01(safeHealth / barMax),
                 },
                 new UiBarBasic.BarSegment

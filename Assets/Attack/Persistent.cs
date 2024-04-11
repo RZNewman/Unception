@@ -292,12 +292,12 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             {
                 case BoxInfo box:
                     BoxCollider b = h.AddComponent<BoxCollider>();
-                    h.transform.localScale = box.size;
+                    b.size = box.size;
                     b.isTrigger = true;
                     break;
                 case SphereInfo sphere:
                     SphereCollider s = h.AddComponent<SphereCollider>();
-                    h.transform.localScale = Vector3.one * sphere.radius * 2;
+                    s.radius = sphere.radius;
                     s.isTrigger = true;
                     break;
                 case CapsuleInfo capsule:

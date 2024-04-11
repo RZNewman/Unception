@@ -161,7 +161,22 @@ public static class Utils
         return HandleUtility.DistancePointLine(point, Vector3.zero, vec);
         //return (point - (Vector3.Dot(point, vec.normalized) * vec.normalized)).magnitude;
     }
+    public static bool FullyInside(this SphereCollider sphere, BoxCollider box)
+    {
 
+        float dist = (box.transform.position - sphere.transform.position).magnitude;
+
+        float radius = box.bounds.max.magnitude;
+        return dist + radius < sphere.radius;
+    }
+    public static bool FullyInside(this SphereCollider sphere, SphereCollider otherSphere)
+    {
+
+        float dist = (otherSphere.transform.position - sphere.transform.position).magnitude;
+
+
+        return dist + otherSphere.radius < sphere.radius;
+    }
     public static bool FullyInside(this SphereCollider sphere, CapsuleCollider capsule)
     {
         Vector3 pA, pB;
@@ -170,6 +185,7 @@ public static class Utils
         float distA = (pA - sphere.transform.position).magnitude;
         float distB = (pB - sphere.transform.position).magnitude;
 
+        //Debug.Log(distA + " - " + distB + " - " + radius + " - " + sphere.radius);
         return Mathf.Max(distA, distB) + radius < sphere.radius;
     }
 

@@ -41,8 +41,14 @@ public class UnitUiReference : MonoBehaviour
             }
         }
         healthbar.source = unitTarget.GetComponentInParent<Health>();
-        staggerbar.source = unitTarget.GetComponentInParent<Posture>();
-        castbar.source = unitTarget.GetComponentInParent<Cast>();
+        if (staggerbar)
+        {
+            staggerbar.source = unitTarget.GetComponentInParent<Posture>();
+        }
+        if (castbar)
+        {
+            castbar.source = unitTarget.GetComponentInParent<Cast>();
+        }
         if (mezmerizeBar)
         {
             mezmerizeBar.source = unitTarget.GetComponentInParent<Mezmerize>();

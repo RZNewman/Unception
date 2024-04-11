@@ -32,8 +32,13 @@ public class FragmentCollider : MonoBehaviour
         if (subtract)
         {
             fullyInside.Add(other, isFullyInside(other));
+            comp.checkCollisionExit(other);
         }
-        comp.checkCollisionEnter(other);
+        else
+        {
+            comp.checkCollisionEnter(other);
+        }
+        
     }
     private void OnTriggerExit(Collider other)
     {
@@ -41,8 +46,13 @@ public class FragmentCollider : MonoBehaviour
         if (subtract)
         {
             fullyInside.Remove(other);
+            comp.checkCollisionEnter(other);
         }
-        comp.checkCollisionExit(other);
+        else
+        {
+            comp.checkCollisionExit(other);
+        }
+        
     }
 
     private void FixedUpdate()
@@ -53,6 +63,10 @@ public class FragmentCollider : MonoBehaviour
             {
                 fullyInside[col] = isFullyInside(col);
             }
+            else
+            {
+                fullyInside.Remove(col);
+            }
             
         }
     }
@@ -62,8 +76,9 @@ public class FragmentCollider : MonoBehaviour
 
         return col switch
         {
-            SphereCollider s => (s.gameObject.transform.position - transform.position).magnitude + s.radius < myCol.radius,
+            SphereCollider s => myCol.FullyInside(s),
             CapsuleCollider c => myCol.FullyInside(c),
+            BoxCollider b => myCol.FullyInside(b),
             _ => throw new NotImplementedException(),
         };
     }

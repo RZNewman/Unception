@@ -37,7 +37,7 @@ namespace Mirror
         // Update applies interpolation
         void Update()
         {
-            if (isServer) UpdateServerInterpolation();
+            if (isServer && NetworkServer.HasExternalConnections()) UpdateServerInterpolation();
             // for all other clients (and for local player if !authority),
             // we need to apply snapshots from the buffer.
             // 'else if' because host mode shouldn't interpolate client

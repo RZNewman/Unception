@@ -1760,29 +1760,24 @@ namespace Mirror
                 // has this connection joined the world yet?
                 // for each READY connection:
                 //   pull in UpdateVarsMessage for each entity it observes
-                if (connection.isReady)
+                if (connection.isReady && HasExternalConnections())
                 {
                     //skip expensive sending on a hosted connection
-                    if(activeHost && localConnection.connectionId == connection.connectionId)
-                    {
-                        //nothing   
-                    }
-                    else
-                    {
-                        // send time for snapshot interpolation every sendInterval.
-                        // BroadcastToConnection() may not send if nothing is new.
-                        //
-                        // sent over unreliable.
-                        // NetworkTime / Transform both use unreliable.
-                        //
-                        // make sure Broadcast() is only called every sendInterval,
-                        // even if targetFrameRate isn't set in host mode (!)
-                        // (done via AccurateInterval)
-                        connection.Send(new TimeSnapshotMessage(), Channels.Unreliable);
 
-                        // broadcast world state to this connection
-                        BroadcastToConnection(connection);
-                    }
+                    // send time for snapshot interpolation every sendInterval.
+                    // BroadcastToConnection() may not send if nothing is new.
+                    //
+                    // sent over unreliable.
+                    // NetworkTime / Transform both use unreliable.
+                    //
+                    // make sure Broadcast() is only called every sendInterval,
+                    // even if targetFrameRate isn't set in host mode (!)
+                    // (done via AccurateInterval)
+                    connection.Send(new TimeSnapshotMessage(), Channels.Unreliable);
+
+                    // broadcast world state to this connection
+                    BroadcastToConnection(connection);
+                    
                     
                 }
 

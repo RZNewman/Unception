@@ -23,6 +23,7 @@ using static GroveObject;
 using static Grove;
 using static Power;
 using static Size;
+using UnityEditor.PackageManager.UI;
 
 public static class GenerateAttack
 {
@@ -174,6 +175,10 @@ public static class GenerateAttack
                         windsRepeat.Add(windRepeat);
                     }
                     winds.AddRange(windsRepeat);
+                }
+                if (hit.dotType == DotType.Channeled)
+                {
+                    winds.Add(winddown.duplicate(hit.dotTime, hit.dotBaseTime));
                 }
                 return winds;
             }
@@ -669,6 +674,13 @@ public static class GenerateAttack
                 {
                     windList.Add(windRepeat);
                 }
+            }
+
+            if (segment.hit.dotType == DotType.Channeled)
+            {
+                float dotTimeCalc, dotBaseCalc;
+                segment.hit.dotCalulations(opts.scales, out dotTimeCalc, out dotBaseCalc,out _);
+                windList.Add(down.duplicate(dotTimeCalc, dotBaseCalc));
             }
 
             instanceStrength += getWindValue(windList.ToArray(), opts.reduceWindValue.GetValueOrDefault(false));

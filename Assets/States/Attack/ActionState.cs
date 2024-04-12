@@ -10,6 +10,7 @@ using static GenerateDefense;
 using System.Linq;
 using System;
 using static GenerateHit.HitInstanceData;
+using static Persistent;
 
 public class ActionState : AttackStageState
 {
@@ -63,10 +64,18 @@ public class ActionState : AttackStageState
                 center = source.transform.position,
                 direction = source.transform.forward
             });
-            if(attackData.dotType == DotType.Placed)
+            if(attackData.willCreateAura)
             {
+
+                PersistMode mode = attackData.dotType switch
+                {
+                    DotType.Placed => PersistMode.AuraPlaced,
+                    DotType.Channeled => PersistMode.AuraChanneled,
+                    DotType.Carried => PersistMode.AuraCarried,
+                    _ => throw new NotImplementedException(),
+                };
                 harm.OverTime = null;
-                SpawnPersistent(source, mover,attackData, null, null, mover.sound.dists, true);
+                SpawnPersistent(source, mover,attackData, null, null, mover.sound.dists, mode);
             }
 
 
@@ -112,7 +121,7 @@ public class ActionState : AttackStageState
         {
             case HitType.Attached:
                 //LineInfo info = LineCalculations(sourcePoint, attackData.range, attackData.length, attackData.width);
-                if(attackData.dotType != DotType.Placed)
+                if(!attackData.willCreateAura)
                 {
                     ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
                 }
@@ -123,11 +132,11 @@ public class ActionState : AttackStageState
                 break;
             case HitType.ProjectileExploding:
             case HitType.ProjectileWave:
-                SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists, false);
+                SpawnPersistent(sourcePoint, mover, attackData, buffData, hitList, mover.sound.dists, Persistent.PersistMode.Default);
                 break;
             case HitType.GroundPlaced:
                 //float radius = GroundRadius(attackData.length, attackData.width);
-                if (attackData.dotType != DotType.Placed)
+                if (!attackData.willCreateAura)
                 {
                     ShapeParticle(sourcePoint, shapeData, attackData.shape, attackData.flair, mover.sound.dists);
                 }

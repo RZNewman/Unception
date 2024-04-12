@@ -63,34 +63,54 @@ public static class AttackUtils
         }
 
     }
-    public static GameObject SpawnPersistent(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, bool isAura)
+    public static GameObject SpawnPersistent(SpellSource source, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, PersistMode persistMode)
     {
         Quaternion aim = source.aimRotation();
         CapsuleSize sizeC = source.sizeCapsule;
-        return SpawnPersistent(aim, source.gameObject,sizeC, mover, hitData, buffData, hitList, dists, isAura);
+        return SpawnPersistent(aim, source.gameObject,sizeC, mover, hitData, buffData, hitList, dists, persistMode);
     }
 
-    public static GameObject SpawnPersistent(Quaternion aim, GameObject root, CapsuleSize sizeC, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, bool isAura)
+    public static GameObject SpawnPersistent(Quaternion aim, GameObject root, CapsuleSize sizeC, UnitMovement mover, HitInstanceData hitData, BuffInstanceData buffData, HitList hitList, AudioDistances dists, PersistMode persistMode)
     {
         GameObject prefab = GlobalPrefab.gPre.ProjectilePre;
         GameObject instance = GameObject.Instantiate(prefab, root.transform.position, aim);
         MoveMode moveType = MoveMode.World;
-        if (hitData.type == HitType.DamageDash)
+        if(persistMode == PersistMode.Default)
         {
-            instance.transform.parent = root.transform;
-            instance.GetComponent<ClientAdoption>().parent = root;
+            persistMode =  hitData.type switch
+            {
+                HitType.ProjectileExploding => PersistMode.Explode,
+                HitType.ProjectileWave => PersistMode.Wave,
+                HitType.DamageDash => PersistMode.Dash,
+                _ => throw new NotImplementedException(),
+            };
+        }
+        
+
+
+        if (persistMode == PersistMode.Dash || persistMode == PersistMode.AuraChanneled || persistMode == PersistMode.AuraCarried)
+        {
             moveType = MoveMode.Parent;
+            if(persistMode == PersistMode.AuraCarried)
+            {
+                ClientAdoption adopt = root.GetComponentInParent<UnitMovement>().GetComponent<ClientAdoption>();
+                instance.GetComponent<ClientAdoption>().parent = adopt.gameObject;
+                instance.GetComponent<ClientAdoption>().useSubBody = true;
+                instance.transform.parent = adopt.GetComponentInChildren<UnitRotation>().transform;
+            }
+            else
+            {
+                instance.transform.parent = root.transform;
+                instance.GetComponent<ClientAdoption>().parent = root;
+            }
+
+            
+            
+            
         }
         Persistent p = instance.GetComponent<Persistent>();
-        NetworkServer.Spawn(instance);
-        PersistMode modeP = isAura ? PersistMode.AuraPlaced : hitData.type switch
-        {
-            HitType.ProjectileExploding  => PersistMode.Explode,
-            HitType.ProjectileWave => PersistMode.Wave,
-            HitType.DamageDash => PersistMode.Dash,
-            _=> throw new NotImplementedException(),
-        };
-        p.init(sizeC, mover, hitData, buffData, hitList, moveType, dists, modeP);      
+        NetworkServer.Spawn(instance);     
+        p.init(sizeC, mover, hitData, buffData, hitList, moveType, dists, persistMode);      
         return instance;
     }
 

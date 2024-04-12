@@ -10,23 +10,31 @@ using static AttackUtils;
 using static FloorNormal;
 using static Size;
 using static SpellSource;
+using System;
 
 public class WindState : AttackStageState, BarValue
 {
-    bool isWinddown;
+    WindType type;
     WindInstanceData windData;
     SpellSource[] groundTargets = new SpellSource[0];
     bool hardCast;
 
+    public enum WindType
+    {
+        Up,
+        Down,
+        Channel
+    }
+
     public WindState(UnitMovement m) : base(m)
     {
         //Only for defaults
-        isWinddown = false;
+        type = WindType.Up;
     }
 
-    public WindState(UnitMovement m, WindInstanceData d, bool winddown, bool hardCasted) : base(m, d.duration)
+    public WindState(UnitMovement m, WindInstanceData d, WindType type, bool hardCasted) : base(m, d.duration)
     {
-        isWinddown = winddown;
+        this.type = type;
         windData = d;
         hardCast = hardCasted;
     }
@@ -94,12 +102,24 @@ public class WindState : AttackStageState, BarValue
 
     public BarValue.BarData getBarFill()
     {
-        Color c = !isWinddown ? Color.cyan : new Color(0, 0.6f, 1);
+        Color c = type switch
+        {
+            WindType.Up => Color.cyan,
+            WindType.Down => new Color(0, 0.6f, 1),
+            WindType.Channel => new Color(0.4f, 1f, 1),
+            _ => throw new NotImplementedException()
+        };
+        bool backwards = type switch
+        {
+            WindType.Down => true,
+            _ => false
+        };
+
         c.a = 0.6f;
         return new BarValue.BarData
         {
             color = c,
-            fillPercent = Mathf.Clamp01(!isWinddown ? 1 - (currentDurration / maxDuration) : currentDurration / maxDuration),
+            fillPercent = Mathf.Clamp01(backwards ? currentDurration / maxDuration : 1 - (currentDurration / maxDuration)),
             active = true,
             text = mover.currentAbilityName(),
         };

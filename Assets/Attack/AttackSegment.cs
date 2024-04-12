@@ -10,6 +10,7 @@ using static GenerateHit;
 using static Size;
 using static SpellSource;
 using static Utils;
+using static WindState;
 
 public class AttackSegment
 {
@@ -248,16 +249,22 @@ public class AttackSegment
             AttackSegment finalSeg = new AttackSegment();
             List<AttackStageState> states = new List<AttackStageState>();
 
-            WindState windup = new WindState(mover, seg.windup, false, castData.hardCast);
+            WindState windup = new WindState(mover, seg.windup, WindType.Up, castData.hardCast);
 
 
-            AttackStageState getHitState()
+            List<AttackStageState> getHitState()
             {
-                return seg.hit.type switch
+                List<AttackStageState> sts = new List<AttackStageState>();
+                sts.Add(seg.hit.type switch
                 {
                     HitType.DamageDash => new DashState(mover, finalSeg, seg.hit, seg.buff, seg.defense, true),
                     _ => new ActionState(mover, finalSeg, seg.hit, seg.buff, seg.defense, castData.hardCast, castData.usesRange(seg.hit.type)),
-                };
+                });
+                if(seg.hit.dotType == DotType.Channeled)
+                {
+                    sts.Add(new WindState(mover, seg.winddown.duplicate(seg.hit.dotTime,seg.hit.dotBaseTime), WindType.Channel, castData.hardCast));
+                }
+                return sts;
             }
             finalSeg.hitData = seg.hit;
 
@@ -268,7 +275,7 @@ public class AttackSegment
                 List<AttackStageState> repeatStates = new List<AttackStageState>();
                 for (int j = 0; j < seg.repeat.repeatCount; j++)
                 {
-                    repeatStates.Add(getHitState());
+                    repeatStates.AddRange(getHitState());
                     if (seg.dash != null && seg.dashInside)
                     {
                         if (seg.dashAfter)
@@ -282,7 +289,7 @@ public class AttackSegment
                     }
                     if (j < seg.repeat.repeatCount - 1)
                     {
-                        repeatStates.Add(new WindState(mover, seg.windRepeat, false, castData.hardCast));
+                        repeatStates.Add(new WindState(mover, seg.windRepeat, WindType.Up, castData.hardCast));
                     }
                     effectStates.AddRange(repeatStates);
                     repeatStates.Clear();
@@ -290,7 +297,7 @@ public class AttackSegment
             }
             else
             {
-                effectStates.Add(getHitState());
+                effectStates.AddRange(getHitState());
             }
 
             if (seg.dash != null && !seg.dashInside)
@@ -307,7 +314,7 @@ public class AttackSegment
             states.AddRange(effectStates);
             if (seg.winddown != null)
             {
-                WindState winddown = new WindState(mover, seg.winddown, true, castData.hardCast);
+                WindState winddown = new WindState(mover, seg.winddown, WindType.Down, castData.hardCast);
                 states.Add(winddown);
                 finalSeg.winddown = winddown;
             }

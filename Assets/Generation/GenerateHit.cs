@@ -50,6 +50,7 @@ public static class GenerateHit
     {
         Applied,
         Placed,
+        Carried,
         Channeled,
     }
 
@@ -89,12 +90,9 @@ public static class GenerateHit
             StatStream stream = new StatStream();
             stream.setStats(stats);
 
-            float dotBaseTime = this.dotTime.asRange(5f, 20f);
-            float dotMultMax = dotType switch
-            {
-                DotType.Placed => 3,
-                _ => 0.2f,
-            };
+            float dotTimeCalc, dotBaseCalc, dotMultCalc;
+            dotCalulations(scalesStart,out dotTimeCalc, out dotBaseCalc, out dotMultCalc);
+            
             HitInstanceData baseData = new HitInstanceData
             {
                 bakedStrength = strength,
@@ -110,8 +108,9 @@ public static class GenerateHit
                 type = this.type,
                 shape = this.shape,
                 dotPercent = dotPercent,
-                dotTime = dotBaseTime / scalesStart.time,
-                dotAddedMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, 20 + 1), 1.5f) * dotMultMax,
+                dotTime = dotTimeCalc,
+                dotBaseTime = dotBaseCalc,
+                dotAddedMult = dotMultCalc,
                 exposePercent = exposePercent,
                 splitMode =splitMode,
                 dotType = dotType,
@@ -123,7 +122,35 @@ public static class GenerateHit
 
         }
 
+        public void dotCalulations(Scales scales, out float dotTime, out float dotBaseTime, out float dotMult)
+        {
+            float dotMinTime = dotType switch
+            {
+                DotType.Channeled => 1,
+                DotType.Carried => 3,
+                _ => 5f,
+            };
 
+            float dotMaxTime = dotType switch
+            {
+                DotType.Placed => 15,
+                DotType.Channeled => 4,
+                DotType.Carried => 10,
+                _ => 20f,
+            };
+
+            dotBaseTime = this.dotTime.asRange(dotMinTime, dotMaxTime);
+            float dotMultMax = dotType switch
+            {
+                DotType.Placed => 3,
+                DotType.Channeled => 0.5f,
+                DotType.Carried => 1.2f,
+                _ => 0.2f,
+            };
+            dotMult = Mathf.Pow(Mathf.Log(dotBaseTime + 1, dotMaxTime + 1), 1.5f) * dotMultMax;
+
+            dotTime = dotBaseTime / scales.time;
+        }
     }
 
     public class HitInstanceData : InstanceData
@@ -137,6 +164,7 @@ public static class GenerateHit
         public HitFlair flair;
         public float dotPercent;
         public float dotTime;
+        public float dotBaseTime;
         public float dotAddedMult;
         public SplitMode splitMode;
         public DotType dotType;
@@ -200,6 +228,14 @@ public static class GenerateHit
         float getStat(Stat stat)
         {
             return stream.getValue(stat, scales, type, shape) * dynamicStrength;
+        }
+
+        public bool willCreateAura
+        {
+            get
+            {
+                return dotType == DotType.Placed || dotType == DotType.Carried || dotType == DotType.Channeled;
+            }
         }
 
         public override EffectiveDistance GetEffectiveDistance(CapsuleSize sizeC)
@@ -490,9 +526,17 @@ public static class GenerateHit
 
             r = Random.value;
             //r = 0.1f;
-            if (r < 0.6f && (t == HitType.Attached || t == HitType.GroundPlaced || t == HitType.ProjectileExploding))
+            if (r < 0.4f && (t == HitType.Attached || t == HitType.GroundPlaced || t == HitType.ProjectileExploding))
             {
                 dotType = DotType.Placed;
+            }
+            else if (r < 0.6f && (t == HitType.Attached || t == HitType.GroundPlaced) && !conditions.HasValue)
+            {
+                dotType = DotType.Channeled;
+            }
+            else if (r < 0.7f && (t == HitType.Attached))
+            {
+                dotType = DotType.Carried;
             }
 
         }

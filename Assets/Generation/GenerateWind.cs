@@ -100,6 +100,22 @@ public static class GenerateWind
                 return getStat(Stat.MovespeedCast);
             }
         }
+
+        public WindInstanceData duplicate(float newDuration, float newBase)
+        {
+            return new WindInstanceData
+            {
+                duration = newDuration,
+                moveMult = moveMult,
+                turnMult = turnMult,
+                baseDuration = newBase,
+                stream = stream,
+                bakedStrength = bakedStrength,
+                powerAtGen = powerAtGen,
+                percentOfEffect = percentOfEffect,
+                scales = scales,
+            };
+        }
     }
     public static WindGenerationData createWind(float durrationMinPercent, float durrationMaxPercent, bool isWinddown)
     {

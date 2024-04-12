@@ -52,10 +52,14 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
 
     public enum PersistMode
     {
+        //default switches to another option
+        Default,
         Explode,
         Wave,
         Dash,
         AuraPlaced,
+        AuraCarried,
+        AuraChanneled,
     }
 
     [SyncVar]
@@ -110,7 +114,7 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             {
                 fireExplode(transform.position + transform.forward * data.hitRadius);
             }
-            if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave)
+            if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave || mode == PersistMode.AuraCarried || mode == PersistMode.AuraChanneled)
             {
                 Destroy(gameObject);
             }
@@ -190,7 +194,7 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             lifetime = maxLifetime;
             setSpeed(hitD.range / lifetime);
         }
-        if (mode == PersistMode.AuraPlaced)
+        if (mode == PersistMode.AuraPlaced || mode == PersistMode.AuraChanneled || mode == PersistMode.AuraCarried)
         {
             maxLifetime = hitData.dotTime;
             lifetime = maxLifetime;
@@ -245,7 +249,7 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             buildShapeInd(shapeD);
             ShapeParticle(transform.rotation, transform.position, transform.forward, shapeD, data.hitDataCaptured.shape, data.hitDataCaptured.flair, mover.sound.dists, transform);
         }
-        else if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave)
+        else if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave || mode == PersistMode.AuraCarried)
         {
             shapeD = getShapeData();
             buildCompoundCollider(shapeD);
@@ -330,6 +334,8 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
                     switch (mode)
                     {
                         case PersistMode.AuraPlaced:
+                        case PersistMode.AuraCarried:
+                        case PersistMode.AuraChanneled:
                             other.GetComponentInParent<BuffManager>().addBuff(AuraBuff);
                             break;
                         case PersistMode.Explode:
@@ -355,6 +361,8 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
                     switch (mode)
                     {
                         case PersistMode.AuraPlaced:
+                        case PersistMode.AuraCarried:
+                        case PersistMode.AuraChanneled:
                             other.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
                             break;
                     }
@@ -372,7 +380,9 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
         switch (mode)
         {
             case PersistMode.AuraPlaced:
-                foreach(Collider col in playerHit.GetComponent<CompoundCollider>().colliding)
+            case PersistMode.AuraCarried:
+            case PersistMode.AuraChanneled:
+                foreach (Collider col in playerHit.GetComponent<CompoundCollider>().colliding)
                 {
                     col.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
                 }
@@ -394,10 +404,11 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             center = contact,
             direction = transform.forward
         });
+        //Cant channel a projectile
         if (hitData.dotType == DotType.Placed)
         {
             harm.OverTime = null;
-            SpawnPersistent(aim, gameObject,data.sizeC, mover, hitData, null, null, mover.sound.dists, true);
+            SpawnPersistent(aim, gameObject,data.sizeC, mover, hitData, null, null, mover.sound.dists, PersistMode.AuraPlaced);
         }
 
         foreach (GameObject o in hits)

@@ -158,8 +158,22 @@ public static class Utils
 
     public static float DistanceToLine(this Vector3 vec, Vector3 point)
     {
-        return HandleUtility.DistancePointLine(point, Vector3.zero, vec);
-        //return (point - (Vector3.Dot(point, vec.normalized) * vec.normalized)).magnitude;
+        return Vector3.Magnitude(ProjectPointLine(point, Vector3.zero, vec) - point);
+    }
+    public static Vector3 ProjectPointLine(Vector3 point, Vector3 lineStart, Vector3 lineEnd)
+    {
+        Vector3 rhs = point - lineStart;
+        Vector3 vector = lineEnd - lineStart;
+        float magnitude = vector.magnitude;
+        Vector3 vector2 = vector;
+        if (magnitude > 1E-06f)
+        {
+            vector2 /= magnitude;
+        }
+
+        float value = Vector3.Dot(vector2, rhs);
+        value = Mathf.Clamp(value, 0f, magnitude);
+        return lineStart + vector2 * value;
     }
     public static bool FullyInside(this SphereCollider sphere, BoxCollider box)
     {

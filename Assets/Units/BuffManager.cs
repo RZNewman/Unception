@@ -2,7 +2,6 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using static EventManager;
 using static GenerateBuff;
@@ -38,6 +37,7 @@ public class BuffManager : NetworkBehaviour
     public void addBuff(Buff b)
     {
         buffs.Add(b);
+        //Debug.Log("ADD");
         b.setManager(this);
         events.TickEvent += b.Tick;
         events.CastEvent += b.OnCast;
@@ -61,6 +61,7 @@ public class BuffManager : NetworkBehaviour
     public void removeBuff(Buff b)
     {
         buffs.Remove(b);
+        //Debug.Log("REMOVE");
         EventManager events = transform.GetComponentInParent<EventManager>();
         events.TickEvent -= b.Tick;
         events.CastEvent -= b.OnCast;

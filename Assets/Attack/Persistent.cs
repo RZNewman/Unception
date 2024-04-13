@@ -384,7 +384,11 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             case PersistMode.AuraChanneled:
                 foreach (Collider col in playerHit.GetComponent<CompoundCollider>().colliding)
                 {
-                    col.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
+                    if (col)
+                    {
+                        col.GetComponentInParent<BuffManager>().removeBuff(AuraBuff);
+                    }
+                    
                 }
                 break;
         }

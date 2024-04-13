@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +14,11 @@ public class FragmentCollider : MonoBehaviour
     Dictionary<Collider,bool> fullyInside = new Dictionary<Collider, bool>();
     public bool isColliding(Collider col)
     {
-
+        //Debug.Log(name + "Check");
+        //foreach(Collider c in colliding)
+        //{
+        //    Debug.Log(c);
+        //}
         return subtract ? !fullyInside.ContainsKey(col) || !fullyInside[col] : colliding.Contains(col);
 
     }
@@ -24,18 +27,26 @@ public class FragmentCollider : MonoBehaviour
     {
         comp = GetComponentInParent<CompoundCollider>();
         comp.addFragment(this);
+        name = "Fragment" + Random.Range(1, 1000);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        colliding.Add(other);
+        //TODO this shouldnt be able to hit twice...
+        if (!colliding.Contains(other))
+        {
+            colliding.Add(other);
+        }
+        //colliding.Add(other);
         if (subtract)
         {
+            //Debug.Log("x sub" + name + " - " + other.name);
             fullyInside.Add(other, isFullyInside(other));
             comp.checkCollisionExit(other);
         }
         else
         {
+            //Debug.Log("e" + name + " - " + other.name);
             comp.checkCollisionEnter(other);
         }
         
@@ -45,11 +56,13 @@ public class FragmentCollider : MonoBehaviour
         colliding.Remove(other);
         if (subtract)
         {
+            //Debug.Log("e - sub" + name + " - " + other.name);
             fullyInside.Remove(other);
             comp.checkCollisionEnter(other);
         }
         else
         {
+            //Debug.Log("x"+ name +" - "+ other.name);
             comp.checkCollisionExit(other);
         }
         
@@ -61,7 +74,19 @@ public class FragmentCollider : MonoBehaviour
         {
             if (col)
             {
+                bool last = fullyInside[col];
                 fullyInside[col] = isFullyInside(col);
+                if(last != fullyInside[col])
+                {
+                    if (last)
+                    {
+                        comp.checkCollisionEnter(col);
+                    }
+                    else
+                    {
+                        comp.checkCollisionExit(col);
+                    }
+                }
             }
             else
             {
@@ -79,7 +104,7 @@ public class FragmentCollider : MonoBehaviour
             SphereCollider s => myCol.FullyInside(s),
             CapsuleCollider c => myCol.FullyInside(c),
             BoxCollider b => myCol.FullyInside(b),
-            _ => throw new NotImplementedException(),
+            _ => throw new System.NotImplementedException(),
         };
     }
 }

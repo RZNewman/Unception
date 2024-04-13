@@ -16,6 +16,8 @@ public class UnitUpdateOrder : NetworkBehaviour
 
     [SyncVar(hook =nameof(hookRegistration))]
     bool registered;
+
+
     void Start()
     {
 
@@ -31,6 +33,9 @@ public class UnitUpdateOrder : NetworkBehaviour
         gravity = GetComponent<Gravity>();
 
         eventManager.suscribeDeath((d) => setRegistration(false));
+
+        setUpdateScripts(registered);
+
     }
 
     public void setRegistration(bool register)
@@ -62,8 +67,16 @@ public class UnitUpdateOrder : NetworkBehaviour
             {
                 globalUpdate.unregister(this);
             }
+            setUpdateScripts(register);
         }
         
+    }
+
+    private void setUpdateScripts(bool active)
+    {
+        GetComponent<ControlManager>().enabled = active;
+        GetComponentInChildren<UnitRotation>().enabled = active;
+        GetComponentInChildren<UnitEye>().enabled = active;
     }
 
 

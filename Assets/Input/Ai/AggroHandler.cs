@@ -105,6 +105,10 @@ public class AggroHandler : MonoBehaviour
                     targetCollider = d.targetCollider
                 });
                 i--;
+                if (aggroedEnemies.Count == 0)
+                {
+                    GetComponentInParent<UnitUpdateOrder>().setRegistration(false);
+                }
             }
             else
             {
@@ -130,6 +134,10 @@ public class AggroHandler : MonoBehaviour
     {
         if (!aggroedEnemies.Select((ag) => ag.targetCollider).Contains(target))
         {
+            if(aggroedEnemies.Count == 0)
+            {
+                GetComponentInParent<UnitUpdateOrder>().setRegistration(true);
+            }
             setCombat();
             GameObject targetParent = target.GetComponentInParent<Combat>().gameObject;
             aggroedEnemies.Add(new AggroData

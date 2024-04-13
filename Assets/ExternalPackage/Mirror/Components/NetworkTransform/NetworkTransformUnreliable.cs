@@ -37,7 +37,7 @@ namespace Mirror
         // Update applies interpolation
         void Update()
         {
-            if (isServer && NetworkServer.HasExternalConnections()) UpdateServerInterpolation();
+            if (isServer) { if (NetworkServer.HasExternalConnections()) UpdateServerInterpolation(); }
             // for all other clients (and for local player if !authority),
             // we need to apply snapshots from the buffer.
             // 'else if' because host mode shouldn't interpolate client
@@ -52,7 +52,7 @@ namespace Mirror
         void LateUpdate()
         {
             // if server then always sync to others.
-            if (isServer) UpdateServerBroadcast();
+            if (isServer) { if (NetworkServer.HasExternalConnections()) UpdateServerBroadcast(); }
             // client authority, and local player (= allowed to move myself)?
             // 'else if' because host mode shouldn't send anything to server.
             // it is the server. don't overwrite anything there.

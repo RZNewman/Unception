@@ -196,8 +196,4 @@ public class InputHandler : MonoBehaviour, UnitControl
 
     }
 
-    public bool isAiActive()
-    {
-        return false;
-    }
 }

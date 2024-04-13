@@ -19,6 +19,7 @@ public class Interactor : NetworkBehaviour
         interactionPrompt.SetActive(false);
         lp = GetComponent<LocalPlayer>();
         mover = GetComponent<UnitMovement>();
+        this.enabled = lp.isLocalUnit;
     }
 
     List<Interaction> zones = new List<Interaction>();

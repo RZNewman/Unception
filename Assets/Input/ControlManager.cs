@@ -109,7 +109,6 @@ public class ControlManager : NetworkBehaviour, TeamOwnership
         {
             if (!isPlayer)
             {
-                updater.setRegistration(controller.isAiActive());
                 controller.refreshInput();
                 currentInput.reset();
                 currentInput.merge(controller.getUnitInuput());

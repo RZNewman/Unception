@@ -101,7 +101,7 @@ public class Ability : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+     public void Tick()
     {
         if (charges < chargeMax && cooldownTicking)
         {

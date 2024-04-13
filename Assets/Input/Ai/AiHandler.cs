@@ -33,10 +33,6 @@ public class AiHandler : MonoBehaviour, UnitControl
         return currentInput;
     }
 
-    public bool isAiActive()
-    {
-        return aggro?.getTopTarget() ?? false;
-    }
     public void init()
     {
         currentInput = new UnitInput();

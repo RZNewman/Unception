@@ -11,6 +11,12 @@ public class AbilityManager : NetworkBehaviour
     Dictionary<int, Ability> instancedAbilitites = new Dictionary<int, Ability>();
     Dictionary<ItemSlot, int> slotLookups = new Dictionary<ItemSlot, int>();
 
+    EventManager events;
+
+    private void Awake()
+    {
+        events = GetComponent<EventManager>();
+    }
     private void Start()
     {
 
@@ -63,6 +69,7 @@ public class AbilityManager : NetworkBehaviour
 
     public void registerAbility(ItemSlot k, Ability a)
     {
+        events.TickEvent += a.Tick;
         instancedAbilitites.Add(a.GetInstanceID(), a);
         slotLookups.Add(k, a.GetInstanceID());
     }

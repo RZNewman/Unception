@@ -1751,7 +1751,7 @@ namespace Mirror
             connections.Values.CopyTo(connectionsCopy);
 
             // go through all connections
-            foreach (NetworkConnectionToClient connection in connectionsCopy)
+            foreach (NetworkConnectionToClient connection in connectionsCopy.ToArray())
             {
                 // check for inactivity. disconnects if necessary.
                 if (DisconnectIfInactive(connection))

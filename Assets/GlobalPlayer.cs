@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GlobalPlayer : MonoBehaviour
 {
@@ -73,5 +74,27 @@ public class GlobalPlayer : MonoBehaviour
     public void clientPlayerGroveLeave()
     {
         clientLocalPlayer.GroveLeave();
+    }
+
+    [Server]
+    public static void shutdown()
+    {
+
+        NetworkServer.Shutdown();
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
+        if (NetworkClient.isConnected)
+        {
+            NetworkClient.Disconnect();
+        }
+    }
+
+    public static void startHost()
+    {
+        FindObjectOfType<NetworkManager>().StartHost();
+    }
+    public static void startClient()
+    {
+        FindObjectOfType<NetworkManager>().StartClient();
     }
 }

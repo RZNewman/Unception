@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Auth : NetworkBehaviour
 {
@@ -62,18 +63,26 @@ public class Auth : NetworkBehaviour
     [Client]
     public void signOut()
     {
-        CmdSignOut();
-        FindObjectOfType<Flower>().cameraPlant.SetActive(false);
-        FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Login);
+        //CmdSignOut();
+        //TODO different when not hosted
+        serverSignOut();
+        //FindObjectOfType<Flower>().cameraPlant.SetActive(false);
+        //FindObjectOfType<MenuHandler>().switchMenu(MenuHandler.Menu.Login);
     }
     [Command]
     void CmdSignOut()
     {
+        serverSignOut();
+
+    }
+
+    [Server]
+    void serverSignOut()
+    {
         GetComponent<PlayerGhost>().cleanup();
         save.saveAll();
         FindObjectOfType<UiPopups>().closePopup();
-        
-        //only unset after
-        username = null;
+
+        GlobalPlayer.shutdown();
     }
 }

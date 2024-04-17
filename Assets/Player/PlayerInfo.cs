@@ -432,7 +432,11 @@ public class PlayerInfo : NetworkBehaviour
         {
             return;
         }
-        FindObjectOfType<MenuHandler>().MenuEvent -= OnOpenMenu;
+        MenuHandler handler = FindObjectOfType<MenuHandler>();
+        if (handler)
+        {
+            handler.MenuEvent -= OnOpenMenu;
+        }
     }
 
     private void Update()

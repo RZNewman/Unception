@@ -476,7 +476,7 @@ namespace Mirror
         {
             if (NetworkServer.active || NetworkClient.active)
             {
-                Debug.LogWarning("Server or Client already started.");
+                Debug.LogWarning("Server or Client already started. Server:"+ NetworkServer.active +" Client:"+ NetworkClient.active);
                 return;
             }
 

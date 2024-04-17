@@ -64,8 +64,12 @@ public class Combat : NetworkBehaviour
 
     void onDeath(bool natural)
     {
-        rewardKiller();
-        clearFighting();
+        if (natural)
+        {
+            rewardKiller();
+            clearFighting();
+        }
+        
     }
     void rewardKiller()
     {

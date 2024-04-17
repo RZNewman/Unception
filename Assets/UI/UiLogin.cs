@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UiLogin : MonoBehaviour
@@ -35,5 +36,11 @@ public class UiLogin : MonoBehaviour
     public void logout()
     {
         FindObjectOfType<GlobalPlayer>().player.GetComponent<Auth>().signOut();
+
+        if (GlobalPlayer.gPlay.player.isClientOnly)
+        {
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(currentSceneName);
+        }
     }
 }

@@ -57,6 +57,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -236,8 +237,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3036739327
-  m_fontColor: {r: 1, g: 0.9640316, b: 0, a: 0.70980394}
+    rgba: 3019962111
+  m_fontColor: {r: 1, g: 0.9640316, b: 0, a: 0.7058824}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

@@ -8,9 +8,11 @@ public class ColorIndividual : MonoBehaviour
     private MaterialPropertyBlock _propBlock;
     SpriteRenderer _spriteRenderer;
 
+    Vector2 offset;
+
     void Awake()
     {
-        
+        offset = new Vector2(Random.value, Random.value);
     }
 
     public void setColor(Color c, string colorProperty = "_BaseColor")
@@ -30,7 +32,7 @@ public class ColorIndividual : MonoBehaviour
             // Assign our new value.
             _propBlock.SetColor(colorProperty, c);
             // Assign our new value.
-            _propBlock.SetVector("_Offset", new Vector2(Random.value, Random.value));
+            _propBlock.SetVector("_Offset", offset);
             // Apply the edited values to the renderer.
             _renderer.SetPropertyBlock(_propBlock);
         }

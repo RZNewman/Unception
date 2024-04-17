@@ -50,7 +50,7 @@ public class FreeState : PlayerMovementState
             key = inp.popKey();
         }
 
-        if(inp.recall && mover.grounded)
+        if(inp.consumeRecall() && mover.grounded)
         {
             return new StateTransition(new ChannelState(mover, 3f, "Returning...", () =>
             {

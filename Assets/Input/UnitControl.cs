@@ -39,6 +39,13 @@ public interface UnitControl
             return j;
         }
 
+        public bool consumeRecall()
+        {
+            bool r = recall;
+            recall = false;
+            return r;
+        }
+
         public void cleanButtons()
         {
             jump = false;

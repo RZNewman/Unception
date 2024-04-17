@@ -34,6 +34,7 @@ public class UIGroveLink : MonoBehaviour
             img.sprite = symbolSource.symbols[f.symbol];
         }
         Color c = color;
+        c.a = 0.8f;
         foreach (ColorIndividual ind in GetComponentsInChildren<ColorIndividual>())
         {
             ind.setColor(c);
@@ -45,7 +46,7 @@ public class UIGroveLink : MonoBehaviour
     public void highlight(bool isHighlighted)
     {
         Color c = color;
-        c.a = 0.3f;
+        c.a = 0.8f;
         Color high = Color.white;
         high.a = 0.3f;
         foreach (ColorIndividual ind in GetComponentsInChildren<ColorIndividual>())

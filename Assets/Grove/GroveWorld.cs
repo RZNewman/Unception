@@ -164,7 +164,7 @@ public class GroveWorld : MonoBehaviour
     {
         get
         {
-            return new Vector3(gridSize.x * 0.5f, 0, gridSize.y * 0.3f) * gridSpacing;
+            return new Vector3(gridSize.x * 0.5f, 0, gridSize.y * 0.5f) * gridSpacing;
         }
     }
 

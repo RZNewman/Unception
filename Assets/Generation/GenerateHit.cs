@@ -394,8 +394,9 @@ public static class GenerateHit
         }
     }
 
-    public static HitGenerationData createHit(float remainingBaseStats, Optional<TriggerConditions> conditions)
+    public static HitGenerationData createHit(float remainingBaseStats, Optional<TriggerConditions> conditions, AttackGenerationType type)
     {
+        bool isIntro = type == AttackGenerationType.IntroMain || type == AttackGenerationType.IntroOff;
         HitType t;
         float r = Random.value;
         //float r = 0.54f;
@@ -419,7 +420,7 @@ public static class GenerateHit
         {
             t = HitType.ProjectileWave;
         }
-        else if (r < 0.65f && !conditions.HasValue)
+        else if (r < 0.65f && !conditions.HasValue && !isIntro)
         {
             t = HitType.DamageDash;
         }
@@ -461,7 +462,7 @@ public static class GenerateHit
         ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1f, fillPercent);
 
 
-        if (Random.value < 0.3f)
+        if (Random.value < 0.3f && !isIntro)
         {
             if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced || t == HitType.DamageDash || t == HitType.ProjectileWave)
             {
@@ -476,11 +477,11 @@ public static class GenerateHit
         {
             vg.augmentInner(itemMaxDict(Stat.Stagger), 1f);
         }
-        if (Random.value < 0.2f)
+        if (Random.value < 0.2f && !isIntro)
         {
             vg.augmentInner(itemMaxDict(Stat.Mezmerize), 0.25f);
         }
-        if (Random.value < 0.2f)
+        if (Random.value < 0.2f && !isIntro)
         {
             vg.augmentInner(itemMaxDict(Stat.Knockup), 1f);
         }

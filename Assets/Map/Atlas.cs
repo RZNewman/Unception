@@ -25,6 +25,8 @@ public class Atlas : NetworkBehaviour
     public WorldData worldData;
     public GameObject mapPodium;
 
+    public GameObject windParticle;
+
     PlayerGhost owner;
     GlobalPlayer gp;
     SoundManager sound;
@@ -580,6 +582,7 @@ public class Atlas : NetworkBehaviour
     void RpcSetLoading(bool load)
     {
         FindObjectOfType<MenuHandler>().setLoading(load);
+        windParticle.SetActive(load);
     }
 
     public Vector3 playerSpawn

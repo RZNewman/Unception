@@ -576,11 +576,6 @@ public static class GenerateAttack
         #endregion
     }
 
-    struct InstanceStreamInfo
-    {
-        public InstanceData data;
-        public float mult;
-    }
 #nullable enable
     public struct PopulateAttackOptions
     {
@@ -810,8 +805,8 @@ public static class GenerateAttack
         }
         if (type == AttackGenerationType.IntroOff)
         {
-            cooldownMin = 0.4f;
-            cooldownMax = 0.6f;
+            cooldownMin = 0.0f;
+            cooldownMax = 0.15f;
         }   
         if (slot == ItemSlot.Gloves)
         {
@@ -1003,7 +998,7 @@ public static class GenerateAttack
     {
         SegmentGenerationData segment = new SegmentGenerationData();
         float gen = Random.value;
-        segment.hit = createHit(remainingBaseStats, conditions);
+        segment.hit = createHit(remainingBaseStats, conditions, type);
 
         if (slot != ItemSlot.Main
             && slot != ItemSlot.Helm

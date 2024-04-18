@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Arc : NetworkBehaviour
 {
+    bool called = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,8 +29,9 @@ public class Arc : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (isServer)
+        if (isServer && ! called)
         {
+            called = true;
             result(transform.position);
             Destroy(gameObject);
         }

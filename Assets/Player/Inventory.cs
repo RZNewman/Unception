@@ -128,7 +128,7 @@ public class Inventory : NetworkBehaviour
         fillInstanceCache(item1);
         fillInstanceCache(item2);
         TargetDropItem(connectionToClient, item1, player.positionAround());
-        TargetDropItem(connectionToClient, item1, player.positionAround());
+        TargetDropItem(connectionToClient, item2, player.positionAround());
         //Vector2Int center = grove.center;
         //Dictionary<string, GrovePlacement> placements = new Dictionary<string, GrovePlacement>();
         //placements.Add(item1.id, new GrovePlacement

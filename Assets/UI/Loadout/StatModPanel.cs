@@ -217,17 +217,17 @@ public class StatModPanel : MonoBehaviour
         switch (stat)
         {
             case Stat.Cooldown:
-                return "CD";
+                return "Cooldown";
             case Stat.Charges:
                 return "Charges";
             case Stat.Haste:
-                return "Cast";
+                return "Cast speed";
             case Stat.TurnspeedCast:
             case Stat.Turnspeed:
-                return "Turn";
+                return "Turn speed";
             case Stat.MovespeedCast:
             case Stat.Movespeed:
-                return "Move";
+                return "Move speed";
             case Stat.Length:
                 return "Length";
             case Stat.Width:
@@ -241,7 +241,7 @@ public class StatModPanel : MonoBehaviour
             case Stat.Stagger:
                 return "Stagger";
             case Stat.Mezmerize:
-                return "Mezmerize";
+                return "Stun";
             default:
                 return "UNK";
 

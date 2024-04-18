@@ -146,6 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemAura: {fileID: 6966883866202795833}
   itemBase: {fileID: 1921795344324520477}
+  waitTimeStart: 3
   waitTime: 2.5
   accel: 3.5
 --- !u!54 &5882956100144475129
@@ -176,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c52ae49ccfe564eb25dd410b85124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: -9.81
+  _gravity: -9.81
 --- !u!1 &9150833463056651079
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,8 +189,8 @@ GameObject:
   - component: {fileID: 9150833463056251227}
   - component: {fileID: 9150833463053352415}
   - component: {fileID: 9150833463054393299}
-  - component: {fileID: 9086665892475805249}
   - component: {fileID: 1921795344324520477}
+  - component: {fileID: 5154918076187970871}
   m_Layer: 14
   m_Name: Gem
   m_TagString: Untagged
@@ -262,20 +263,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &9086665892475805249
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9150833463056651079}
-  m_Material: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 79ac5b8f102db6f4a8f5291c6225d772, type: 3}
 --- !u!114 &1921795344324520477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,3 +275,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3aaa7be205dbe44cba57ad0bce6bc29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &5154918076187970871
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9150833463056651079}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.06314063, y: 0.12958673, z: 0.057123676}
+  m_Center: {x: 0, y: 0, z: 0}

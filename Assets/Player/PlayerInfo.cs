@@ -234,6 +234,12 @@ public class PlayerInfo : NetworkBehaviour
                         displayText = "Leave to find more water"
                     }
                 },
+                action = (i) =>
+                {
+                    Ship  s =FindObjectOfType<Ship>();
+
+                    s.shipTakeoffArrow.SetActive(true);
+                },
                 stop = new FinishCondtions
                 {
                     events = new List<TutorialEvent>()
@@ -254,6 +260,12 @@ public class PlayerInfo : NetworkBehaviour
                     {
                         displayText = "More water must be here...",
                     }
+                },
+                action = (i) =>
+                {
+                    Ship  s =FindObjectOfType<Ship>();
+
+                    s.shipTakeoffArrow.SetActive(false);
                 },
                 stop = new FinishCondtions
                 {

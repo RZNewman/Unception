@@ -437,6 +437,14 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
+    public bool canInteractGrove
+    {
+        get
+        {
+            return currentProgress >= 9;
+        }
+    }
+
 
     private void OnDestroy()
     {

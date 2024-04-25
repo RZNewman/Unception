@@ -52,6 +52,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             FindObjectOfType<GlobalPlayer>().setServerPlayer(this);
             //TODO multiplayer fix
             FindObjectOfType<GroveWorld>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(GroveInteract);
+            FindObjectOfType<GroveWorld>().transform.parent.GetComponentInChildren<Interaction>().setCondition(GroveCondition);
             FindObjectOfType<Atlas>().mapPodium.GetComponentInChildren<Interaction>().setInteraction(AtlasInteract);
             FindObjectOfType<Flower>().transform.parent.GetComponentInChildren<Interaction>().setInteraction(PlantFeedInteract);
             FindObjectOfType<Flower>().transform.parent.GetComponentInChildren<Interaction>().setCondition(PlantFeedCondition);
@@ -189,6 +190,11 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             TargetMenu(connectionToClient, MenuHandler.Menu.Loadout);
         }
     }
+    bool GroveCondition(Interactor i)
+    {
+        return GetComponent<PlayerInfo>().canInteractGrove;
+    }
+
     [Server]
     void AtlasInteract(Interactor i)
     {

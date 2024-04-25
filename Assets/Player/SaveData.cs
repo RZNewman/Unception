@@ -303,7 +303,7 @@ public class SaveData : NetworkBehaviour
     {
         MenuHandler mh = FindObjectOfType<MenuHandler>();
         mh.switchMenu(MenuHandler.Menu.Gameplay);
-        mh.setLoading(false);
+        mh.setLoading(Loading.LoadingType.None);
     }
 
     private void OnDestroy()

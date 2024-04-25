@@ -47,7 +47,7 @@ public class Auth : NetworkBehaviour
     {
         MenuHandler mh = FindObjectOfType<MenuHandler>();
         mh.switchMenu(MenuHandler.Menu.Blank);
-        mh.setLoading(true);
+        mh.setLoading(Loading.LoadingType.Loading);
     }
 
     [Command]

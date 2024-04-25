@@ -9,6 +9,8 @@ using static Utils;
 using static RewardManager;
 using static Power;
 using static Atlas;
+using static Loading;
+
 public class Atlas : NetworkBehaviour
 {
     public static readonly int breakablesPerFloor = 4;
@@ -555,7 +557,7 @@ public class Atlas : NetworkBehaviour
         }
         missionStatus = MissionStatus.Loading;
         clearAllDrops();
-        RpcSetLoading(true);
+        RpcSetLoading();
         Map m;
         if (index >= 0)
         {
@@ -576,13 +578,31 @@ public class Atlas : NetworkBehaviour
         yield return gen.buildMap();
         PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.LoadingFinished);
         missionStatus = MissionStatus.Arrived;
-        RpcSetLoading(false);
+        RpcSetLoading();
     }
+
+
     [ClientRpc]
-    void RpcSetLoading(bool load)
+    void RpcSetLoading()
     {
-        FindObjectOfType<MenuHandler>().setLoading(load);
-        windParticle.SetActive(load);
+        setLoading();
+        
+    }
+
+    [Client]
+    public void setLoading(bool fromStatus=true, LoadingType type = LoadingType.None)
+    {
+        if (fromStatus)
+        {
+            type = missionStatus switch
+            {
+                MissionStatus.Loading => LoadingType.Loading,
+                MissionStatus.Arrived => LoadingType.Landed,
+                _ => LoadingType.None,
+            };
+        }
+        FindObjectOfType<MenuHandler>().setLoading(type);
+        windParticle.SetActive(type == LoadingType.Loading);
     }
 
     public Vector3 playerSpawn

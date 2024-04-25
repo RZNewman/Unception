@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static EventManager;
+using static Loading;
 using static Utils;
 
 public class MenuHandler : MonoBehaviour
@@ -74,7 +75,8 @@ public class MenuHandler : MonoBehaviour
         {
             menuObject(m).SetActive(false);
         }
-        loading.SetActive(false);
+        loading.SetActive(true);
+        setLoading(LoadingType.None);
         gp = FindObjectOfType<GlobalPlayer>(true);
         switchMenu(Menu.Title);
         GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
@@ -147,9 +149,9 @@ public class MenuHandler : MonoBehaviour
         switchMenu(prevoiusMenu);
     }
 
-    public void setLoading(bool load)
+    public void setLoading(LoadingType type)
     {
-        loading.SetActive(load);
+        loading.GetComponent<Loading>().setType(type);
     }
 
     public bool canPause

@@ -230,7 +230,6 @@ public class PlayerGhost : NetworkBehaviour, TextValue
                 {
                     props.waterCarried.GetComponent<Power>().setOverrideDefault();
                 }
-                
             }
             else if(!toShip)
             {
@@ -255,11 +254,13 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         {
             FindObjectOfType<MaterialScaling>().none();
             music.Menu();
+            atlas.setLoading();
         }
         else
         {
             FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
             music.Game();
+            atlas.setLoading(false);
         }
         
     }

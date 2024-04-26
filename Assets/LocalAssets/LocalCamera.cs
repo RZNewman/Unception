@@ -21,7 +21,7 @@ public class LocalCamera : MonoBehaviour
     public float zoomMinPercent = 0.4f;
     public float turnXSens = 0.5f;
     public float turnYSens = 0.3f;
-    public float zoomSens = 0.05f;
+    public float zoomSens = 0.02f;
    
 
     float currentPhysScale;
@@ -66,7 +66,6 @@ public class LocalCamera : MonoBehaviour
 
     }
 
-    bool initial = true;
     void scaleCameraSize(Power p)
     {
         currentPhysScale = p.scalePhysical();
@@ -104,7 +103,7 @@ public class LocalCamera : MonoBehaviour
         {
             zoomDelt += 1;
         }
-        zoomDelt += Input.GetAxis("Mouse ScrollWheel") * -3.5f;
+        zoomDelt += Input.GetAxis("Mouse ScrollWheel") * -7.5f;
         if (zoomDelt != 0)
         {
             currentZoomPercent += zoomDelt * zoomSens;

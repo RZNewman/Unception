@@ -121,11 +121,12 @@ MonoBehaviour:
   cameraHolder: {fileID: 830587588339165010}
   cameraBaseDistance: 22
   currentLookAngle: 0
-  currentPitchAngle: 70
   pitchMax: 89
   pitchMin: 0
+  zoomMinPercent: 0.3
   turnXSens: 0.5
   turnYSens: 0.3
+  zoomSens: 0.02
   mode: 0
 --- !u!1 &6503254567255875584
 GameObject:

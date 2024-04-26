@@ -23,6 +23,8 @@ public class Auth : NetworkBehaviour
     [Client]
     public void signIn(string u)
     {
+        username = u;
+        FindObjectOfType<Keybinds>().loadKeys(username);
         CmdSetUser(u);
         AuthLoadingMenu();
     }

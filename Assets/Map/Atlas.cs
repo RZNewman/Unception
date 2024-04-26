@@ -10,6 +10,7 @@ using static RewardManager;
 using static Power;
 using static Atlas;
 using static Loading;
+using static WFCGeneration;
 
 public class Atlas : NetworkBehaviour
 {
@@ -17,7 +18,6 @@ public class Atlas : NetworkBehaviour
     public readonly static float avgFloorsPerMap = 1f;
     public readonly static float softcap = 6_000f;
     public readonly static float playerStartingPower = 500;
-    public static readonly float sparsness = 5f;
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;
@@ -122,9 +122,10 @@ public class Atlas : NetworkBehaviour
     public struct Floor
     {
         public float sparseness;
-        public int segments;
+        public WFCParameters wfcParams;
         public EncounterData[] encounters;
     }
+
     public struct EncounterData
     {
         public Difficulty difficulty;
@@ -262,16 +263,48 @@ public class Atlas : NetworkBehaviour
         return Mathf.Min(power, softcap);
     }
 
-    int segmentsAtTier(int tier)
+    WFCParameters wfcAtTier(int tier)
+    {
+        return new WFCParameters
+        {
+            segmentCount = tier switch
+            {
+                int i when i == 0 => 1,
+                int i when i == 1 => 2,
+                int i when i == 2 => 3,
+                _ => Mathf.RoundToInt(Random.value.asRange(4, 6)),
+            },
+            segmentBaseLength = tier switch
+            {
+                int i when i == 0 => 5,
+                _ => 4,
+            },
+            segmentVariableLength = tier switch
+            {
+                int i when i == 0 => 0,
+                int i when i == 1 => 1,
+                int i when i == 2 => 3,
+                _ => 6,
+            },
+            straightnessPercent = 0.3f,
+            verticalityPercent = tier switch
+            {
+                int i when i == 0 => 0,
+                int i when i == 1 => 0.3f,
+                _ => 0.6f,
+            },
+
+        };
+    }
+    float sparsnessAtTier(int tier)
     {
         return tier switch
         {
-            int i when i == 0 => 1,
-            int i when i == 1 => 2,
-            int i when i == 1 => 3,
-            _ => Mathf.RoundToInt(Random.value.asRange(4, 6)),
+            int i when i < 2 => 15,
+            _ => 7,
         };
     }
+
     float mapClearsToTier(int tier)
     {
         return Enumerable.Range(1, tier - 1).Select(t => mapClearsAtTier(t)).Sum();
@@ -386,8 +419,8 @@ public class Atlas : NetworkBehaviour
                     floor = new Floor
                     {
                         encounters = floorEncounters(q.difficulty, q.encounters),
-                        sparseness = sparsness,
-                        segments = segmentsAtTier(q.tier)
+                        sparseness = sparsnessAtTier(q.tier),
+                        wfcParams = wfcAtTier(q.tier)
 
                     },
                     visualLocation = location.visualLocation,
@@ -423,8 +456,8 @@ public class Atlas : NetworkBehaviour
     {
         return new Floor
         {
-            sparseness = sparsness,
-            segments = Mathf.RoundToInt(Random.value.asRange(4, 6)),
+            sparseness = 7,
+            wfcParams = WFCParameters.basic(),
             encounters = floorEncounters(difficulty),
         };
     }

@@ -1053,8 +1053,29 @@ public class WFCGeneration : MonoBehaviour
         public List<GameObject> navTiles;
     }
 
+    public struct WFCParameters
+    {
+        public int segmentCount;
+        public int segmentBaseLength;
+        public int segmentVariableLength;
+        public float straightnessPercent;
+        public float verticalityPercent;
+
+        public static WFCParameters basic()
+        {
+            return new WFCParameters
+            {
+                segmentCount = Mathf.RoundToInt(Random.value.asRange(4, 6)),
+                segmentBaseLength = 4,
+                segmentVariableLength = 6,
+                straightnessPercent = 0.3f,
+                verticalityPercent = 0.6f,
+            };
+        }
+    }
+
     bool generationBroken = false;
-    public IEnumerator generate(GameObject floor, int segments)
+    public IEnumerator generate(GameObject floor, WFCParameters parameters)
     {
         floorRoot = floor;
         floorRoot.transform.localScale = tileScale;
@@ -1063,7 +1084,7 @@ public class WFCGeneration : MonoBehaviour
         {
 
             generationBroken = false;
-            yield return collapseCells(makePath(segments));
+            yield return collapseCells(makePath(parameters));
 
             if (generationBroken)
             {
@@ -1478,7 +1499,7 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-    List<Vector3Int> makePath(int segments)
+    List<Vector3Int> makePath(WFCParameters parameters)
     {
         Vector3Int point = Vector3Int.zero;
         List<Vector3Int> path = new List<Vector3Int>();
@@ -1486,7 +1507,7 @@ public class WFCGeneration : MonoBehaviour
 
         Vector3 diff = Vector3.zero;
 
-        int points = segments +1;
+        int points = parameters.segmentCount + 1;
         for (int i = 0; i < points; i++)
         {
             Vector2 dir2d = Random.insideUnitCircle.normalized;
@@ -1496,13 +1517,13 @@ public class WFCGeneration : MonoBehaviour
             {
                 Vector3 flatDiff = new Vector3(diff.x, 0, diff.z);
                 float angle = Vector3.Angle(dir, flatDiff);
-                angle *= 0.25f;
+                angle *= parameters.straightnessPercent;
                 dir = Vector3.RotateTowards(dir, flatDiff, Mathf.PI * angle / 180, 0);
             }
-            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI * 0.3f * Random.value, 0);
+            dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI *0.5f * parameters.verticalityPercent * Random.value, 0);
             dir.Normalize();
 
-            diff = dir * (4 + Random.value * 6);
+            diff = dir * (parameters.segmentBaseLength + Random.value * parameters.segmentVariableLength);
 
             point += diff.asInt();
             path.Add(point);

@@ -53,6 +53,7 @@ public class Keybinds : MonoBehaviour
 
     private void Start()
     {
+
         foreach (Sprite sprite in Keys)
         {
 
@@ -60,6 +61,13 @@ public class Keybinds : MonoBehaviour
             //Debug.Log(sprite.name + " - " + code);
             keyLookup.Add(code, sprite);
         }
+        
+    }
+    static readonly string keyString = "Key";
+    string keyPrefix = keyString;
+    public void loadKeys(string username)
+    {
+        keyPrefix = "P:" + username + keyString;
         StartCoroutine(buildKeyObjects());
     }
 
@@ -108,7 +116,7 @@ public class Keybinds : MonoBehaviour
                 KeyCode code = e.isKey ? e.keyCode : fromMouse(e.button);
                 setters[bindKey].setLabel(bindKey, code, this);
                 binds[bindKey] = code;
-                PlayerPrefs.SetInt("Key" + bindKey.ToString(), (int)code);
+                PlayerPrefs.SetInt(keyPrefix + bindKey.ToString(), (int)code);
             }
 
             foreach (KeySetter s in setters.Values)
@@ -138,7 +146,7 @@ public class Keybinds : MonoBehaviour
 
     KeyCode getKey(KeyName name)
     {
-        string storedKey = "Key" + name.ToString();
+        string storedKey = keyPrefix + name.ToString();
         if (PlayerPrefs.HasKey(storedKey))
         {
             return (KeyCode)PlayerPrefs.GetInt(storedKey);

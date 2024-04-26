@@ -18,7 +18,7 @@ public class LocalCamera : MonoBehaviour
     float currentZoomPercent = 1;
     public float pitchMax = 89;
     public float pitchMin = -60;
-    public float zoomMinPercent = 0.3f;
+    public float zoomMinPercent = 0.4f;
     public float turnXSens = 0.5f;
     public float turnYSens = 0.3f;
     public float zoomSens = 0.05f;
@@ -98,11 +98,11 @@ public class LocalCamera : MonoBehaviour
         float zoomDelt = 0;
         if (Input.GetKey(keys.binding(Keybinds.KeyName.ZoomIn)))
         {
-            zoomDelt += 1;
+            zoomDelt -= 1;
         }
         if (Input.GetKey(keys.binding(Keybinds.KeyName.ZoomOut)))
         {
-            zoomDelt -= 1;
+            zoomDelt += 1;
         }
         zoomDelt += Input.GetAxis("Mouse ScrollWheel") * -3.5f;
         if (zoomDelt != 0)

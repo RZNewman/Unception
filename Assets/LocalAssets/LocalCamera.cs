@@ -6,25 +6,22 @@ using static Utils;
 public class LocalCamera : MonoBehaviour
 {
     float localClip;
-    Vector3 targetPosition;
-    float oldPowerMag = 0;
-    readonly float transitionTime = 1f;
-    float currentTransition = 1f;
     CinemachineVirtualCamera cam;
     Keybinds keys;
 
-    public Vector3 lockedOffset = new Vector3(0, 20, -7);
-    public Vector3 turnOffset = new Vector3(0, 12, -7);
+    public GameObject focalPoint;
+    public GameObject cameraHolder;
+    public float cameraBaseDistance = 22f;
     [HideInInspector]
-    public float currentLookAngle = 0;
+    public float currentLookAngle = 30;
     [HideInInspector]
     public float currentPitchAngle = 70;
-    public float pitchMax = 60;
-    public float pitchMin;
-    public GameObject rootRotation;
+    public float pitchMax = 89;
+    public float pitchMin = -60;
     public float turnXSens = 0.5f;
     public float turnYSens = 0.3f;
 
+    float currentPhysScale;
     public enum CameraMode
     {
         Locked,
@@ -34,17 +31,16 @@ public class LocalCamera : MonoBehaviour
 
     private void Awake()
     {
-        cam = GetComponent<CinemachineVirtualCamera>();
+        cam = GetComponentInChildren<CinemachineVirtualCamera>();
     }
     // Start is called before the first frame update
     void Start()
     {
         localClip = cam.m_Lens.NearClipPlane;
-        oldPowerMag = transform.localPosition.magnitude;
         keys = FindObjectOfType<Keybinds>(true);
         Power p = GetComponentInParent<Power>();
         p.subscribePower(scaleCameraSize);
-        pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
+        //pitchMax = Vector3.Angle(Vector3.forward, -cameraOffset());
 
         float cameraClipScale = 0;
         if (mode == CameraMode.Turn)
@@ -53,9 +49,8 @@ public class LocalCamera : MonoBehaviour
         }
         else
         {
-            transform.localRotation = Quaternion.Euler(pitchMax, 0, 0);
             cameraClipScale = p.scalePhysical();
-
+            currentPitchAngle = 25;
         }
         
     }
@@ -67,32 +62,13 @@ public class LocalCamera : MonoBehaviour
         }
 
     }
-    Vector3 cameraOffset()
-    {
-        switch (mode)
-        {
 
-            case CameraMode.Turn:
-                return turnOffset;
-            case CameraMode.Locked:
-            default:
-                return lockedOffset;
-        }
-    }
     bool initial = true;
     void scaleCameraSize(Power p)
     {
-        float scalePhys = p.scalePhysical();
-        targetPosition = cameraOffset() * scalePhys;
-        cam.m_Lens.NearClipPlane = localClip * scalePhys;
-        currentTransition = 0;
-        oldPowerMag = transform.localPosition.magnitude;
-        if (initial)
-        {
-            initial = false;
-            currentTransition = transitionTime;
-            transform.localPosition = targetPosition;
-        }
+        currentPhysScale = p.scalePhysical();
+        cam.m_Lens.NearClipPlane = localClip * currentPhysScale;
+        focalPoint.transform.localPosition = Vector3.up * 2f * currentPhysScale;
 
         //cam.nearClipPlane = 1.0f * p.scale();
         
@@ -101,7 +77,7 @@ public class LocalCamera : MonoBehaviour
     {
         get
         {
-            return targetPosition.magnitude;
+            return cameraBaseDistance* currentPhysScale;
         }
     }
 
@@ -109,25 +85,17 @@ public class LocalCamera : MonoBehaviour
     Vector3 lastMousePosition = Vector3.zero;
     private void Update()
     {
-        float targetMag = targetPosition.magnitude;
+        //float targetMag = cameraMagnitude;
 
-        RaycastHit hit;
-        if (mode == CameraMode.Turn && Physics.Raycast(transform.parent.position, transform.parent.rotation * targetPosition, out hit, targetMag, LayerMask.GetMask("Terrain")))
-        {
-            targetMag = hit.distance;
-        }
-
-        //if (currentTransition < transitionTime)
+        //RaycastHit hit;
+        //if (mode == CameraMode.Turn && Physics.Raycast(transform.parent.position, transform.parent.rotation * targetPosition, out hit, targetMag, LayerMask.GetMask("Terrain")))
         //{
-        //    float frameMag = Mathf.SmoothStep(oldPowerMag, targetMag, currentTransition / transitionTime);
-        //    transform.localPosition = cameraOffset().normalized * frameMag;
+        //    targetMag = hit.distance;
+        //}
 
-        //    currentTransition += Time.deltaTime;
-        //}
-        //else
-        //{
-        transform.localPosition = cameraOffset().normalized * targetMag;
-        //}
+
+        cameraHolder.transform.localPosition = cameraMagnitude * Vector3.back;
+
 
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         if (mode == CameraMode.Turn)
@@ -141,7 +109,7 @@ public class LocalCamera : MonoBehaviour
             currentPitchAngle -= mouseDelta.y * turnYSens;
             currentPitchAngle = Mathf.Clamp(currentPitchAngle, pitchMin, pitchMax);
 
-            rootRotation.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
+            focalPoint.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
             transform.localRotation = Quaternion.Euler(currentPitchAngle, 0, 0);
 
             //lastMousePosition = Input.mousePosition;
@@ -152,7 +120,9 @@ public class LocalCamera : MonoBehaviour
             {
                 currentLookAngle += mouseDelta.x * turnXSens * 5;
                 currentLookAngle = normalizeAngle(currentLookAngle);
-                rootRotation.transform.localRotation = Quaternion.Euler(0, currentLookAngle, 0);
+                currentPitchAngle += mouseDelta.y * turnYSens * 12;
+                currentPitchAngle = Mathf.Clamp(currentPitchAngle, pitchMin, pitchMax);
+                focalPoint.transform.localRotation = Quaternion.Euler(currentPitchAngle, currentLookAngle, 0);
 
             }
 

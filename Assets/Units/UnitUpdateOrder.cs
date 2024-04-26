@@ -31,7 +31,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         packHeal = GetComponent<PackHeal>();
         eventManager = GetComponent<EventManager>();
         gravity = GetComponent<Gravity>();
-
+        gravity.turnOffGrav();
         eventManager.suscribeDeath((d) => setRegistration(false));
 
         setUpdateScripts(registered);

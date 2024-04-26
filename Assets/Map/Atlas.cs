@@ -680,6 +680,7 @@ public class Atlas : NetworkBehaviour
                 inv.addBlessing(embarkedMap.power, embarkedMap.difficulty.total);
             }
         }
+        RpcSetLoading();
         yield return passTime();
         refreshAllPlayers();
         makeMaps();

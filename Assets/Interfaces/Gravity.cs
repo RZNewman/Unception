@@ -33,6 +33,11 @@ public class Gravity : MonoBehaviour
         setForce();
     }
 
+    public void turnOffGrav()
+    {
+        gravMult = 0;
+    }
+
     void setForce()
     {
         float f = _gravity * gravMult;

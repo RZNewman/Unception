@@ -105,19 +105,28 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
             setup();
         }
     }
+
+    //Stores previous locations to fake contanct point with trigger
+    Vector3[] projectileLastLocations = new Vector3[2];
     private void FixedUpdate()
     {
+        projectileLastLocations[1] = projectileLastLocations[0];
+        projectileLastLocations[0] = transform.position;
         lifetime -= Time.fixedDeltaTime;
-        if (isServer  && lifetime <=0)
+        if (isServer)
         {
-            if (mode == PersistMode.Explode)
+            if (lifetime <= 0)
             {
-                fireExplode(transform.position + transform.forward * data.hitRadius);
+                if (mode == PersistMode.Explode)
+                {
+                    fireExplode(transform.position + transform.forward * data.hitRadius);
+                }
+                if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave || mode == PersistMode.AuraCarried || mode == PersistMode.AuraChanneled)
+                {
+                    Destroy(gameObject);
+                }
             }
-            if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave || mode == PersistMode.AuraCarried || mode == PersistMode.AuraChanneled)
-            {
-                Destroy(gameObject);
-            }
+            
             
         }
     }
@@ -320,6 +329,7 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
     void setSpeed(float speed)
     {
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
+        GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
     public void onPlayerCollide(Collider other, bool enter)
@@ -339,10 +349,7 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
                             other.GetComponentInParent<BuffManager>().addBuff(AuraBuff);
                             break;
                         case PersistMode.Explode:
-                            Vector3 diff = other.transform.position - transform.position;
-                            Vector3 offset = diff.normalized * Mathf.Min(diff.magnitude, data.hitRadius);
-
-                            fireExplode(transform.position + offset);
+                            fireExplode(other.ClosestPoint(projectileLastLocations[1]));
                             break;
                         default:
                             HarmPortions harm = hitData.getHarmValues(data.power, new KnockBackVectors
@@ -445,7 +452,14 @@ public class Persistent : NetworkBehaviour, Duration, IndicatorHolder
     {
         if (isServer)
         {
-            Destroy(gameObject);
+            if (mode == PersistMode.Explode)
+            {
+                fireExplode(transform.position + transform.forward * data.hitRadius);
+            }
+            if (mode == PersistMode.AuraPlaced || mode == PersistMode.Wave || mode == PersistMode.AuraCarried || mode == PersistMode.AuraChanneled)
+            {
+                Destroy(gameObject);
+            }
         }
 
     }

@@ -577,11 +577,15 @@ public class UnitMovement : NetworkBehaviour
 
         //verticalAngle
         desiredAngle = inp.lookVerticalAngle;
-        float floorAngle = Vector3.SignedAngle((ground.getAimRotation(transform.forward) * Vector3.forward),transform.forward, transform.right);
+        Quaternion rotBody = Quaternion.Euler(0, currentLookAngle, 0);
+        Vector3 rotatingForward = rotBody * Vector3.forward;
+        Vector3 rotatingRight = rotBody * Vector3.right;
+        float floorAngle = Vector3.SignedAngle(ground.forwardPlanarWorld(rotatingForward), rotatingForward, rotatingRight);
         if (grounded && inp.lookObstructed(transform.position))
         {
+            //Debug.Log(desiredAngle + " - " + floorAngle);
             //While on the ground, prevent our aiming from going into the floor
-            desiredAngle = Mathf.Min(desiredAngle, floorAngle);
+            desiredAngle = Mathf.Max(desiredAngle, floorAngle);
         }
         diff = desiredAngle - currentLookVerticalAngle;
         if (Mathf.Abs(diff) <= frameMagnitude)

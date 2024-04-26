@@ -41,7 +41,7 @@ public class PityTimer<T> where T : struct, System.IConvertible
         for (int i = 0; i < values.Length; i++)
         {
             T value = values[i];
-            float initial = 0;
+            float initial = -1;
 
             if (i == 0)
             {

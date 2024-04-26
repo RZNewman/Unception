@@ -126,7 +126,7 @@ public interface UnitControl
                 Vector3 cross = Vector3.Cross(flatLookDiff, lookOffset);
                 //despite beign signed, the cross product will always be positive
                 float angle = Vector3.SignedAngle(flatLookDiff, lookOffset, cross);
-                if (lookOffset.y> flatLookDiff.y)
+                if (lookOffset.y < flatLookDiff.y)
                 {
                     angle = -angle;
                 }

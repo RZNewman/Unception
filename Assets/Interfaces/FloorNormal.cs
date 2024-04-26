@@ -98,6 +98,7 @@ public class FloorNormal : MonoBehaviour
 
     public Quaternion getAimRotation(Vector3 forward)
     {
+        //Debug.Log(forwardPlanarWorld(forward));
         return Quaternion.LookRotation(forwardPlanarWorld(forward), groundNormal);
     }
 

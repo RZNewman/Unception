@@ -56,7 +56,7 @@ public class Ability : NetworkBehaviour
         }
         if (p.isClient && p.isOwned && clientSyncKey.HasValue)
         {
-            GameObject bar = GameObject.FindGameObjectWithTag("LocalAbilityBar");
+            GameObject bar = FindObjectOfType<UiAbilityBar>().gameObject;
             icon = Instantiate(abilityIconPrefab, bar.transform);
             icon.GetComponent<UiAbility>().setTarget(this);
             bar.transform.SortChildren(c => c.GetComponent<UiAbility>().blockFilled.slot);

@@ -32,6 +32,8 @@ public class Keybinds : MonoBehaviour
         CameraRotate,
         Interact,
         Recall,
+        ZoomIn,
+        ZoomOut,
     }
 
     Dictionary<KeyName, KeyCode> binds = new Dictionary<KeyName, KeyCode>();
@@ -167,6 +169,10 @@ public class Keybinds : MonoBehaviour
                 return KeyCode.LeftControl;
             case KeyName.CameraRotate:
                 return KeyCode.Mouse2;
+            case KeyName.ZoomIn:
+                return KeyCode.KeypadPlus;
+            case KeyName.ZoomOut:
+                return KeyCode.KeypadMinus;
             case KeyName.Interact:
                 return KeyCode.E;
             case KeyName.Recall:

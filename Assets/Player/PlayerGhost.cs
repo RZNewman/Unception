@@ -264,7 +264,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
         }
         else
         {
-            FindObjectOfType<MaterialScaling>().game(FindObjectOfType<LocalCamera>().cameraMagnitude);
+            FindObjectOfType<MaterialScaling>().game();
             music.Game();
             atlas.setLoading(false);
         }

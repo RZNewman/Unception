@@ -14,12 +14,15 @@ public class LocalCamera : MonoBehaviour
     public float cameraBaseDistance = 22f;
     [HideInInspector]
     public float currentLookAngle = 30;
-    [HideInInspector]
-    public float currentPitchAngle = 70;
+    float currentPitchAngle = 70;
+    float currentZoomPercent = 1;
     public float pitchMax = 89;
     public float pitchMin = -60;
+    public float zoomMinPercent = 0.3f;
     public float turnXSens = 0.5f;
     public float turnYSens = 0.3f;
+    public float zoomSens = 0.05f;
+   
 
     float currentPhysScale;
     public enum CameraMode
@@ -50,7 +53,7 @@ public class LocalCamera : MonoBehaviour
         else
         {
             cameraClipScale = p.scalePhysical();
-            currentPitchAngle = 25;
+            focalPoint.transform.localRotation = Quaternion.Euler(currentPitchAngle, currentLookAngle, 0);
         }
         
     }
@@ -68,16 +71,16 @@ public class LocalCamera : MonoBehaviour
     {
         currentPhysScale = p.scalePhysical();
         cam.m_Lens.NearClipPlane = localClip * currentPhysScale;
-        focalPoint.transform.localPosition = Vector3.up * 2f * currentPhysScale;
-
+        //focalPoint.transform.localPosition = Vector3.up * 2f * currentPhysScale;
+        FindObjectOfType<MaterialScaling>().setCameraDistance(cameraMagnitude);
         //cam.nearClipPlane = 1.0f * p.scale();
-        
+
     }
     public float cameraMagnitude
     {
         get
         {
-            return cameraBaseDistance* currentPhysScale;
+            return cameraBaseDistance* currentPhysScale * currentZoomPercent;
         }
     }
 
@@ -92,7 +95,22 @@ public class LocalCamera : MonoBehaviour
         //{
         //    targetMag = hit.distance;
         //}
-
+        float zoomDelt = 0;
+        if (Input.GetKey(keys.binding(Keybinds.KeyName.ZoomIn)))
+        {
+            zoomDelt += 1;
+        }
+        if (Input.GetKey(keys.binding(Keybinds.KeyName.ZoomOut)))
+        {
+            zoomDelt -= 1;
+        }
+        zoomDelt += Input.GetAxis("Mouse ScrollWheel") * -3.5f;
+        if (zoomDelt != 0)
+        {
+            currentZoomPercent += zoomDelt * zoomSens;
+            currentZoomPercent = Mathf.Clamp(currentZoomPercent, zoomMinPercent, 1);
+            FindObjectOfType<MaterialScaling>().setCameraDistance(cameraMagnitude);
+        }
 
         cameraHolder.transform.localPosition = cameraMagnitude * Vector3.back;
 
@@ -120,11 +138,13 @@ public class LocalCamera : MonoBehaviour
             {
                 currentLookAngle += mouseDelta.x * turnXSens * 5;
                 currentLookAngle = normalizeAngle(currentLookAngle);
-                currentPitchAngle += mouseDelta.y * turnYSens * 12;
+                currentPitchAngle += mouseDelta.y * turnYSens * -12;
                 currentPitchAngle = Mathf.Clamp(currentPitchAngle, pitchMin, pitchMax);
                 focalPoint.transform.localRotation = Quaternion.Euler(currentPitchAngle, currentLookAngle, 0);
 
             }
+
+            
 
         }
 

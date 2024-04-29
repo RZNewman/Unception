@@ -23,6 +23,7 @@ using static GroveObject;
 using static Grove;
 using static Power;
 using static Size;
+using static AttackUtils;
 
 public static class GenerateAttack
 {
@@ -189,52 +190,106 @@ public static class GenerateAttack
             return castTime() * Power.scaleNumerical(power);
 
         }
+
+
         public string shapeDisplay()
         {
-            string shape = hit.type.ToString();
+            string action = hit.dotType switch {
+                DotType.Channeled => "Channel",
+                DotType.Carried => "Focus",
+                _ => "Strike",
+            };
+
+            string shape = hit.shape switch
+            {
+                EffectShape.Slash => "slash",
+                EffectShape.Overhead => "line",
+                EffectShape.Centered => "circle",
+                _ => ""
+            };
+            string shapePosition = hit.shape switch
+            {
+                EffectShape.Centered => "around",
+                _ => "in front of"
+            };
+
+            string multipleHit = hit.multiple switch
+            {
+                int i when i <= 1 => "a",
+                int i => i.ToString(),
+            };
+            string multipleSs = hit.multiple switch
+            {
+                int i when i <= 1 => "",
+                _ => "s"
+            };
+
+
+            string basicDesc =  hit.type switch
+            {
+                HitType.Attached => string.Format("{1} in a {0} {2} you", shape, action, shapePosition),
+                HitType.GroundPlaced => string.Format("{1} {2} space{3} in a {0}", shape, action, multipleHit, multipleSs),
+                HitType.ProjectileExploding => string.Format("Fire {1} shot{2} that explodes in a {0}", shape, multipleHit, multipleSs),
+                HitType.ProjectileWave => string.Format("Fire {1} {0}{2}", shape, multipleHit, multipleSs),
+                HitType.DamageDash => string.Format("Dash with a {0} {1} ", shape, shapePosition),
+                _ => "",
+            };
             float percent;
             if (hit.dotPercent > 0)
             {
                 percent = Mathf.Round(hit.dotPercent * 100);
-                shape += " Dot " + percent + "%";
+                basicDesc += " Dot " + percent + "%";
             }
             if (hit.exposePercent > 0)
             {
                 percent = Mathf.Round(hit.exposePercent * 100);
-                shape += " Expose " + percent + "%";
+                basicDesc += " Expose " + percent + "%";
             }
+            if (repeat != null)
+            {
+
+                basicDesc += " X" + repeat.repeatCount.ToString();
+            }
+
+
+
+            if (defense != null)
+            {
+                percent = Mathf.Round(defense.percentOfEffect * 100);
+                string label = "Shield";
+                basicDesc += " " + label + " " + percent + "%";
+            }
+
 
             if (dash != null)
             {
-                percent = Mathf.Round(dash.percentOfEffect * 100);
-                shape += " Dash " + dash.control.ToString() + " " + percent + "%";
+                //percent = Mathf.Round(dash.percentOfEffect * 100);
+                //basicDesc += " Dash " + dash.control.ToString() + " " + percent + "%";
+                string dashDesc = "Dash " + dash.control.ToString();
+                if (dashAfter)
+                {
+                    basicDesc = basicDesc + ", then " + dashDesc;
+                }
+                else
+                {
+                    basicDesc = dashDesc + ", then " + basicDesc;
+                }
             }
             if (buff != null)
             {
                 percent = Mathf.Round(buff.percentOfEffect * 100);
                 string label = buff.type == GenerateBuff.BuffType.Buff ? "Buff" : "Debuff";
-                shape += " " + label + " " + buff.stats.First().Key.ToString() + " " + percent + "%";
+                basicDesc += ", then " + label + " " + buff.stats.First().Key.ToString() + " " + percent + "%";
                 if (buff.slot.HasValue)
                 {
-                    shape += " " + buff.slot;
+                    basicDesc += " " + buff.slot;
                 }
                 if (buff.castCount > 0)
                 {
-                    shape += " N:" + buff.castCount;
+                    basicDesc += " N:" + buff.castCount;
                 }
             }
-            if (defense != null)
-            {
-                percent = Mathf.Round(defense.percentOfEffect * 100);
-                string label = "Shield";
-                shape += " " + label + " " + percent + "%";
-            }
-            if (repeat != null)
-            {
-
-                shape += " X" + repeat.repeatCount.ToString();
-            }
-            return shape;
+            return basicDesc;
         }
 
         public float castTime()
@@ -498,7 +553,7 @@ public static class GenerateAttack
         }
         public string shapeDisplay()
         {
-            return System.String.Join(", ", segments.Select(s => s.shapeDisplay()));
+            return System.String.Join("\nThen,\n", segments.Select(s => s.shapeDisplay()));
         }
         public float castTimeDisplay(float power)
         {

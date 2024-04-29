@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 415179275646083370}
   - component: {fileID: 4863423421354933755}
   m_Layer: 0
-  m_Name: Air
+  m_Name: EX-AirGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,7 +50,7 @@ MonoBehaviour:
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 02000000
+    connections: 0200000008000000
   - direction: 2
     connections: 02000000
   - direction: 1

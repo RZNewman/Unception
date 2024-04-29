@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5195837346520216111
+--- !u!1 &3701307041042402943
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 415179275646083370}
-  - component: {fileID: 7557229181265901087}
-  - component: {fileID: 2221951367452455550}
-  - component: {fileID: 7813429192099148214}
-  - component: {fileID: 4863423421354933755}
+  - component: {fileID: 583681826217726246}
+  - component: {fileID: 1690454858649557211}
+  - component: {fileID: 811627697551990136}
   m_Layer: 6
-  m_Name: Ramp Corner
+  m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &415179275646083370
+--- !u!4 &583681826217726246
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
+  m_GameObject: {fileID: 3701307041042402943}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.545, z: 0}
+  m_LocalScale: {x: 1.001, y: 0.1, z: 1.001}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 415179275646083370}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7557229181265901087
+--- !u!33 &1690454858649557211
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
---- !u!23 &2221951367452455550
+  m_GameObject: {fileID: 3701307041042402943}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &811627697551990136
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
+  m_GameObject: {fileID: 3701307041042402943}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -86,20 +84,39 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7813429192099148214
-MeshCollider:
+--- !u!1 &5195837346520216111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 415179275646083370}
+  - component: {fileID: 4863423421354933755}
+  m_Layer: 6
+  m_Name: Grass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &415179275646083370
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5195837346520216111}
-  m_Material: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 583681826217726246}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4863423421354933755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,18 +131,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skipSpawn: 0
   dissuadeCollapse: 0
-  navType: 1
+  navType: 2
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 2000000010000000
+    connections: 01000000040000001000000000040000
   - direction: 2
-    connections: 0100000002000000
+    connections: 01000000040000001000000000040000
   - direction: 1
-    connections: 0100000002000000
+    connections: 01000000040000001000000000040000
   - direction: 3
-    connections: 0001000010000000
+    connections: 01000000040000001000000000040000
   - direction: 4
-    connections: 02000000
+    connections: 00000400
   - direction: 5
-    connections: 08000000
+    connections: 10000000

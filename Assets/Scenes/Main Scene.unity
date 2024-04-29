@@ -15186,62 +15186,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileScale: {x: 13, y: 3.5, z: 13}
   collapsePerFrame: 50
-  TileFailurePre: {fileID: 0}
   tiles:
-  - weight: 60
-    prefab: {fileID: 4863423421354933755, guid: f6db63cd4ad0a0e4aa10cb733f319b62, type: 3}
-  - weight: 10
-    prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
-  - weight: 0.5
+  - weight: 120
+    prefab: {fileID: 4863423421354933755, guid: 7d319f736736d6342a87cbc770dc214d, type: 3}
+  - weight: 300
     prefab: {fileID: 4863423421354933755, guid: 318ee6c2cbd73634f82fdf5bcc70ab58, type: 3}
-  - weight: 0.5
-    prefab: {fileID: 4863423421354933755, guid: 6cc6ca28cad735048bf00b43c8ea3f3a, type: 3}
-  - weight: 0.1
-    prefab: {fileID: 4863423421354933755, guid: c24738a99ea07b248afa4255417c0730, type: 3}
-  - weight: 100
+  - weight: 60
     prefab: {fileID: 4863423421354933755, guid: 1552fd8bcfad6aa4b856c1b288816738, type: 3}
   - weight: 15
     prefab: {fileID: 4863423421354933755, guid: 45fedb091e967e1488815396e1b8dec7, type: 3}
   - weight: 2
     prefab: {fileID: 4863423421354933755, guid: 408ea6b3e7b317b4490b9a5b41db0880, type: 3}
-  - weight: 25
-    prefab: {fileID: 4863423421354933755, guid: c2c76fe8e726cc2418f1c1faaff00022, type: 3}
-  - weight: 5
-    prefab: {fileID: 4863423421354933755, guid: 43aa9a90d1379be43b6999fee935eb39, type: 3}
-  - weight: 0.2
-    prefab: {fileID: 4863423421354933755, guid: 0eb02db10a97798429df175bc2f307d0, type: 3}
-  - weight: 1
-    prefab: {fileID: 4863423421354933755, guid: 08c9b638f595b5848a0d831ff22a22cc, type: 3}
-  - weight: 1
-    prefab: {fileID: 4863423421354933755, guid: 09928b5dc4eb1f74fb361f8cc6fc9dac, type: 3}
-  - weight: 30
+  - weight: 6
     prefab: {fileID: 4863423421354933755, guid: bcaee33e42ac8db4f89b3fda508475f0, type: 3}
   - weight: 5
     prefab: {fileID: 4863423421354933755, guid: 3de10b9761f8eeb4f93ce1e0e687403f, type: 3}
-  - weight: 5
-    prefab: {fileID: 4863423421354933755, guid: 7b8340fc2ebde324882eb3dc7846a517, type: 3}
+  - weight: 10
+    prefab: {fileID: 4863423421354933755, guid: d713c39cc492b154f8fd192de7e56851, type: 3}
+  - weight: 6
+    prefab: {fileID: 4863423421354933755, guid: fd381d44dade247499250e308bcf58d2, type: 3}
+  - weight: 6
+    prefab: {fileID: 4863423421354933755, guid: 64155f33c2d8f56489ac1db778df5b84, type: 3}
+  - weight: 6
+    prefab: {fileID: 4863423421354933755, guid: 1a3bcb472e1b768499c0ea58df76368e, type: 3}
+  - weight: 4
+    prefab: {fileID: 4863423421354933755, guid: bd6bf39eb117c554e826d653ee401e87, type: 3}
+  - weight: 3
+    prefab: {fileID: 4863423421354933755, guid: 5c5b49efa4cdfd54cb6ff1c5268d8637, type: 3}
+  - weight: 3
+    prefab: {fileID: 4863423421354933755, guid: bb7ae2023fdecbb4cab3a110e02adbc7, type: 3}
   - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: d588f29ac429fef44930cbf7fd65ab6f, type: 3}
+    prefab: {fileID: 4863423421354933755, guid: e19f1e1b068b997498624fafd2093c1f, type: 3}
   - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: 22c5acac42feac64fa8dca9551d343f3, type: 3}
+    prefab: {fileID: 4863423421354933755, guid: 8fa536267f773044f9eb13864f6f45c3, type: 3}
   - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: ae72b60c86e2a354eb6a6c40a40d3d21, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: bf66ac6135fde264db34dfbf1fc86a67, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: 3979e29aa7ec1cb4db39023815d6cc76, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: c1e2ecba81fda2e44b4f810dc0600dfe, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: b7b760654428d934ea81353191ec11b4, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: d5a5ec9f233264e4c8cf5ab53c9b1d29, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: 91c1f5a330d00bc489c2a71561f0119d, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: fb188c063f0e0c1469e03f056a385c8c, type: 3}
-  - weight: 0
-    prefab: {fileID: 4863423421354933755, guid: a4fa041b647b95241888ea1ccdf2b73b, type: 3}
+    prefab: {fileID: 4863423421354933755, guid: cdbac0a34bff25348b031c1068918b7c, type: 3}
 --- !u!4 &1231075384
 Transform:
   m_ObjectHideFlags: 0

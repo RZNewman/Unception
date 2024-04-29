@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7813429192099148214}
   - component: {fileID: 4863423421354933755}
   m_Layer: 6
-  m_Name: Ramp Corner
+  m_Name: EX-RampGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5195837346520216111}
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: 93d4ad0e26059e04fbd8259c20316cb5, type: 3}
 --- !u!23 &2221951367452455550
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -99,7 +99,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: 93d4ad0e26059e04fbd8259c20316cb5, type: 3}
 --- !u!114 &4863423421354933755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,14 +118,14 @@ MonoBehaviour:
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 2000000010000000
+    connections: 08000000
   - direction: 2
     connections: 0100000002000000
   - direction: 1
-    connections: 0100000002000000
+    connections: 800000001000000004000000
   - direction: 3
-    connections: 0001000010000000
+    connections: 400000001000000004000000
   - direction: 4
-    connections: 02000000
+    connections: 0002000002000000
   - direction: 5
     connections: 08000000

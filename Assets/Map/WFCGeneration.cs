@@ -12,7 +12,6 @@ public class WFCGeneration : MonoBehaviour
 {
     public Vector3 tileScale = new Vector3(8, 4, 8);
     public int collapsePerFrame = 100;
-    public GameObject TileFailurePre;
     public List<TileWeight> tiles;
 
     [System.Serializable]
@@ -23,49 +22,42 @@ public class WFCGeneration : MonoBehaviour
     }
     public enum TileConnection
     {
-        Flat = 1 << 0,
+        Walkable = 1 << 0,
         Air = 1 << 1,
         AirConnect = 1 << 2,
         Ground = 1 << 3,
         GroundConnect = 1 << 4,
-        RampLeft = 1 << 5,
-        RampRight = 1 << 6,
-        RampTop = 1 << 7,
-        WallLeft = 1 << 8,
-        WallRight = 1 << 9,
-        FlatUnwalkable = 1 << 10,
-        FlatUnwalkableConnect = 1 << 11,
-        GateLeft = 1 << 12,
-        GateRight = 1 << 13,
-        ArchRightConnect = 1 << 14,
-        ArchLeft = 1 << 15,
-        ArchRight = 1 << 16,
-        ArchLeftConnect = 1 << 17,
-        Air2 = 1 << 18,
+        RampRightConnect = 1 << 5,
+        RampLeft = 1 << 6,
+        RampRight = 1 << 7,
+        RampLeftConnect = 1 << 8,
+        RampTop = 1 << 9,
+        ArchRightConnect = 1 << 10,
+        ArchLeft = 1 << 11,
+        ArchRight = 1 << 12,
+        ArchLeftConnect = 1 << 13,
+        Bridge = 1 << 14,
+        BridgeWidth = 1 << 15,
     }
 
     int connectionsRightMask = (int)(
         TileConnection.AirConnect |
         TileConnection.GroundConnect |
         TileConnection.RampRight |
-        TileConnection.WallRight |
-        TileConnection.FlatUnwalkableConnect |
-        TileConnection.GateRight |
         TileConnection.ArchRight |
-        TileConnection.ArchLeftConnect
+        TileConnection.ArchLeftConnect |
+        TileConnection.RampLeftConnect
         );
     int connectionsLeftMask = (int)(
         TileConnection.RampLeft |
-        TileConnection.WallLeft |
-        TileConnection.GateLeft |
         TileConnection.ArchLeft |
-        TileConnection.ArchRightConnect
+        TileConnection.ArchRightConnect |
+        TileConnection.RampRightConnect
         );
 
     int enhancementLeftMask = (int)(
         TileConnection.Air |
         TileConnection.Ground |
-        TileConnection.FlatUnwalkable |
         TileConnection.ArchRight
         );
 
@@ -77,12 +69,12 @@ public class WFCGeneration : MonoBehaviour
 
 
     public static int walkableMask = (int)(
-        TileConnection.Flat 
+        TileConnection.Walkable 
         | TileConnection.RampTop 
         | TileConnection.RampLeft 
         | TileConnection.RampRight
-        | TileConnection.WallLeft
-        | TileConnection.WallRight
+        | TileConnection.RampLeftConnect
+        | TileConnection.RampRightConnect
         );
     public List<TileDirection> walkableDirections(Vector3Int loc)
     {
@@ -200,12 +192,12 @@ public class WFCGeneration : MonoBehaviour
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(copy.alignmentRestrictions);
         }
 
-        public void init(BigMask fullDomain, int fullConnection, Dictionary<int, HashSet<Rotation>> fullRestrictions)
+        public void init(BigMask fullDomain, int verticalConnections, int horizontalConnections, Dictionary<int, HashSet<Rotation>> fullRestrictions)
         {
             domainMask = new BigMask(fullDomain);
-            forwardMask = fullConnection;
-            rightMask = fullConnection;
-            upMask = fullConnection;
+            forwardMask = horizontalConnections;
+            rightMask = horizontalConnections;
+            upMask = verticalConnections;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(fullRestrictions);
         }
         public void makeReady()
@@ -225,9 +217,25 @@ public class WFCGeneration : MonoBehaviour
     WFCCell[,,] mapBackup;
     WFCCell[,,] map;
 
-    int fullConnectionMask()
+    void fullConnectionMask(BigMask fullDomainMask, out int verticalMask, out int horizontalMask)
     {
-        return connectionDomain(EnumValues<TileConnection>());
+        ConnectionDomainInfo cdi = compositeConnectionDomains(fullDomainMask);
+        verticalMask = cdi.validConnections.up;
+        horizontalMask = cdi.validConnections.forward;
+    }
+
+    string namesFromConnections(int conn)
+    {
+        string names = "";
+        foreach(TileConnection c in EnumValues<TileConnection>())
+        {
+            int ind = (int)c;
+            if((conn & ind) > 0)
+            {
+                names += c.ToString()+",";
+            }
+        }
+        return names;
     }
 
     (BigMask, BigMask) fullDomainMask()
@@ -299,10 +307,6 @@ public class WFCGeneration : MonoBehaviour
         newDomain |= enhancementsRightOverlap << 1;
         newDomain |= enhancementsLeftOverlap >> 1;
 
-        if ((domain & ((int)TileConnection.Air2)) > 0)
-        {
-            newDomain |= (int)TileConnection.Air;
-        }
 
         return newDomain;
     }
@@ -662,16 +666,18 @@ public class WFCGeneration : MonoBehaviour
             else
             {
                 Debug.LogWarning("Domain reduced to 0:" + loc + ":"
-                        + " Up:" + cell.upMask
-                        + " Forward:" + cell.forwardMask
-                        + " Right:" + cell.rightMask
-                        + " Down:" + map[loc.x, loc.y - 1, loc.z].upMask
-                        + " Back:" + map[loc.x, loc.y, loc.z - 1].forwardMask
-                        + " Left:" + map[loc.x - 1, loc.y, loc.z].rightMask
+                        + " Up:" + namesFromConnections(cell.upMask)
+                        + " Forward:" + namesFromConnections(cell.forwardMask)
+                        + " Right:" + namesFromConnections(cell.rightMask)
+                        + " Down:" + namesFromConnections(map[loc.x, loc.y - 1, loc.z].upMask)
+                        + " Back:" + namesFromConnections(map[loc.x, loc.y, loc.z - 1].forwardMask)
+                        + " Left:" + namesFromConnections(map[loc.x - 1, loc.y, loc.z].rightMask)
                         + " Up align:" + string.Join(",", cell.alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
                         + " Down align:" + string.Join(",", map[loc.x, loc.y - 1, loc.z].alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
                         );
-
+                Vector3 worldLocation = loc;
+                worldLocation = worldLocation.scale(floorScale);
+                Debug.DrawLine(worldLocation, worldLocation + Vector3.up, Color.red, 60f);
                 //start EX call
                 cell.domainMask = new BigMask(ExDomain);
                 cell.rightMask = EXEnhanceConnections(cell.rightMask);
@@ -714,6 +720,7 @@ public class WFCGeneration : MonoBehaviour
 
         if (ExCall)
         {
+            //Debug.LogWarning("EX choice: "+ cell.domainMask.);
             return RestrictTileResult.ReducedEx;
         }
 
@@ -1175,7 +1182,8 @@ public class WFCGeneration : MonoBehaviour
 
         (BigMask fullDomain, BigMask Ex) = fullDomainMask();
         ExDomain = Ex;
-        int fullConnection = fullConnectionMask();
+        int vertConnections, horizonConnections;
+        fullConnectionMask(fullDomain, out vertConnections, out horizonConnections);
         Dictionary<int, HashSet<Rotation>> fullRestrictions = fullAlignmentMask();
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
@@ -1218,7 +1226,7 @@ public class WFCGeneration : MonoBehaviour
                         if (map[x, y, z] == null)
                         {
                             map[x, y, z] = new WFCCell();
-                            map[x, y, z].init(fullDomain, fullConnection, fullRestrictions);
+                            map[x, y, z].init(fullDomain, vertConnections, horizonConnections, fullRestrictions);
                             uniqueLocations.Add(loc);
                         }
 
@@ -1275,8 +1283,8 @@ public class WFCGeneration : MonoBehaviour
         Debug.Log("Init: " + Time.time);
 
         int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
-        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air );
-        int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect | TileConnection.Air2);
+        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.AirConnect );
+        int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect );
         int groundMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
 
         foreach (TileDirection dir in AllDirections)

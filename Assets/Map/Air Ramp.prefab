@@ -44,13 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7aefd46d238b9c4ba6ab7f6cad4f499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipSpawn: 0
-  dissuadeCollapse: 1
+  skipSpawn: 1
+  dissuadeCollapse: 0
   navType: 0
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 010000000004000010000000
+    connections: 01000000
   - direction: 2
     connections: 02000000
   - direction: 1
@@ -58,6 +58,6 @@ MonoBehaviour:
   - direction: 3
     connections: 02000000
   - direction: 4
-    connections: 00000400
+    connections: 02000000
   - direction: 5
-    connections: 80000000
+    connections: 00020000

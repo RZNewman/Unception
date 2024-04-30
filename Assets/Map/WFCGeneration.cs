@@ -40,7 +40,7 @@ public class WFCGeneration : MonoBehaviour
         BridgeWidth = 1 << 15,
     }
 
-    int connectionsRightMask = (int)(
+    readonly int connectionsRightMask = (int)(
         TileConnection.AirConnect |
         TileConnection.GroundConnect |
         TileConnection.RampRight |
@@ -48,27 +48,27 @@ public class WFCGeneration : MonoBehaviour
         TileConnection.ArchLeftConnect |
         TileConnection.RampLeftConnect
         );
-    int connectionsLeftMask = (int)(
+    readonly int connectionsLeftMask = (int)(
         TileConnection.RampLeft |
         TileConnection.ArchLeft |
         TileConnection.ArchRightConnect |
         TileConnection.RampRightConnect
         );
 
-    int enhancementLeftMask = (int)(
+    readonly int enhancementLeftMask = (int)(
         TileConnection.Air |
         TileConnection.Ground |
         TileConnection.ArchRight
         );
 
-    int enhancementRightMask = (int)(
+    readonly int enhancementRightMask = (int)(
         TileConnection.ArchLeft
         );
 
 
 
 
-    public static int walkableMask = (int)(
+    public readonly static int walkableMask = (int)(
         TileConnection.Walkable 
         | TileConnection.RampTop 
         | TileConnection.RampLeft 
@@ -76,6 +76,13 @@ public class WFCGeneration : MonoBehaviour
         | TileConnection.RampLeftConnect
         | TileConnection.RampRightConnect
         );
+
+    static readonly int airMask = (int)(
+        TileConnection.Air
+        | TileConnection.RampTop
+        | TileConnection.AirConnect
+        );
+    static readonly int groundMask = ~airMask;
     public List<TileDirection> walkableDirections(Vector3Int loc)
     {
         List<TileDirection> directions = new List<TileDirection>();
@@ -155,6 +162,262 @@ public class WFCGeneration : MonoBehaviour
         //Debug.Log(rotation + ":" + direction + " - " + newDir);
         return newDir;
     }
+    enum MeasureType
+    {
+        Air, 
+        Ground
+    }
+    enum GapCollapseType
+    {
+        None,
+        Air,
+        Ground
+    }
+
+    struct AirMeasurements
+    {
+        public Dictionary<MeasureType, int> typeDists;
+
+        public bool isAir()
+        {
+            return typeDists[MeasureType.Air] >0 && typeDists[MeasureType.Ground] > 0;
+        }
+    }
+
+    struct AirGap
+    {
+        public Dictionary<TileDirection, AirMeasurements> measurements;
+        GapCollapseType gapCollapseType;
+
+        bool isGround(int spacing)
+        {
+            return (measurements[TileDirection.Up].typeDists[MeasureType.Ground] + measurements[TileDirection.Down].typeDists[MeasureType.Ground]) > spacing + 1;
+        }
+        bool isAir()
+        {
+            return measurements[TileDirection.Up].isAir() || measurements[TileDirection.Down].isAir();
+        }
+        //cell in the spacing that arent adjacnet must be entirely one substance (vertical connection type)
+        //public bool requiresLikePoles(int spacing)
+        //{
+        //    int upGround = measurements[TileDirection.Up].typeDists[MeasureType.Ground];
+        //    int downGround = measurements[TileDirection.Down].typeDists[MeasureType.Ground];
+
+        //    //up is spacing -1 bc the cell above a ground cell is adj
+        //    bool req = (upGround > 0 && upGround < spacing - 1) || (downGround > 1 && downGround < spacing);
+        //    if (req) Debug.Log(ToString());
+        //    return req;
+        //}
+        public bool domainFit(int spacing, int upDomain, int downDomain)
+        {
+            int upGround = measurements[TileDirection.Up].typeDists[MeasureType.Ground];
+            int downGround = measurements[TileDirection.Down].typeDists[MeasureType.Ground];
+            return !(
+                    (
+                        (upDomain | groundMask) == groundMask
+                        &&
+                        (downDomain | airMask) == airMask
+                        &&
+                        upGroundRestricted(upGround,spacing)
+                    )
+                    ||
+                    (
+                        (upDomain | airMask) == airMask
+                        &&
+                        (downDomain | groundMask) == groundMask
+                        &&
+                        downGroundRestricted(downGround, spacing)
+                    )
+                );
+        }
+
+        bool upGroundRestricted(int dist, int spacing)
+        {
+            return (dist > 0 && dist < spacing - 1);
+        }
+        bool downGroundRestricted(int dist, int spacing)
+        {
+            return (dist > 1 && dist < spacing);
+        }
+
+
+        public override string ToString()
+        {
+            return System.String.Join('/',measurements.Select(pair => pair.Key.ToString() + ":" + System.String.Join(',', pair.Value.typeDists.Select(distPair => distPair.Key.ToString() + "-" + distPair.Value))));
+        }
+        public GapCollapseType tryCollapseConnection(int newConn)
+        {
+            
+            if(gapCollapseType == GapCollapseType.None)
+            {
+                if ((newConn | airMask) == airMask)
+                {
+                    gapCollapseType = GapCollapseType.Air;
+                    return gapCollapseType;
+                }
+                if ((newConn | groundMask) == groundMask)
+                {
+                    gapCollapseType = GapCollapseType.Ground;
+                    return gapCollapseType;
+                }
+            }
+            return GapCollapseType.None;
+
+        }
+
+        public bool applyDistance(int spacing, TileDirection dir, MeasureType type, int dist, out bool checkDomain)
+        {
+            checkDomain = false;
+            if (measurements[dir].typeDists[type] < dist)
+            {
+                //Air measures shouldnt go through ground
+                if (type == MeasureType.Air && gapCollapseType == GapCollapseType.Ground)
+                {
+                    return false;
+                }
+                measurements[dir].typeDists[type] = dist;
+                if(type == MeasureType.Ground && (
+                    (dir == TileDirection.Up  && upGroundRestricted(dist, spacing))
+                    ||
+                    (dir == TileDirection.Down && downGroundRestricted(dist, spacing))
+                    ))
+                {
+                    checkDomain = true;
+                }
+
+                return true;
+            }
+            return false;
+        }
+
+        public GapCollapseType tryCollapseSpacing(int spacing)
+        {
+            if (gapCollapseType == GapCollapseType.None)
+            {
+                //Debug.Log(this.ToString());
+                if (isAir())
+                {
+                    //Debug.Log("Air " + ToString());
+                    gapCollapseType = GapCollapseType.Air;
+                    return gapCollapseType;
+                }
+                if (isGround(spacing))
+                {
+                    //Debug.Log("Ground " + ToString());
+                    gapCollapseType = GapCollapseType.Ground;
+                    return gapCollapseType;
+                }
+            }
+            return GapCollapseType.None;
+        }
+
+    }
+
+    void propagateGap(int spacing, HashSet<Vector3Int> queueIn, out HashSet<Vector3Int> queueOut, Vector3Int loc, TileDirection dir, MeasureType type, int dist)
+    {
+        queueOut = queueIn;
+        if(dist <= 0)
+        {
+            return;
+        }
+        WFCCell cell = map[loc.x, loc.y, loc.z];
+        if (!cell.ready)
+        {
+            return;
+        }
+        bool checkDomain;
+        if(cell.verticalGap.applyDistance(spacing, dir, type, dist, out checkDomain))
+        {
+            GapCollapseType newCollapse = cell.verticalGap.tryCollapseSpacing(spacing);
+            if (newCollapse != GapCollapseType.None)
+            {
+                Debug.Log(loc + newCollapse.ToString()+ ": "+ cell.verticalGap.ToString() + ": " + namesFromConnections(cell.upMask));
+                Vector3 worldLocation = loc;
+                worldLocation = worldLocation.scale(floorScale);
+                Debug.DrawLine(worldLocation, worldLocation + Vector3Int.up*2, Color.yellow, 60f);
+                cell.upMask &= newCollapse switch
+                {
+                    GapCollapseType.Air => airMask,
+                    GapCollapseType.Ground => groundMask,
+                    _ => throw new System.NotImplementedException(),
+                };
+                //Debug.Log(loc + " 2 "+cell.upMask);
+                if (cell.upMask == 0)
+                {
+                    throw new System.Exception("Air gap removed mask");
+                }
+                queueOut.Add(loc);
+                queueOut.Add(loc + Vector3Int.up);
+            }
+            else if (checkDomain)
+            {
+                queueOut.Add(loc);
+            }
+
+            switch (dir)
+            {
+                case TileDirection.Up:
+                    loc.y += 1;
+                    propagateGap(spacing, queueOut, out queueOut, loc, dir, type, dist - 1);
+                    break;
+                case TileDirection.Down:
+                    loc.y -= 1;
+                    propagateGap(spacing, queueOut, out queueOut, loc, dir, type, dist - 1);
+                    break;
+
+            }
+        }
+        
+    }
+
+    void startPropogateGap(int spacing, Vector3Int loc, GapCollapseType gapColl, HashSet<Vector3Int> queueIn, out HashSet<Vector3Int> queueOut)
+    {
+        queueOut = queueIn;
+        switch (gapColl)
+        {
+            case GapCollapseType.Air:
+                propagateGap(spacing, queueOut, out queueOut, loc, TileDirection.Up, MeasureType.Air, spacing - 1);
+                propagateGap(spacing, queueOut, out queueOut, loc, TileDirection.Down, MeasureType.Air, spacing - 1);
+                break;
+            case GapCollapseType.Ground:
+                propagateGap(spacing, queueOut, out queueOut, loc, TileDirection.Up, MeasureType.Ground, spacing);
+                propagateGap(spacing, queueOut, out queueOut, loc, TileDirection.Down, MeasureType.Ground, spacing);
+                break;
+        }
+    }
+    void tryPropagateGap(int spacing, Vector3Int loc, HashSet<Vector3Int> queueIn, out HashSet<Vector3Int> queueOut)
+    {
+        queueOut = queueIn;
+        WFCCell cell = map[loc.x, loc.y, loc.z];
+        WFCCell adjCell = map[loc.x, loc.y-1, loc.z];
+
+
+        GapCollapseType gapCollTop = cell.verticalGap.tryCollapseConnection(cell.upMask);
+        GapCollapseType gapCollBottom = GapCollapseType.None;
+        if (adjCell.ready)
+        {
+            gapCollBottom = adjCell.verticalGap.tryCollapseConnection(adjCell.upMask);
+        }
+        startPropogateGap(spacing, loc, gapCollTop, queueOut, out queueOut);
+        startPropogateGap(spacing, loc+ Vector3Int.down, gapCollBottom, queueOut, out queueOut);
+
+
+    }
+
+
+    static string namesFromConnections(int conn)
+    {
+        string names = "";
+        foreach (TileConnection c in EnumValues<TileConnection>())
+        {
+            int ind = (int)c;
+            if ((conn & ind) > 0)
+            {
+                names += c.ToString() + ",";
+            }
+        }
+        return names;
+    }
 
 
     class WFCCell
@@ -170,6 +433,8 @@ public class WFCGeneration : MonoBehaviour
         public NavLoad navType;
 
         public Dictionary<int, HashSet<Rotation>> alignmentRestrictions;
+        public AirGap verticalGap;
+
         public WFCCell()
         {
             ready = false;
@@ -199,6 +464,30 @@ public class WFCGeneration : MonoBehaviour
             rightMask = horizontalConnections;
             upMask = verticalConnections;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(fullRestrictions);
+            verticalGap = new AirGap() {
+                measurements = new Dictionary<TileDirection, AirMeasurements>()
+                {
+                    {TileDirection.Up,new AirMeasurements()
+                        {
+                            typeDists = new Dictionary<MeasureType, int>()
+                            {
+                                {MeasureType.Air,0},
+                                {MeasureType.Ground,0},
+                            }
+                        }
+                    },
+                    {TileDirection.Down,new AirMeasurements()
+                        {
+                            typeDists = new Dictionary<MeasureType, int>()
+                            {
+                                {MeasureType.Air,0},
+                                {MeasureType.Ground,0},
+                            }
+                        }
+                    }
+                }
+                
+            };
         }
         public void makeReady()
         {
@@ -224,19 +513,7 @@ public class WFCGeneration : MonoBehaviour
         horizontalMask = cdi.validConnections.forward;
     }
 
-    string namesFromConnections(int conn)
-    {
-        string names = "";
-        foreach(TileConnection c in EnumValues<TileConnection>())
-        {
-            int ind = (int)c;
-            if((conn & ind) > 0)
-            {
-                names += c.ToString()+",";
-            }
-        }
-        return names;
-    }
+    
 
     (BigMask, BigMask) fullDomainMask()
     {
@@ -554,6 +831,8 @@ public class WFCGeneration : MonoBehaviour
         }
         List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
+        //BigMask cachedDomain = new BigMask(cell.domainMask);
+        //Debug.Log("Restrict Domain " + loc+ cell.upMask);
 
         foreach ((TileOption opt, int index) in optionsFromTileDomain(cell.domainMask))
         {
@@ -644,6 +923,15 @@ public class WFCGeneration : MonoBehaviour
                         break;
                 }
             }
+
+            if(!cell.verticalGap.domainFit(gapSpacing, domains.up, domains.down))
+            {
+                doesntFit = true;
+                Vector3 worldLocation = loc;
+                worldLocation = worldLocation.scale(floorScale);
+                Debug.DrawLine(worldLocation, worldLocation + Vector3Int.down * 2, Color.cyan, 60f);
+                //Debug.DrawLine(loc, loc + Vector3Int.up*4, Color.yellow, 1f);
+            }
         MatchFound:
             if (doesntFit)
             {
@@ -666,6 +954,7 @@ public class WFCGeneration : MonoBehaviour
             else
             {
                 Debug.LogWarning("Domain reduced to 0:" + loc + ":"
+                        //+ " Tiles:" + System.String.Join(',', optionsFromTileDomain(cachedDomain).Select(opt => opt.Item1.prefab.name))
                         + " Up:" + namesFromConnections(cell.upMask)
                         + " Forward:" + namesFromConnections(cell.forwardMask)
                         + " Right:" + namesFromConnections(cell.rightMask)
@@ -771,16 +1060,21 @@ public class WFCGeneration : MonoBehaviour
     {
         public Dictionary<TileDirection, int> validConnections;
     }
+
+    static int gapSpacing = 3;
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
         ConnectionDomainInfo connections = compositeConnectionDomains(cell.domainMask);
         ConnectionDomainMasks domains = connections.validConnections;
+        HashSet<Vector3Int> queueLocations = new HashSet<Vector3Int>();
+        //Debug.Log("Collapse Connections " + loc);
         foreach (TileDirection dir in AllDirections)
         {
             WFCCell negativeCell;
             int negativeDomain;
             bool altered;
+            
             switch (dir)
             {
                 case TileDirection.Forward:
@@ -788,14 +1082,14 @@ public class WFCGeneration : MonoBehaviour
                     if (cell.forwardMask != domains.forward)
                     {
                         cell.forwardMask &= domains.forward;
-                        queue(loc + new Vector3Int(0, 0, 1));
+                        queueLocations.Add(loc + Vector3Int.forward);
                     }
                     break;
                 case TileDirection.Right:
                     if (cell.rightMask != domains.right)
                     {
                         cell.rightMask &= domains.right;
-                        queue(loc + new Vector3Int(1, 0, 0));
+                        queueLocations.Add(loc + Vector3Int.right);
                     }
                     break;
                 case TileDirection.Up:
@@ -816,7 +1110,7 @@ public class WFCGeneration : MonoBehaviour
                     }
                     if (altered)
                     {
-                        queue(loc + new Vector3Int(0, 1, 0));
+                        queueLocations.Add(loc + Vector3Int.up);
                     }
                     break;
                 case TileDirection.Backward:
@@ -825,7 +1119,7 @@ public class WFCGeneration : MonoBehaviour
                     if (negativeCell.forwardMask != negativeDomain)
                     {
                         negativeCell.forwardMask &= negativeDomain;
-                        queue(loc + new Vector3Int(0, 0, -1));
+                        queueLocations.Add(loc + Vector3Int.back);
                     }
                     break;
                 case TileDirection.Left:
@@ -834,7 +1128,7 @@ public class WFCGeneration : MonoBehaviour
                     if (negativeCell.rightMask != negativeDomain)
                     {
                         negativeCell.rightMask &= negativeDomain;
-                        queue(loc + new Vector3Int(-1, 0, 0));
+                        queueLocations.Add(loc + Vector3Int.left);
                     }
                     break;
                 case TileDirection.Down:
@@ -855,12 +1149,19 @@ public class WFCGeneration : MonoBehaviour
                             altered = true;
                         }
                     }
+
                     if (altered)
                     {
-                        queue(loc + new Vector3Int(0, -1, 0));
+                        queueLocations.Add(loc + Vector3Int.down);
                     }
                     break;
             }
+        }
+        tryPropagateGap(gapSpacing, loc, queueLocations, out queueLocations);
+
+        foreach (Vector3Int q in queueLocations)
+        {
+            queue(q);
         }
     }
 

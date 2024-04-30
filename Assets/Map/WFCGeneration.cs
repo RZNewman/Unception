@@ -180,7 +180,10 @@ public class WFCGeneration : MonoBehaviour
 
         public bool isAir()
         {
-            return typeDists[MeasureType.Air] >0 && typeDists[MeasureType.Ground] > 0;
+            return typeDists[MeasureType.Air] >0 && typeDists[MeasureType.Ground] > 0
+                &&
+                typeDists[MeasureType.Air] >= typeDists[MeasureType.Ground]
+                ;
         }
     }
 
@@ -243,7 +246,7 @@ public class WFCGeneration : MonoBehaviour
 
         public override string ToString()
         {
-            return System.String.Join('/',measurements.Select(pair => pair.Key.ToString() + ":" + System.String.Join(',', pair.Value.typeDists.Select(distPair => distPair.Key.ToString() + "-" + distPair.Value))));
+            return System.String.Join('/',measurements.Select(pair => pair.Key.ToString() + ":" + System.String.Join(',', pair.Value.typeDists.Select(distPair => distPair.Key.ToString() + "-" + distPair.Value)))) +" --Collapse: "+ gapCollapseType;
         }
         public GapCollapseType tryCollapseConnection(int newConn)
         {
@@ -270,11 +273,11 @@ public class WFCGeneration : MonoBehaviour
             checkDomain = false;
             if (measurements[dir].typeDists[type] < dist)
             {
-                //Air measures shouldnt go through ground
-                if (type == MeasureType.Air && gapCollapseType == GapCollapseType.Ground)
-                {
-                    return false;
-                }
+                ////Air measures shouldnt go through ground
+                //if (type == MeasureType.Air && gapCollapseType == GapCollapseType.Ground)
+                //{
+                //    return false;
+                //}
                 measurements[dir].typeDists[type] = dist;
                 if(type == MeasureType.Ground && (
                     (dir == TileDirection.Up  && upGroundRestricted(dist, spacing))
@@ -328,10 +331,11 @@ public class WFCGeneration : MonoBehaviour
         bool checkDomain;
         if(cell.verticalGap.applyDistance(spacing, dir, type, dist, out checkDomain))
         {
+            //Debug.Log("New dist: " + loc + cell.verticalGap.ToString());
             GapCollapseType newCollapse = cell.verticalGap.tryCollapseSpacing(spacing);
             if (newCollapse != GapCollapseType.None)
             {
-                Debug.Log(loc + newCollapse.ToString()+ ": "+ cell.verticalGap.ToString() + ": " + namesFromConnections(cell.upMask));
+                //Debug.Log(loc + newCollapse.ToString()+ ": "+ cell.verticalGap.ToString() + ": " + namesFromConnections(cell.upMask));
                 Vector3 worldLocation = loc;
                 worldLocation = worldLocation.scale(floorScale);
                 Debug.DrawLine(worldLocation, worldLocation + Vector3Int.up*2, Color.yellow, 60f);
@@ -373,6 +377,11 @@ public class WFCGeneration : MonoBehaviour
     void startPropogateGap(int spacing, Vector3Int loc, GapCollapseType gapColl, HashSet<Vector3Int> queueIn, out HashSet<Vector3Int> queueOut)
     {
         queueOut = queueIn;
+        //if(gapColl!= GapCollapseType.None)
+        //{
+        //    Debug.Log("Propagate: " + loc + gapColl.ToString());
+        //}
+        
         switch (gapColl)
         {
             case GapCollapseType.Air:
@@ -455,6 +464,7 @@ public class WFCGeneration : MonoBehaviour
             rightMask = copy.rightMask;
             upMask = copy.upMask;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(copy.alignmentRestrictions);
+            verticalGap = copy.verticalGap;
         }
 
         public void init(BigMask fullDomain, int verticalConnections, int horizontalConnections, Dictionary<int, HashSet<Rotation>> fullRestrictions)
@@ -639,7 +649,7 @@ public class WFCGeneration : MonoBehaviour
 
                 if (domains[TileDirection.Forward] != domains[TileDirection.Right])
                 {
-                    rots.Add(Rotation.Half);
+                    rots.Add(Rotation.Quarter);
                 }
             }
             else
@@ -1061,7 +1071,7 @@ public class WFCGeneration : MonoBehaviour
         public Dictionary<TileDirection, int> validConnections;
     }
 
-    static int gapSpacing = 3;
+    static int gapSpacing = 5;
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
@@ -1398,6 +1408,7 @@ public class WFCGeneration : MonoBehaviour
             {
                 Debug.LogWarning("Retrying...");
                 Debug.Break();
+                yield return null;
                 foreach (Transform child in floorRoot.transform)
                 {
                     Destroy(child.gameObject);
@@ -1634,7 +1645,8 @@ public class WFCGeneration : MonoBehaviour
             }
         }
         Debug.Log("Constrain Walls: " + Time.time);
-
+        //Debug.Break();
+        yield return null;
 
         TileWalker walker = new TileWalker(path[0]);
 
@@ -1646,6 +1658,7 @@ public class WFCGeneration : MonoBehaviour
 
         while (path.Count > 0)
         {
+            //Debug.Break();
             if (walker.arrived)
             {
                 mapCopy(uniqueLocations, true);

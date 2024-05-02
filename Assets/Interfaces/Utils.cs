@@ -610,6 +610,12 @@ public static class Utils
         return new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
     }
 
+    public static Vector3 oneOver(this Vector3 v)
+    {
+        return new Vector3(1/v.x, 1 / v.y, 1 / v.z);
+    }
+
+
     public static Vector3 asFloat(this Vector3Int v)
     {
         return v;

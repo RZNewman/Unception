@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skipSpawn: 0
-  dissuadeCollapse: 0
+  collapsePriority: 0
   navType: 1
   alternatives: []
   adjacencies:
@@ -122,9 +122,9 @@ MonoBehaviour:
   - direction: 2
     connections: 0100000002000000
   - direction: 1
-    connections: 800000001000000004000000
+    connections: 800000001000000002000000
   - direction: 3
-    connections: 400000001000000004000000
+    connections: 400000001000000002000000
   - direction: 4
     connections: 0002000002000000
   - direction: 5

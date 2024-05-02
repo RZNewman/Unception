@@ -178,6 +178,10 @@ public class WFCGeneration : MonoBehaviour
     {
         public Dictionary<MeasureType, int> typeDists;
 
+        public AirMeasurements(AirMeasurements copy)
+        {
+            typeDists = new Dictionary<MeasureType, int>(copy.typeDists);
+        }
         public bool isAir()
         {
             return typeDists[MeasureType.Air] >0 && typeDists[MeasureType.Ground] > 0
@@ -191,6 +195,16 @@ public class WFCGeneration : MonoBehaviour
     {
         public Dictionary<TileDirection, AirMeasurements> measurements;
         GapCollapseType gapCollapseType;
+
+        public AirGap(AirGap copy)
+        {
+            gapCollapseType = copy.gapCollapseType;
+            measurements = new Dictionary<TileDirection, AirMeasurements>();
+            foreach(KeyValuePair<TileDirection, AirMeasurements> pair in copy.measurements)
+            {
+                measurements[pair.Key] = new AirMeasurements(pair.Value);
+            }
+        }
 
         bool isGround(int spacing)
         {
@@ -338,7 +352,7 @@ public class WFCGeneration : MonoBehaviour
                 //Debug.Log(loc + newCollapse.ToString()+ ": "+ cell.verticalGap.ToString() + ": " + namesFromConnections(cell.upMask));
                 Vector3 worldLocation = loc;
                 worldLocation = worldLocation.scale(floorScale);
-                Debug.DrawLine(worldLocation, worldLocation + Vector3Int.up*2, Color.yellow, 60f);
+                //Debug.DrawLine(worldLocation, worldLocation + Vector3Int.up*2, Color.yellow, 60f);
                 cell.upMask &= newCollapse switch
                 {
                     GapCollapseType.Air => airMask,
@@ -444,6 +458,8 @@ public class WFCGeneration : MonoBehaviour
         public Dictionary<int, HashSet<Rotation>> alignmentRestrictions;
         public AirGap verticalGap;
 
+        public Dictionary<TileType, int> groupWeights;
+
         public WFCCell()
         {
             ready = false;
@@ -453,6 +469,7 @@ public class WFCGeneration : MonoBehaviour
             rightMask = 0;
             upMask = 0;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>();
+            groupWeights = new Dictionary<TileType, int>();
         }
 
         public WFCCell(WFCCell copy)
@@ -464,7 +481,8 @@ public class WFCGeneration : MonoBehaviour
             rightMask = copy.rightMask;
             upMask = copy.upMask;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(copy.alignmentRestrictions);
-            verticalGap = copy.verticalGap;
+            verticalGap = new AirGap(copy.verticalGap);
+            groupWeights = new Dictionary<TileType, int>(copy.groupWeights);
         }
 
         public void init(BigMask fullDomain, int verticalConnections, int horizontalConnections, Dictionary<int, HashSet<Rotation>> fullRestrictions)
@@ -474,6 +492,7 @@ public class WFCGeneration : MonoBehaviour
             rightMask = horizontalConnections;
             upMask = verticalConnections;
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(fullRestrictions);
+            groupWeights = new Dictionary<TileType, int>();
             verticalGap = new AirGap() {
                 measurements = new Dictionary<TileDirection, AirMeasurements>()
                 {
@@ -683,7 +702,7 @@ public class WFCGeneration : MonoBehaviour
     }
 
 
-    BigMask selectFromTileDomain(BigMask domain)
+    BigMask selectFromTileDomain(BigMask domain, Dictionary<TileType, int> groupWeights)
     {
         if (domain.empty)
         {
@@ -702,9 +721,24 @@ public class WFCGeneration : MonoBehaviour
         {
             TileOption opt = domainTiles[index];
             //Debug.Log(opt.prefab.name + " - " + opt.weight);
+            float weight = opt.weight;
+            if(opt.prefab.typeGroup != TileType.None)
+            {
+                if (groupWeights.ContainsKey(opt.prefab.typeGroup))
+                {
+                    float weightBonus = opt.prefab.typeGroup switch
+                    {
+                        TileType.Surface => 15,
+                        TileType.Air => 2,
+                        TileType.Ground => 2,
+                        _ => 0
+                    };
+                    weight *= weightBonus * groupWeights[opt.prefab.typeGroup];
+                }
+            }
 
-            indexWeights.Add((index, opt.weight));
-            weightSum += opt.weight;
+            indexWeights.Add((index, weight));
+            weightSum += weight;
         }
 
         if (weightSum == 0)
@@ -763,7 +797,55 @@ public class WFCGeneration : MonoBehaviour
         throw new System.Exception("tile option not found");
     }
 
+    void addLikeTypeGroups(TileOption opt, Vector3Int loc)
+    {
+        if(opt.prefab.typeGroup != TileType.None)
+        {
+            int connMask = opt.prefab.typeGroup switch
+            {
+                TileType.Air => (int)(TileConnection.Air),
+                TileType.Ground => (int)(TileConnection.Ground),
+                TileType.Surface => walkableMask,
+                _ => 0
+            };
+            foreach(TileDirection dir in HorizontalDirections)
+            {
+                Vector3Int adjLoc = loc + fromDir(dir);
+                WFCCell cellAdj = map[adjLoc.x, adjLoc.y, adjLoc.z];
 
+                Vector3Int cellConnLoc = dir switch
+                {
+                    TileDirection.Backward | TileDirection.Left | TileDirection.Down => adjLoc,
+                    _ => loc
+                };
+                TileDirection dirForMask = dir switch
+                {
+                    TileDirection.Backward | TileDirection.Left | TileDirection.Down => opposite(dir),
+                    _ => dir
+                };
+                WFCCell cellForConn = map[cellConnLoc.x, cellConnLoc.y, cellConnLoc.z];
+                int connCell = dirForMask switch
+                {
+                    TileDirection.Up => cellForConn.upMask,
+                    TileDirection.Right => cellForConn.rightMask,
+                    TileDirection.Forward => cellForConn.forwardMask,
+                    _ => 0
+                };
+
+                if((connCell & connMask) != 0)
+                {
+                    if (cellAdj.groupWeights.ContainsKey(opt.prefab.typeGroup))
+                    {
+                        cellAdj.groupWeights[opt.prefab.typeGroup] += 1;
+                    }
+                    else
+                    {
+                        cellAdj.groupWeights[opt.prefab.typeGroup] = 1;
+                    }
+                }
+            }
+        }
+    }
     ConnectionDomainInfo compositeConnectionDomains(BigMask domain)
     {
         if (domain.empty)
@@ -934,13 +1016,12 @@ public class WFCGeneration : MonoBehaviour
                 }
             }
 
-            if(!cell.verticalGap.domainFit(gapSpacing, domains.up, domains.down))
+            if(!cell.verticalGap.domainFit(gapVerticalSpacingTile, domains.up, domains.down))
             {
                 doesntFit = true;
                 Vector3 worldLocation = loc;
                 worldLocation = worldLocation.scale(floorScale);
-                Debug.DrawLine(worldLocation, worldLocation + Vector3Int.down * 2, Color.cyan, 60f);
-                //Debug.DrawLine(loc, loc + Vector3Int.up*4, Color.yellow, 1f);
+                //Debug.DrawLine(worldLocation, worldLocation + Vector3Int.down * 2, Color.cyan, 60f);
             }
         MatchFound:
             if (doesntFit)
@@ -973,6 +1054,8 @@ public class WFCGeneration : MonoBehaviour
                         + " Left:" + namesFromConnections(map[loc.x - 1, loc.y, loc.z].rightMask)
                         + " Up align:" + string.Join(",", cell.alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
                         + " Down align:" + string.Join(",", map[loc.x, loc.y - 1, loc.z].alignmentRestrictions.Select(pair => pair.Key + ":" + string.Join("|", pair.Value)))
+                        + " Up gap:" + cell.verticalGap
+                        + " Down gap:" + map[loc.x, loc.y - 1, loc.z].verticalGap
                         );
                 Vector3 worldLocation = loc;
                 worldLocation = worldLocation.scale(floorScale);
@@ -1025,27 +1108,35 @@ public class WFCGeneration : MonoBehaviour
 
         if (reduced)
         {
-            update(loc, entropy(remaining));
+            update(loc, entropy(remaining, cell.groupWeights));
         }
 
         return reduced ? RestrictTileResult.Reduced : RestrictTileResult.NoChange;
     }
 
-    float entropy(List<TileOption> options)
+    float entropy(List<TileOption> options, Dictionary<TileType, int> groupWeights)
     {
         //return options.Count;
         if (options.Count == 0)
         {
             return 0;
         }
+        if (options.Count == 1)
+        {
+            return -10;
+        }
         float maxWeight = options[0].weight;
         float entropy = 0;
         int count = 0;
         foreach (TileOption opt in options)
         {
-            if (opt.prefab.dissuadeCollapse)
+            if (opt.prefab.collapsePriority ==  CollapsePersuasion.Dissuade)
             {
                 entropy += 1;
+            }
+            else if (opt.prefab.collapsePriority == CollapsePersuasion.Encourage)
+            {
+                entropy -= 1;
             }
             else
             {
@@ -1053,6 +1144,7 @@ public class WFCGeneration : MonoBehaviour
             }
             count++;
         }
+        entropy -= groupWeights.Select(pair =>pair.Key == TileType.Surface ? pair.Value*3: pair.Value).Sum() * 0.5f;
 
         //Debug.Log(entropy);
         return entropy;
@@ -1071,7 +1163,7 @@ public class WFCGeneration : MonoBehaviour
         public Dictionary<TileDirection, int> validConnections;
     }
 
-    static int gapSpacing = 5;
+    
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
@@ -1108,6 +1200,12 @@ public class WFCGeneration : MonoBehaviour
                     {
                         cell.upMask &= domains.up;
                         altered = true;
+                        //if(cell.upMask == 0)
+                        //{
+                        //    Debug.LogError("Mask set to 0");
+                        //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
+                        //    Debug.Break();
+                        //}
                     }
                     foreach (TileConnection a in alignments)
                     {
@@ -1149,6 +1247,13 @@ public class WFCGeneration : MonoBehaviour
                     {
                         negativeCell.upMask &= negativeDomain;
                         altered = true;
+                        //if (negativeCell.upMask == 0)
+                        //{
+                        //    Debug.LogError("Mask set to 0");
+                        //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
+                        //    Debug.Break();
+
+                        //}
                     }
                     foreach (TileConnection a in alignments)
                     {
@@ -1167,7 +1272,7 @@ public class WFCGeneration : MonoBehaviour
                     break;
             }
         }
-        tryPropagateGap(gapSpacing, loc, queueLocations, out queueLocations);
+        tryPropagateGap(gapVerticalSpacingTile, loc, queueLocations, out queueLocations);
 
         foreach (Vector3Int q in queueLocations)
         {
@@ -1177,6 +1282,7 @@ public class WFCGeneration : MonoBehaviour
 
     BigMask ExDomain = new BigMask();
     static List<TileDirection> AllDirections;
+    static List<TileDirection> HorizontalDirections;
 
     private void Start()
     {
@@ -1185,6 +1291,9 @@ public class WFCGeneration : MonoBehaviour
     void init()
     {
         AllDirections = EnumValues<TileDirection>().ToList();
+        HorizontalDirections = new List<TileDirection>(AllDirections);
+        HorizontalDirections.Remove(TileDirection.Up);
+        HorizontalDirections.Remove(TileDirection.Down);
         makeDomain();
 
 
@@ -1195,20 +1304,21 @@ public class WFCGeneration : MonoBehaviour
         public List<Vector3Int> path;
         public List<BoundsInt> deltaBounds;
     }
-    static readonly int padding = 4;
-    PathInfo fromPath(List<Vector3Int> path)
+    
+    PathInfo fromPath(List<Vector3> pathWorldSpace)
     {
+        List<Vector3Int> pathTileSpace = pathWorldSpace.Select(l => { l.Scale(tileScale.oneOver()); return l.asInt(); }).ToList();
         //push bounds into the positive
         Vector3Int negativeMin = new Vector3Int();
-        foreach (Vector3Int loc in path)
+        foreach (Vector3Int loc in pathTileSpace)
         {
             negativeMin.x = Mathf.Min(negativeMin.x, loc.x);
             negativeMin.y = Mathf.Min(negativeMin.y, loc.y);
             negativeMin.z = Mathf.Min(negativeMin.z, loc.z);
         }
-        negativeMin -= Vector3Int.one * padding;
+        negativeMin -= Vector3Int.one * paddingTiles;
         List<Vector3Int> positivePath = new List<Vector3Int>();
-        foreach (Vector3Int loc in path)
+        foreach (Vector3Int loc in pathTileSpace)
         {
             positivePath.Add(loc - negativeMin);
         }
@@ -1223,7 +1333,7 @@ public class WFCGeneration : MonoBehaviour
             delta.center = positivePath[(i - 1)];
             delta.size = Vector3.zero;
             delta.Encapsulate(positivePath[i]);
-            delta.Expand(padding * 2);
+            delta.Expand(paddingTiles * 2);
             bigBounds.Encapsulate(delta.min);
             bigBounds.Encapsulate(delta.max);
             deltaBounds.Add(delta.asInt());
@@ -1370,7 +1480,22 @@ public class WFCGeneration : MonoBehaviour
         public List<SpawnTransform> spawns;
         public List<GameObject> navTiles;
     }
-
+    static readonly int paddingWorld = 50;
+    static readonly int gapVerticalSpacingWorld = 18;
+    int paddingTiles
+    {
+        get
+        {
+            return Mathf.CeilToInt(paddingWorld / tileScale.x);
+        }
+    }
+    int gapVerticalSpacingTile
+    {
+        get
+        {
+            return Mathf.CeilToInt(gapVerticalSpacingWorld / tileScale.y);
+        }
+    }
     public struct WFCParameters
     {
         public int segmentCount;
@@ -1384,10 +1509,10 @@ public class WFCGeneration : MonoBehaviour
             return new WFCParameters
             {
                 segmentCount = Mathf.RoundToInt(Random.value.asRange(4, 6)),
-                segmentBaseLength = 4,
-                segmentVariableLength = 6,
+                segmentBaseLength = 50,
+                segmentVariableLength = 80,
                 straightnessPercent = 0.3f,
-                verticalityPercent = 0.6f,
+                verticalityPercent = 0.25f,
             };
         }
     }
@@ -1447,7 +1572,7 @@ public class WFCGeneration : MonoBehaviour
     }
 
 
-    public IEnumerator collapseCells(List<Vector3Int> randomPath)
+    public IEnumerator collapseCells(List<Vector3> randomPath)
     {
         Debug.Log("Start: " + Time.time);
         generationData = new GenData();
@@ -1594,8 +1719,10 @@ public class WFCGeneration : MonoBehaviour
         yield return null;
         Debug.Log("Init: " + Time.time);
 
-        int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
-        int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.AirConnect );
+        //int wallMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
+        //int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.AirConnect );
+        int wallMaskIn = (int)(TileConnection.AirConnect);
+        int wallMaskOut = (int)( TileConnection.Air | TileConnection.AirConnect);
         int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect );
         int groundMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
 
@@ -1720,7 +1847,7 @@ public class WFCGeneration : MonoBehaviour
                 walker.arriveMagnitude = 1.5f;
             }
             stepsThisPath++;
-            if (stepsThisPath >= 400)
+            if (stepsThisPath >= 5000 / tileScale.x)
             {
                 Debug.DrawLine(path[0].asFloat().scale(floorScale), (path[0].asFloat() + Vector3.up).scale(floorScale), Color.red, 600);
                 Debug.LogWarning("Too many steps on this segment");
@@ -1753,8 +1880,9 @@ public class WFCGeneration : MonoBehaviour
             location.Scale(floorScale);
 
             WFCCell cell = map[coords.x, coords.y, coords.z];
-            cell.domainMask = selectFromTileDomain(cell.domainMask);
+            cell.domainMask = selectFromTileDomain(cell.domainMask,cell.groupWeights );
             TileOption opt = optionFromSingleDomain(cell.domainMask);
+            addLikeTypeGroups(opt, coords);
             GameObject instance = null;
             WFCTileOption alt = null;
             if (!opt.prefab.skipSpawn)
@@ -1821,10 +1949,10 @@ public class WFCGeneration : MonoBehaviour
 
 
 
-    List<Vector3Int> makePath(WFCParameters parameters)
+    List<Vector3> makePath(WFCParameters parameters)
     {
-        Vector3Int point = Vector3Int.zero;
-        List<Vector3Int> path = new List<Vector3Int>();
+        Vector3 point = Vector3.zero;
+        List<Vector3> path = new List<Vector3>();
         path.Add(point);
 
         Vector3 diff = Vector3.zero;
@@ -1845,9 +1973,10 @@ public class WFCGeneration : MonoBehaviour
             dir = Vector3.RotateTowards(dir, Random.value > 0.5f ? Vector3.up : Vector3.down, Mathf.PI *0.5f * parameters.verticalityPercent * Random.value, 0);
             dir.Normalize();
 
+
             diff = dir * (parameters.segmentBaseLength + Random.value * parameters.segmentVariableLength);
 
-            point += diff.asInt();
+            point += diff;
             path.Add(point);
         }
         return path;

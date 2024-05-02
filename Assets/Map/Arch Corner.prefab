@@ -145,7 +145,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skipSpawn: 0
-  dissuadeCollapse: 0
+  collapsePriority: 0
+  typeGroup: 0
   navType: 0
   alternatives: []
   adjacencies:

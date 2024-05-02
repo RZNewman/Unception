@@ -22,8 +22,23 @@ public class WFCTile : MonoBehaviour
         ThisAndBeneath,
     }
 
+    public enum CollapsePersuasion
+    {
+        None,
+        Dissuade,
+        Encourage,
+    }
+    public enum TileType
+    {
+        None,
+        Ground,
+        Air,
+        Surface,
+    }
+
     public bool skipSpawn = false;
-    public bool dissuadeCollapse = false;
+    public CollapsePersuasion collapsePriority = CollapsePersuasion.None;
+    public TileType typeGroup = TileType.None;
     public NavLoad navType = NavLoad.None;
     public List<WFCTileOption> alternatives = new List<WFCTileOption>();
     public List<ConnectionOptions> adjacencies;

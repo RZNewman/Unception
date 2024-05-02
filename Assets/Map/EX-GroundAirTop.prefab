@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 415179275646083370}
   - component: {fileID: 4863423421354933755}
   m_Layer: 6
-  m_Name: Bridge
+  m_Name: EX-GroundAirTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,22 +47,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skipSpawn: 0
   collapsePriority: 0
-  typeGroup: 1
   navType: 0
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 0040000010000000
-  - direction: 2
-    connections: 0040000010000000
-  - direction: 1
-    connections: 0080000004000000
-  - direction: 3
-    connections: 0080000004000000
-  - direction: 4
     connections: 08000000
-  - direction: 5
+  - direction: 2
+    connections: 08000000
+  - direction: 1
+    connections: 08000000
+  - direction: 3
+    connections: 08000000
+  - direction: 4
     connections: 02000000
+  - direction: 5
+    connections: 08000000
 --- !u!1 &7874122638961783294
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,7 +89,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7874122638961783294}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: -0.2, z: 0}
   m_LocalScale: {x: 1, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

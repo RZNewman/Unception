@@ -276,22 +276,21 @@ public class Atlas : NetworkBehaviour
             },
             segmentBaseLength = tier switch
             {
-                int i when i == 0 => 5,
-                _ => 4,
+                _ => 50,
             },
             segmentVariableLength = tier switch
             {
                 int i when i == 0 => 0,
-                int i when i == 1 => 1,
-                int i when i == 2 => 3,
-                _ => 6,
+                int i when i == 1 => 10,
+                int i when i == 2 => 40,
+                _ => 80,
             },
             straightnessPercent = 0.3f,
             verticalityPercent = tier switch
             {
                 int i when i == 0 => 0,
-                int i when i == 1 => 0.3f,
-                _ => 0.6f,
+                int i when i == 1 => 0.1f,
+                _ => 0.25f,
             },
 
         };

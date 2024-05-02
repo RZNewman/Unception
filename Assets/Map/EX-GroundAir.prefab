@@ -63,7 +63,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d24bde530a6cd174cb70a68743168031, type: 2}
-  - {fileID: 2100000, guid: ff511ad115b5d67479e6c603d3e8b95d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -151,7 +150,7 @@ MonoBehaviour:
   alternatives: []
   adjacencies:
   - direction: 0
-    connections: 0200000008000000000800000010000040000000800000000040000000800000
+    connections: 02000000080000000008000000100000400000008000000000400000
   - direction: 2
     connections: 0200000008000000000800000010000040000000800000000040000000800000
   - direction: 1
@@ -225,7 +224,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d24bde530a6cd174cb70a68743168031, type: 2}
-  - {fileID: 2100000, guid: ff511ad115b5d67479e6c603d3e8b95d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

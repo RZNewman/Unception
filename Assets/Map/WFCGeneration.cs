@@ -10,7 +10,7 @@ using static WFCTileOption;
 
 public class WFCGeneration : MonoBehaviour
 {
-    public Vector3 tileScale = new Vector3(8, 4, 8);
+    static Vector3 tileScale = new Vector3(6, 1.5f, 6);
     public int collapsePerFrame = 100;
     public List<TileWeight> tiles;
 
@@ -176,43 +176,69 @@ public class WFCGeneration : MonoBehaviour
 
     struct AirMeasurements
     {
-        public Dictionary<MeasureType, int> typeDists;
+        public int groundDist;
+        public int airDist;
 
         public AirMeasurements(AirMeasurements copy)
         {
-            typeDists = new Dictionary<MeasureType, int>(copy.typeDists);
+            groundDist = copy.groundDist;
+            airDist = copy.airDist;
         }
         public bool isAir()
         {
-            return typeDists[MeasureType.Air] >0 && typeDists[MeasureType.Ground] > 0
+            return airDist > 0 && groundDist > 0
                 &&
-                typeDists[MeasureType.Air] >= typeDists[MeasureType.Ground]
+                airDist >= groundDist
                 ;
+        }
+        public override string ToString()
+        {
+            return "Ground:" + groundDist + ", " + "Air:" + airDist;
+        }
+
+        public bool applyDist(MeasureType type, int dist)
+        {
+            switch (type)
+            {
+                case MeasureType.Air:
+                    if(airDist < dist)
+                    {
+                        airDist = dist;
+                        return true;
+                    }
+                    break;
+                case MeasureType.Ground:
+                    if (groundDist < dist)
+                    {
+                        groundDist = dist;
+                        return true;
+                    }
+                    break;
+            }
+            return false;
         }
     }
 
     struct AirGap
     {
-        public Dictionary<TileDirection, AirMeasurements> measurements;
+        public AirMeasurements upMeasurements;
+        public AirMeasurements downMeasurements;
         GapCollapseType gapCollapseType;
 
         public AirGap(AirGap copy)
         {
             gapCollapseType = copy.gapCollapseType;
-            measurements = new Dictionary<TileDirection, AirMeasurements>();
-            foreach(KeyValuePair<TileDirection, AirMeasurements> pair in copy.measurements)
-            {
-                measurements[pair.Key] = new AirMeasurements(pair.Value);
-            }
+            upMeasurements = new AirMeasurements(copy.upMeasurements);
+            downMeasurements = new AirMeasurements(copy.downMeasurements);
         }
 
         bool isGround(int spacing)
         {
-            return (measurements[TileDirection.Up].typeDists[MeasureType.Ground] + measurements[TileDirection.Down].typeDists[MeasureType.Ground]) > spacing + 1;
+            return (upMeasurements.groundDist + downMeasurements.groundDist) > spacing + 1;
         }
         bool isAir()
         {
-            return measurements[TileDirection.Up].isAir() || measurements[TileDirection.Down].isAir();
+            return upMeasurements.isAir() || downMeasurements.isAir();
         }
         //cell in the spacing that arent adjacnet must be entirely one substance (vertical connection type)
         //public bool requiresLikePoles(int spacing)
@@ -227,8 +253,8 @@ public class WFCGeneration : MonoBehaviour
         //}
         public bool domainFit(int spacing, int upDomain, int downDomain)
         {
-            int upGround = measurements[TileDirection.Up].typeDists[MeasureType.Ground];
-            int downGround = measurements[TileDirection.Down].typeDists[MeasureType.Ground];
+            int upGround = upMeasurements.groundDist;
+            int downGround = downMeasurements.groundDist;
             return !(
                     (
                         (upDomain | groundMask) == groundMask
@@ -260,7 +286,11 @@ public class WFCGeneration : MonoBehaviour
 
         public override string ToString()
         {
-            return System.String.Join('/',measurements.Select(pair => pair.Key.ToString() + ":" + System.String.Join(',', pair.Value.typeDists.Select(distPair => distPair.Key.ToString() + "-" + distPair.Value)))) +" --Collapse: "+ gapCollapseType;
+            string output = "";
+            output += "Up:" + upMeasurements.ToString() + "---";
+            output += "Down:" + downMeasurements.ToString() + "---";
+            output += "Collapse: " + gapCollapseType;
+            return output;
         }
         public GapCollapseType tryCollapseConnection(int newConn)
         {
@@ -285,14 +315,13 @@ public class WFCGeneration : MonoBehaviour
         public bool applyDistance(int spacing, TileDirection dir, MeasureType type, int dist, out bool checkDomain)
         {
             checkDomain = false;
-            if (measurements[dir].typeDists[type] < dist)
+            if (_applyDist(dir, type, dist))
             {
                 ////Air measures shouldnt go through ground
                 //if (type == MeasureType.Air && gapCollapseType == GapCollapseType.Ground)
                 //{
                 //    return false;
                 //}
-                measurements[dir].typeDists[type] = dist;
                 if(type == MeasureType.Ground && (
                     (dir == TileDirection.Up  && upGroundRestricted(dist, spacing))
                     ||
@@ -305,6 +334,16 @@ public class WFCGeneration : MonoBehaviour
                 return true;
             }
             return false;
+        }
+
+        bool _applyDist(TileDirection dir, MeasureType type, int dist)
+        {
+            return dir switch
+            {
+                TileDirection.Up => upMeasurements.applyDist(type, dist),
+                TileDirection.Down => downMeasurements.applyDist(type, dist),
+                _ => false,
+            };
         }
 
         public GapCollapseType tryCollapseSpacing(int spacing)
@@ -494,28 +533,18 @@ public class WFCGeneration : MonoBehaviour
             alignmentRestrictions = new Dictionary<int, HashSet<Rotation>>(fullRestrictions);
             groupWeights = new Dictionary<TileType, int>();
             verticalGap = new AirGap() {
-                measurements = new Dictionary<TileDirection, AirMeasurements>()
+                upMeasurements = new AirMeasurements()
                 {
-                    {TileDirection.Up,new AirMeasurements()
-                        {
-                            typeDists = new Dictionary<MeasureType, int>()
-                            {
-                                {MeasureType.Air,0},
-                                {MeasureType.Ground,0},
-                            }
-                        }
-                    },
-                    {TileDirection.Down,new AirMeasurements()
-                        {
-                            typeDists = new Dictionary<MeasureType, int>()
-                            {
-                                {MeasureType.Air,0},
-                                {MeasureType.Ground,0},
-                            }
-                        }
-                    }
+                    airDist =0,
+                    groundDist = 0,
+                },
+
+                downMeasurements =    new AirMeasurements()
+                {
+                    airDist =0,
+                    groundDist = 0,
                 }
-                
+                                
             };
         }
         public void makeReady()
@@ -773,13 +802,13 @@ public class WFCGeneration : MonoBehaviour
 
     }
 
-    IEnumerable<(TileOption, int)> optionsFromTileDomain(BigMask domain, bool debug = false)
+    List<int> optionsFromTileDomain(BigMask domain, bool debug = false)
     {
         if (domain.empty && !debug)
         {
             throw new System.Exception("Empty Domain");
         }
-        return domain.indicies.Select(ind => (domainTiles[ind], ind));
+        return domain.indicies;
     }
 
     TileOption optionFromSingleDomain(BigMask domain)
@@ -871,8 +900,9 @@ public class WFCGeneration : MonoBehaviour
             connections.upAlignments[singleAlignmentMask] = new HashSet<Rotation>();
             connections.downAlignments[singleAlignmentMask] = new HashSet<Rotation>();
         }
-        foreach ((TileOption opt, _) in optionsFromTileDomain(domain))
+        foreach (int index in optionsFromTileDomain(domain))
         {
+            TileOption opt = domainTiles[index];
             ConnectionDomainMasks connectionsTile = opt.domains;
             connections.validConnections |= connectionsTile;
 
@@ -921,100 +951,80 @@ public class WFCGeneration : MonoBehaviour
         {
             return RestrictTileResult.NoChange;
         }
-        List<TileOption> remaining = new List<TileOption>();
         bool reduced = false;
+
+        int cachedAlignmentMask = alignmentMask();
         //BigMask cachedDomain = new BigMask(cell.domainMask);
         //Debug.Log("Restrict Domain " + loc+ cell.upMask);
 
-        foreach ((TileOption opt, int index) in optionsFromTileDomain(cell.domainMask))
-        {
+        int negativeLeftMask = invertConnections(map[loc.x - 1, loc.y, loc.z].rightMask);
+        int negativeBackMask = invertConnections(map[loc.x, loc.y, loc.z-1].forwardMask);
+        WFCCell downCell = map[loc.x, loc.y - 1, loc.z];
+        int negativeDownMask = invertConnections(downCell.upMask);
 
+        foreach (int index in optionsFromTileDomain(cell.domainMask))
+        {
+            TileOption opt = domainTiles[index];
             ConnectionDomainMasks domains = opt.domains;
             bool doesntFit = false;
-            foreach (TileDirection dir in AllDirections)
+            int overlap;
+
+            if ((cell.forwardMask & domains.forward) == 0)
             {
-                WFCCell negativeCell;
-                int negativeDomain;
-                int overlap;
-                switch (dir)
-                {
-                    case TileDirection.Forward:
-
-                        if ((cell.forwardMask & domains.forward) == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                    case TileDirection.Right:
-
-                        if ((cell.rightMask & domains.right) == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                    case TileDirection.Up:
-
-                        overlap = cell.upMask & domains.up;
-                        if (overlap == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        else if (
-                            (overlap | alignmentMask()) == alignmentMask()
-                            &&
-                            !cell.alignmentRestrictions[overlap].Contains(opt.rotation)
-                            )
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                    case TileDirection.Backward:
-                        negativeCell = map[loc.x, loc.y, loc.z - 1];
-                        negativeDomain = invertConnections(negativeCell.forwardMask);
-
-                        if ((negativeDomain & domains.backward) == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                    case TileDirection.Left:
-                        negativeCell = map[loc.x - 1, loc.y, loc.z];
-                        negativeDomain = invertConnections(negativeCell.rightMask);
-
-                        if ((negativeDomain & domains.left) == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                    case TileDirection.Down:
-                        negativeCell = map[loc.x, loc.y - 1, loc.z];
-                        negativeDomain = invertConnections(negativeCell.upMask);
-
-                        overlap = negativeDomain & domains.down;
-                        if (overlap == 0)
-                        {
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        else if (
-                            (overlap | alignmentMask()) == alignmentMask()
-                            &&
-                            !negativeCell.alignmentRestrictions[overlap].Contains(opt.rotation)
-                            )
-                        {
-
-                            doesntFit = true;
-                            goto MatchFound;
-                        }
-                        break;
-                }
+                doesntFit = true;
+                goto MatchFound;
             }
+            if ((cell.rightMask & domains.right) == 0)
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+            overlap = cell.upMask & domains.up;
+            if (overlap == 0)
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+            else if (
+                (overlap | cachedAlignmentMask) == cachedAlignmentMask
+                &&
+                !cell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                )
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+
+
+            if ((negativeBackMask & domains.backward) == 0)
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+            if ((negativeLeftMask & domains.left) == 0)
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+            overlap = negativeDownMask & domains.down;
+            if (overlap == 0)
+            {
+                doesntFit = true;
+                goto MatchFound;
+            }
+            else if (
+                (overlap | cachedAlignmentMask) == cachedAlignmentMask
+                &&
+                !downCell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                )
+            {
+
+                doesntFit = true;
+                goto MatchFound;
+            }
+
+            
+            
 
             if(!cell.verticalGap.domainFit(gapVerticalSpacingTile, domains.up, domains.down))
             {
@@ -1028,10 +1038,6 @@ public class WFCGeneration : MonoBehaviour
             {
                 cell.domainMask.removeIndex(index);
                 reduced = true;
-            }
-            else
-            {
-                remaining.Add(opt);
             }
         }
 
@@ -1108,7 +1114,7 @@ public class WFCGeneration : MonoBehaviour
 
         if (reduced)
         {
-            update(loc, entropy(remaining, cell.groupWeights));
+            update(loc, entropy(cell.domainMask.indicies.Select(ind => domainTiles[ind]).ToList(), cell.groupWeights));
         }
 
         return reduced ? RestrictTileResult.Reduced : RestrictTileResult.NoChange;
@@ -1171,107 +1177,94 @@ public class WFCGeneration : MonoBehaviour
         ConnectionDomainMasks domains = connections.validConnections;
         HashSet<Vector3Int> queueLocations = new HashSet<Vector3Int>();
         //Debug.Log("Collapse Connections " + loc);
-        foreach (TileDirection dir in AllDirections)
-        {
-            WFCCell negativeCell;
-            int negativeDomain;
-            bool altered;
+
+        WFCCell negativeCell;
+        int negativeDomain;
+        bool altered;
             
-            switch (dir)
+            
+                
+        //Debug.Log(domains[TileDirection.Forward]);
+        if (cell.forwardMask != domains.forward)
+        {
+            cell.forwardMask &= domains.forward;
+            queueLocations.Add(loc + Vector3Int.forward);
+        }
+        if (cell.rightMask != domains.right)
+        {
+            cell.rightMask &= domains.right;
+            queueLocations.Add(loc + Vector3Int.right);
+        }
+        altered = false;
+        if (cell.upMask != domains.up)
+        {
+            cell.upMask &= domains.up;
+            altered = true;
+            //if(cell.upMask == 0)
+            //{
+            //    Debug.LogError("Mask set to 0");
+            //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
+            //    Debug.Break();
+            //}
+        }
+        foreach (TileConnection a in alignments)
+        {
+            int singleAlignmentMask = (int)a;
+            if (cell.alignmentRestrictions[singleAlignmentMask] != connections.upAlignments[singleAlignmentMask])
             {
-                case TileDirection.Forward:
-                    //Debug.Log(domains[TileDirection.Forward]);
-                    if (cell.forwardMask != domains.forward)
-                    {
-                        cell.forwardMask &= domains.forward;
-                        queueLocations.Add(loc + Vector3Int.forward);
-                    }
-                    break;
-                case TileDirection.Right:
-                    if (cell.rightMask != domains.right)
-                    {
-                        cell.rightMask &= domains.right;
-                        queueLocations.Add(loc + Vector3Int.right);
-                    }
-                    break;
-                case TileDirection.Up:
-                    altered = false;
-                    if (cell.upMask != domains.up)
-                    {
-                        cell.upMask &= domains.up;
-                        altered = true;
-                        //if(cell.upMask == 0)
-                        //{
-                        //    Debug.LogError("Mask set to 0");
-                        //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
-                        //    Debug.Break();
-                        //}
-                    }
-                    foreach (TileConnection a in alignments)
-                    {
-                        int singleAlignmentMask = (int)a;
-                        if (cell.alignmentRestrictions[singleAlignmentMask] != connections.upAlignments[singleAlignmentMask])
-                        {
-                            cell.alignmentRestrictions[singleAlignmentMask] = connections.upAlignments[singleAlignmentMask];
-                            altered = true;
-                        }
-                    }
-                    if (altered)
-                    {
-                        queueLocations.Add(loc + Vector3Int.up);
-                    }
-                    break;
-                case TileDirection.Backward:
-                    negativeCell = map[loc.x, loc.y, loc.z - 1];
-                    negativeDomain = invertConnections(domains.backward);
-                    if (negativeCell.forwardMask != negativeDomain)
-                    {
-                        negativeCell.forwardMask &= negativeDomain;
-                        queueLocations.Add(loc + Vector3Int.back);
-                    }
-                    break;
-                case TileDirection.Left:
-                    negativeCell = map[loc.x - 1, loc.y, loc.z];
-                    negativeDomain = invertConnections(domains.left);
-                    if (negativeCell.rightMask != negativeDomain)
-                    {
-                        negativeCell.rightMask &= negativeDomain;
-                        queueLocations.Add(loc + Vector3Int.left);
-                    }
-                    break;
-                case TileDirection.Down:
-                    altered = false;
-                    negativeCell = map[loc.x, loc.y - 1, loc.z];
-                    negativeDomain = invertConnections(domains.down);
-                    if (negativeCell.upMask != negativeDomain)
-                    {
-                        negativeCell.upMask &= negativeDomain;
-                        altered = true;
-                        //if (negativeCell.upMask == 0)
-                        //{
-                        //    Debug.LogError("Mask set to 0");
-                        //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
-                        //    Debug.Break();
-
-                        //}
-                    }
-                    foreach (TileConnection a in alignments)
-                    {
-                        int singleAlignmentMask = (int)a;
-                        if (negativeCell.alignmentRestrictions[singleAlignmentMask] != connections.downAlignments[singleAlignmentMask])
-                        {
-                            negativeCell.alignmentRestrictions[singleAlignmentMask] = connections.downAlignments[singleAlignmentMask];
-                            altered = true;
-                        }
-                    }
-
-                    if (altered)
-                    {
-                        queueLocations.Add(loc + Vector3Int.down);
-                    }
-                    break;
+                cell.alignmentRestrictions[singleAlignmentMask] = connections.upAlignments[singleAlignmentMask];
+                altered = true;
             }
         }
+        if (altered)
+        {
+            queueLocations.Add(loc + Vector3Int.up);
+        }
+
+        negativeCell = map[loc.x, loc.y, loc.z - 1];
+        negativeDomain = invertConnections(domains.backward);
+        if (negativeCell.forwardMask != negativeDomain)
+        {
+            negativeCell.forwardMask &= negativeDomain;
+            queueLocations.Add(loc + Vector3Int.back);
+        }
+        negativeCell = map[loc.x - 1, loc.y, loc.z];
+        negativeDomain = invertConnections(domains.left);
+        if (negativeCell.rightMask != negativeDomain)
+        {
+            negativeCell.rightMask &= negativeDomain;
+            queueLocations.Add(loc + Vector3Int.left);
+        }
+        altered = false;
+        negativeCell = map[loc.x, loc.y - 1, loc.z];
+        negativeDomain = invertConnections(domains.down);
+        if (negativeCell.upMask != negativeDomain)
+        {
+            negativeCell.upMask &= negativeDomain;
+            altered = true;
+            //if (negativeCell.upMask == 0)
+            //{
+            //    Debug.LogError("Mask set to 0");
+            //    Debug.DrawLine(loc, loc + Vector3Int.up * 2, Color.red, 20f);
+            //    Debug.Break();
+
+            //}
+        }
+        foreach (TileConnection a in alignments)
+        {
+            int singleAlignmentMask = (int)a;
+            if (negativeCell.alignmentRestrictions[singleAlignmentMask] != connections.downAlignments[singleAlignmentMask])
+            {
+                negativeCell.alignmentRestrictions[singleAlignmentMask] = connections.downAlignments[singleAlignmentMask];
+                altered = true;
+            }
+        }
+        if (altered)
+        {
+            queueLocations.Add(loc + Vector3Int.down);
+        }
+            
+        
         tryPropagateGap(gapVerticalSpacingTile, loc, queueLocations, out queueLocations);
 
         foreach (Vector3Int q in queueLocations)
@@ -1482,20 +1475,8 @@ public class WFCGeneration : MonoBehaviour
     }
     static readonly int paddingWorld = 50;
     static readonly int gapVerticalSpacingWorld = 18;
-    int paddingTiles
-    {
-        get
-        {
-            return Mathf.CeilToInt(paddingWorld / tileScale.x);
-        }
-    }
-    int gapVerticalSpacingTile
-    {
-        get
-        {
-            return Mathf.CeilToInt(gapVerticalSpacingWorld / tileScale.y);
-        }
-    }
+    static int paddingTiles = Mathf.CeilToInt(paddingWorld / tileScale.x);
+    static int gapVerticalSpacingTile = Mathf.CeilToInt(gapVerticalSpacingWorld / tileScale.y);
     public struct WFCParameters
     {
         public int segmentCount;

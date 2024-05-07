@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Outline Objects
-    Event: 500
+    Event: 1000
     filterSettings:
       RenderQueueType: 0
       LayerMask:
@@ -24,16 +24,16 @@ MonoBehaviour:
       PassNames: []
     overrideMaterial: {fileID: 2100000, guid: 2647a26a67946304896478dcf069dc12, type: 2}
     overrideMaterialPassIndex: 0
-    overrideDepthState: 0
+    overrideDepthState: 1
     depthCompareFunction: 4
     enableWrite: 1
     stencilSettings:
       overrideStencilState: 0
-      stencilReference: 0
-      stencilCompareFunction: 8
-      passOperation: 0
+      stencilReference: 1
+      stencilCompareFunction: 5
+      passOperation: 3
       failOperation: 0
-      zFailOperation: 0
+      zFailOperation: 3
     cameraSettings:
       overrideCamera: 0
       restoreCamera: 1
@@ -56,7 +56,7 @@ MonoBehaviour:
     passTag: Ceil hint
     Event: 500
     filterSettings:
-      RenderQueueType: 1
+      RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
         m_Bits: 64

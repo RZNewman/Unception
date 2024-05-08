@@ -115,22 +115,29 @@ public class MapGenerator : NetworkBehaviour
         //navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
         float agentRadius = 0.6f * currentFloorScale;
         recastGraph.characterRadius = agentRadius;
+        recastGraph.cellSize = agentRadius * 0.5f;
         recastGraph.walkableClimb = 0.3f * currentFloorScale;
-        recastGraph.walkableHeight = WFCGeneration.tileScale.y * currentFloorScale;
-        recastGraph.maxEdgeLength = WFCGeneration.tileScale.x * currentFloorScale;
+        recastGraph.walkableHeight = WFCGeneration.tileScale.y * 1.2f * currentFloorScale;
+        recastGraph.maxEdgeLength = WFCGeneration.tileScale.x * 1.0f * currentFloorScale;
         recastGraph.collectionSettings.layerMask = LayerMask.GetMask("Terrain");
         recastGraph.maxSlope = floorDegrees;
-        recastGraph.Scan();
+        recastGraph.forcedBoundsCenter = wfc.generationData.size / 2f;
+        recastGraph.forcedBoundsSize = wfc.generationData.size;
         
-        linkGenerator.oneWayLinkPrefab = fallPre.transform;
-        linkGenerator.linkPrefab = jumpPre.transform;
+        
+        linkGenerator.tileWidth = WFCGeneration.tileScale.x * 0.3f * currentFloorScale;
         linkGenerator.maxJumpUpHeight = 4 * currentFloorScale;
         linkGenerator.maxJumpDist = 5 * currentFloorScale;
         linkGenerator.maxJumpDownHeight = 15 * currentFloorScale;
         linkGenerator.raycastLayerMask = LayerMask.GetMask("Terrain");
         linkGenerator.agentRadius = agentRadius;
         //linkGenerator.a = agent.agentHeight;
+
+        recastGraph.Scan();
+        yield return new WaitForSeconds(3);
+        
         linkGenerator.Generate();
+
         //yield return GenerateLinks(linkGenerator);
         yield return null;
 

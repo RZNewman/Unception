@@ -15323,9 +15323,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1073741824
   uniqueID: 3388183284785104788
-  generateOnPostScan: 1
-  linkPrefab: {fileID: 0}
-  oneWayLinkPrefab: {fileID: 0}
+  generateOnPostScan: 0
+  linkPrefab: {fileID: 192790449095488339, guid: e05828b8e9e36cf4f9ae1b45c51bc064, type: 3}
+  oneWayLinkPrefab: {fileID: 192790449095488339, guid: c6a5ef7790cb8424b91fc1ed1f990daf, type: 3}
   tileWidth: 5
   maxJumpDownHeight: 5
   maxJumpUpHeight: 3
@@ -15337,8 +15337,8 @@ MonoBehaviour:
   cheatOffset: 0.25
   wallCheckYOffset: 0.5
   ignoreSameGraph: 0
-  invertFacingNormal: 0
-  dontAllignYAxis: 1
+  invertFacingNormal: 1
+  dontAllignYAxis: 0
   agentRadius: 0.5
 --- !u!114 &1231075390
 MonoBehaviour:
@@ -15379,7 +15379,39 @@ MonoBehaviour:
     _ConnectionHighLerp: {r: 1, g: 0, b: 0, a: 0.5}
     _MeshEdgeColor: {r: 0, g: 0, b: 0, a: 0.5}
     _AreaColors: []
-  tagNames: []
+  tagNames:
+  - Basic Ground
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
   heuristic: 2
   heuristicScale: 1
   threadCount: 1

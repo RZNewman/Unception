@@ -1471,9 +1471,9 @@ public class WFCGeneration : MonoBehaviour
         public Vector3 start;
         public Vector3 end;
         public List<SpawnTransform> spawns;
-        public List<GameObject> navTiles;
+        public Vector3 size;
     }
-    static readonly int paddingWorld = 50;
+    static readonly int paddingWorld = 29;
     static readonly int gapVerticalSpacingWorld = 18;
     static int paddingTiles = Mathf.CeilToInt(paddingWorld / tileScale.x);
     static int gapVerticalSpacingTile = Mathf.CeilToInt(gapVerticalSpacingWorld / tileScale.y);
@@ -1606,6 +1606,8 @@ public class WFCGeneration : MonoBehaviour
         PathInfo infoP = fromPath(randomPath);
         List<Vector3Int> path = infoP.path;
         generationData.start = path[0].asFloat().scale(floorScale);
+        Vector3 sizeWorld = infoP.bounds.size;
+        generationData.size = sizeWorld.scale(tileScale);
         Vector3Int startLoc = path[0];
         BoundsInt bounds = infoP.bounds;
         List<BoundsInt> deltas = infoP.deltaBounds;
@@ -1918,14 +1920,14 @@ public class WFCGeneration : MonoBehaviour
         Debug.Log("Collapse: " + Time.time);
 
         generationData.spawns = getSpawns(startLoc);
-        foreach (SpawnTransform spawn in generationData.spawns)
-        {
-            Debug.DrawLine(spawn.position, spawn.position + Vector3.forward * spawn.halfExtents.y + Vector3.right * spawn.halfExtents.x, Color.magenta, 600);
-        }
+        //foreach (SpawnTransform spawn in generationData.spawns)
+        //{
+        //    Debug.DrawLine(spawn.position, spawn.position + Vector3.forward * spawn.halfExtents.y + Vector3.right * spawn.halfExtents.x, Color.magenta, 600);
+        //}
         Debug.Log("Spawns: " + Time.time);
         yield return null;
-        generationData.navTiles = getNavigation(uniqueLocations);
-        Debug.Log("Nav: " + Time.time);
+        //generationData.navTiles = getNavigation(uniqueLocations);
+        //Debug.Log("Nav: " + Time.time);
     }
 
 

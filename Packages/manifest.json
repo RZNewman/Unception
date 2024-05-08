@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.github.idbrii.unity-navgen": "https://github.com/idbrii/unity-navgen.git#latest-release",
     "com.unity.2d.animation": "7.1.0",
     "com.unity.2d.pixel-perfect": "5.0.3",
     "com.unity.2d.psdimporter": "6.0.9",

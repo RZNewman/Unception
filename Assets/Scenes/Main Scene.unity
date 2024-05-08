@@ -10394,7 +10394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -4.6411743
+      value: -4.6411133
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -15165,6 +15165,8 @@ GameObject:
   - component: {fileID: 1231075385}
   - component: {fileID: 1231075383}
   - component: {fileID: 1231075388}
+  - component: {fileID: 1231075389}
+  - component: {fileID: 1231075390}
   m_Layer: 0
   m_Name: WFC Core
   m_TagString: Untagged
@@ -15184,7 +15186,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15f54ffd3090df142b3b7e1fd04c5e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileScale: {x: 8, y: 2, z: 8}
   collapsePerFrame: 200
   tiles:
   - weight: 400
@@ -15308,6 +15309,91 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f612dc54d3965c24bbb8594ae3d96c42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1231075389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231075381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3bbc39c3647674cb2b3ae8138caf40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  uniqueID: 3388183284785104788
+  generateOnPostScan: 1
+  linkPrefab: {fileID: 0}
+  oneWayLinkPrefab: {fileID: 0}
+  tileWidth: 5
+  maxJumpDownHeight: 5
+  maxJumpUpHeight: 3
+  maxJumpDist: 5
+  raycastLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  sphereCastRadius: 1
+  cheatOffset: 0.25
+  wallCheckYOffset: 0.5
+  ignoreSameGraph: 0
+  invertFacingNormal: 0
+  dontAllignYAxis: 1
+  agentRadius: 0.5
+--- !u!114 &1231075390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231075381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78396926cbbfc4ac3b48fc5fc34a87d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  data:
+    dataString: UEsDBBQAAAgIAACQn+sTVGe1MwAAAD0AAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNUz1DPQUVBKL0osyCgGCoA5pZkpIHZ0LJBTUlmQ6peYmwoRqAUAUEsBAi0AFAAACAgAAJCf6xNUZ7UzAAAAPQAAAAkAJAAAAAAAAAAAAAAAAAAAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAQABAFsAAAB+AAAAAAA=
+    file_cachedStartup: {fileID: 0}
+    cacheStartup: 0
+  showNavGraphs: 1
+  showUnwalkableNodes: 1
+  debugMode: 0
+  debugFloor: 0
+  debugRoof: 1
+  manualDebugFloorRoof: 0
+  showSearchTree: 0
+  unwalkableNodeDebugSize: 0.3
+  logPathResults: 1
+  maxNearestNodeDistance: 100
+  scanOnStartup: 1
+  fullGetNearestSearch: 0
+  prioritizeGraphs: 0
+  prioritizeGraphsLimit: 1
+  colorSettings:
+    _SolidColor: {r: 0.11764706, g: 0.4, b: 0.7882353, a: 0.9}
+    _UnwalkableNode: {r: 1, g: 0, b: 0, a: 0.5}
+    _BoundsHandles: {r: 0.29, g: 0.454, b: 0.741, a: 0.9}
+    _ConnectionLowLerp: {r: 0, g: 1, b: 0, a: 0.5}
+    _ConnectionHighLerp: {r: 1, g: 0, b: 0, a: 0.5}
+    _MeshEdgeColor: {r: 0, g: 0, b: 0, a: 0.5}
+    _AreaColors: []
+  tagNames: []
+  heuristic: 2
+  heuristicScale: 1
+  threadCount: 1
+  maxFrameTime: 10
+  batchGraphUpdates: 0
+  graphUpdateBatchingInterval: 0.2
+  navmeshUpdates:
+    updateInterval: 0
+  euclideanEmbedding:
+    mode: 0
+    seed: 0
+    pivotPointRoot: {fileID: 0}
+    spreadOutCount: 1
+  showGraphs: 0
 --- !u!1 &1234623725
 GameObject:
   m_ObjectHideFlags: 0

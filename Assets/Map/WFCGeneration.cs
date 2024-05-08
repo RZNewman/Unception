@@ -10,7 +10,7 @@ using static WFCTileOption;
 
 public class WFCGeneration : MonoBehaviour
 {
-    static Vector3 tileScale = new Vector3(6, 1.5f, 6);
+    public static Vector3 tileScale = new Vector3(6, 1.5f, 6);
     public int collapsePerFrame = 100;
     public List<TileWeight> tiles;
 

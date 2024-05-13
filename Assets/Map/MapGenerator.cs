@@ -97,6 +97,8 @@ public class MapGenerator : NetworkBehaviour
         NetworkServer.Spawn(wfcFloor);
         yield return wfc.generate(wfcFloor, currentMap.floor.wfcParams);
 
+        
+
         GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
 
 
@@ -145,6 +147,9 @@ public class MapGenerator : NetworkBehaviour
         List<GraphNode> nodes = new List<GraphNode>();
         recastGraph.GetNodes(nodes.Add);
         yield return null;
+
+
+        StaticBatchingUtility.Combine(wfcFloor);
 
 
         yield return spawner.spawnLevel(nodes, currentMap, endPortal,wfc.generationData.start);

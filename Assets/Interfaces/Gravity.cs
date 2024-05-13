@@ -36,6 +36,7 @@ public class Gravity : MonoBehaviour
     public void turnOffGrav()
     {
         gravMult = 0;
+        setForce();
     }
 
     void setForce()

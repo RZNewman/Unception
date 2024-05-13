@@ -182,10 +182,12 @@ namespace Pathfinding {
 			}
 
 			// The path should always start and stop on regular nodes
-			if (result[0].type == PartType.OffMeshLink) {
+			if (result[0].type == PartType.OffMeshLink)
+			{
 				result.RemoveAt(0);
 			}
-			if (result[result.Count - 1].type == PartType.OffMeshLink) {
+			if (result[result.Count - 1].type == PartType.OffMeshLink)
+			{
 				result.RemoveAt(result.Count - 1);
 			}
 

@@ -1,3 +1,4 @@
+using Pathfinding.RVO;
 using UnityEngine;
 using static IndicatorHolder;
 

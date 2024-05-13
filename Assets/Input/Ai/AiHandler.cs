@@ -1,3 +1,5 @@
+using Pathfinding;
+using Pathfinding.RVO;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -16,7 +18,8 @@ public class AiHandler : MonoBehaviour, UnitControl
     float scaleSpeed = 1;
     float scalePhys = 1;
 
-    NavMeshAgent agent;
+    Seeker pathmaker;
+    RVOController avoidance;
 
     public struct EffectiveDistance
     {
@@ -42,9 +45,8 @@ public class AiHandler : MonoBehaviour, UnitControl
         eye = mover.GetComponentInChildren<UnitEye>(true);
         //pathCalculator = FindObjectOfType<NavPathCalc>();
         //obstacle = GetComponent<NavMeshObstacle>();
-        agent = GetComponent<NavMeshAgent>();
-        agent.updatePosition = false;
-        agent.updateRotation = false;
+        pathmaker = GetComponent<Seeker>();
+        avoidance = GetComponent<RVOController>();
         rotatingBody = mover.GetComponentInChildren<UnitRotation>(true).gameObject;
         GetComponentInParent<Power>(true).subscribePower(setRadius);
     }
@@ -52,44 +54,89 @@ public class AiHandler : MonoBehaviour, UnitControl
     void setRadius(Power p)
     {
         scalePhys = p.scalePhysical();
-        agent.baseOffset = 0.75f * scalePhys;
-        agent.radius = 0.7f * scalePhys;
-        agent.height = 1.5f * scalePhys;
         scaleSpeed = p.scaleSpeed();
+        avoidance.radius = 0.7f * scalePhys;
+        avoidance.height = 1.5f * scalePhys;
     }
     float timePathed;
-    readonly float pathPeriod = 1f;
-    float timeAgentSync;
-    readonly float agentSyncPeriod = 0.1f;
-    void makePath(Vector3 navTarget)
+    readonly float pathPeriod = 0.85f;
+    Path currentPath;
+    int currentPathIndex=0;
+    Vector3 currentTarget;
+    void makePath(Vector3 navTarget, bool flee, GameObject target)
     {
-        agent.SetDestination(navTarget);
+        if (flee)
+        {
+            FleePath path = FleePath.Construct(transform.position, target.transform.position, 10_000);
+            // This is how strongly it will try to flee, if you set it to 0 it will behave like a RandomPath
+            path.aimStrength = 0.5f;
+            // Determines the variation in path length that is allowed
+            path.spread = 4000;
+
+            pathmaker.StartPath(path, pathCallback);
+        }
+        else
+        {
+            ABPath ab = ABPath.Construct(transform.position, navTarget);
+            pathmaker.StartPath(ab, pathCallback);
+        }
         //pathingCorner = 0;
         timePathed = Time.time;
 
     }
 
-    void syncAgent()
+    void pathCallback(Path p)
     {
-        if (!agent.isOnOffMeshLink  && mover.grounded)
+        
+        if(p.CompleteState != PathCompleteState.Error)
         {
-            timeAgentSync = Time.time;
-            if((agent.nextPosition -transform.position).magnitude > 2f * scalePhys)
+            if (p.vectorPath.Count==0)
             {
-                agent.Warp(transform.position + mover.worldVelocity * Time.fixedDeltaTime);
-                transform.localPosition = Vector3.zero;
+                Debug.LogWarning("Empty path");
+                return;
             }
+            //pathmaker.RunModifiers(Seeker.ModifierPass.PostProcess, p);
+            currentPath = p;
+            currentPathIndex = 0;
             
-            agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
-            agent.velocity = mover.worldVelocity;
-            agent.speed = mover.props.maxSpeed * scaleSpeed;
-            agent.acceleration = agent.speed * 5;
-            //agent.angularSpeed = mover.props.lookSpeedDegrees;
+            if (currentPath.vectorPath.Count > 1)
+            {
+                Vector3 diff0 = currentPath.vectorPath[0] - transform.position;
+                Vector3 diff1 = currentPath.vectorPath[1] - transform.position;
+                diff0.y = 0;
+                diff1.y = 0;
+                if (Vector3.Dot(diff0,diff1) < 0)
+                {
+                    currentPathIndex = 1;
+                }
+                
+                
+            }
         }
-
-
-
+        
     }
+
+    //void syncAgent()
+    //{
+    //    if (!agent.isOnOffMeshLink  && mover.grounded)
+    //    {
+    //        timeAgentSync = Time.time;
+    //        if((agent.nextPosition -transform.position).magnitude > 2f * scalePhys)
+    //        {
+    //            agent.Warp(transform.position + mover.worldVelocity * Time.fixedDeltaTime);
+    //            transform.localPosition = Vector3.zero;
+    //        }
+            
+    //        agent.nextPosition = transform.position + mover.worldVelocity * Time.fixedDeltaTime;
+    //        agent.velocity = mover.worldVelocity;
+    //        agent.speed = mover.props.maxSpeed * scaleSpeed;
+    //        agent.acceleration = agent.speed * 5;
+    //        //agent.angularSpeed = mover.props.lookSpeedDegrees;
+    //    }
+
+
+
+    //}
 
     enum DistanceType
     {
@@ -174,27 +221,47 @@ public class AiHandler : MonoBehaviour, UnitControl
                 {
                     currentInput.attacks = new ItemSlot[] { bestNext.key };
                 }
-                
 
 
+                Vector3 targetNav = thierGround.nav;
                 if (Time.time > timePathed + pathPeriod)
                 {
-                    Vector3 targetNav = thierGround.nav;
-                    if(dist == DistanceType.TooClose || dist == DistanceType.SlightlyClose)
-                    {
-                        targetNav = escapePosition(transform.position, target.transform.position, Mathf.Max(eff.minDistance, rawDiffAttack.magnitude));
-                        Debug.DrawLine(targetNav, targetNav + Vector3.up, Color.cyan, 1f);
-                    }
-                    makePath(targetNav);
+
+                    bool flee = dist == DistanceType.TooClose || dist == DistanceType.SlightlyClose;
+                    makePath(targetNav, flee, target);
 
                 }
-                moveTarget = agent.nextPosition;
-                //syncAgent();
-                if (Time.time > timeAgentSync + agentSyncPeriod)
+                Vector3 pathCorner = Vector3.zero;
+                if(currentPath != null)
                 {
-                    syncAgent();
+                    Vector3 heightDiff = Vector3.up * mySize.scaledHalfHeight;
+                    pathCorner = currentPath.vectorPath[currentPathIndex]+ heightDiff;
+                    while(currentPathIndex < currentPath.vectorPath.Count && (pathCorner -transform.position).magnitude < 0.5f * scalePhys)
+                    {
+                        currentPathIndex++;
+                        pathCorner = currentPath.vectorPath[currentPathIndex] + heightDiff;
+                    }
+                    if(currentTarget!= pathCorner)
+                    {
+                        currentTarget = pathCorner;
+                        float speed = GetComponentInParent<UnitPropsHolder>().props.maxSpeed * scaleSpeed;
+                        avoidance.SetTarget(currentTarget, speed * 0.9f, speed, currentPath.vectorPath[currentPath.vectorPath.Count-1]);
+                    }
 
+                    moveTarget = transform.position + avoidance.velocity;
+                    //moveTarget = pathCorner;
                 }
+                else
+                {
+                    moveTarget = targetNav;
+                }
+
+                //syncAgent();
+                //if (Time.time > timeAgentSync + agentSyncPeriod)
+                //{
+                //    syncAgent();
+
+                //}
 
 
                 Debug.DrawLine(transform.position, moveTarget, Color.red);
@@ -209,8 +276,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                     DistanceType.JustRight => Vector2.zero,
                     _ => inpVec,
                 };
-                if(mover.grounded && agent.isOnOffMeshLink && agent.nextPosition.y > transform.position.y
-                    )
+                if(mover.grounded && pathCorner != Vector3.zero && pathCorner.y > transform.position.y + 0.9f * scalePhys)
                 {
                     currentInput.jump = true;
                 }
@@ -247,7 +313,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     }
 
-    public Vector3 escapePosition(Vector3 location, Vector3 enemyPosition, float distance)
+    Vector3 escapePosition(Vector3 location, Vector3 enemyPosition, float distance)
     {
         Vector3 enemyDiff = enemyPosition - location;
         Optional<Vector3> escape;
@@ -292,7 +358,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
     }
 
-    public Optional<Vector3> validEscape(Vector3 location, Vector3 look, float dist)
+    Optional<Vector3> validEscape(Vector3 location, Vector3 look, float dist)
     {
         NavMeshHit hit;
         bool didHit;

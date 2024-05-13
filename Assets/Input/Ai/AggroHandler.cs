@@ -76,7 +76,10 @@ public class AggroHandler : MonoBehaviour
         List<GameObject> sensed = new List<GameObject>(sensedEnemies);
         foreach (GameObject o in sensed)
         {
-
+            if (!o)
+            {
+                sensedEnemies.Remove(o);
+            }
             if (canSee(o))
             {
                 addAggro(o);

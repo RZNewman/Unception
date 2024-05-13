@@ -47,7 +47,7 @@ MonoBehaviour:
   version: 1073741824
   uniqueID: 4330911796688927868
   end: {fileID: 0}
-  costFactor: 1
+  costFactor: 1.75
   oneWay: 0
   pathfindingTag:
     value: 0

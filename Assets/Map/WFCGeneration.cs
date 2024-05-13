@@ -10,7 +10,7 @@ using static WFCTileOption;
 
 public class WFCGeneration : MonoBehaviour
 {
-    public static Vector3 tileScale = new Vector3(6, 1.5f, 6);
+    public static Vector3 tileScale = new Vector3(6, 1f, 6);
     public int collapsePerFrame = 100;
     public List<TileWeight> tiles;
 
@@ -1309,7 +1309,7 @@ public class WFCGeneration : MonoBehaviour
             negativeMin.y = Mathf.Min(negativeMin.y, loc.y);
             negativeMin.z = Mathf.Min(negativeMin.z, loc.z);
         }
-        negativeMin -= Vector3Int.one * paddingTiles;
+        negativeMin -= paddingTiles;
         List<Vector3Int> positivePath = new List<Vector3Int>();
         foreach (Vector3Int loc in pathTileSpace)
         {
@@ -1470,12 +1470,12 @@ public class WFCGeneration : MonoBehaviour
     {
         public Vector3 start;
         public Vector3 end;
-        public List<SpawnTransform> spawns;
         public Vector3 size;
     }
-    static readonly int paddingWorld = 29;
-    static readonly int gapVerticalSpacingWorld = 18;
-    static int paddingTiles = Mathf.CeilToInt(paddingWorld / tileScale.x);
+    static readonly float paddingSide = 29;
+    static readonly float paddingTop = 9.9f;
+    static readonly float gapVerticalSpacingWorld = 18;
+    static Vector3Int paddingTiles = new Vector3(paddingSide,paddingTop,paddingSide).scale(tileScale.oneOver()).asInt();
     static int gapVerticalSpacingTile = Mathf.CeilToInt(gapVerticalSpacingWorld / tileScale.y);
     public struct WFCParameters
     {
@@ -1706,8 +1706,8 @@ public class WFCGeneration : MonoBehaviour
         //int wallMaskOut = (int)(TileConnection.Ground | TileConnection.Air | TileConnection.AirConnect );
         int wallMaskIn = (int)(TileConnection.AirConnect);
         int wallMaskOut = (int)( TileConnection.Air | TileConnection.AirConnect);
-        int skyMaskOut = (int)(TileConnection.Air | TileConnection.AirConnect );
-        int groundMaskIn = (int)(TileConnection.GroundConnect | TileConnection.AirConnect);
+        int skyMaskOut = (int)(TileConnection.Air  );
+        int groundMaskIn = (int)(TileConnection.Ground | TileConnection.Air);
 
         foreach (TileDirection dir in AllDirections)
         {
@@ -1919,12 +1919,12 @@ public class WFCGeneration : MonoBehaviour
         }
         Debug.Log("Collapse: " + Time.time);
 
-        generationData.spawns = getSpawns(startLoc);
+        //generationData.spawns = getSpawns(startLoc);
         //foreach (SpawnTransform spawn in generationData.spawns)
         //{
         //    Debug.DrawLine(spawn.position, spawn.position + Vector3.forward * spawn.halfExtents.y + Vector3.right * spawn.halfExtents.x, Color.magenta, 600);
         //}
-        Debug.Log("Spawns: " + Time.time);
+        //Debug.Log("Spawns: " + Time.time);
         yield return null;
         //generationData.navTiles = getNavigation(uniqueLocations);
         //Debug.Log("Nav: " + Time.time);
@@ -1995,7 +1995,7 @@ public class WFCGeneration : MonoBehaviour
                 & (loc - start).magnitude > 2f
                 )
             {
-                spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), halfExtents = floorScale * 0.5f });
+                spawns.Add(new SpawnTransform { position = loc.asFloat().scale(floorScale), radius = floorScale.x * 0.5f });
             }
         }
 

@@ -1,7 +1,10 @@
 using Mirror;
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 using static TeamOwnership;
@@ -22,6 +25,7 @@ public class Encounter : NetworkBehaviour
     GameObject triggeringUnit;
     GameObject triggeringUnitBody;
     Pack currentPack = null;
+
     //Server
     public void addPack(Pack p)
     {
@@ -130,49 +134,15 @@ public class Encounter : NetworkBehaviour
     {
         combat = GetComponent<Combat>();
         float scaledAmbushRadius = scale * ambushRadius;
-        NavMeshHit hit;
-        NavMeshPath path = new NavMeshPath();
 
-        Vector3 rootPos;
-        if (NavMesh.SamplePosition(transform.position, out hit, scaledAmbushRadius, NavMesh.AllAreas))
-        {
-            rootPos = hit.position;
-        }
-        else
-        {
-            rootPos = transform.position;
-        }
+        
         //server
         foreach (Pack p in packs)
         {
             p.disableUnits();
             p.disableItemReward();
-            List<Vector3> spawns = new List<Vector3>();
-
-            for (int i = 0; i < 60 && spawns.Count < p.unitCount; i++)
-            {
-                Vector2 circlePoint = Random.insideUnitCircle;
-                Vector3 planePoint = transform.position + new Vector3(circlePoint.x, 0, circlePoint.y) * scaledAmbushRadius;
-
-                if (NavMesh.SamplePosition(planePoint, out hit, scaledAmbushRadius, NavMesh.AllAreas))
-                {
-                    Vector3 target = hit.position;
-                    NavMesh.CalculatePath(rootPos, target, NavMesh.AllAreas, path);
-                    if (path.status == NavMeshPathStatus.PathComplete && path.distance() < scaledAmbushRadius * 1.3f)
-                    {
-                        spawns.Add(target + Vector3.up * 1 * scale);
-                    }
-                    else
-                    {
-                        i--;
-                    }
-
-                }
-            }
-
-
-
-            p.reposition(spawns);
+            p.reposition(scaledAmbushRadius);
         }
     }
+
 }

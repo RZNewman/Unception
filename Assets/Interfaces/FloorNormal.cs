@@ -1,3 +1,4 @@
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -28,10 +29,13 @@ public class FloorNormal : MonoBehaviour
         ground = calc.ground;
         groundNormal = calc.normal;
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
+        //NNInfo nodeInfo = AstarPath.active.GetNearest(transform.position);
+        //if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
+        RaycastHit hit;
+        //if(nodeInfo.node != null & (nodeInfo.position - transform.position).magnitude < sizeC.distance * 3)
+        if(Physics.Raycast(transform.position,Vector3.down,out hit,sizeC.distance*3,LayerMask.GetMask("Terrain")))
         {
-            navPosition = hit.position;
+            navPosition = hit.point;
         }
 
         cachedPosition = transform.position;

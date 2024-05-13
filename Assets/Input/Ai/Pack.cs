@@ -1,9 +1,13 @@
 using Mirror;
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static EventManager;
 
 public class Pack : NetworkBehaviour
@@ -18,6 +22,10 @@ public class Pack : NetworkBehaviour
     SoundManager sound;
 
     Encounter encounter;
+    Seeker seeker;
+    List<Vector3> spawns;
+    Vector3 rootNavPos;
+    float packSpawnRadius;
 
     //Server
     //bool aggroed = false;
@@ -115,10 +123,6 @@ public class Pack : NetworkBehaviour
     public void packDeath(GameObject u)
     {
         pack.Remove(u);
-    }
-    public int unitCount
-    {
-        get { return pack.Count; }
     }
 
     public bool packAlive()
@@ -222,13 +226,57 @@ public class Pack : NetworkBehaviour
         }
     }
 
-    public void reposition(List<Vector3> positions)
+    public void reposition(float radius)
     {
-        positions.Shuffle();
-        for (int i = 0; i < pack.Count; i++)
+        seeker = GetComponent<Seeker>();
+        spawns = new List<Vector3>();
+
+        rootNavPos = AstarPath.active.GetNearest(transform.position).position;
+        packSpawnRadius = radius;
+        attemptPath();
+
+    }
+
+    int pathAttempts = 0;
+    void attemptPath()
+    {
+        Debug.Log("Path attempt:" + pathAttempts);
+        if(spawns.Count >= pack.Count || pathAttempts > 60)
         {
-            pack[i].transform.position = positions[i];
+            spawns.Shuffle();
+            for (int i = 0; i < pack.Count; i++)
+            {
+                pack[i].transform.position = spawns[i % spawns.Count];
+            }
+            return;
         }
+
+        pathAttempts++;
+
+        Vector2 circlePoint = Random.insideUnitCircle;
+        Vector3 planePoint = transform.position + new Vector3(circlePoint.x, 0, circlePoint.y) * packSpawnRadius;
+
+        NNInfo nodeInfo = AstarPath.active.GetNearest(planePoint);
+        //if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
+        if (nodeInfo.node != null && (nodeInfo.position - transform.position).magnitude < packSpawnRadius)
+        {
+            seeker.StartPath(rootNavPos, nodeInfo.position,pathCallback);
+        }
+        else
+        {
+            attemptPath();
+        }
+
+    }
+
+    void pathCallback(Path p)
+    {
+        if (p.CompleteState == PathCompleteState.Complete && p.vectorPath.distance() < packSpawnRadius * 1.3f)
+        {
+            spawns.Add(p.vectorPath[p.vectorPath.Count-1] + Vector3.up * 1 * scale);
+        }
+        attemptPath();
+
     }
 
     private void OnDestroy()

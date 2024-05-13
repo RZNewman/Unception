@@ -134,14 +134,20 @@ public class MapGenerator : NetworkBehaviour
         //linkGenerator.a = agent.agentHeight;
 
         recastGraph.Scan();
-        yield return new WaitForSeconds(3);
+        Debug.Log("Nav mesh: " + Time.time);
+        yield return null;
         
         linkGenerator.Generate();
-
+        Debug.Log("Nav links: " + Time.time);
         //yield return GenerateLinks(linkGenerator);
         yield return null;
 
-        yield return spawner.spawnLevel(wfc.generationData.spawns, currentMap, endPortal);
+        List<GraphNode> nodes = new List<GraphNode>();
+        recastGraph.GetNodes(nodes.Add);
+        yield return null;
+
+
+        yield return spawner.spawnLevel(nodes, currentMap, endPortal,wfc.generationData.start);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassTarget(wfc.generationData.end));
     }
 

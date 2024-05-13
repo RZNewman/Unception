@@ -163,9 +163,6 @@ namespace NavmeshLinksGenerator
             //Debug Wall Hit
             //Debug.DrawLine ( startPosHorizontal, startPos, Physics.Linecast(startPosHorizontal, startPos, out _, raycastLayerMask.value, QueryTriggerInteraction.Ignore) ? Color.red : Color.green, 2 );
 
-            NNInfo nodeStartInfo = AstarPath.active.GetNearest(pos, NNConstraint.Default);
-            NavGraph startGraph = nodeStartInfo.node.Graph;
-
             RaycastHit raycastHit = new RaycastHit();
             if (Physics.Linecast(startPosHorizontal, startPos, out _, raycastLayerMask.value, QueryTriggerInteraction.Ignore))
             {
@@ -180,7 +177,7 @@ namespace NavmeshLinksGenerator
                 return result;
             }
 
-            NNInfo nodeInfo = AstarPath.active.GetNearest(raycastHit.point, NNConstraint.Default);
+            NNInfo nodeInfo = AstarPath.active.GetNearest(raycastHit.point, NNConstraint.Walkable);
             Vector3 closestPos = nodeInfo.position;
 
             if (nodeInfo.node == null)
@@ -271,7 +268,7 @@ namespace NavmeshLinksGenerator
             }
             Vector3 cheatRaycastHit = LerpByDistance(raycastHit.point, endPos, .2f);
 
-            NNInfo nodeInfo = AstarPath.active.GetNearest(cheatRaycastHit, NNConstraint.Default);
+            NNInfo nodeInfo = AstarPath.active.GetNearest(cheatRaycastHit, NNConstraint.Walkable);
             Vector3 closestPos = nodeInfo.position;
 
             if (nodeInfo.node != null)

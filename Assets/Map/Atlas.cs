@@ -18,6 +18,7 @@ public class Atlas : NetworkBehaviour
     public readonly static float avgFloorsPerMap = 1f;
     public readonly static float softcap = 6_000f;
     public readonly static float playerStartingPower = 500;
+    public readonly static float baseSparseness = 2000;
 
     public RectTransform mapImage;
     public GameObject mapMarkerPre;
@@ -299,8 +300,8 @@ public class Atlas : NetworkBehaviour
     {
         return tier switch
         {
-            int i when i < 2 => 15,
-            _ => 7,
+            int i when i < 2 => baseSparseness * 2,
+            _ => baseSparseness,
         };
     }
 
@@ -455,7 +456,7 @@ public class Atlas : NetworkBehaviour
     {
         return new Floor
         {
-            sparseness = 7,
+            sparseness = baseSparseness,
             wfcParams = WFCParameters.basic(),
             encounters = floorEncounters(difficulty),
         };

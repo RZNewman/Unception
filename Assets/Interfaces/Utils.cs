@@ -355,12 +355,12 @@ public static class Utils
         }
         return newDict;
     }
-    public static float distance(this NavMeshPath path)
+    public static float distance(this List<Vector3> path)
     {
         float distance = 0;
-        for (int i = 0; i < path.corners.Length - 1; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            distance += (path.corners[i] - path.corners[i + 1]).magnitude;
+            distance += (path[i] - path[i + 1]).magnitude;
         }
         return distance;
     }

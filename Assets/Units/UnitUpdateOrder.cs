@@ -1,4 +1,6 @@
 using Mirror;
+using System.Collections;
+using UnityEngine;
 
 public class UnitUpdateOrder : NetworkBehaviour
 {
@@ -11,6 +13,8 @@ public class UnitUpdateOrder : NetworkBehaviour
     PackHeal packHeal;
     EventManager eventManager;
     Gravity gravity;
+    UnitMovement mover;
+    LifeManager life;
     // Start is called before the first frame update
     DeterministicUpdate globalUpdate;
 
@@ -32,29 +36,49 @@ public class UnitUpdateOrder : NetworkBehaviour
         eventManager = GetComponent<EventManager>();
         gravity = GetComponent<Gravity>();
         gravity.turnOffGrav();
-        eventManager.suscribeDeath((d) => setRegistration(false));
+        mover = GetComponent<UnitMovement>();
+        life = GetComponent<LifeManager>();
+        eventManager.suscribeDeath((d) => {
+            setRegistration(false, true);
+            });
 
+        setUpdateScripts(registered);
+    }
+
+    public void logUnit()
+    {
+        Debug.Log(name);
+    }
+
+    IEnumerator delayUnregister(DeterministicUpdate globalUpdate)
+    {
+        while (!life.IsDead || !mover.grounded)
+        {
+            yield return null;
+        }
+        globalUpdate.unregister(this);
         setUpdateScripts(registered);
 
     }
 
-    public void setRegistration(bool register)
+
+    public void setRegistration(bool register, bool death = false)
     {
         if (register == registered) return;
 
         registered = register;
-        setRegistrationHelper(register);
+        setRegistrationHelper(register, death);
     }
 
     void hookRegistration(bool old, bool register)
     {
         if (isClientOnly)
         {
-            setRegistrationHelper(register);
+            setRegistrationHelper(register, true);
         }
     }
 
-    void setRegistrationHelper(bool register)
+    void setRegistrationHelper(bool register, bool noWait)
     {
         globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
         if (globalUpdate)
@@ -62,12 +86,22 @@ public class UnitUpdateOrder : NetworkBehaviour
             if (register)
             {
                 globalUpdate.register(this);
+                setUpdateScripts(register);
             }
             else
             {
-                globalUpdate.unregister(this);
+                if (noWait)
+                {
+                    globalUpdate.unregister(this);
+                    setUpdateScripts(register);
+                }
+                else
+                {
+                    StartCoroutine(delayUnregister(globalUpdate));
+                }
+                
             }
-            setUpdateScripts(register);
+            
         }
         
     }
@@ -77,6 +111,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         GetComponent<ControlManager>().enabled = active;
         GetComponentInChildren<UnitRotation>().enabled = active;
         GetComponentInChildren<UnitEye>().enabled = active;
+        GetComponent<Rigidbody>().isKinematic = !active;
     }
 
 

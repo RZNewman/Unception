@@ -10394,7 +10394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -4.6411133
+      value: -4.6410522
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -14292,6 +14292,7 @@ GameObject:
   - component: {fileID: 1202127504}
   - component: {fileID: 1202127505}
   - component: {fileID: 1202127507}
+  - component: {fileID: 1202127508}
   m_Layer: 0
   m_Name: UpdateManager
   m_TagString: Untagged
@@ -14855,6 +14856,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3965dca96e6f7d4794176b4ae31d3c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1202127508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202127495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1764de1de43cc4d19af52679d3eaae06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  desiredSimulationFPS: 20
+  workerThreads: 2
+  doubleBuffering: 0
+  hardCollisions: 1
+  symmetryBreakingBias: 0.1
+  movementPlane: 0
+  useNavmeshAsObstacle: 1
+  drawQuadtree: 0
 --- !u!1 &1209829813
 GameObject:
   m_ObjectHideFlags: 0
@@ -15337,7 +15359,7 @@ MonoBehaviour:
   cheatOffset: 0.25
   wallCheckYOffset: 0.5
   ignoreSameGraph: 0
-  invertFacingNormal: 1
+  invertFacingNormal: 0
   dontAllignYAxis: 0
   agentRadius: 0.5
 --- !u!114 &1231075390
@@ -15365,8 +15387,8 @@ MonoBehaviour:
   manualDebugFloorRoof: 0
   showSearchTree: 0
   unwalkableNodeDebugSize: 0.3
-  logPathResults: 1
-  maxNearestNodeDistance: 100
+  logPathResults: 0
+  maxNearestNodeDistance: 5
   scanOnStartup: 1
   fullGetNearestSearch: 0
   prioritizeGraphs: 0

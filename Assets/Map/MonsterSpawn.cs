@@ -10,6 +10,7 @@ using static Utils;
 using static Breakable;
 using Unity.Burst.CompilerServices;
 using UnityEngine.AI;
+using Pathfinding;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -102,23 +103,35 @@ public class MonsterSpawn : NetworkBehaviour
     public struct SpawnTransform
     {
         public Vector3 position;
-        public Vector3 halfExtents;
+        public float radius;
 
-        public Vector3 randomLocaion
+        public Vector3 randomNavLocaion
         {
             get
             {
-                Vector3 positionOffset = new Vector3(Random.Range(-halfExtents.x, halfExtents.x), 0, Random.Range(-halfExtents.z, halfExtents.z));
-                float searchRad = positionOffset.magnitude;
-                positionOffset *= 0.9f;
-                NavMeshHit hit;
-                if(NavMesh.SamplePosition(positionOffset, out hit, searchRad, NavMesh.AllAreas))
+                Vector2 circlePoint = Random.insideUnitCircle;
+                Vector3 planePoint = position + new Vector3(circlePoint.x, 0, circlePoint.y) * radius;
+
+                Vector3 pos = position;
+                //RaycastHit hit;
+                //float distance = WFCGeneration.tileScale.y * 3.1f;
+                NNInfo nodeInfo;
+                for (int i =0; i<4; i++)
                 {
-                    positionOffset = hit.position;
+                    nodeInfo = AstarPath.active.GetNearest(planePoint);
+                    if(nodeInfo.node != null & (nodeInfo.position - position).magnitude < radius)
+                    //if (Physics.Raycast(planePoint + Vector3.up * distance * 0.5f, Vector3.down, out hit, distance, LayerMask.GetMask("Terrain")))
+                    {
+                        //pos = hit.point;
+                        pos = nodeInfo.position;
+                        break;
+                    }
                 }
                 
-                positionOffset.y = halfExtents.y;
-                return position + positionOffset;
+                
+
+                //if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
+                return pos;
             }
         }
     }
@@ -136,6 +149,7 @@ public class MonsterSpawn : NetworkBehaviour
         public float championHealthMult;
         public List<Color> indicatorColors;
         public float power;
+        public float halfHeight;
         public float killerHealMult;
         public float rewardMult;
         public float rewardPercent;
@@ -174,11 +188,13 @@ public class MonsterSpawn : NetworkBehaviour
             float healthMult = (championTiers * championHealthPercent + remainingMult) * 2.0f;
 
             float rewardPercent = poolPower / weightedPool();
+            float scalePhys = Power.getScales(unitPower).world;
 
             SpawnUnit unit = new SpawnUnit()
             {
                 props = template.props,
                 power = unitPower,
+                halfHeight = 0.75f * scalePhys,
                 abilitites = abilities,
                 championHealthMult = healthMult,
                 indicatorColors = abilities.Count > 1 ? abilities.Skip(1).Select(a => a.flair.color).ToList() : new List<Color>(),
@@ -192,8 +208,9 @@ public class MonsterSpawn : NetworkBehaviour
         return units;
     }
 
-    public IEnumerator spawnLevel(List<SpawnTransform> locations, Map map, GameObject endWater)
+    public IEnumerator spawnLevel(List<GraphNode> nodes, Map map, GameObject endWater, Vector3 startPos)
     {
+        Debug.Log("Start spawn: " + Time.time);
         monsterUnits = createUnits(map.difficulty);
         endWater.GetComponent<Reward>().setReward(spawnPower, map.difficulty.total, 3);
         endWater.GetComponent<Power>().setPower(spawnPower);
@@ -203,6 +220,21 @@ public class MonsterSpawn : NetworkBehaviour
         {
             yield break;
         }
+
+        float totalArea = nodes.Sum(n => n.SurfaceArea());
+        float packRadius = 7;
+        float packArea = Mathf.Pow(packRadius,2) * Mathf.PI;
+        int locationCount = Mathf.RoundToInt(totalArea / (packArea * Mathf.Pow(map.floor.sparseness,2)));
+        Debug.Log("location count:"+ locationCount+" = Area:"+totalArea+"/"+packArea+"*"+map.floor.sparseness+"^2");
+        //Debug.Break();
+        yield return null;
+        List<SpawnTransform> locations = nodes.RandomItemsWeighted(locationCount, n => n.SurfaceArea(), _=>1).Select(n => 
+            new SpawnTransform
+            {
+                position = n.RandomPointOnSurface(),
+                radius = packRadius,
+            }
+        ).Where(st => (st.position - startPos).magnitude > packRadius *2).ToList();
 
         EncounterData[] encounters = map.floor.encounters;
         for (int i = 0; i < encounters.Length; i++)
@@ -216,7 +248,7 @@ public class MonsterSpawn : NetworkBehaviour
                 t = new SpawnTransform
                 {
                     position = endWater.transform.position,
-                    halfExtents = mapScales.world * 0.5f * Vector3.one,
+                    radius = mapScales.world * 0.5f ,
                 };
                 endWater.GetComponent<Interaction>().setInteractable(false);
                 reveal = endWater;
@@ -231,6 +263,7 @@ public class MonsterSpawn : NetworkBehaviour
 
             yield return spawnEncounter(e, t, reveal);
         }
+        Debug.Log("Encounters: " + Time.time);
 
         int zoneCount = locations.Count;
         for (int i = 0; i < zoneCount && i < (breakablesPerFloor); i++)
@@ -242,31 +275,26 @@ public class MonsterSpawn : NetworkBehaviour
             spawnBreakables(t, bType, map.difficulty.total);
             yield return null;
         }
+        Debug.Log("Breakables: " + Time.time);
 
-        float sparseCounter = 0;
-        float sparseness = map.floor.sparseness;
-        while(locations.Count>0)
+        while (locations.Count>0)
         {
             int z = locations.RandomIndex();
             SpawnTransform t = locations[z];
             locations.RemoveAt(z);
 
-            sparseCounter += 1f;
-
-            if (sparseCounter > sparseness)
+            SpawnPack packData = new SpawnPack
             {
-                sparseCounter -= sparseness;
-                SpawnPack packData = new SpawnPack
-                {
-                    spawnTransform = t,
-                    packMult = 1 + map.difficulty.pack,
-                    ignoreWakeup = false,
-                };
-                Pack pack = Instantiate(PackPre, floor).GetComponent<Pack>();
-                yield return spawnCreatures(packData, monsterUnits, pack);
-                pack.init();
-            }           
+                spawnTransform = t,
+                packMult = 1 + map.difficulty.pack,
+                ignoreWakeup = false,
+            };
+            Pack pack = Instantiate(PackPre, floor).GetComponent<Pack>();
+            yield return spawnCreatures(packData, monsterUnits, pack);
+            pack.init();
+                     
         }
+        Debug.Log("Units: " + Time.time);
     }
 
     IEnumerator spawnEncounter(EncounterData encounterData, SpawnTransform spawn, GameObject reveal)
@@ -316,7 +344,7 @@ public class MonsterSpawn : NetworkBehaviour
         for (int j = 0; j < numBreakables; j++)
         {
 
-            GameObject o = Instantiate(UrnPre, numBreakables <= 1 ? spawn.position : spawn.randomLocaion, Quaternion.identity, floor);
+            GameObject o = Instantiate(UrnPre, numBreakables <= 1 ? spawn.position : spawn.randomNavLocaion, Quaternion.identity, floor);
             o.transform.localScale = Vector3.one * mapScales.world;
             o.GetComponent<ClientAdoption>().parent = floor.gameObject;
             o.GetComponent<Gravity>().gravity *= mapScales.speed;
@@ -372,12 +400,12 @@ public class MonsterSpawn : NetworkBehaviour
     void InstanceCreature(SpawnPack spawnData, SpawnUnit spawnUnit, Pack p)
     {
 
-        Vector3 unitPos = spawnData.spawnTransform.randomLocaion;
-        RaycastHit hit;
-        if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 6, LayerMask.GetMask("Terrain")))
-        {
-            unitPos = hit.point + Vector3.up * mapScales.world;
-        }
+        Vector3 unitPos = spawnData.spawnTransform.randomNavLocaion+ spawnUnit.halfHeight * Vector3.up;
+        //RaycastHit hit;
+        //if (Physics.Raycast(unitPos, Vector3.down, out hit, spawnData.spawnTransform.halfExtents.y * 6, LayerMask.GetMask("Terrain")))
+        //{
+        //    unitPos = hit.point + Vector3.up * mapScales.world;
+        //}
         GameObject o = Instantiate(UnitPre, unitPos, Quaternion.identity, floor);
         o.GetComponent<UnitMovement>().currentLookAngle = Random.Range(-180f, 180f);
         o.GetComponent<ClientAdoption>().parent = floor.gameObject;

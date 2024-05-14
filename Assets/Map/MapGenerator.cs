@@ -160,6 +160,7 @@ public class MapGenerator : NetworkBehaviour
         Debug.Log("Nav links: " + Time.time);
         //yield return GenerateLinks(linkGenerator);
         yield return null;
+        nodes.Clear();
         recastGraph.GetNodes(nodes.Add);
 
         

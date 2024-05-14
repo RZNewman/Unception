@@ -7,6 +7,7 @@ public class Ship : MonoBehaviour
     public GameObject shipWaterPosition;
     public GameObject shipWaterArrow;
     public GameObject shipTakeoffArrow;
+    public GameObject clouds;
     // Start is called before the first frame update
     void Start()
     {

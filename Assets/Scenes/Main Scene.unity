@@ -17998,6 +17998,7 @@ MonoBehaviour:
   shipWaterPosition: {fileID: 99017623}
   shipWaterArrow: {fileID: 2015969866}
   shipTakeoffArrow: {fileID: 1310712124}
+  clouds: {fileID: 760993519}
 --- !u!1 &1443176484
 GameObject:
   m_ObjectHideFlags: 0

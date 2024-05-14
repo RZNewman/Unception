@@ -250,6 +250,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             }
             currentSelf.GetComponent<UnitMovement>().stop(true);
             TargetToggleShip(connectionToClient, toShip);
+            
         }
     }
 
@@ -268,7 +269,8 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             music.Game();
             atlas.setLoading(false);
         }
-        
+        FindObjectOfType<Ship>().clouds.SetActive(toShip);
+
     }
     public void cleanup()
     {

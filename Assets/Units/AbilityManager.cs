@@ -12,7 +12,6 @@ public class AbilityManager : NetworkBehaviour
     Dictionary<ItemSlot, int> slotLookups = new Dictionary<ItemSlot, int>();
 
     EventManager events;
-
     private void Awake()
     {
         events = GetComponent<EventManager>();
@@ -48,7 +47,7 @@ public class AbilityManager : NetworkBehaviour
     }
     void instanceAbility(ItemSlot key, CastData block)
     {
-        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
+        GameObject o = Instantiate(GlobalPrefab.gPre.AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
         a.setFormat(block);
         registerAbility(key, a);
@@ -58,7 +57,7 @@ public class AbilityManager : NetworkBehaviour
     }
     Ability instanceTriggeredAbility(TriggerData block)
     {
-        GameObject o = Instantiate(FindObjectOfType<GlobalPrefab>().AbilityRootPre, transform);
+        GameObject o = Instantiate(GlobalPrefab.gPre.AbilityRootPre, transform);
         Ability a = o.GetComponent<Ability>();
         a.setFormat(block);
         instancedAbilitites.Add(a.GetInstanceID(), a);

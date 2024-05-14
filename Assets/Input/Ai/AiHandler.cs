@@ -236,7 +236,7 @@ public class AiHandler : MonoBehaviour, UnitControl
                 {
                     Vector3 heightDiff = Vector3.up * mySize.scaledHalfHeight;
                     pathCorner = currentPath.vectorPath[currentPathIndex]+ heightDiff;
-                    while(currentPathIndex < currentPath.vectorPath.Count && (pathCorner -transform.position).magnitude < 0.5f * scalePhys)
+                    while(currentPathIndex < currentPath.vectorPath.Count - 1 && (pathCorner -transform.position).magnitude < 0.5f * scalePhys)
                     {
                         currentPathIndex++;
                         pathCorner = currentPath.vectorPath[currentPathIndex] + heightDiff;

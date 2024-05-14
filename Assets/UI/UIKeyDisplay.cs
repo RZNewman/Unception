@@ -10,7 +10,7 @@ public class UIKeyDisplay : MonoBehaviour
     // Start is called before the first frame update
     public void sync()
     {
-        Keybinds keys = FindObjectOfType<Keybinds>(true);
+        Keybinds keys = Keybinds.inst;
         Image display = GetComponent<Image>();
         display.sprite = keys.keyImage(keys.binding(key));
         display.scaleToFit();

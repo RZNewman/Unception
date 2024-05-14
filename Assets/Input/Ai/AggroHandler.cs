@@ -1,3 +1,4 @@
+using Pathfinding.RVO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class AggroHandler : MonoBehaviour
     List<GameObject> sensedAllies = new List<GameObject>();
 
     Combat combat;
+    RVOController avoidance;
     bool started = false;
 
     private void Start()
@@ -30,6 +32,8 @@ public class AggroHandler : MonoBehaviour
         setCombat();
         GetComponentInParent<Power>().subscribePower(setRadius);
         transform.parent.GetComponent<EventManager>().HitEvent += aggroWhenHit;
+        avoidance = GetComponent<RVOController>();
+        avoidance.enabled = false;
         started = true;
     }
     void setCombat()
@@ -73,12 +77,17 @@ public class AggroHandler : MonoBehaviour
     static readonly float LooseAggroTime = 8f;
     private void Update()
     {
+        if(sensedEnemies.Count == 0 && aggroedEnemies.Count == 0)
+        {
+            return;
+        }
         List<GameObject> sensed = new List<GameObject>(sensedEnemies);
         foreach (GameObject o in sensed)
         {
             if (!o)
             {
                 sensedEnemies.Remove(o);
+                continue;
             }
             if (canSee(o))
             {
@@ -111,6 +120,7 @@ public class AggroHandler : MonoBehaviour
                 if (aggroedEnemies.Count == 0)
                 {
                     GetComponentInParent<UnitUpdateOrder>().setRegistration(false);
+                    avoidance.enabled = false;
                 }
             }
             else
@@ -140,6 +150,7 @@ public class AggroHandler : MonoBehaviour
             if(aggroedEnemies.Count == 0)
             {
                 GetComponentInParent<UnitUpdateOrder>().setRegistration(true);
+                avoidance.enabled = true;
             }
             setCombat();
             GameObject targetParent = target.GetComponentInParent<Combat>().gameObject;

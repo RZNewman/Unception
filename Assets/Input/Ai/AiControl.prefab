@@ -121,7 +121,7 @@ MonoBehaviour:
   centerBackingField: 0
   locked: 0
   lockWhenNotMoving: 0
-  agentTimeHorizon: 1.5
+  agentTimeHorizon: 1
   obstacleTimeHorizon: 0.5
   maxNeighbours: 6
   layer: 1

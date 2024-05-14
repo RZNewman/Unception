@@ -4,7 +4,12 @@ using System.Collections.Generic;
 public class DeterministicUpdate : NetworkBehaviour
 {
     List<UnitUpdateOrder> unitList = new List<UnitUpdateOrder>();
+    public static DeterministicUpdate Determ;
 
+    private void Start()
+    {
+        Determ = this;
+    }
     public void register(UnitUpdateOrder unit)
     {
         unitList.Add(unit);

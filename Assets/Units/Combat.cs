@@ -12,9 +12,9 @@ public class Combat : NetworkBehaviour
 
     private void Start()
     {
-        if (!inCombat)
+        if (inCombat)
         {
-            setUnitUI(false, false);
+            setUnitUI(true);
         }      
         if (isServer)
         {
@@ -24,15 +24,15 @@ public class Combat : NetworkBehaviour
         }
 
     }
-    void setUnitUI(bool active, bool aiOnly = true)
+    void setUnitUI(bool active)
     {
         LocalPlayer player = GetComponent<LocalPlayer>();
         //Encounters dont have UI or LocalPlayer
         if (player)
         {
-            if (!player.isLocalUnit || !aiOnly)
+            if (!player.isLocalUnit)
             {
-                gameObject.GetComponentInChildren<UnitUiReference>(true).gameObject.SetActive(active);
+                GetComponentInChildren<UiUnitCanvas>(true).gameObject.SetActive(active);
             }
         }
 

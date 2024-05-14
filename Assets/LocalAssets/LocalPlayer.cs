@@ -1,4 +1,5 @@
 using Mirror;
+using Mirror.Experimental;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +18,13 @@ public class LocalPlayer : NetworkBehaviour
             Instantiate(localClickPre, transform);
             Instantiate(localAudio, transform);
             GameObject.FindGameObjectWithTag("LocalCanvas").GetComponentInChildren<UnitUiReference>(true).setTarget(gameObject);
+            GetComponentInChildren<UiUnitCanvas>(true).gameObject.SetActive(true);
+        }
 
+        if(GlobalPlayer.playerType == GlobalPlayer.NetworkType.SinglePlayer)
+        {
+            GetComponent<NetworkTransformUnreliable>().enabled = false;
+            GetComponent<NetworkRigidbodyUnreliable>().enabled = false;
         }
     }
 

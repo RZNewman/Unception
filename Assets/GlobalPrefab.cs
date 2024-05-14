@@ -66,7 +66,7 @@ public class GlobalPrefab : MonoBehaviour
         return bg;
     }
 
-    private void Start()
+    private void Awake()
     {
         gPre = this;
     }

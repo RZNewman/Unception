@@ -33,8 +33,8 @@ public class Health : NetworkBehaviour, BarValue
     {
 
         combat = GetComponent<Combat>();
-        damageDisplayPre = FindObjectOfType<GlobalPrefab>().DamageNumberPre;
-        gp = FindObjectOfType<GlobalPlayer>();
+        damageDisplayPre = GlobalPrefab.gPre.DamageNumberPre;
+        gp = GlobalPlayer.gPlay;
         mover = GetComponent<UnitMovement>();
         power = GetComponent<Power>();
         life = GetComponent<LifeManager>();

@@ -107,7 +107,7 @@ Material:
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _Outline_depth_cull: 2
+    - _Outline_depth_cull: 0.5
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -117,8 +117,8 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _Thickness: 0.18
-    - _UseNormals: 0
+    - _Thickness: 0.08
+    - _UseNormals: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:

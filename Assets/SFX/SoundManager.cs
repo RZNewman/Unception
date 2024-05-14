@@ -18,6 +18,13 @@ public class SoundManager : NetworkBehaviour
     public AudioClip encounterStart;
     public AudioClip encounterSpawn;
 
+    public static SoundManager inst;
+
+    private void Start()
+    {
+        inst = this;
+    }
+
     [Server]
     public void sendSound(SoundClip sound, Vector3 position)
     {

@@ -12,6 +12,7 @@ public class Keybinds : MonoBehaviour
 
     public Sprite[] Keys;
     Dictionary<KeyCode, Sprite> keyLookup = new Dictionary<KeyCode, Sprite>();
+    public static Keybinds inst;
 
     public enum KeyName
     {
@@ -53,7 +54,7 @@ public class Keybinds : MonoBehaviour
 
     private void Start()
     {
-
+        inst = this;
         foreach (Sprite sprite in Keys)
         {
 

@@ -7,7 +7,14 @@ using UnityEngine.SceneManagement;
 public class GlobalPlayer : MonoBehaviour
 {
     public static GlobalPlayer gPlay;
-    private void Start()
+
+    public enum NetworkType
+    {
+        SinglePlayer,
+        Muliplayer
+    }
+    public static NetworkType playerType = NetworkType.SinglePlayer;
+    private void Awake()
     {
         gPlay = this;
     }

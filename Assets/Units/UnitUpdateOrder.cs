@@ -25,7 +25,7 @@ public class UnitUpdateOrder : NetworkBehaviour
     void Start()
     {
 
-        globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
+        globalUpdate = DeterministicUpdate.Determ;
         health = GetComponent<Health>();
         posture = GetComponent<Posture>();
         stamina = GetComponent<Stamina>();
@@ -57,6 +57,7 @@ public class UnitUpdateOrder : NetworkBehaviour
             yield return null;
         }
         globalUpdate.unregister(this);
+        registered =false;
         setUpdateScripts(registered);
 
     }

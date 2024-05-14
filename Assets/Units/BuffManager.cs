@@ -61,8 +61,6 @@ public class BuffManager : NetworkBehaviour
     public void removeBuff(Buff b)
     {
         buffs.Remove(b);
-        //Debug.Log("REMOVE");
-        EventManager events = transform.GetComponentInParent<EventManager>();
         events.TickEvent -= b.Tick;
         events.CastEvent -= b.OnCast;
         if (isServer)

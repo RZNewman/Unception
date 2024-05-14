@@ -32,7 +32,7 @@ public class Pack : NetworkBehaviour
     //bool enabledUnits = false;
     private void Start()
     {
-        sound = FindObjectOfType<SoundManager>();
+        sound = SoundManager.inst;
         
     }
 

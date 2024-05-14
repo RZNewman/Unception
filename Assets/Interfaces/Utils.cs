@@ -1,6 +1,7 @@
 
 using Firebase.Database;
 using Mirror;
+using Pathfinding;
 using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static Atlas;
 using static GenerateAttack;
 using static MapGenerator;
+using static MonsterSpawn;
 using static RewardManager;
 
 public static class Utils
@@ -457,6 +460,15 @@ public static class Utils
             index--;
         }
         return index;
+    }
+
+    public static IEnumerable<Vector3> RandomLocations(this IList<GraphNode> nodes, float radius, float sparsness)
+    {
+        float totalArea = nodes.Sum(n => n.SurfaceArea());
+        float packArea = Mathf.Pow(radius, 2) * Mathf.PI;
+        int locationCount = Mathf.RoundToInt(totalArea / (packArea * Mathf.Pow(sparsness, 2)));
+        //Debug.Log("location count:" + locationCount + " = Area:" + totalArea + "/" + packArea + "*" + map.floor.sparseness + "^2");
+        return nodes.RandomItemsWeighted(locationCount, n => n.SurfaceArea(), _ => 1).Select(n => n.RandomPointOnSurface());
     }
 
     public struct Weighted<T>

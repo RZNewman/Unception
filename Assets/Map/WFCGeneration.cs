@@ -875,6 +875,21 @@ public class WFCGeneration : MonoBehaviour
             }
         }
     }
+
+    Dictionary<string, ConnectionDomainInfo> cachedDomainInfo = new Dictionary<string, ConnectionDomainInfo>();
+    ConnectionDomainInfo compositeConnectionDomainsCached(BigMask domain)
+    {
+        ConnectionDomainInfo info;
+        string key = domain.cacheKey;
+        if (cachedDomainInfo.TryGetValue(key, out info))
+        {
+            return info;
+        }
+        info = compositeConnectionDomains(domain);
+        cachedDomainInfo.Add(key, info);
+        return info;
+    }
+
     ConnectionDomainInfo compositeConnectionDomains(BigMask domain)
     {
         if (domain.empty)
@@ -1173,7 +1188,7 @@ public class WFCGeneration : MonoBehaviour
     void collapseConnections(Vector3Int loc, CollapseEnqueue queue)
     {
         WFCCell cell = map[loc.x, loc.y, loc.z];
-        ConnectionDomainInfo connections = compositeConnectionDomains(cell.domainMask);
+        ConnectionDomainInfo connections = compositeConnectionDomainsCached(cell.domainMask);
         ConnectionDomainMasks domains = connections.validConnections;
         HashSet<Vector3Int> queueLocations = new HashSet<Vector3Int>();
         //Debug.Log("Collapse Connections " + loc);
@@ -1493,7 +1508,7 @@ public class WFCGeneration : MonoBehaviour
                 segmentBaseLength = 50,
                 segmentVariableLength = 80,
                 straightnessPercent = 0.3f,
-                verticalityPercent = 0.25f,
+                verticalityPercent = 0.2f,
             };
         }
     }

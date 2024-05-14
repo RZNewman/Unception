@@ -21,6 +21,14 @@ public class MapGenerator : NetworkBehaviour
     public GameObject floorRootPre;
     public GameObject endPortalPre;
 
+    public List<WeightedProp> props;
+    [System.Serializable]
+    public struct WeightedProp
+    {
+        public int weight;
+        public GameObject prop;
+    }
+
 
     float currentFloorScale = 1f;
     GameObject currentFloor;
@@ -136,24 +144,47 @@ public class MapGenerator : NetworkBehaviour
         //linkGenerator.a = agent.agentHeight;
 
         recastGraph.Scan();
-        Debug.Log("Nav mesh: " + Time.time);
+        Debug.Log("Nav mesh for props: " + Time.time);
         yield return null;
-        
+        List<GraphNode> nodes = new List<GraphNode>();
+        recastGraph.GetNodes(nodes.Add);
+
+
+        yield return spawnProps(nodes);
+        yield return null;
+
+
+        recastGraph.Scan();
+        Debug.Log("Nav mesh for agents: " + Time.time);
         linkGenerator.Generate();
         Debug.Log("Nav links: " + Time.time);
         //yield return GenerateLinks(linkGenerator);
         yield return null;
-
-        List<GraphNode> nodes = new List<GraphNode>();
         recastGraph.GetNodes(nodes.Add);
-        yield return null;
 
+        
 
-        StaticBatchingUtility.Combine(wfcFloor);
+        StaticBatchingUtility.Combine(currentFloor);
 
 
         yield return spawner.spawnLevel(nodes, currentMap, endPortal,wfc.generationData.start);
         FindObjectsOfType<PlayerGhost>().ToList().ForEach(ghost => ghost.RpcSetCompassTarget(wfc.generationData.end));
+    }
+
+    IEnumerator spawnProps(List<GraphNode> nodes)
+    {
+        int propCount = 0;
+        foreach(Vector3 location in nodes.RandomLocations(5, Atlas.baseSparseness * 0.55f))
+        {
+            Instantiate(props.RandomItemWeighted(n => n.weight).prop, location, Quaternion.Euler(0, Random.value, 0), currentFloor.transform);
+            propCount++;
+            if(propCount == 5)
+            {
+                propCount = 0;
+                yield return null;
+            }
+            
+        }
     }
 
 

@@ -290,8 +290,8 @@ public class Atlas : NetworkBehaviour
             verticalityPercent = tier switch
             {
                 int i when i == 0 => 0,
-                int i when i == 1 => 0.1f,
-                _ => 0.25f,
+                int i when i == 1 => 0.07f,
+                _ => 0.20f,
             },
 
         };

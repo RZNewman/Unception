@@ -62,5 +62,13 @@ public class BigMask
         }
     }
 
+    public string cacheKey
+    {
+        get
+        {
+            return System.String.Join(',',mask.OrderBy(n=>n));
+        }
+    }
+
 
 }

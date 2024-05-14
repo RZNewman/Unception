@@ -221,17 +221,11 @@ public class MonsterSpawn : NetworkBehaviour
             yield break;
         }
 
-        float totalArea = nodes.Sum(n => n.SurfaceArea());
         float packRadius = 7;
-        float packArea = Mathf.Pow(packRadius,2) * Mathf.PI;
-        int locationCount = Mathf.RoundToInt(totalArea / (packArea * Mathf.Pow(map.floor.sparseness,2)));
-        Debug.Log("location count:"+ locationCount+" = Area:"+totalArea+"/"+packArea+"*"+map.floor.sparseness+"^2");
-        //Debug.Break();
-        yield return null;
-        List<SpawnTransform> locations = nodes.RandomItemsWeighted(locationCount, n => n.SurfaceArea(), _=>1).Select(n => 
+        List<SpawnTransform> locations = nodes.RandomLocations(packRadius,map.floor.sparseness).Select(v => 
             new SpawnTransform
             {
-                position = n.RandomPointOnSurface(),
+                position = v,
                 radius = packRadius,
             }
         ).Where(st => (st.position - startPos).magnitude > packRadius *2).ToList();

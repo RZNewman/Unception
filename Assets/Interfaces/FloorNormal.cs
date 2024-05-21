@@ -33,7 +33,7 @@ public class FloorNormal : MonoBehaviour
         //if (NavMesh.SamplePosition(transform.position, out hit, sizeC.distance * 3, NavMesh.AllAreas))
         RaycastHit hit;
         //if(nodeInfo.node != null & (nodeInfo.position - transform.position).magnitude < sizeC.distance * 3)
-        if(Physics.Raycast(transform.position,Vector3.down,out hit,sizeC.distance*3,LayerMask.GetMask("Terrain")))
+        if(Physics.Raycast(transform.position,Vector3.down,out hit,sizeC.distance*3, MapGenerator.TerrainMask()))
         {
             navPosition = hit.point;
         }
@@ -50,7 +50,7 @@ public class FloorNormal : MonoBehaviour
     public static GroundResult getGroundNormal(Vector3 position, CapsuleSize sizeC)
     {
         RaycastHit rout;
-        bool terrain = Physics.SphereCast(position + Vector3.up * sizeC.distance, sizeC.radius * 0.95f, Vector3.down, out rout, sizeC.distance * 2.01f, LayerMask.GetMask("Terrain"));
+        bool terrain = Physics.SphereCast(position + Vector3.up * sizeC.distance, sizeC.radius * 0.95f, Vector3.down, out rout, sizeC.distance * 2.01f, MapGenerator.TerrainMask());
         float angle = Vector3.Angle(Vector3.up, rout.normal);
 
         bool ground = terrain && angle < floorDegrees;

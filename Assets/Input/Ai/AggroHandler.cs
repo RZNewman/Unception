@@ -201,6 +201,6 @@ public class AggroHandler : MonoBehaviour
     public bool canSee(GameObject other)
     {
         Vector3 diff = other.transform.position - transform.position;
-        return !Physics.Raycast(transform.position, diff, diff.magnitude, LayerMask.GetMask("Terrain"));
+        return !Physics.Raycast(transform.position, diff, diff.magnitude, MapGenerator.TerrainMask());
     }
 }

@@ -16,6 +16,12 @@ using static FloorNormal;
 
 public class MapGenerator : NetworkBehaviour
 {
+    public static int TerrainMask() {
+        return LayerMask.GetMask("Terrain", "TerrainSmooth");
+            
+    }
+    
+
     public GameObject fallPre;
     public GameObject jumpPre;
     public GameObject floorRootPre;
@@ -115,11 +121,11 @@ public class MapGenerator : NetworkBehaviour
         //{
         //    //recastGraph.
         //}
-        //NavMeshBuilder.CollectSources(currentFloor.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
+        //NavMeshBuilder.CollectSources(currentFloor.transform, TerrainMask, NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sources);
         //foreach (GameObject tile in wfc.generationData.navTiles)
         //{
         //    List<NavMeshBuildSource> sourcesTile = new List<NavMeshBuildSource>();
-        //    NavMeshBuilder.CollectSources(tile.transform, LayerMask.GetMask("Terrain"), NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sourcesTile);
+        //    NavMeshBuilder.CollectSources(tile.transform, TerrainMask, NavMeshCollectGeometry.PhysicsColliders, 0, new List<NavMeshBuildMarkup>(), sourcesTile);
         //    sources.AddRange(sourcesTile);
         //}
         //navData = NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(agent, sources, new Bounds(Vector3.zero, Vector3.one * 4000), Vector3.zero, Quaternion.identity));
@@ -129,7 +135,7 @@ public class MapGenerator : NetworkBehaviour
         recastGraph.walkableClimb = 0.3f * currentFloorScale;
         recastGraph.walkableHeight = WFCGeneration.tileScale.y * 1.2f * currentFloorScale;
         recastGraph.maxEdgeLength = WFCGeneration.tileScale.x * 1.0f * currentFloorScale;
-        recastGraph.collectionSettings.layerMask = LayerMask.GetMask("Terrain");
+        recastGraph.collectionSettings.layerMask = TerrainMask();
         recastGraph.maxSlope = floorDegrees;
         recastGraph.forcedBoundsCenter = wfc.generationData.size / 2f;
         recastGraph.forcedBoundsSize = wfc.generationData.size;
@@ -139,7 +145,7 @@ public class MapGenerator : NetworkBehaviour
         linkGenerator.maxJumpUpHeight = 4 * currentFloorScale;
         linkGenerator.maxJumpDist = 5 * currentFloorScale;
         linkGenerator.maxJumpDownHeight = 15 * currentFloorScale;
-        linkGenerator.raycastLayerMask = LayerMask.GetMask("Terrain");
+        linkGenerator.raycastLayerMask = TerrainMask();
         linkGenerator.agentRadius = agentRadius;
         //linkGenerator.a = agent.agentHeight;
 

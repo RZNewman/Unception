@@ -121,7 +121,7 @@ public class InputHandler : MonoBehaviour, UnitControl
         r = Camera.main.ScreenPointToRay(Input.mousePosition);
 
 
-        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, LayerMask.GetMask("Terrain","Stopper"));
+        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, MapGenerator.TerrainMask() & LayerMask.GetMask("Stopper"));
 
         System.Array.Sort(info, (a, b) => a.distance.CompareTo(b.distance));
 
@@ -157,7 +157,7 @@ public class InputHandler : MonoBehaviour, UnitControl
                 continue;
             }
 
-            if (1 << hit.transform.gameObject.layer == LayerMask.GetMask("Terrain"))
+            if ((1 << hit.transform.gameObject.layer & MapGenerator.TerrainMask()) > 0 )
             {
                 if (
                 Vector3.Angle(Vector3.up, hit.normal) < floorDegrees

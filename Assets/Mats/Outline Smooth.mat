@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Outline
+  m_Name: Outline Smooth
   m_Shader: {fileID: -6465566751694194690, guid: fd1440862aab4a643b636275bfb58eae, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -106,7 +106,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NormalVertexColor: 1
+    - _NormalVertexColor: 0
     - _OcclusionStrength: 1
     - _Outline_depth_cull: 0.5
     - _Parallax: 0.005
@@ -118,7 +118,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _Thickness: 1
+    - _Thickness: 0.8
     - _UseNormals: 1
     - _WorkflowMode: 1
     - _ZWrite: 1

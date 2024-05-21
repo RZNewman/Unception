@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8917593923728155573}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Rock Obs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 7118491184478170961}
   - component: {fileID: 3950878394573162273}
   - component: {fileID: 3933959811224466111}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

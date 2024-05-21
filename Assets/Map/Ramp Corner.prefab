@@ -9,9 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 415179275646083370}
-  - component: {fileID: 7557229181265901087}
-  - component: {fileID: 2221951367452455550}
-  - component: {fileID: 7813429192099148214}
   - component: {fileID: 4863423421354933755}
   m_Layer: 6
   m_Name: Ramp Corner
@@ -31,25 +28,90 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 889214580469195045}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7557229181265901087
+--- !u!114 &4863423421354933755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195837346520216111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7aefd46d238b9c4ba6ab7f6cad4f499, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skipSpawn: 0
+  collapsePriority: 0
+  typeGroup: 3
+  navType: 1
+  alternatives: []
+  adjacencies:
+  - direction: 0
+    connections: 2000000010000000
+  - direction: 2
+    connections: 0100000002000000
+  - direction: 1
+    connections: 0100000002000000
+  - direction: 3
+    connections: 0001000010000000
+  - direction: 4
+    connections: 02000000
+  - direction: 5
+    connections: 08000000
+--- !u!1 &6473477181737472618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 889214580469195045}
+  - component: {fileID: 8575843598468142232}
+  - component: {fileID: 6673321913647451027}
+  - component: {fileID: 2126649135171720098}
+  m_Layer: 6
+  m_Name: Arch Corner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &889214580469195045
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6473477181737472618}
+  m_LocalRotation: {x: 0, y: 0.70710063, z: 0.7071129, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 415179275646083370}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -90.001, y: 180, z: 0}
+--- !u!33 &8575843598468142232
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
---- !u!23 &2221951367452455550
+  m_GameObject: {fileID: 6473477181737472618}
+  m_Mesh: {fileID: -5495902117074765545, guid: 8501e54f42bb66343be2287e355c411d, type: 3}
+--- !u!23 &6673321913647451027
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
+  m_GameObject: {fileID: 6473477181737472618}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -85,47 +147,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7813429192099148214
+--- !u!64 &2126649135171720098
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
+  m_GameObject: {fileID: 6473477181737472618}
   m_Material: {fileID: 13400000, guid: 1cd25272c7113264c83b7446e1f379f6, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -5495902117074765545, guid: 656af19716c32e846bde3f74b9d2d573, type: 3}
---- !u!114 &4863423421354933755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5195837346520216111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7aefd46d238b9c4ba6ab7f6cad4f499, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skipSpawn: 0
-  collapsePriority: 0
-  typeGroup: 3
-  navType: 1
-  alternatives: []
-  adjacencies:
-  - direction: 0
-    connections: 2000000010000000
-  - direction: 2
-    connections: 0100000002000000
-  - direction: 1
-    connections: 0100000002000000
-  - direction: 3
-    connections: 0001000010000000
-  - direction: 4
-    connections: 02000000
-  - direction: 5
-    connections: 08000000
+  m_Mesh: {fileID: -5495902117074765545, guid: 8501e54f42bb66343be2287e355c411d, type: 3}

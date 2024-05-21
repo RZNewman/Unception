@@ -137,7 +137,7 @@ public interface UnitControl
         public bool lookObstructed(Vector3 position)
         {
             Debug.DrawLine(position, position + lookOffset, Color.black);
-            return Physics.Raycast(position,lookOffset,lookOffset.magnitude, LayerMask.GetMask("Terrain")) ;
+            return Physics.Raycast(position,lookOffset,lookOffset.magnitude, MapGenerator.TerrainMask()) ;
         }
     }
 

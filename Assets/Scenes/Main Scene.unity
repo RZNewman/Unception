@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 5558643}
   - component: {fileID: 5558642}
   - component: {fileID: 5558641}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1231,7 +1231,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 79537625}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1493,7 +1493,7 @@ GameObject:
   - component: {fileID: 136816163}
   - component: {fileID: 136816165}
   - component: {fileID: 136816166}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2798,7 +2798,7 @@ GameObject:
   - component: {fileID: 190597955}
   - component: {fileID: 190597954}
   - component: {fileID: 190597953}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4043,7 +4043,7 @@ GameObject:
   - component: {fileID: 319947372}
   - component: {fileID: 319947374}
   - component: {fileID: 319947373}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4603,7 +4603,7 @@ GameObject:
   - component: {fileID: 369466222}
   - component: {fileID: 369466224}
   - component: {fileID: 369466223}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4950,7 +4950,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 406675596}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5132,7 +5132,7 @@ GameObject:
   - component: {fileID: 409238982}
   - component: {fileID: 409238985}
   - component: {fileID: 409238984}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Grove Patch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7143,7 +7143,7 @@ GameObject:
   - component: {fileID: 575546182}
   - component: {fileID: 575546184}
   - component: {fileID: 575546183}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8851,7 +8851,7 @@ GameObject:
   - component: {fileID: 740926594}
   - component: {fileID: 740926593}
   - component: {fileID: 740926592}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9060,7 +9060,7 @@ GameObject:
   - component: {fileID: 754466722}
   - component: {fileID: 754466724}
   - component: {fileID: 754466723}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11120,7 +11120,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 913175186}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12663,6 +12663,103 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1072514144
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1072514145}
+  - component: {fileID: 1072514148}
+  - component: {fileID: 1072514147}
+  - component: {fileID: 1072514146}
+  m_Layer: 6
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1072514145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072514144}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1209608353}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1072514146
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072514144}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1072514147
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072514144}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: d24bde530a6cd174cb70a68743168031, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1072514148
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072514144}
+  m_Mesh: {fileID: -5495902117074765545, guid: fffe18ce5717d124298ec4de04652d16, type: 3}
 --- !u!1 &1076966286
 GameObject:
   m_ObjectHideFlags: 0
@@ -12770,7 +12867,7 @@ GameObject:
   - component: {fileID: 1085139041}
   - component: {fileID: 1085139043}
   - component: {fileID: 1085139042}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13826,7 +13923,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1154045616}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13993,7 +14090,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1157815428}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14160,7 +14257,7 @@ GameObject:
   - component: {fileID: 1186934693}
   - component: {fileID: 1186934695}
   - component: {fileID: 1186934694}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: dirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14877,6 +14974,39 @@ MonoBehaviour:
   movementPlane: 0
   useNavmeshAsObstacle: 0
   drawQuadtree: 0
+--- !u!1 &1209608352
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1209608353}
+  m_Layer: 6
+  m_Name: Map Scale
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1209608353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209608352}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 6, y: 1, z: 6}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1072514145}
+  - {fileID: 1398124789}
+  m_Father: {fileID: 1703856085}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1209829813
 GameObject:
   m_ObjectHideFlags: 0
@@ -14889,7 +15019,7 @@ GameObject:
   - component: {fileID: 1209829817}
   - component: {fileID: 1209829816}
   - component: {fileID: 1209829815}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14983,7 +15113,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1219022323}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15015,7 +15145,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1224906578}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15466,7 +15596,7 @@ GameObject:
   - component: {fileID: 1234623726}
   - component: {fileID: 1234623728}
   - component: {fileID: 1234623727}
-  m_Layer: 8
+  m_Layer: 22
   m_Name: WheelHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15710,7 +15840,7 @@ GameObject:
   - component: {fileID: 1241568577}
   - component: {fileID: 1241568579}
   - component: {fileID: 1241568578}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15794,7 +15924,7 @@ GameObject:
   - component: {fileID: 1250411050}
   - component: {fileID: 1250411049}
   - component: {fileID: 1250411048}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16403,7 +16533,7 @@ GameObject:
   - component: {fileID: 1280208898}
   - component: {fileID: 1280208897}
   - component: {fileID: 1280208896}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17426,6 +17556,103 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1398124788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1398124789}
+  - component: {fileID: 1398124792}
+  - component: {fileID: 1398124791}
+  - component: {fileID: 1398124790}
+  m_Layer: 6
+  m_Name: Cube (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1398124789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398124788}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1209608353}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1398124790
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398124788}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1398124791
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398124788}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: d24bde530a6cd174cb70a68743168031, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1398124792
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398124788}
+  m_Mesh: {fileID: -5495902117074765545, guid: 93d4ad0e26059e04fbd8259c20316cb5, type: 3}
 --- !u!1 &1398247574
 GameObject:
   m_ObjectHideFlags: 0
@@ -17594,7 +17821,7 @@ GameObject:
   - component: {fileID: 1400216609}
   - component: {fileID: 1400216608}
   - component: {fileID: 1400216607}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17877,7 +18104,7 @@ GameObject:
   - component: {fileID: 1428962384}
   - component: {fileID: 1428962387}
   - component: {fileID: 1428962388}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Ship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18984,7 +19211,7 @@ GameObject:
   - component: {fileID: 1509183477}
   - component: {fileID: 1509183479}
   - component: {fileID: 1509183478}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19067,7 +19294,7 @@ GameObject:
   - component: {fileID: 1527944547}
   - component: {fileID: 1527944549}
   - component: {fileID: 1527944548}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19638,7 +19865,7 @@ GameObject:
   - component: {fileID: 1562197393}
   - component: {fileID: 1562197395}
   - component: {fileID: 1562197394}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20822,7 +21049,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1699711007}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20844,6 +21071,38 @@ Transform:
   - {fileID: 369466222}
   m_Father: {fileID: 136816162}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1703856084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1703856085}
+  m_Layer: 6
+  m_Name: World Scale
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1703856085
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703856084}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -855.8, y: 416.44, z: 1026.6}
+  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1209608353}
+  m_Father: {fileID: 0}
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1713576154
 GameObject:
@@ -21247,7 +21506,7 @@ GameObject:
   - component: {fileID: 1781994626}
   - component: {fileID: 1781994625}
   - component: {fileID: 1781994624}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21557,7 +21816,7 @@ GameObject:
   - component: {fileID: 1795705023}
   - component: {fileID: 1795705025}
   - component: {fileID: 1795705024}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21641,7 +21900,7 @@ GameObject:
   - component: {fileID: 1808904776}
   - component: {fileID: 1808904775}
   - component: {fileID: 1808904777}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22486,7 +22745,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1962526218}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Axis (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23217,7 +23476,7 @@ GameObject:
   - component: {fileID: 2047577034}
   - component: {fileID: 2047577036}
   - component: {fileID: 2047577035}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: plant (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24140,7 +24399,7 @@ GameObject:
   - component: {fileID: 2134781968}
   - component: {fileID: 2134781967}
   - component: {fileID: 2134781966}
-  m_Layer: 6
+  m_Layer: 22
   m_Name: Railing
   m_TagString: Untagged
   m_Icon: {fileID: 0}

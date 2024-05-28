@@ -11,6 +11,7 @@ using static Breakable;
 using Unity.Burst.CompilerServices;
 using UnityEngine.AI;
 using Pathfinding;
+using UnityEngine.TerrainUtils;
 
 public class MonsterSpawn : NetworkBehaviour
 {
@@ -295,7 +296,7 @@ public class MonsterSpawn : NetworkBehaviour
     {
         Vector3 encounterPos = spawn.position;
         RaycastHit hit;
-        if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * mapScales.world, LayerMask.GetMask("Terrain")))
+        if (Physics.Raycast(encounterPos, Vector3.down, out hit, 10f * mapScales.world, MapGenerator.TerrainMask()))
         {
             encounterPos = hit.point + Vector3.up * mapScales.world;
         }

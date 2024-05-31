@@ -265,36 +265,62 @@ public class Atlas : NetworkBehaviour
         return Mathf.Min(power, softcap);
     }
 
-    WFCParameters wfcAtTier(int tier)
+    static WFCParameters wfcAtTier(int tier)
     {
+
+        int segCount = tier switch
+        {
+            int i when i == 0 => 1,
+            int i when i == 1 => 2,
+            int i when i == 2 => 3,
+            _ => Mathf.RoundToInt(Random.value.asRange(3, 8)),
+        };
+        float walkLength = tier switch
+        {
+            int i when i == 0 => 50,
+            int i when i == 1 => 120,
+            int i when i == 2 => 200,
+            int i => Random.value.asRange(150,250) + 10*i,
+        };
+        float walkBasePercent = tier switch
+        {
+            int i when i == 0 => 1,
+            int i when i == 1 => 0.9f,
+            int i when i == 2 => 0.75f,
+            _ => 0.6f,
+        };
+        float segLength = walkLength / segCount;
+
+
+        float padSideMin = Random.value.asRange(0, 19);
+        float padSideMax = Random.value.asRange(padSideMin, 39);
+        float padTopMin = Random.value.asRange(0, 5.5f);
+        float padTopMax = Random.value.asRange(padTopMin, 9.9f);
+
         return new WFCParameters
         {
-            segmentCount = tier switch
+            segmentCount = segCount,
+            segmentBaseLength = segLength * walkBasePercent,
+            segmentVariableLength = segLength * (1-walkBasePercent),
+            straightnessPercent = tier switch
             {
-                int i when i == 0 => 1,
-                int i when i == 1 => 2,
-                int i when i == 2 => 3,
-                _ => Mathf.RoundToInt(Random.value.asRange(4, 6)),
+                int i when i <= 1 => 0.6f,
+                _ => Random.value.asRange(0.3f, 0.9f),
             },
-            segmentBaseLength = tier switch
-            {
-                _ => 50,
-            },
-            segmentVariableLength = tier switch
-            {
-                int i when i == 0 => 0,
-                int i when i == 1 => 10,
-                int i when i == 2 => 40,
-                _ => 80,
-            },
-            straightnessPercent = 0.3f,
             verticalityPercent = tier switch
             {
                 int i when i == 0 => 0,
                 int i when i == 1 => 0.07f,
-                _ => 0.20f,
+                _ => Random.value.asRange(0.03f, 0.25f),
             },
-
+            ajoinSurfaceWeight = Random.value.asRange(12, 30),
+            ajoinGroundWeight = Random.value.asRange(0, 5),
+            ajoinAirWeight = Random.value.asRange(0, 5),
+            paddingSideMin = padSideMin,
+            paddingSideMax = padSideMax,
+            paddingTopMin = padTopMin,
+            paddingTopMax = padTopMax,
+            gapVerticalSpacingWorld = Random.value.asRange(12, 20),
         };
     }
     float sparsnessAtTier(int tier)
@@ -438,7 +464,7 @@ public class Atlas : NetworkBehaviour
                     index = mapIndex,
                     power = gp.serverPlayer.power,
                     difficulty = difficulty,
-                    floor = mapRandomFloor(difficulty),
+                    floor = mapRandomFloor(difficulty,playerTier),
                     visualLocation = location.visualLocation,
                     difficultyRangePercent = difficultyRangePercent,
                 });
@@ -452,12 +478,12 @@ public class Atlas : NetworkBehaviour
         return mapsGen.ToArray();
     }
 
-    public static Floor mapRandomFloor(Difficulty difficulty)
+    public static Floor mapRandomFloor(Difficulty difficulty, int tier)
     {
         return new Floor
         {
             sparseness = baseSparseness,
-            wfcParams = WFCParameters.basic(),
+            wfcParams = wfcAtTier(tier),
             encounters = floorEncounters(difficulty),
         };
     }
@@ -598,7 +624,7 @@ public class Atlas : NetworkBehaviour
         }
         else
         {
-            m = serverMap.getMap(gp.serverPlayer.power);
+            m = serverMap.getMap(this, gp.serverPlayer.power);
         }
         embarkedMap = m;
 

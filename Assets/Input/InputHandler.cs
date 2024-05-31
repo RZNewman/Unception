@@ -120,8 +120,9 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         r = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+        //Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + r.direction * cameraRayMax);
 
-        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, MapGenerator.TerrainMask() & LayerMask.GetMask("Stopper"));
+        RaycastHit[] info = Physics.RaycastAll(r, cameraRayMax, MapGenerator.TerrainMask() | LayerMask.GetMask("Stopper"));
 
         System.Array.Sort(info, (a, b) => a.distance.CompareTo(b.distance));
 

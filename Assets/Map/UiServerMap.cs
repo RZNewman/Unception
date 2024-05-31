@@ -11,7 +11,7 @@ public class UiServerMap : MonoBehaviour
     public TMP_InputField veteran;
     public TMP_InputField champion;
 
-    public Map getMap(float power)
+    public Map getMap(Atlas atlas, float power)
     {
         float p;
         float v;
@@ -41,7 +41,7 @@ public class UiServerMap : MonoBehaviour
         {
             visualLocation = Vector2.zero,
             difficultyRangePercent = 0,
-            floor = mapRandomFloor(d),
+            floor = mapRandomFloor(d, 10),
             index = -1,
             power = power,
             difficulty = d

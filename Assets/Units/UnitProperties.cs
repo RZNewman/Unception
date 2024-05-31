@@ -22,6 +22,7 @@ public class UnitProperties : ScriptableObject
 
     public float maxPosture;
     public float maxFocus;
+    public float maxKnockdown;
 
     public float maxStamina;
     public float staminaRecover;

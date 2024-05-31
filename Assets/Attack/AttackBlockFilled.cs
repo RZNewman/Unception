@@ -25,7 +25,7 @@ public class CastDataInstance : AbilityDataInstance
     };
     public override StrengthMultiplers strength()
     {
-        return new StrengthMultiplers(shape.power(shapeValues), multipliedStrength());
+        return new StrengthMultiplers(shape.strength(shapeValues), multipliedStrength());
     }
 
     public float multipliedStrength()

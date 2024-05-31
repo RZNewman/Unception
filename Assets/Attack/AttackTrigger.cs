@@ -52,9 +52,9 @@ public class TriggerData : AbilityData
 
         TriggerDataInstance filled = ScriptableObject.CreateInstance<TriggerDataInstance>();
         opts.reduceWindValue = true;
-        populate(filled, opts);
         filled.conditions = conditions;
         filled.difficultyTotal = difficultyTotal;
+        populate(filled, opts);
         return filled;
     }
 

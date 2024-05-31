@@ -20,11 +20,13 @@ public class Knockdown : NetworkBehaviour
     }
     bool isDown = false;
     Power power;
+    UnitPropsHolder props;
 
     // Start is called before the first frame update
     void Start()
     {
         power = GetComponent<Power>();
+        props = GetComponent<UnitPropsHolder>();
         recentlyKDTime = 0;
     }
 
@@ -41,7 +43,7 @@ public class Knockdown : NetworkBehaviour
     {
         get
         {
-            return 1.2f * fallOffMult;
+            return props.props.maxKnockdown * fallOffMult;
         }
 
     }

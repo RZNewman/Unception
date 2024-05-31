@@ -18,6 +18,7 @@ public class Atlas : NetworkBehaviour
     public readonly static float avgFloorsPerMap = 1f;
     public readonly static float softcap = 6_000f;
     public readonly static float playerStartingPower = 500;
+    public readonly static float itemStartingPower = playerStartingPower * 2;
     public readonly static float baseSparseness = 2000;
 
     public RectTransform mapImage;
@@ -253,7 +254,7 @@ public class Atlas : NetworkBehaviour
         }
     }
 
-    readonly float packsKilledPerMap = 15f;
+    readonly float packsKilledPerMap = 10f;
     float powerAtTier(int tier)
     {
         float power = tier switch
@@ -300,7 +301,7 @@ public class Atlas : NetworkBehaviour
     {
         return tier switch
         {
-            int i when i < 2 => baseSparseness * 2,
+            //int i when i < 2 => baseSparseness * 2,
             _ => baseSparseness,
         };
     }
@@ -313,9 +314,8 @@ public class Atlas : NetworkBehaviour
     {
         return tier switch
         {
-            int i when i < 2 => 0,
             int i when i < 6 => 1,
-            int i => 0.65f * Mathf.Pow(1.1f, tier),
+            int i => 0.65f * Mathf.Pow(1.1f, i),
         };
     }
 

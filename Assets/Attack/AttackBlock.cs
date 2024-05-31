@@ -21,11 +21,11 @@ public class CastData : AbilityData
     {
 
         CastDataInstance filled = ScriptableObject.CreateInstance<CastDataInstance>();
-        populate(filled, opts);
         filled.slot = slot;
         filled.quality = quality;
         filled.stars = stars;
         filled.shape = shape;
+        populate(filled, opts);
         return filled;
     }
 

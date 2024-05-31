@@ -31,7 +31,7 @@ public class UiAbilityDetails : MonoBehaviour
             player = FindObjectOfType<PlayerGhost>();
         }
 
-        title.text = filled.flair.name;
+        title.text = filled.flair.fullName(filled.effectGeneration.specialty.stat);
         titleSlot.text = slotPhysical(filled.slot) + " of";
         power.text = Power.displayExaggertatedPower(filled.powerInstance);
         powerTotal.text = Power.displayExaggertatedPower(filled.actingPower());

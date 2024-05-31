@@ -28,6 +28,7 @@ MonoBehaviour:
   maxHealthMult: 10
   maxPosture: 250
   maxFocus: 1750
+  maxKnockdown: 1.2
   maxStamina: 65
   staminaRecover: 8
   visuals:

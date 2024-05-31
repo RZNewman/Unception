@@ -223,9 +223,11 @@ public class Grove : NetworkBehaviour
 
         }
 
-        public float power(Dictionary<GroveSlotType, float> values)
+        public float strength(Dictionary<GroveSlotType, float> values)
         {
-            return points!= null ? points.Sum(point => values[point.type]) : 0;
+            float str = points != null ? points.Sum(point => values[point.type]) : 0;
+            //Debug.Log(str);
+            return str;
         }
     }
 

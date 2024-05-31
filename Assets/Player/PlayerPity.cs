@@ -11,7 +11,7 @@ public class PlayerPity : NetworkBehaviour
 {
     PityTimer<Quality> pityQuality;
     PityTimer<BreakableType> pityBreakable;
-    PityTimer<ModCount> pityModCount;
+    PityTimer<ModCount> pityStarCount;
     PityTimer<ModBonus> pityModBonus;
 
 
@@ -24,7 +24,7 @@ public class PlayerPity : NetworkBehaviour
         pityBreakable = new PityTimer<BreakableType>(BreakableType.Urn, 0.25f);
         pityBreakable.addCategory(BreakableType.Chest, chestChance);
 
-        pityModCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor);
+        pityStarCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor);
         pityModBonus = new PityTimer<ModBonus>(0.02f, modBonusChance, modBonusRarityFactor);
     }
 
@@ -37,7 +37,7 @@ public class PlayerPity : NetworkBehaviour
         pityBreakable = new PityTimer<BreakableType>(BreakableType.Urn, 0.25f);
         pityBreakable.addCategory(BreakableType.Chest, chestChance, data.breakables[BreakableType.Chest.ToString()]);
 
-        pityModCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor, data.modCount.asEnum<ModCount>());
+        pityStarCount = new PityTimer<ModCount>(0.1f, oneModChance, modCountRarityFactor, data.modCount.asEnum<ModCount>());
         pityModBonus = new PityTimer<ModBonus>(0.02f, modBonusChance, modBonusRarityFactor, data.modBonus.asEnum<ModBonus>());
     }
 
@@ -47,7 +47,7 @@ public class PlayerPity : NetworkBehaviour
         {
             quality = pityQuality.export(),
             breakables = pityBreakable.export(),
-            modCount = pityModCount.export(),
+            modCount = pityStarCount.export(),
         };
 
 
@@ -65,9 +65,9 @@ public class PlayerPity : NetworkBehaviour
         return pityBreakable.roll(qualityMultiplier);
     }
     [Server]
-    public int rollModCount(float qualityMultiplier)
+    public int rollStarCount(float qualityMultiplier)
     {
-        return (int)pityModCount.roll(qualityMultiplier);
+        return (int)pityStarCount.roll(qualityMultiplier);
     }
     [Server]
     public ModBonus rollModBonus(float qualityMultiplier)

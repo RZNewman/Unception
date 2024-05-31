@@ -132,6 +132,7 @@ public static class StatTypes
     }
     public static float statToValue(Stat stat, float amount, Scales scales)
     {
+        //Debug.Log(stat + " - " + amount + " : " + scales.ToString());
         float value = statValues[stat] * amount;
         switch (stat)
         {
@@ -197,17 +198,18 @@ public static class StatTypes
 
     static Dictionary<Stat, float> itemStatMax = new Dictionary<Stat, float>()
     {
-        {Stat.Length,69},
-        {Stat.Width,60},
-        {Stat.Knockback,55},
-        {Stat.DamageMult,106},
-        {Stat.Stagger,80},
-        {Stat.Mezmerize,80},
-        {Stat.Knockup,60},
-        {Stat.Charges,81},
-        {Stat.Range,75},
+        {Stat.Length,70},
+        {Stat.Width,70},
+        {Stat.Knockback,50},
+        {Stat.DamageMult,100},
+        {Stat.Stagger,50},
+        {Stat.Mezmerize,50},
+        {Stat.Knockup,50},
+        {Stat.Charges,50},
+        {Stat.Range,50},
     };
-    public static readonly float itemStatSpread = 210;
+    public static readonly float itemStatSpread = 160;
+    public static readonly float itemStatSpecialty = 75;
     public static readonly float statsPerModMax = 45;
     public static readonly float statModBasePercent = 0.5f;
     public static readonly float modBonusPercent = 0.025f;

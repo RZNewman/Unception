@@ -187,7 +187,7 @@ public static class GenerateAttack
         public float castTimeDisplay(float power)
         {
 
-            return castTime() * Power.scaleNumerical(power);
+            return castTime() * Power.getScales(power).time;
 
         }
 
@@ -231,7 +231,7 @@ public static class GenerateAttack
                 HitType.GroundPlaced => string.Format("{1} {2} space{3} in a {0}", shape, action, multipleHit, multipleSs),
                 HitType.ProjectileExploding => string.Format("Fire {1} shot{2} that explodes in a {0}", shape, multipleHit, multipleSs),
                 HitType.ProjectileWave => string.Format("Fire {1} {0}{2}", shape, multipleHit, multipleSs),
-                HitType.DamageDash => string.Format("Dash with a {0} {1} ", shape, shapePosition),
+                HitType.DamageDash => string.Format("Dash with a {0} {1} you", shape, shapePosition),
                 _ => "",
             };
             float percent;
@@ -349,6 +349,11 @@ public static class GenerateAttack
         public string identifier;
         public Color color;
         public int symbol;
+
+        public string fullName(Stat stat)
+        {
+            return Naming.statPrefix(stat) + " " + name;
+        }
     }
 
     [System.Serializable]
@@ -368,6 +373,7 @@ public static class GenerateAttack
     public struct AttackGenerationData
     {
         public SegmentGenerationData[] segments;
+        public Mod specialty;
         public float cooldown;
         public float charges;
         public int criticalCount;
@@ -513,6 +519,7 @@ public static class GenerateAttack
 
         public float getStat(Stat stat)
         {
+            //Debug.Log(stat + " - " + scales.ToString() + ", str:" + strength);
             return stream.getValue(stat, scales) * strength;
         }
 
@@ -549,7 +556,7 @@ public static class GenerateAttack
 
         public float cooldownDisplay(float powerPlayer)
         {
-            return cooldown * scaleNumerical(powerPlayer) / getCooldownMult();
+            return cooldown * getScales(powerPlayer).time / getCooldownMult();
         }
         public string shapeDisplay()
         {
@@ -655,6 +662,10 @@ public static class GenerateAttack
                 return world * time;
             }
         }
+        public override string ToString()
+        {
+            return bases.ToString() + "Numeric:"+ numeric + ", World:" + world + ", Time:" + time;
+        }
     }
 #nullable disable
     public static AttackInstanceData populateAttack(AttackGenerationData atk, PopulateAttackOptions opts)
@@ -668,7 +679,15 @@ public static class GenerateAttack
         
         cooldownTime /= opts.scales.time;
         Dictionary<Stat, float> stats = new Dictionary<Stat, float>();
-        stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
+        stats[atk.specialty.stat] = itemStatSpecialty;
+        if (stats.ContainsKey(Stat.Charges))
+        {
+            stats[Stat.Charges] += atk.charges.asRange(0, itemMax(Stat.Charges));
+        }
+        else
+        {
+            stats[Stat.Charges] = atk.charges.asRange(0, itemMax(Stat.Charges));
+        }
         stats = stats.scale(opts.scales.numeric);
 
         StatStream stream = new StatStream();
@@ -782,7 +801,7 @@ public static class GenerateAttack
         }
 
         
-
+        
         AttackInstanceData atkIn = new AttackInstanceData
         {
             strength = opts.strength,
@@ -799,6 +818,17 @@ public static class GenerateAttack
 
     }
 
+
+    static Mod pickspecialty()
+    {
+        List<Stat> possible = new List<Stat>() {
+            Stat.Length, Stat.Width, Stat.Range, Stat.Knockback, Stat.Knockup, Stat.Stagger, Stat.Charges, Stat.MovespeedCast, Stat.Mezmerize,
+        };
+        return new Mod()
+        {
+            stat = possible.RandomItem()
+        };
+    }
 
     static Mod[] rollMods(PlayerPity pity, int count, float qualityMultiplier)
     {
@@ -902,19 +932,12 @@ public static class GenerateAttack
             windDownMax = 0.5f;
             
         }
-        else if (type == AttackGenerationType.IntroMain)
-        {
-            windUpMin = 0.3f;
-            windUpMax = 0.4f;
-            windDownMin = 0.1f;
-            windDownMax = 0.4f;
-            
-        }
         else if (type == AttackGenerationType.IntroOff)
         {
+            windUpMin = 0.1f;
             windUpMax = 0.3f;
-            windDownMin = 0.1f;
-            windDownMax = 0.5f;
+            windDownMin = 0.05f;
+            windDownMax = 0.35f;
             
 
         }
@@ -925,12 +948,12 @@ public static class GenerateAttack
         }
         else
         {
-            if (slot == ItemSlot.Main || Random.value < 0.8f)
+            if (slot == ItemSlot.Main || Random.value < 0.9f)
             {
                 //fast hit
-                windUpMax = 0.2f;
-                windDownMax = 0.5f;
-                windDownMin = 0.1f;
+                windUpMax = 0.15f;
+                windDownMax = 0.35f;
+                windDownMin = 0.05f;
             }
             else
             {
@@ -965,6 +988,7 @@ public static class GenerateAttack
         AttackGenerationData atk = new AttackGenerationData
         {
             segments = segments.ToArray(),
+            specialty = pickspecialty(),
             cooldown = noCooldown ? -1 : GaussRandomDecline(2).asRange(cooldownMin, cooldownMax),
             charges = charges,
             criticalCount = critCount,
@@ -1011,7 +1035,7 @@ public static class GenerateAttack
                 if (pity)
                 {
                     quality = pity.rollQuality(qualityMultiplier);
-                    starCount = quality == Quality.Legendary ? pity.rollModCount(qualityMultiplier) : 0;
+                    starCount = quality == Quality.Legendary ? pity.rollStarCount(qualityMultiplier) : 0;
                 }
                 break;
         }

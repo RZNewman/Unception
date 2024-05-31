@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static GenerateAttack;
+using static StatTypes;
 
 public static class Naming
 {
@@ -25,6 +26,23 @@ public static class Naming
             ItemSlot.Boots => "Boots",
             ItemSlot.Helm => "Helm",
             _ => "Amulet",
+        };
+    }
+
+    public static string statPrefix(Stat stat)
+    {
+        return stat switch
+        {
+            Stat.Length => "Long",
+            Stat.Width => "Broad",
+            Stat.Range => "Far",
+            Stat.Knockback => "Pushing",
+            Stat.Knockup => "Upward",
+            Stat.Stagger => "Heavy",
+            Stat.Charges => "Multi",
+            Stat.Mezmerize => "Stunning",
+            Stat.MovespeedCast => "Agile",
+            _ => "Strange",
         };
     }
 
@@ -89,7 +107,6 @@ public static class Naming
 "Mega",
 "Brilliant",
 "Lithe",
-"Agile",
 "Hunger",
 "Piercing",
 "Running",
@@ -127,6 +144,17 @@ public static class Naming
 "Hammer",
 "Brick",
 "Sick",
+"Omen",
+"Blood",
+"Felling",
+"Brutal",
+"Sly",
+"Cunning",
+"Unstopable",
+"Death",
+"Rogue",
+"Aligned",
+"Hollow"
 
 
     };
@@ -161,6 +189,20 @@ public static class Naming
 "Obliterate",
 "Twist",
 "Impale",
+"Ripper",
+"Rage",
+"End",
+"Chop",
+"Storm",
+"Weapon",
+"Star",
+"Divide",
+"Call",
+"Surge",
+"Blow",
+"Bite",
+
+
 
     };
 }

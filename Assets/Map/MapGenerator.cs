@@ -113,7 +113,7 @@ public class MapGenerator : NetworkBehaviour
 
         
 
-        GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
+        
 
 
 
@@ -172,6 +172,8 @@ public class MapGenerator : NetworkBehaviour
         
 
         StaticBatchingUtility.Combine(currentFloor);
+
+        GameObject endPortal = Instantiate(endPortalPre, wfc.generationData.end, Quaternion.identity, currentFloor.transform);
 
 
         yield return spawner.spawnLevel(nodes, currentMap, endPortal,wfc.generationData.start);

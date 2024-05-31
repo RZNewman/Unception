@@ -93,7 +93,7 @@ public class Reward : MonoBehaviour
     {
         if (inventory)
         {
-            float itemBasePower = Mathf.Max(other.rewardBasePower, Atlas.playerStartingPower);
+            float itemBasePower = Mathf.Max(other.rewardBasePower, Atlas.itemStartingPower);
 
             partialItemPower += other.power;
             float packPerItem = 1 / RewardManager.itemsPerPack;

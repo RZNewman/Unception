@@ -447,11 +447,11 @@ public class UnitMovement : NetworkBehaviour
         {
             combatMultiplier = 1.5f;
         }
-        //if (!grounded)
-        //{
-        //    airMultiplier = 0.5f;
-        //    pitch = -45;
-        //}
+        if (!grounded)
+        {
+            airMultiplier = 0.6f;
+            //pitch = -45;
+        }
 
         float scalePhys = power.scalePhysical();
         float scaleSpeed = power.scaleSpeed();

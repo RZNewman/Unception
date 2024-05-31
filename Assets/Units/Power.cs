@@ -220,6 +220,7 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         return new Scales
         {
+            bases = instanceBaseScales,
             numeric = scaleNumerical(),
             world = scalePhysical(),
             time = scaleTime(),
@@ -283,6 +284,7 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         return new Scales
         {
+            bases = baseScales,
             numeric = scaleNumerical(power),
             world = scalePhysical(power),
             time = scaleTime(power),
@@ -293,6 +295,11 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         public float world;
         public float time;
+
+        public override string ToString()
+        {
+            return "World Base:" + world + ", Time Base:" + time;
+        }
     }
     public static BaseScales currentBaseScales
     {

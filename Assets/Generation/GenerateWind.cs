@@ -27,7 +27,7 @@ public static class GenerateWind
             bool turnDir = turnMag >= 0;
             float turnMult = turnDir ? 1 + turnMag : 1 / (1 - turnMag);
 
-            float baseDuration = this.duration.asRange(0.08f, 3f);
+            float baseDuration = this.duration.asRange(0.04f, 3f);
             return new WindInstanceData
             {
                 bakedStrength = strength,
@@ -120,7 +120,7 @@ public static class GenerateWind
     public static WindGenerationData createWind(float durrationMinPercent, float durrationMaxPercent, bool isWinddown)
     {
         WindGenerationData wind = ScriptableObject.CreateInstance<WindGenerationData>();
-        wind.duration = GaussRandomDecline(2).asRange(durrationMinPercent, durrationMaxPercent);
+        wind.duration = GaussRandomDecline(2.5f).asRange(durrationMinPercent, durrationMaxPercent);
         wind.moveMult = GaussRandomDecline(1.5f);
         wind.turnMult = GaussRandomDecline(1.5f);
         wind.isWinddown = isWinddown;

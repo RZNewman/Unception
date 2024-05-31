@@ -9,23 +9,27 @@ public static class GenerateUnit
         properties.isPlayer = false;
 
 
-        Value[] typeValues = generateRandomValues(new float[] { 0.9f, .4f, 1f, 0.9f, 0.8f });
+        Value[] typeValues = generateRandomValues(new float[] { 0.9f, 0.5f, .4f, 1f, 0.9f, 0.8f,0.9f },1.25f);
         float speedVal = typeValues[0].val;
-        float turnVal = typeValues[1].val;
-        float healthVal = typeValues[2].val;
-        float postureVal = typeValues[3].val;
-        float mezValue = typeValues[4].val;
+        float stoppingVal = typeValues[1].val;
+        float turnVal = typeValues[2].val;
+        float healthVal = typeValues[3].val;
+        float postureVal = typeValues[4].val;
+        float mezValue = typeValues[5].val;
+        float kdValue = typeValues[6].val;
 
         float speed = (5f + 7f * speedVal);
+        float stopping = (30f + 40f * stoppingVal);
         float turn = 75f + 60f * turnVal;
         float health = 2.5f + 2f * healthVal;
         float posture = (100f + 100f * postureVal);
         float mezmerize = (700f + 700f * mezValue);
+        float kd = (0.8f + 0.6f * kdValue);
 
         properties.maxSpeed = speed;
         properties.acceleration = speed * 4;
-        properties.decceleration = speed * 6;
-        properties.friction = speed * 4;
+        properties.decceleration = stopping;
+        properties.friction = 35;
         properties.jumpForce = 20f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;
@@ -36,6 +40,7 @@ public static class GenerateUnit
 
         properties.maxPosture = posture;
         properties.maxFocus = mezmerize;
+        properties.maxKnockdown = kd;
 
         properties.visuals = vis;
 

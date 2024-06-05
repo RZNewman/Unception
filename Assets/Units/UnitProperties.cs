@@ -35,4 +35,5 @@ public struct UnitVisuals
 {
     public Color[] colors;
     public int[] parts;
+    public Vector3[] scales;
 }

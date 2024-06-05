@@ -461,30 +461,30 @@ public static class GenerateHit
 
         ValueGenerator<Stat> vg = new ValueGenerator<Stat>(itemMaxDict(generateStats), 1f, fillPercent);
 
-
-        if (Random.value < 0.3f && !isIntro)
-        {
-            if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced || t == HitType.DamageDash || t == HitType.ProjectileWave)
-            {
-                vg.augmentInner(itemMaxDict(Stat.Length), 1f);
-            }
-            else
-            {
-                vg.augmentInner(itemMaxDict(Stat.Range), 2f);
-            }
-        }
-        if (Random.value < 0.5f)
-        {
-            vg.augmentInner(itemMaxDict(Stat.Stagger), 1f);
-        }
-        if (Random.value < 0.2f && !isIntro)
-        {
-            vg.augmentInner(itemMaxDict(Stat.Mezmerize), 0.25f);
-        }
-        if (Random.value < 0.2f && !isIntro)
-        {
-            vg.augmentInner(itemMaxDict(Stat.Knockup), 1f);
-        }
+        //handeled by specialty now
+        //if (Random.value < 0.3f && !isIntro)
+        //{
+        //    if (t == HitType.ProjectileExploding || t == HitType.GroundPlaced || t == HitType.DamageDash || t == HitType.ProjectileWave)
+        //    {
+        //        vg.augmentInner(itemMaxDict(Stat.Length), 1f);
+        //    }
+        //    else
+        //    {
+        //        vg.augmentInner(itemMaxDict(Stat.Range), 2f);
+        //    }
+        //}
+        //if (Random.value < 0.5f)
+        //{
+        //    vg.augmentInner(itemMaxDict(Stat.Stagger), 1f);
+        //}
+        //if (Random.value < 0.2f && !isIntro)
+        //{
+        //    vg.augmentInner(itemMaxDict(Stat.Mezmerize), 0.25f);
+        //}
+        //if (Random.value < 0.2f && !isIntro)
+        //{
+        //    vg.augmentInner(itemMaxDict(Stat.Knockup), 1f);
+        //}
 
 
 

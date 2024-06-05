@@ -182,6 +182,7 @@ GameObject:
   - component: {fileID: 7211666195320880782}
   - component: {fileID: 544525584168001222}
   - component: {fileID: 7393305606151320541}
+  - component: {fileID: 6839425256093543171}
   m_Layer: 7
   m_Name: Horn12
   m_TagString: Untagged
@@ -254,6 +255,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6839425256093543171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211054313111611967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 2, y: 3, z: 1}
 --- !u!1 &228949530038004526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,6 +1399,7 @@ GameObject:
   - component: {fileID: 3928810337260720215}
   - component: {fileID: 512178001289906621}
   - component: {fileID: 3261764537941675751}
+  - component: {fileID: 1332066938315961850}
   m_Layer: 7
   m_Name: Hat16
   m_TagString: Untagged
@@ -1456,6 +1472,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1332066938315961850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566532740388109760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 1, y: 2, z: 2}
 --- !u!1 &586032258327525205
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,6 +2057,7 @@ GameObject:
   - component: {fileID: 1809764383823490528}
   - component: {fileID: 3583890954984568490}
   - component: {fileID: 6724252731533801356}
+  - component: {fileID: 7687597657865839938}
   m_Layer: 7
   m_Name: Hair09
   m_TagString: Untagged
@@ -2099,6 +2130,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7687597657865839938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762643776294099841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 4, y: 2, z: 1.5}
 --- !u!1 &773101437056036044
 GameObject:
   m_ObjectHideFlags: 0
@@ -3065,6 +3110,7 @@ GameObject:
   - component: {fileID: 6408415259963316905}
   - component: {fileID: 9119434406442798920}
   - component: {fileID: 8177874166225109614}
+  - component: {fileID: 4261888181655830748}
   m_Layer: 7
   m_Name: Hat19
   m_TagString: Untagged
@@ -3137,6 +3183,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4261888181655830748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200753447145736115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 2, y: 2, z: 2}
 --- !u!1 &1377871742053597281
 GameObject:
   m_ObjectHideFlags: 0
@@ -3512,6 +3572,7 @@ GameObject:
   - component: {fileID: 4920700228628259188}
   - component: {fileID: 5566778272275565241}
   - component: {fileID: 2362754106049953399}
+  - component: {fileID: 471987626466982877}
   m_Layer: 7
   m_Name: Horn11
   m_TagString: Untagged
@@ -3584,6 +3645,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &471987626466982877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570104302320093273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 4, y: 2.5, z: 2.5}
 --- !u!1 &1573178157650222825
 GameObject:
   m_ObjectHideFlags: 0
@@ -3627,6 +3702,7 @@ GameObject:
   - component: {fileID: 7825619092141024839}
   - component: {fileID: 1156360236170060289}
   - component: {fileID: 431263323971843957}
+  - component: {fileID: 5871757479825402278}
   m_Layer: 7
   m_Name: Horn10
   m_TagString: Untagged
@@ -3699,6 +3775,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5871757479825402278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669505605672006193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 2, y: 3, z: 1}
 --- !u!1 &1730375801460391162
 GameObject:
   m_ObjectHideFlags: 0
@@ -3708,6 +3798,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 94866172394395038}
+  - component: {fileID: 7177431685364624864}
   m_Layer: 7
   m_Name: tail_01
   m_TagString: Untagged
@@ -3722,7 +3813,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730375801460391162}
-  m_LocalRotation: {x: -0.3024084, y: 0.95317847, z: 6.7676127e-16, w: -2.7212164e-16}
+  m_LocalRotation: {x: -0.37743127, y: 0.92603767, z: -0, w: -0.000000029802319}
   m_LocalPosition: {x: -0.030352466, y: 0.25417748, z: 2.7145378e-16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3730,7 +3821,21 @@ Transform:
   - {fileID: 4558198078023570259}
   m_Father: {fileID: 644219776614051615}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: -44.349}
+--- !u!114 &7177431685364624864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730375801460391162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 0.5, y: 1, z: 1}
+  max: {x: 1.5, y: 2, z: 2}
 --- !u!1 &1884330553929256700
 GameObject:
   m_ObjectHideFlags: 0
@@ -4731,6 +4836,32 @@ MonoBehaviour:
   - {fileID: 7579615239833474781}
   - {fileID: 5601292804935117298}
   - {fileID: 4744888157907837090}
+  scalerGroups:
+  - scalers:
+    - {fileID: 7177431685364624864}
+    shared: 0
+  - scalers:
+    - {fileID: 8079956234609014918}
+    shared: 0
+  - scalers:
+    - {fileID: 937828957251531753}
+    - {fileID: 8195615119521363248}
+    - {fileID: 5681749482157598357}
+    - {fileID: 5005686513971556805}
+    - {fileID: 1876547976311374752}
+    - {fileID: 5668774644282404216}
+    - {fileID: 3724455407392963027}
+    - {fileID: 7687597657865839938}
+    - {fileID: 1332066938315961850}
+    - {fileID: 7861913964883916620}
+    - {fileID: 4261888181655830748}
+    - {fileID: 909679513466363008}
+    - {fileID: 5965972632296507064}
+    - {fileID: 5871757479825402278}
+    - {fileID: 471987626466982877}
+    - {fileID: 6839425256093543171}
+    - {fileID: 2953001669001399033}
+    shared: 0
 --- !u!1 &2592317967071917300
 GameObject:
   m_ObjectHideFlags: 0
@@ -5403,10 +5534,6 @@ MonoBehaviour:
   - {fileID: 5257158148524724982}
   - {fileID: 7927822082428614061}
   - {fileID: 3250913550543839811}
-  - {fileID: 1463636460132918401}
-  - {fileID: 3749341766826639845}
-  - {fileID: 1017799903894434157}
-  - {fileID: 6230691845478668682}
   - {fileID: 6865655726532287389}
   - {fileID: 4427110683392621910}
   - {fileID: 762643776294099841}
@@ -5802,6 +5929,7 @@ GameObject:
   - component: {fileID: 5508436996515919571}
   - component: {fileID: 3104225492388196811}
   - component: {fileID: 1047269177597098470}
+  - component: {fileID: 1876547976311374752}
   m_Layer: 7
   m_Name: Ear05
   m_TagString: Untagged
@@ -5874,6 +6002,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1876547976311374752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3250913550543839811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 6, y: 3.5, z: 1}
 --- !u!1 &3281995640574603074
 GameObject:
   m_ObjectHideFlags: 0
@@ -6025,6 +6167,7 @@ GameObject:
   - component: {fileID: 476694753597851633}
   - component: {fileID: 2349134075751034629}
   - component: {fileID: 6454689920523776807}
+  - component: {fileID: 5965972632296507064}
   m_Layer: 7
   m_Name: Hat21
   m_TagString: Untagged
@@ -6097,6 +6240,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5965972632296507064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3290022055884668257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 0.5, y: 1, z: 1}
+  max: {x: 1.5, y: 1.5, z: 1.5}
 --- !u!1 &3343128810972418902
 GameObject:
   m_ObjectHideFlags: 0
@@ -7136,6 +7293,7 @@ GameObject:
   - component: {fileID: 3698590341560441842}
   - component: {fileID: 3403548754656462829}
   - component: {fileID: 8219889564098119911}
+  - component: {fileID: 3724455407392963027}
   m_Layer: 7
   m_Name: Hair06
   m_TagString: Untagged
@@ -7208,6 +7366,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3724455407392963027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427110683392621910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 1, y: 2, z: 2}
 --- !u!1 &4645631378934616919
 GameObject:
   m_ObjectHideFlags: 0
@@ -7779,6 +7951,7 @@ GameObject:
   - component: {fileID: 3645241617033259846}
   - component: {fileID: 3192393525345804609}
   - component: {fileID: 3170111655265341164}
+  - component: {fileID: 8195615119521363248}
   m_Layer: 7
   m_Name: Ear02
   m_TagString: Untagged
@@ -7851,6 +8024,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8195615119521363248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5212479952834051116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 3, y: 3, z: 1}
 --- !u!1 &5257158148524724982
 GameObject:
   m_ObjectHideFlags: 0
@@ -7862,6 +8049,7 @@ GameObject:
   - component: {fileID: 2561478379357459285}
   - component: {fileID: 5010818310386728693}
   - component: {fileID: 6426449266987827384}
+  - component: {fileID: 5681749482157598357}
   m_Layer: 7
   m_Name: Ear03
   m_TagString: Untagged
@@ -7934,6 +8122,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5681749482157598357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5257158148524724982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 3, y: 2, z: 2}
 --- !u!1 &5369261486907719739
 GameObject:
   m_ObjectHideFlags: 0
@@ -8011,6 +8213,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3089500768409170712}
+  - component: {fileID: 8079956234609014918}
   m_Layer: 7
   m_Name: neck_01
   m_TagString: Untagged
@@ -8034,6 +8237,20 @@ Transform:
   m_Father: {fileID: 5515090363106619776}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8079956234609014918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5379461777596222353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 1.5, y: 1.5, z: 1.5}
 --- !u!1 &5446579859562124321
 GameObject:
   m_ObjectHideFlags: 0
@@ -10689,6 +10906,7 @@ GameObject:
   - component: {fileID: 3726238551702834093}
   - component: {fileID: 5385712357374807865}
   - component: {fileID: 6425343610259943475}
+  - component: {fileID: 5668774644282404216}
   m_Layer: 7
   m_Name: Grass15
   m_TagString: Untagged
@@ -10761,6 +10979,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5668774644282404216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6865655726532287389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 4, y: 2.5, z: 2.5}
 --- !u!1 &6876104121289092224
 GameObject:
   m_ObjectHideFlags: 0
@@ -11212,6 +11444,7 @@ GameObject:
   - component: {fileID: 3427330217237758016}
   - component: {fileID: 4899172812638988889}
   - component: {fileID: 6224898144866740573}
+  - component: {fileID: 937828957251531753}
   m_Layer: 7
   m_Name: Comb14
   m_TagString: Untagged
@@ -11284,6 +11517,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &937828957251531753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7146828076483778419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 3, y: 1, z: 3}
 --- !u!1 &7189101231858288881
 GameObject:
   m_ObjectHideFlags: 0
@@ -11826,6 +12073,7 @@ GameObject:
   - component: {fileID: 8807765876055788656}
   - component: {fileID: 4059876782000808979}
   - component: {fileID: 7020310555174712218}
+  - component: {fileID: 2953001669001399033}
   m_Layer: 7
   m_Name: Horn13
   m_TagString: Untagged
@@ -11898,6 +12146,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2953001669001399033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7482863132953460750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 4, y: 3, z: 2}
 --- !u!1 &7484442670908629046
 GameObject:
   m_ObjectHideFlags: 0
@@ -12738,6 +13000,7 @@ GameObject:
   - component: {fileID: 6158288217729855705}
   - component: {fileID: 7205097711363264970}
   - component: {fileID: 2361663268155083804}
+  - component: {fileID: 5005686513971556805}
   m_Layer: 7
   m_Name: Ear04
   m_TagString: Untagged
@@ -12810,6 +13073,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5005686513971556805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7927822082428614061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 3, y: 2, z: 2}
 --- !u!1 &7937734186474189494
 GameObject:
   m_ObjectHideFlags: 0
@@ -13430,6 +13707,7 @@ GameObject:
   - component: {fileID: 914218269727890780}
   - component: {fileID: 4378585536230447346}
   - component: {fileID: 9113703845869542436}
+  - component: {fileID: 7861913964883916620}
   m_Layer: 7
   m_Name: Hat17
   m_TagString: Untagged
@@ -13502,6 +13780,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7861913964883916620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8544753124871020739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 2, y: 2, z: 1.5}
 --- !u!1 &8677159906957356581
 GameObject:
   m_ObjectHideFlags: 0
@@ -14385,6 +14677,7 @@ GameObject:
   - component: {fileID: 3293562505016750807}
   - component: {fileID: 7687097752535067101}
   - component: {fileID: 455950941070972195}
+  - component: {fileID: 909679513466363008}
   m_Layer: 7
   m_Name: Hat20
   m_TagString: Untagged
@@ -14457,6 +14750,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &909679513466363008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9214927088942474481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b9906356717584e85ebb6dd5ec9a8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  min: {x: 1, y: 1, z: 1}
+  max: {x: 1.5, y: 1.5, z: 1}
 --- !u!1001 &1009136740330545146
 PrefabInstance:
   m_ObjectHideFlags: 0

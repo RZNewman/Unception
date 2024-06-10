@@ -36,7 +36,7 @@ public class PartAssignment : MonoBehaviour
         {
             parts = pickers.Select(pick => Random.Range(0, pick.partCount())).ToArray(),
             colors = Enumerable.Repeat(0, 16).Select(i => randomColor()).ToArray(),
-            scales = scalerGroups.Select(group => group.scalers[0].random()).ToArray(),
+            scales = scalerGroups.SelectMany(group => group.random()).ToArray(),
         };
     }
 

@@ -159,6 +159,8 @@ public class MapGenerator : NetworkBehaviour
         yield return spawnProps(nodes);
         yield return null;
 
+        GetComponent<MaterialScaling>().recolor(new List<GameObject>() { currentFloor });
+
 
         recastGraph.Scan();
         Debug.Log("Nav mesh for agents: " + Time.time);

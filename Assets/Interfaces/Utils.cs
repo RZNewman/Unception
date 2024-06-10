@@ -426,7 +426,13 @@ public static class Utils
             digits = normalized,
         };
     }
-
+    public static void ForEach<T>(this IEnumerable<T> enumeration, System.Action<T> action)
+    {
+        foreach (T item in enumeration)
+        {
+            action(item);
+        }
+    }
 
 
     private static System.Random rng = new System.Random();

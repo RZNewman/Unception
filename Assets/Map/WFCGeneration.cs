@@ -1663,7 +1663,7 @@ public class WFCGeneration : MonoBehaviour
         PathInfo infoP = fromPath(randomPath, parameters);
         List<Vector3Int> path = infoP.path;
         generationData.start = path[0].asFloat().scale(floorScale);
-        Vector3 sizeWorld = infoP.bounds.size;
+        Vector3 sizeWorld = infoP.bounds.max;
         generationData.size = sizeWorld.scale(tileScale);
         Vector3Int startLoc = path[0];
         BoundsInt bounds = infoP.bounds;

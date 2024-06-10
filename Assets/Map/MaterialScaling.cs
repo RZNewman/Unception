@@ -1,15 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MaterialScaling : MonoBehaviour
 {
+    public List<Material> recolors = new List<Material>();
+
     float cloudTextureDist = 0;
 
     float cameraMult = 0;
     float camDist = 0;
     static readonly float playerDistBase = 2000;
     float playerDist = playerDistBase;
+
+    List<List<Material>> palettes = new List<List<Material>>();
+
+    private readonly int _Hue = Shader.PropertyToID("_Hue");
+    private readonly int _HueTop = Shader.PropertyToID("_HueTop");
+    public void recolor(List<GameObject> objects)
+    {
+        List<Material> palette = recolors.Select(mat => new Material(mat)).ToList();
+        for (int i = 0; i < palette.Count; i++)
+        {
+            palette[i].SetFloat(_Hue, Random.value * 360);
+            palette[i].SetFloat(_HueTop, Random.value * 360);
+        };
+        palettes.Add(palette);
+
+        float hue = Random.value * 360;
+
+        foreach (MeshRenderer rend in objects.SelectMany(obj => obj.GetComponentsInChildren<MeshRenderer>())){ 
+            for(int i =0; i< recolors.Count; i++)
+            {
+                Material source = recolors[i];
+                if(source == rend.sharedMaterial)
+                {
+                    rend.sharedMaterial = palette[i];
+                    break;
+                }
+            }
+        };
+        
+
+    }
+
     public void game()
     {
 

@@ -292,7 +292,7 @@ public class Atlas : NetworkBehaviour
         float segLength = walkLength / segCount;
 
 
-        float padSideMin = Random.value.asRange(0, 19);
+        float padSideMin = Random.value.asRange(1, 19);
         float padSideMax = Random.value.asRange(padSideMin, 39);
         float padTopMin = Random.value.asRange(0, 5.5f);
         float padTopMax = Random.value.asRange(padTopMin, 9.9f);

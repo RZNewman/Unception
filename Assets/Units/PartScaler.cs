@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Utils;
 
 public class PartScaler : MonoBehaviour
 {
@@ -9,11 +10,7 @@ public class PartScaler : MonoBehaviour
 
     public Vector3 random()
     {
-        return new Vector3(
-            Mathf.Lerp(min.x, max.x, Random.value),
-            Mathf.Lerp(min.y, max.y, Random.value),
-            Mathf.Lerp(min.z, max.z, Random.value)
-            );
+        return RandomScale(min, max);
     }
 
     public void scale(Vector3 s)

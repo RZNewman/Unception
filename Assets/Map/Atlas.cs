@@ -179,7 +179,7 @@ public class Atlas : NetworkBehaviour
             id = "Wilds",
             visualLocation = new Vector2(0.5f, 0.5f),
             verticals = new QuestVertical[] { },
-            overrideTier = 6
+            overrideTier = 5
         });
         locations.Add(new Location
         {
@@ -292,7 +292,7 @@ public class Atlas : NetworkBehaviour
         float segLength = walkLength / segCount;
 
 
-        float padSideMin = Random.value.asRange(1, 19);
+        float padSideMin = Random.value.asRange(10, 19);
         float padSideMax = Random.value.asRange(padSideMin, 39);
         float padTopMin = Random.value.asRange(0, 5.5f);
         float padTopMax = Random.value.asRange(padTopMin, 9.9f);
@@ -447,7 +447,7 @@ public class Atlas : NetworkBehaviour
                         encounters = floorEncounters(q.difficulty, q.encounters),
                         sparseness = sparsnessAtTier(q.tier),
                         wfcParams = wfcAtTier(q.tier)
-
+                        //TODO break out by biome, kill floor
                     },
                     visualLocation = location.visualLocation,
                     hideMonsters = q.tier == 0

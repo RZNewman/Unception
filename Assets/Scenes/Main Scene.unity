@@ -10310,7 +10310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1107187551696863446, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.78344727
+      value: -0.7834778
       objectReference: {fileID: 0}
     - target: {fileID: 1107187552323243050, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_AnchorMax.x
@@ -10394,7 +10394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -4.641083
+      value: -4.6410522
       objectReference: {fileID: 0}
     - target: {fileID: 6017791625427872196, guid: e7b955bfdbc0b5c44a5a906536de1297, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -15451,11 +15451,14 @@ MonoBehaviour:
   floorRootPre: {fileID: 1992255564142479259, guid: a32504b107be8ac4cae59fca7d462d8e, type: 3}
   endPortalPre: {fileID: 3924559744057093534, guid: d42f5174fe1303d4f9b49a772d4c1369, type: 3}
   props:
-  - weight: 10
+  - weightMin: 0
+    weightMax: 15
     prop: {fileID: 3139541979742845633, guid: 3a3e83434ba5de6418fb2b84efb1db9a, type: 3}
-  - weight: 12
+  - weightMin: 0
+    weightMax: 15
     prop: {fileID: 3139541979742845633, guid: c0f2843f24aa8f5408136c8a4bfb76a5, type: 3}
-  - weight: 80
+  - weightMin: 0
+    weightMax: 160
     prop: {fileID: 4773872565342936962, guid: 5f3d863e7bb00a64b9d8c24b4a0e8827, type: 3}
 --- !u!114 &1231075387
 MonoBehaviour:

@@ -27,12 +27,24 @@ public class MapGenerator : NetworkBehaviour
     public GameObject floorRootPre;
     public GameObject endPortalPre;
 
-    public List<WeightedProp> props;
+    public List<PropWeights> props;
     [System.Serializable]
-    public struct WeightedProp
+    public struct PropWeights
     {
-        public int weight;
+        public float weightMin;
+        public float weightMax;
         public GameObject prop;
+    }
+    struct PropWeightSelected
+    {
+        public float weight;
+        public ScaleRange scaleRange;
+        public GameObject prop;
+    }
+    struct ScaleRange
+    {
+        public Vector3 min;
+        public Vector3 max;
     }
 
 
@@ -185,9 +197,34 @@ public class MapGenerator : NetworkBehaviour
     IEnumerator spawnProps(List<GraphNode> nodes)
     {
         int propCount = 0;
-        foreach(Vector3 location in nodes.RandomLocations(5, Atlas.baseSparseness * 0.55f))
+        List<PropWeightSelected> propsW = props.Select(p => {
+            Vector3 min = p.prop.GetComponent<PropScaler>().min;
+            Vector3 max = p.prop.GetComponent<PropScaler>().max;
+            Vector3 middle = RandomScale(min, max);
+
+            ScaleRange scaleRange = Random.value switch
+            {
+                float f when f < 0.4f => new ScaleRange() { min = min, max = middle},
+                float f when f < 0.8f => new ScaleRange() { min = middle, max = max },
+                _ => new ScaleRange() { min = min, max = max },
+            };
+
+
+            return new PropWeightSelected()
+            {
+                prop = p.prop,
+                weight = Random.value.asRange(p.weightMin, p.weightMax),
+                scaleRange = scaleRange,
+            };
+        }).ToList();
+
+        float sparsnessMult = GaussRandomDecline().asRange(0.4f, 3); 
+
+        foreach(Vector3 location in nodes.RandomLocations(5, Atlas.baseSparseness * sparsnessMult))
         {
-            Instantiate(props.RandomItemWeighted(n => n.weight).prop, location, Quaternion.Euler(0, Random.value, 0), currentFloor.transform);
+            PropWeightSelected propInfo = propsW.RandomItemWeighted(n => n.weight);
+            GameObject o = Instantiate(propInfo.prop, location, Quaternion.Euler(0, Random.value, 0), currentFloor.transform);
+            o.GetComponent<PropScaler>().scale(RandomScale(propInfo.scaleRange.min, propInfo.scaleRange.max));
             propCount++;
             if(propCount == 5)
             {

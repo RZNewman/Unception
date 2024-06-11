@@ -30,7 +30,6 @@ public class MonsterSpawn : NetworkBehaviour
 
     public static readonly float lengthPerPack = 8f;
 
-    float lastPowerAdded = 100;
     float spawnPower = 100;
     Scales mapScales;
 
@@ -431,19 +430,21 @@ public class MonsterSpawn : NetworkBehaviour
     {
         spawnPower = power;
         mapScales = scales;
-        float powerMultDiff = 1.2f;
         //clear data
         monsterTemplates.Clear();
 
         float pool = weightedPool();
-        lastPowerAdded = inverseWeightedPower(pool / maxPackSize);
+        float minPower = inverseWeightedPower(pool / maxPackSize);
+        float maxPower = inverseWeightedPower(pool * maxSingleUnitFactor);
 
-        while (weightedPower(lastPowerAdded * powerMultDiff) < weightedPool() * maxSingleUnitFactor)//reduce the pool so no one monster takes up the whole spot
+        //int types = Mathf.RoundToInt(Random.value.asRange(2, 3));
+        int types = 3;
+        for(int i = 0; i < types; i++)
         {
-            lastPowerAdded *= powerMultDiff;
-            //Debug.Log(lastPowerAdded);
-            monsterTemplates.Add(createType(lastPowerAdded));
+            float templatePower = Random.value.asRange(minPower, maxPower);
+            monsterTemplates.Add(createType(minPower));
         }
+        monsterTemplates.Sort((t1,t2) => t1.power.CompareTo(t2.power));
 
     }
 

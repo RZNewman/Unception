@@ -145,6 +145,14 @@ public static class Utils
         return new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
     }
 
+    public static Vector3 RandomScale(Vector3 min, Vector3 max)
+    {
+        return new Vector3(
+            Mathf.Lerp(min.x, max.x, Random.value),
+            Mathf.Lerp(min.y, max.y, Random.value),
+            Mathf.Lerp(min.z, max.z, Random.value)
+            );
+    }
 
 
     public static IEnumerable<T> innerJoin<T>(this List<T> one, IEnumerable<T> two)

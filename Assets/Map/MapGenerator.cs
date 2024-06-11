@@ -218,12 +218,12 @@ public class MapGenerator : NetworkBehaviour
             };
         }).ToList();
 
-        float sparsnessMult = GaussRandomDecline().asRange(0.4f, 3); 
+        float sparsnessMult = Random.value.asRange(0.4f, 2.5f); 
 
         foreach(Vector3 location in nodes.RandomLocations(5, Atlas.baseSparseness * sparsnessMult))
         {
             PropWeightSelected propInfo = propsW.RandomItemWeighted(n => n.weight);
-            GameObject o = Instantiate(propInfo.prop, location, Quaternion.Euler(0, Random.value, 0), currentFloor.transform);
+            GameObject o = Instantiate(propInfo.prop, location, Quaternion.Euler(0, Random.value *360, 0), currentFloor.transform);
             o.GetComponent<PropScaler>().scale(RandomScale(propInfo.scaleRange.min, propInfo.scaleRange.max));
             propCount++;
             if(propCount == 5)

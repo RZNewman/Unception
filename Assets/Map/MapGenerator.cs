@@ -218,7 +218,7 @@ public class MapGenerator : NetworkBehaviour
             };
         }).ToList();
 
-        float sparsnessMult = Random.value.asRange(0.4f, 2.5f); 
+        float sparsnessMult = Random.value.asRange(0.4f, 1f); 
 
         foreach(Vector3 location in nodes.RandomLocations(5, Atlas.baseSparseness * sparsnessMult))
         {

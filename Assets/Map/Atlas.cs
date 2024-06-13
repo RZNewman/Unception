@@ -294,7 +294,7 @@ public class Atlas : NetworkBehaviour
 
         float padSideMin = Random.value.asRange(10, 19);
         float padSideMax = Random.value.asRange(padSideMin, 39);
-        float padTopMin = Random.value.asRange(0, 5.5f);
+        float padTopMin = Random.value.asRange(1, 5.5f);
         float padTopMax = Random.value.asRange(padTopMin, 9.9f);
 
         return new WFCParameters

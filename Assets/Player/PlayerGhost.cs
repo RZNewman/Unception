@@ -240,7 +240,7 @@ public class PlayerGhost : NetworkBehaviour, TextValue
             else if(!toShip)
             {
                 p.setOverrideNull();
-                currentSelf.transform.position = atlas.playerSpawn;
+                currentSelf.transform.position = atlas.playerSpawn + Vector3.up;
                 props.launchedPlayer = true;
                 GetComponent<PlayerInfo>().FireTutorialEvent(PlayerInfo.TutorialEvent.Launch);
                 if (props.waterCarried)

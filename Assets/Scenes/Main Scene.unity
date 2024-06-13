@@ -15382,6 +15382,12 @@ MonoBehaviour:
   - weightMin: 2
     weightMax: 50
     prefab: {fileID: 4863423421354933755, guid: bb7ae2023fdecbb4cab3a110e02adbc7, type: 3}
+  - weightMin: 1
+    weightMax: 100
+    prefab: {fileID: 4863423421354933755, guid: f26c2e9a4b34648458fda656e2175888, type: 3}
+  - weightMin: 2
+    weightMax: 20
+    prefab: {fileID: 4863423421354933755, guid: f3c63f2c43d6d364dadac85212121aff, type: 3}
   - weightMin: 0
     weightMax: 0
     prefab: {fileID: 4863423421354933755, guid: e19f1e1b068b997498624fafd2093c1f, type: 3}

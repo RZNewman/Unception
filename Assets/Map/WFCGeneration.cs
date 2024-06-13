@@ -41,6 +41,7 @@ public class WFCGeneration : MonoBehaviour
         ArchLeftConnect = 1 << 13,
         Bridge = 1 << 14,
         BridgeWidth = 1 << 15,
+        RampSharp = 1 << 16,
     }
 
     readonly int connectionsRightMask = (int)(
@@ -78,6 +79,7 @@ public class WFCGeneration : MonoBehaviour
         | TileConnection.RampRight
         | TileConnection.RampLeftConnect
         | TileConnection.RampRightConnect
+        | TileConnection.RampSharp
         );
 
     static readonly int airMask = (int)(
@@ -112,10 +114,10 @@ public class WFCGeneration : MonoBehaviour
         return directions;
     }
 
-    public static List<TileConnection> alignments = new List<TileConnection>() { TileConnection.RampTop };
+    public static List<TileConnection> alignments = new List<TileConnection>() { TileConnection.RampTop, TileConnection.RampSharp  };
     public static int alignmentMask()
     {
-        return (int)(TileConnection.RampTop);
+        return (int)(TileConnection.RampTop | TileConnection.RampSharp);
     }
     public enum TileDirection
     {
@@ -458,11 +460,11 @@ public class WFCGeneration : MonoBehaviour
 
 
         GapCollapseType gapCollTop = cell.verticalGap.tryCollapseConnection(cell.upMask);
-        GapCollapseType gapCollBottom = GapCollapseType.None;
-        if (adjCell.ready)
-        {
-            gapCollBottom = adjCell.verticalGap.tryCollapseConnection(adjCell.upMask);
-        }
+        //GapCollapseType gapCollBottom = GapCollapseType.None;
+        //if (adjCell.ready)
+        //{
+        GapCollapseType gapCollBottom = adjCell.verticalGap.tryCollapseConnection(adjCell.upMask);
+        //}
         startPropogateGap(spacing, loc, gapCollTop, queueOut, out queueOut);
         startPropogateGap(spacing, loc+ Vector3Int.down, gapCollBottom, queueOut, out queueOut);
 
@@ -1005,9 +1007,9 @@ public class WFCGeneration : MonoBehaviour
                 goto MatchFound;
             }
             else if (
-                (overlap | cachedAlignmentMask) == cachedAlignmentMask
-                &&
-                !cell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                    (overlap | cachedAlignmentMask) == cachedAlignmentMask
+                    &&
+                    cell.alignmentRestrictions.All(pair => (pair.Key & overlap) == 0 || !pair.Value.Contains(opt.rotation))
                 )
             {
                 doesntFit = true;
@@ -1034,7 +1036,7 @@ public class WFCGeneration : MonoBehaviour
             else if (
                 (overlap | cachedAlignmentMask) == cachedAlignmentMask
                 &&
-                !downCell.alignmentRestrictions[overlap].Contains(opt.rotation)
+                downCell.alignmentRestrictions.All(pair => (pair.Key & overlap) == 0 || !pair.Value.Contains(opt.rotation))
                 )
             {
 

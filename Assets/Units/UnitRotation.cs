@@ -6,7 +6,7 @@ public class UnitRotation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        movement = GetComponentInParent<UnitMovement>();
+        
     }
 
     // Update is called once per frame
@@ -19,6 +19,10 @@ public class UnitRotation : MonoBehaviour
 
     public void updateRotation()
     {
+        if (!movement)
+        {
+            movement = GetComponentInParent<UnitMovement>();
+        }
         transform.localRotation = Quaternion.AngleAxis(movement.currentLookAngle, Vector3.up);
     }
 

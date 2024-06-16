@@ -149,7 +149,7 @@ public class AggroHandler : MonoBehaviour
         {
             if(aggroedEnemies.Count == 0)
             {
-                GetComponentInParent<UnitUpdateOrder>().setRegistration(true);
+                GetComponentInParent<UnitUpdateOrder>(true).setRegistration(true);
                 avoidance.enabled = true;
             }
             setCombat();

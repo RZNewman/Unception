@@ -6,7 +6,7 @@ public class Size : MonoBehaviour
 {
     CapsuleCollider col;
     Vector3 baseSize = Vector3.one;
-    CapsuleCollider stopper;
+    public CapsuleCollider stopper;
     // Start is called before the first frame update
 
     private void Awake()
@@ -47,7 +47,6 @@ public class Size : MonoBehaviour
 
     void Start()
     {
-        CapsuleCollider stopper = transform.parent?.GetComponentInChildren<UnitStopper>()?.GetComponent<CapsuleCollider>();
         if (stopper)
         {
             Physics.IgnoreCollision(col, stopper);

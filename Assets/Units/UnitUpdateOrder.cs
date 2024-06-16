@@ -136,6 +136,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         if (!active)
         {
             GetComponent<UnitMovement>().stop(true);
+            GetComponentInChildren<UnitRotation>().updateRotation();
         }
     }
 

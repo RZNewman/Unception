@@ -257,14 +257,6 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
-    public Vector3 worldVelocity
-    {
-        get
-        {
-            return rb.velocity;
-        }
-    }
-
     public MoveDirection moveDirection
     {
         get

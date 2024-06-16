@@ -45,6 +45,7 @@ public class Wetstone : NetworkBehaviour
         cam.gameObject.SetActive(true);
         yield return new WaitForSeconds(1.5f);
         unit.GetComponent<Reward>().recieveReward(GetComponent<Reward>());
+        FindObjectOfType<Atlas>().makeMaps();
         MenuHandler.controlCharacterCutscene = true;
         Destroy(gameObject);
         PlayerInfo.FireTutorialEventAll(PlayerInfo.TutorialEvent.WaterFed);

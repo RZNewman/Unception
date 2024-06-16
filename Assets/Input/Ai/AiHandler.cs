@@ -276,7 +276,12 @@ public class AiHandler : MonoBehaviour, UnitControl
                     DistanceType.JustRight => Vector2.zero,
                     _ => inpVec,
                 };
-                if(mover.grounded && pathCorner != Vector3.zero && pathCorner.y > transform.position.y + 0.9f * scalePhys)
+                float angleBetween = Vector3.Angle(planarDiff, rawDiff);
+                if( mover.grounded 
+                    && pathCorner != Vector3.zero 
+                    && pathCorner.y > transform.position.y + 0.9f * scalePhys
+                    //&& angleBetween > FloorNormal.floorDegrees 
+                    )
                 {
                     currentInput.jump = true;
                 }

@@ -18,8 +18,15 @@ public class UnitUpdateOrder : NetworkBehaviour
     // Start is called before the first frame update
     DeterministicUpdate globalUpdate;
 
+    enum RegistrationState
+    {
+        None,
+        Registered,
+        AwaitStop
+    }
+
     [SyncVar(hook =nameof(hookRegistration))]
-    bool registered;
+    RegistrationState registered = RegistrationState.None;
 
 
     void Start()
@@ -41,8 +48,7 @@ public class UnitUpdateOrder : NetworkBehaviour
         eventManager.suscribeDeath((d) => {
             setRegistration(false, true);
             });
-
-        setUpdateScripts(registered);
+        setUpdateScripts();
     }
 
     public void logUnit()
@@ -52,67 +58,83 @@ public class UnitUpdateOrder : NetworkBehaviour
 
     IEnumerator delayUnregister(DeterministicUpdate globalUpdate)
     {
-        while (!life.IsDead || !mover.grounded)
+        while (!mover.grounded)
         {
             yield return null;
         }
+        if (registered != RegistrationState.AwaitStop) yield break;
+
         globalUpdate.unregister(this);
-        registered =false;
-        setUpdateScripts(registered);
+        setUpdateScripts();
 
     }
 
 
     public void setRegistration(bool register, bool death = false)
     {
-        if (register == registered) return;
+        RegistrationState target = (register, death) switch
+        {
+            (true, _) => RegistrationState.Registered,
+            (_, true) => RegistrationState.None,
+            _ => RegistrationState.AwaitStop,
+        };
+        if (target == registered) return;
+        if (target == RegistrationState.AwaitStop && registered == RegistrationState.None) return;
 
-        registered = register;
-        setRegistrationHelper(register, death);
+        registered = target;
+        if(target == RegistrationState.Registered && registered == RegistrationState.AwaitStop) return;
+        setRegistrationHelper();
     }
 
-    void hookRegistration(bool old, bool register)
+    void hookRegistration(RegistrationState old, RegistrationState register)
     {
         if (isClientOnly)
         {
-            setRegistrationHelper(register, true);
+            if(register == RegistrationState.AwaitStop)
+            {
+                return;
+            }
+
+            setRegistrationHelper();
         }
     }
 
-    void setRegistrationHelper(bool register, bool noWait)
+    void setRegistrationHelper()
     {
         globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
         if (globalUpdate)
         {
-            if (register)
+            switch (registered)
             {
-                globalUpdate.register(this);
-                setUpdateScripts(register);
-            }
-            else
-            {
-                if (noWait)
-                {
+                case RegistrationState.Registered:
+                    globalUpdate.register(this);
+                    setUpdateScripts();
+                    break;
+                case RegistrationState.None:
                     globalUpdate.unregister(this);
-                    setUpdateScripts(register);
-                }
-                else
-                {
+                    setUpdateScripts();
+                    break;
+                case RegistrationState.AwaitStop:
                     StartCoroutine(delayUnregister(globalUpdate));
-                }
-                
+                    break;
             }
             
         }
         
     }
 
-    private void setUpdateScripts(bool active)
+    private void setUpdateScripts()
     {
+        bool active = registered != RegistrationState.None;
+
         GetComponent<ControlManager>().enabled = active;
         GetComponentInChildren<UnitRotation>().enabled = active;
         GetComponentInChildren<UnitEye>().enabled = active;
         GetComponent<Rigidbody>().isKinematic = !active;
+        if (!active)
+        {
+            GetComponent<UnitMovement>().stop(true);
+        }
     }
 
 

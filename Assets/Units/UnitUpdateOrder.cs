@@ -18,15 +18,15 @@ public class UnitUpdateOrder : NetworkBehaviour
     // Start is called before the first frame update
     DeterministicUpdate globalUpdate;
 
-    enum RegistrationState
+    enum ActiveState
     {
         None,
-        Registered,
+        Active,
         AwaitStop
     }
 
     [SyncVar(hook =nameof(hookRegistration))]
-    RegistrationState registered = RegistrationState.None;
+    ActiveState state = ActiveState.None;
 
 
     void Start()
@@ -62,35 +62,37 @@ public class UnitUpdateOrder : NetworkBehaviour
         {
             yield return null;
         }
-        if (registered != RegistrationState.AwaitStop) yield break;
+        if (state != ActiveState.AwaitStop) yield break;
 
-        globalUpdate.unregister(this);
-        setUpdateScripts();
+        state = ActiveState.None;
+        setRegistrationHelper();
 
     }
 
 
     public void setRegistration(bool register, bool death = false)
     {
-        RegistrationState target = (register, death) switch
+        ActiveState target = (register, death) switch
         {
-            (true, _) => RegistrationState.Registered,
-            (_, true) => RegistrationState.None,
-            _ => RegistrationState.AwaitStop,
+            (true, _) => ActiveState.Active,
+            (_, true) => ActiveState.None,
+            _ => ActiveState.AwaitStop,
         };
-        if (target == registered) return;
-        if (target == RegistrationState.AwaitStop && registered == RegistrationState.None) return;
+        ActiveState old = state;
 
-        registered = target;
-        if(target == RegistrationState.Registered && registered == RegistrationState.AwaitStop) return;
+        if (target == old) return;
+        if (target == ActiveState.AwaitStop && old == ActiveState.None) return;
+
+        state = target;
+        if(target == ActiveState.Active && old == ActiveState.AwaitStop) return;
         setRegistrationHelper();
     }
 
-    void hookRegistration(RegistrationState old, RegistrationState register)
+    void hookRegistration(ActiveState old, ActiveState state)
     {
         if (isClientOnly)
         {
-            if(register == RegistrationState.AwaitStop)
+            if(state == ActiveState.AwaitStop)
             {
                 return;
             }
@@ -104,17 +106,17 @@ public class UnitUpdateOrder : NetworkBehaviour
         globalUpdate = FindObjectOfType<DeterministicUpdate>(true);
         if (globalUpdate)
         {
-            switch (registered)
+            switch (state)
             {
-                case RegistrationState.Registered:
+                case ActiveState.Active:
                     globalUpdate.register(this);
                     setUpdateScripts();
                     break;
-                case RegistrationState.None:
+                case ActiveState.None:
                     globalUpdate.unregister(this);
                     setUpdateScripts();
                     break;
-                case RegistrationState.AwaitStop:
+                case ActiveState.AwaitStop:
                     StartCoroutine(delayUnregister(globalUpdate));
                     break;
             }
@@ -125,7 +127,7 @@ public class UnitUpdateOrder : NetworkBehaviour
 
     private void setUpdateScripts()
     {
-        bool active = registered != RegistrationState.None;
+        bool active = state != ActiveState.None;
 
         GetComponent<ControlManager>().enabled = active;
         GetComponentInChildren<UnitRotation>().enabled = active;

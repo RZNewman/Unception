@@ -31,7 +31,7 @@ public static class StatTypes
     {
         {Stat.Length,3f},
         {Stat.Width,3.5f},
-        {Stat.Knockback,12},
+        {Stat.Knockback,7},
         {Stat.DamageMult,0.14f},
         {Stat.Stagger,200},
         {Stat.Mezmerize,200},

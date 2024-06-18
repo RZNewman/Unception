@@ -157,7 +157,7 @@ namespace NavmeshLinksGenerator
             bool result = false;
 
             Vector3 startPosHorizontal = pos + Vector3.up * wallCheckYOffset - normal * Vector3.forward * agentRadius;
-            Vector3 startPos = pos + normal * Vector3.forward * (agentRadius * 5) + Vector3.up * wallCheckYOffset;
+            Vector3 startPos = pos + normal * Vector3.forward * (agentRadius * 2) + Vector3.up * wallCheckYOffset;
             Vector3 endPos = startPos - Vector3.up * maxJumpDownHeight * 1.1f;
 
             //Debug Wall Hit

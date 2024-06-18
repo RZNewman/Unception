@@ -67,6 +67,7 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         cachedNumerical.recalc();
         cachedSpeed.recalc();
+        cachedAccel.recalc();
         cachedPhysical.recalc();
         cachedTime.recalc();
         powerUpdates();
@@ -206,6 +207,11 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         return cachedSpeed.get(currentPower);
     }
+
+    public float scaleAccel()
+    {
+        return cachedAccel.get(currentPower);
+    }
     public float scalePhysical()
     {
         return cachedPhysical.get(currentPower);
@@ -229,12 +235,14 @@ public class Power : NetworkBehaviour, TextValue, BarValue
 
     CacheValue<float, float> cachedNumerical;
     CacheValue<float, float> cachedSpeed;
+    CacheValue<float, float> cachedAccel;
     CacheValue<float, float> cachedPhysical;
     CacheValue<float, float> cachedTime;
     private void Awake()
     {
         cachedNumerical = new CacheValue<float, float>(scaleNumerical, currentPower);
         cachedSpeed = new CacheValue<float, float>(_scaleSpeedInstance, currentPower);
+        cachedAccel = new CacheValue<float, float>(_scaleAccelInstance, currentPower);
         cachedPhysical = new CacheValue<float, float>(_scalePhysicalInstance, currentPower);
         cachedTime = new CacheValue<float, float>(_scaleTimeInstance, currentPower);
     }
@@ -251,6 +259,11 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     float _scaleSpeedInstance(float power)
     {
         return _scalePhysicalInstance(power) * _scaleTimeInstance(power);
+    }
+
+    float _scaleAccelInstance(float power)
+    {
+        return _scalePhysicalInstance(power) * Mathf.Pow(_scaleTimeInstance(power), 2);
     }
 
 

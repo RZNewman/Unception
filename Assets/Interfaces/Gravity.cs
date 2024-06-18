@@ -42,7 +42,7 @@ public class Gravity : MonoBehaviour
     void setForce()
     {
         float f = _gravity * gravMult;
-        if (power) { f *= power.scaleSpeed(); }
+        if (power) { f *= power.scaleAccel(); }
         force.force = Vector3.up * f;
     }
     void Start()

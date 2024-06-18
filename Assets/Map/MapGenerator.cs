@@ -154,8 +154,8 @@ public class MapGenerator : NetworkBehaviour
         
         
         linkGenerator.tileWidth = WFCGeneration.tileScale.x * 0.3f * currentFloorScale;
-        linkGenerator.maxJumpUpHeight = 4 * currentFloorScale;
-        linkGenerator.maxJumpDist = 5 * currentFloorScale;
+        linkGenerator.maxJumpUpHeight = 1.5f * currentFloorScale;
+        linkGenerator.maxJumpDist = 2.2f * currentFloorScale;
         linkGenerator.maxJumpDownHeight = 15 * currentFloorScale;
         linkGenerator.raycastLayerMask = TerrainMask();
         linkGenerator.agentRadius = agentRadius;

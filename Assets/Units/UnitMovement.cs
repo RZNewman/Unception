@@ -38,6 +38,10 @@ public class UnitMovement : NetworkBehaviour
     [SyncVar]
     public float currentLookVerticalAngle = 0;
 
+
+    [SyncVar]
+    float jumpBonusTime = 0;
+
     Vector3 planarVelocityCache;
 
 
@@ -105,6 +109,8 @@ public class UnitMovement : NetworkBehaviour
             {
                 legMode = LegMode.Normal;
             }
+            jumpBonusTime -= Time.fixedDeltaTime * power.scaleTime();
+            jumpBonusTime = Mathf.Max(0, jumpBonusTime);
             movement.tick();
         }
         else
@@ -312,21 +318,37 @@ public class UnitMovement : NetworkBehaviour
         return rot * vec;
     }
 
+
     public void tryJump()
     {
         if (grounded)
         {
             jump();
+            //Debug.Log(rb.velocity.y);
         }
-        else if(props.canFloat)
+        else if(hasJumpBonus)
         {
-            toggleFloat();
+            float amount = props.jumpForce * jumpBonusRatio * power.scaleAccel() * Time.fixedDeltaTime / jumpBonus;
+            rb.velocity += Vector3.up * amount;
+            //Debug.Log(amount);
+        }
+    }
+    public bool hasJumpBonus
+    {
+        get
+        {
+            return jumpBonusTime > 0;
         }
     }
 
+    static readonly float jumpBonus = 0.7f;
+    static readonly float jumpBonusRatio = 0.5f;
     public void jump()
     {
-        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * power.scalePhysical(), rb.velocity.z);
+        float ratio = 1 - jumpBonusRatio;
+        rb.velocity = new Vector3(rb.velocity.x, props.jumpForce * ratio * power.scaleSpeed(), rb.velocity.z);
+        jumpBonusTime = jumpBonus;
+        
     }
     void knock(Vector3 dir, float back, float up)
     {
@@ -359,6 +381,7 @@ public class UnitMovement : NetworkBehaviour
         }
 
         float scaleSpeed = power.scaleSpeed();
+        float scaleAccel = power.scaleAccel();
 
 
         Vector3 planarVelocity = planarVelocityCalculated;
@@ -371,11 +394,11 @@ public class UnitMovement : NetworkBehaviour
 
 
         float maxSpeedFriction = movespeed * movespeedMult * toMoveMultiplier(vec2input(planarVelocity)) * scaleSpeed;
-        float frictionFrameMag = props.friction * frictionMult * Time.fixedDeltaTime * scaleSpeed;
+        float frictionFrameMag = props.friction * frictionMult * Time.fixedDeltaTime * scaleAccel;
         float potentialSpeed = movespeed * movespeedMult * toMoveMultiplier(inp.move) * scaleSpeed;
-        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scaleSpeed;
+        float stoppingFrameMag = props.decceleration * stoppingMult * Time.fixedDeltaTime * scaleAccel;
         //the look mulitplier for acceleration is applied later
-        float accelerationFrameMag = props.acceleration * accelerationMult * Time.fixedDeltaTime * scaleSpeed;
+        float accelerationFrameMag = props.acceleration * accelerationMult * Time.fixedDeltaTime * scaleAccel;
 
 
         //section: friction

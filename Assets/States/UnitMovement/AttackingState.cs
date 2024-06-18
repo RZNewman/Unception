@@ -61,7 +61,7 @@ public class AttackingState : PlayerMovementState
         base.tick();
         UnitInput inp = mover.input;
 
-        if (inp.consumeJump())
+        if (inp.jump)
         {
             mover.tryJump();
         }

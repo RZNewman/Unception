@@ -30,7 +30,7 @@ public static class GenerateUnit
         properties.acceleration = speed * 4;
         properties.decceleration = stopping;
         properties.friction = 35;
-        properties.jumpForce = 20f;
+        properties.jumpForce = 23f;
         properties.jumpsquatTime = 0.4f;
         properties.lookSpeedDegrees = turn;
         properties.sidewaysMoveMultiplier = 0.2f;

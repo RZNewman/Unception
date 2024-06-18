@@ -17,7 +17,7 @@ MonoBehaviour:
   acceleration: 40
   decceleration: 80
   friction: 15
-  jumpForce: 20
+  jumpForce: 23
   jumpsquatTime: 0.2
   lookSpeedDegrees: 180
   sidewaysMoveMultiplier: 0.85
@@ -34,3 +34,4 @@ MonoBehaviour:
   visuals:
     colors: []
     parts: 
+    scales: []

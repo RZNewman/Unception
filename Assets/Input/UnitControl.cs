@@ -32,12 +32,12 @@ public interface UnitControl
             attacks = new ItemSlot[0];
         }
 
-        public bool consumeJump()
-        {
-            bool j = jump;
-            jump = false;
-            return j;
-        }
+        //public bool consumeJump()
+        //{
+        //    bool j = jump;
+        //    jump = false;
+        //    return j;
+        //}
 
         public bool consumeRecall()
         {
@@ -48,7 +48,7 @@ public interface UnitControl
 
         public void cleanButtons()
         {
-            jump = false;
+            //jump = false;
             dash = false;
             cancel = false;
             interact=false;
@@ -91,7 +91,7 @@ public interface UnitControl
         {
             move = newer.move;
             lookOffset = newer.lookOffset;
-            jump = jump || newer.jump;
+            jump = newer.jump;
             dash = dash || newer.dash;
             cancel = cancel || newer.cancel;
             interact = interact || newer.interact;

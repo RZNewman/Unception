@@ -224,6 +224,7 @@ public class AiHandler : MonoBehaviour, UnitControl
 
 
                 Vector3 targetNav = thierGround.nav;
+                Vector3 heightDiff = Vector3.up * mySize.scaledHalfHeight;
                 if (Time.time > timePathed + pathPeriod)
                 {
 
@@ -234,9 +235,9 @@ public class AiHandler : MonoBehaviour, UnitControl
                 Vector3 pathCorner = Vector3.zero;
                 if(currentPath != null)
                 {
-                    Vector3 heightDiff = Vector3.up * mySize.scaledHalfHeight;
+                    
                     pathCorner = currentPath.vectorPath[currentPathIndex]+ heightDiff;
-                    while(currentPathIndex < currentPath.vectorPath.Count - 1 && (pathCorner -transform.position).magnitude < 0.5f * scalePhys)
+                    while(currentPathIndex < currentPath.vectorPath.Count - 1 && (pathCorner -transform.position).magnitude < 0.6f * scalePhys)
                     {
                         currentPathIndex++;
                         pathCorner = currentPath.vectorPath[currentPathIndex] + heightDiff;
@@ -276,11 +277,23 @@ public class AiHandler : MonoBehaviour, UnitControl
                     DistanceType.JustRight => Vector2.zero,
                     _ => inpVec,
                 };
-                float angleBetween = Vector3.Angle(planarDiff, rawDiff);
-                if( mover.grounded 
-                    && pathCorner != Vector3.zero 
-                    && pathCorner.y > transform.position.y + 0.9f * scalePhys
-                    //&& angleBetween > FloorNormal.floorDegrees 
+
+
+                Vector3 targetDiff = currentTarget - transform.position;
+                Vector3 targetDiffFlat = targetDiff;
+                targetDiffFlat.y = 0;
+                Vector3 ankleDiff = Vector3.down * mySize.scaledHalfHeight * 0.9f;
+                //float angleBetween = Vector3.Angle(targetDiffFlat, targetDiff);
+                if ( mover.grounded 
+                    && targetDiff.y >  0.1f * scalePhys
+                    && Physics.Raycast(transform.position +ankleDiff,targetDiff, targetDiff.magnitude, MapGenerator.TerrainMask())
+                    )
+                {
+                    currentInput.jump = true;
+                }
+                else if (mover.hasJumpBonus
+                    && !mover.grounded
+                    && targetDiff.y > -0.1f * scalePhys
                     )
                 {
                     currentInput.jump = true;

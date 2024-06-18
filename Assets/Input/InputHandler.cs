@@ -81,7 +81,7 @@ public class InputHandler : MonoBehaviour, UnitControl
 
         currentInput.move = move;
 
-        currentInput.jump = Input.GetKeyDown(keys.binding(KeyName.Jump));
+        currentInput.jump = Input.GetKey(keys.binding(KeyName.Jump));
         currentInput.dash = Input.GetKeyDown(keys.binding(KeyName.Dash));
         currentInput.cancel = Input.GetKeyDown(keys.binding(KeyName.Cancel));
         currentInput.interact = Input.GetKeyDown(keys.binding(KeyName.Interact));

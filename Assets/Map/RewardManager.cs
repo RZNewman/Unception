@@ -110,7 +110,7 @@ public static class RewardManager
 
     //public readonly static float powerMapPercent = (powerPercentFalloff - 1) / mapsPerFalloff;
     //public readonly static float powerPackPercent = powerMapPercent / packsKilledPerMap;
-    public readonly static float powerPackPercent = 0.05f;
+    public readonly static float powerPackPercent = 0.04f;
 
 
     //public static readonly float uncommonChance = 4f / (itemsPerPack * packsKilledPerMap);

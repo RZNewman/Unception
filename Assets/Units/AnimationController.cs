@@ -68,6 +68,12 @@ public class AnimationController : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        anim.SetInteger("BaseState", (int)AnimationState.Idle);
+        anim.SetFloat("MoveSpeed", 0);
+    }
+
     public void setAttack()
     {
         anim.SetTrigger("Attack");

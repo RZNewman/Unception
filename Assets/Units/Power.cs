@@ -402,7 +402,7 @@ public class Power : NetworkBehaviour, TextValue, BarValue
     {
         return new BarValue.BarData
         {
-            active = currentPower< softcap,
+            active = currentPower < softcap,
             color = new Color(1, 0.8f, 0),
             fillPercent = (currentPower - Atlas.playerStartingPower) / (softcap- Atlas.playerStartingPower),
 
